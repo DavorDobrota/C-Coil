@@ -8,30 +8,33 @@ int main(){
     //setting the number of threads
     tp.resize(16);
 
-	FILE *input = fopen("values.txt", "r");
-	FILE *output = fopen("output.txt", "w");
+    // vector testing
 
-	Type Rt1, at1, bt1; int Nt1;
-	Type Rt2, at2, bt2; int Nt2;
-	Type distance;
-	Coil prim1, sec1;
-	Type Temp;
 
-	while (fscanf(input, "%lf %lf %lf %d %lf %lf %lf %d %lf", &Rt1, &at1, &bt1, &Nt1, &Rt2, &at2, &bt2, &Nt2, &distance) == 9){
-		printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
-		for (Type i = 1; i <= 9.0; i += 1.0){
-			prim1 = Coil(1, Rt1, at1, bt1, 0.001, 12, 12, 80, Nt1, true, 100000, ro1);
-			sec1 = Coil(1, Rt2, at2, bt2, 0.001, 8, 8, 12, Nt2, true, 100000, ro1);
-			Temp = sec1.MutualInductanceCalc(distance, prim1, true, i);
-			printf(" %.18f\n", Temp);
-			fprintf(output, "%.20f\t", Temp);
-		}
-		printf("====================================================================================\n");
-		fprintf(output, "\n");
-	}
-
-	fclose(input);
-	fclose(output);
+//	FILE *input = fopen("values.txt", "r");
+//	FILE *output = fopen("output.txt", "w");
+//
+//	Type Rt1, at1, bt1; int Nt1;
+//	Type Rt2, at2, bt2; int Nt2;
+//	Type distance;
+//	Coil prim1, sec1;
+//	Type Temp;
+//
+//	while (fscanf(input, "%lf %lf %lf %d %lf %lf %lf %d %lf", &Rt1, &at1, &bt1, &Nt1, &Rt2, &at2, &bt2, &Nt2, &distance) == 9){
+//		printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
+//		for (Type i = 1; i <= 9.0; i += 1.0){
+//			prim1 = Coil(1, Rt1, at1, bt1, 0.001, 12, 12, 80, Nt1, true, 100000, ro1);
+//			sec1 = Coil(1, Rt2, at2, bt2, 0.001, 8, 8, 12, Nt2, true, 100000, ro1);
+//			Temp = sec1.MutualInductanceCalc(distance, prim1, true, i);
+//			printf(" %.18f\n", Temp);
+//			fprintf(output, "%.20f\t", Temp);
+//		}
+//		printf("====================================================================================\n");
+//		fprintf(output, "\n");
+//	}
+//
+//	fclose(input);
+//	fclose(output);
 
     /*
     for (int i = 4; i <= 120; i += 4){
@@ -98,8 +101,6 @@ int main(){
 */
 //	Calculate_hardware_accelerated_e (1, &theta, &dist, 1000000.f, 0.03f, 0.12f, 0.03f, 0.001f, 0.001f, 0.2617993878f, nullptr, nullptr, &temp);
 //	printf("%.30f\n", temp);
-
-
 
     return 0;
 }

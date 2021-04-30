@@ -99,7 +99,7 @@ void Polynomial::printForGrapher()
 
     for (int i = 0; i <= leading_coefficient; ++i)
     {
-        if (std::abs(coefficients[i])  > 1e-14)
+        if (std::abs(coefficients[i]) > tolerance)
         {
             printf("%fx^%d", coefficients[i], i);
             if (i != leading_coefficient)
@@ -195,16 +195,51 @@ Polynomial Polynomial::multiplyPolynomials(Polynomial &pol1, Polynomial &pol2)
     return polynomial;
 }
 
-double Polynomial::findNewtonZero(double firstGuess, Polynomial &inputPolynomial)
+double Polynomial::findNewtonZero(double firstGuess)
 {
-    Polynomial inputDerivative = inputPolynomial.takeDerivative();
+    Polynomial inputDerivative = takeDerivative();
     double currentX = firstGuess;
 
     for (int i = 0; i < steps; ++i)
     {
-        currentX -= inputPolynomial.getValueAt(currentX) / inputDerivative.getValueAt(currentX);
+        currentX -= getValueAt(currentX) / inputDerivative.getValueAt(currentX);
     }
     return currentX;
+}
+
+std::vector<double> Polynomial::getPolynomialRealZeros(double lowerBound, double upperBound)
+{
+    double zeros_from_Attempts[size * 2 + 1];
+    double step = (upperBound - lowerBound) / (2 * size);
+
+    for (int i = 0; i <= 2 * size; ++i)
+    {
+        zeros_from_Attempts[i] = findNewtonZero(lowerBound + i * step);
+    }
+
+    std::vector<double> polynomial_zeros;
+    double temp_zero;
+
+    for (int i = 0; i <= 2 * size; ++i)
+    {
+        temp_zero = zeros_from_Attempts[i];
+        bool duplicate = false;
+
+        for (double polynomial_zero : polynomial_zeros)
+        {
+            if (std::fabs(temp_zero - polynomial_zero) < tolerance || _isnan(temp_zero))
+            {
+                duplicate = true;
+            }
+        }
+        if (!duplicate)
+        {
+            polynomial_zeros.push_back(temp_zero);
+        }
+    }
+    std::sort(polynomial_zeros.begin(), polynomial_zeros.end());
+
+    return polynomial_zeros;
 }
 
 Polynomial Polynomial::genLegendrePolynomialN(int n, Polynomial legendreN_minus_1, Polynomial legendreN_minus_2)

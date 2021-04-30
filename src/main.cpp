@@ -38,7 +38,7 @@ int main(){
 
     printf("===========================\n");
 
-    int numPol = 25;
+    int numPol = 26;
 
     std::vector<Polynomial> legendrePolynomials = Polynomial::getLegendreSequence(numPol);
 
@@ -46,6 +46,19 @@ int main(){
     {
         legendrePolynomials[i].printForGrapher();
     }
+
+    for (int i = 1; i < numPol; ++i)
+    {
+        std::vector<double> zeros1 = legendrePolynomials[i].getPolynomialRealZeros(-1.0, 1.0);
+        printf("%2d: ", i);
+        for (double j : zeros1)
+        {
+            printf("%.9f, ", j);
+        }
+        printf("\n");
+    }
+
+
 
 //	FILE *input = fopen("values.txt", "r");
 //	FILE *output = fopen("output.txt", "w");

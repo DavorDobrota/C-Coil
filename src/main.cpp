@@ -31,28 +31,16 @@ int main(){
     Polynomial pol3 = Polynomial::addPolynomials(pol1, pol2);
     pol3.printPolynomial();
 
+    pol1.printPolynomial();
+    pol2.printPolynomial();
+    Polynomial pol4 = Polynomial::multiplyPolynomials(pol1, pol2);
+    pol4.printPolynomial();
+
     printf("===========================\n");
 
-    std::vector<Polynomial> legendrePolynomials;
+    int numPol = 25;
 
-    std::vector<double> vec1;
-    vec1.push_back(1);
-
-    std::vector<double> vec2;
-    vec2.push_back(0);
-    vec2.push_back(1);
-
-    legendrePolynomials.emplace_back(Polynomial(vec1));
-    legendrePolynomials.emplace_back(Polynomial(vec2));
-
-
-    int numPol = 20;
-
-    for (int i = 2; i < numPol; ++i)
-    {
-        legendrePolynomials.emplace_back(
-                Polynomial::genLegendrePolynomialN(i, legendrePolynomials[i-1], legendrePolynomials[i-2]));
-    }
+    std::vector<Polynomial> legendrePolynomials = Polynomial::getLegendreSequence(numPol);
 
     for (int i = 0; i < numPol; i++)
     {

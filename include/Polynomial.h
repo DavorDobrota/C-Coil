@@ -38,12 +38,12 @@ class Polynomial
         void multiplyByXtoN (int n);
         Polynomial takeDerivative();
 
-        static Polynomial addPolynomials (Polynomial pol1, Polynomial pol2);
-        static Polynomial multiplyPolynomials (Polynomial pol1, Polynomial pol2);
+        static Polynomial addPolynomials (Polynomial &pol1, Polynomial &pol2);
+        static Polynomial multiplyPolynomials (Polynomial &pol1, Polynomial &pol2);
         static double findNewtonZero (double firstGuess, Polynomial &inputPolynomial);
+
         static Polynomial genLegendrePolynomialN (int n, Polynomial legendreN_minus_1, Polynomial legendreN_minus_2);
-
+        static std::vector<Polynomial> getLegendreSequence (int maxN);
 };
-
 
 #endif //GENERAL_COIL_PROGRAM_POLYNOMIAL_H

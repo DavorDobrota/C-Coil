@@ -99,10 +99,13 @@ void Polynomial::printForGrapher()
 
     for (int i = 0; i <= leading_coefficient; ++i)
     {
-        printf("%fx^%d", coefficients[i], i);
-        if (i != leading_coefficient)
+        if (std::abs(coefficients[i])  > 1e-14)
         {
-            printf(" + ");
+            printf("%fx^%d", coefficients[i], i);
+            if (i != leading_coefficient)
+            {
+                printf(" + ");
+            }
         }
     }
     printf("\n");
@@ -158,7 +161,7 @@ void Polynomial::multiplyByXtoN(int n)
     }
 }
 
-Polynomial Polynomial::addPolynomials(Polynomial pol1, Polynomial pol2)
+Polynomial Polynomial::addPolynomials(Polynomial &pol1, Polynomial &pol2)
 {
     int leading_coefficient_1 = pol1.getLeadingCoefficient();
     int leading_coefficient_2 = pol2.getLeadingCoefficient();
@@ -168,6 +171,26 @@ Polynomial Polynomial::addPolynomials(Polynomial pol1, Polynomial pol2)
     for (int i = 0; i <= std::max(leading_coefficient_1, leading_coefficient_2); ++i)
     {
         polynomial.coefficients[i] = pol1.coefficients[i] + pol2.coefficients[i];
+    }
+    return polynomial;
+}
+
+Polynomial Polynomial::multiplyPolynomials(Polynomial &pol1, Polynomial &pol2)
+{
+    int leading_coefficient_1 = pol1.getLeadingCoefficient();
+    int leading_coefficient_2 = pol2.getLeadingCoefficient();
+
+    Polynomial polynomial = Polynomial();
+
+    if (leading_coefficient_1 + leading_coefficient_2 < size)
+    {
+        for (int i = 0; i <= leading_coefficient_1; ++i)
+        {
+            for (int j = 0; j <= leading_coefficient_2; ++j)
+            {
+                polynomial.coefficients[i+j] += pol1.coefficients[i] * pol2.coefficients[j];
+            }
+        }
     }
     return polynomial;
 }
@@ -194,4 +217,26 @@ Polynomial Polynomial::genLegendrePolynomialN(int n, Polynomial legendreN_minus_
     polynomial.multiplyByConst(1.0 / n);
 
     return polynomial;
+}
+
+std::vector<Polynomial> Polynomial::getLegendreSequence(int maxN)
+{
+    std::vector<Polynomial> legendrePolynomials;
+
+    std::vector<double> vec1;
+    vec1.push_back(1);
+
+    std::vector<double> vec2;
+    vec2.push_back(0);
+    vec2.push_back(1);
+
+    legendrePolynomials.emplace_back(Polynomial(vec1));
+    legendrePolynomials.emplace_back(Polynomial(vec2));
+
+    for (int i = 2; i < maxN; ++i)
+    {
+        legendrePolynomials.emplace_back(
+                Polynomial::genLegendrePolynomialN(i, legendrePolynomials[i-1], legendrePolynomials[i-2]));
+    }
+    return legendrePolynomials;
 }

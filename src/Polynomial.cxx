@@ -38,13 +38,13 @@ Polynomial::Polynomial() {
     setCoefficientsTo0();
 }
 
-Polynomial::Polynomial(int degree, std::vector<double> &coefficientList)
+Polynomial::Polynomial(std::vector<double> &coefficientList)
 {
 
     genDerivativeMatrix();
     setCoefficientsTo0();
 
-    for (int i = 0; i <= degree; ++i)
+    for (int i = 0; i < coefficientList.size(); ++i)
     {
         coefficients[i] = coefficientList[i];
     }
@@ -77,31 +77,40 @@ std::vector<double> Polynomial::getCoefficients()
     return vector;
 }
 
-std::string Polynomial::toString()
+void Polynomial::printPolynomial()
 {
-    std::string output = "[";
+    printf("[");
     int leading_coefficient = getLeadingCoefficient();
 
     for (int i = 0; i <= leading_coefficient; ++i)
     {
-        output += coefficients[i];
+        printf("%.4f", coefficients[i]);
         if (i != leading_coefficient)
         {
-            output += ", ";
+            printf(", ");
         }
     }
-    return output;
+    printf("]\n");
 }
 
-Polynomial Polynomial::derivativeOfPolynomial(Polynomial &inputPolynomial) {
+void Polynomial::multiplyByConst(double multiplier)
+{
+    int leading_coefficient = getLeadingCoefficient();
 
+    for (int i = 0; i <= leading_coefficient; ++i){
+        coefficients[i] *= multiplier;
+    }
+}
+
+Polynomial Polynomial::takeDerivative()
+{
     Polynomial polynomial = Polynomial();
 
     for (int i = 0; i < size; ++i)
     {
         for (int j = 0; j < size; ++j)
         {
-            polynomial.coefficients[i] += derivativeMatrix[i][j] * inputPolynomial.coefficients[j];
+            polynomial.coefficients[i] += derivativeMatrix[i][j] * coefficients[j];
         }
     }
 
@@ -120,9 +129,37 @@ double Polynomial::getValueAt(double x)
     return value;
 }
 
+void Polynomial::multiplyByXtoN(int n)
+{
+    int leading_coefficient = getLeadingCoefficient();
+
+    if (leading_coefficient + n < size && n > 0)
+    {
+        for (int i = leading_coefficient; i >= 0; --i)
+        {
+            coefficients[i + n] = coefficients[i];
+            coefficients[i] = 0.0;
+        }
+    }
+}
+
+Polynomial Polynomial::addPolynomials(Polynomial pol1, Polynomial pol2)
+{
+    int leading_coefficient_1 = pol1.getLeadingCoefficient();
+    int leading_coefficient_2 = pol2.getLeadingCoefficient();
+
+    Polynomial polynomial = Polynomial();
+
+    for (int i = 0; i <= std::max(leading_coefficient_1, leading_coefficient_2); ++i)
+    {
+        polynomial.coefficients[i] = pol1.coefficients[i] + pol2.coefficients[i];
+    }
+    return polynomial;
+}
+
 double Polynomial::findNewtonZero(double firstGuess, Polynomial &inputPolynomial)
 {
-    Polynomial inputDerivative = derivativeOfPolynomial(inputPolynomial);
+    Polynomial inputDerivative = inputPolynomial.takeDerivative();
     double currentX = firstGuess;
 
     for (int i = 0; i < steps; ++i)
@@ -130,4 +167,16 @@ double Polynomial::findNewtonZero(double firstGuess, Polynomial &inputPolynomial
         currentX -= inputPolynomial.getValueAt(currentX) / inputDerivative.getValueAt(currentX);
     }
     return currentX;
+}
+
+Polynomial Polynomial::genLegendrePolynomialN(int n, Polynomial legendreN_minus_1, Polynomial legendreN_minus_2)
+{
+    legendreN_minus_1.multiplyByXtoN(1);
+    legendreN_minus_1.multiplyByConst((2 * n - 1));
+    legendreN_minus_2.multiplyByConst(n - 1);
+
+    Polynomial polynomial = addPolynomials(legendreN_minus_1, legendreN_minus_2);
+    polynomial.multiplyByConst(1.0 / n);
+
+    return polynomial;
 }

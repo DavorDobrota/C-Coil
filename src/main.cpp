@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../include/Coil.h"
+#include "../include/Polynomial.h"
 
 Type ro1 = 1.63e-8;
 extern thread_pool tp;
@@ -8,8 +9,56 @@ int main(){
     //setting the number of threads
     tp.resize(16);
 
-    // vector testing
+    // polynomial testing
+    std::vector<double> vector1;
+    vector1.push_back(3);
+    vector1.push_back(4);
+    vector1.push_back(5);
 
+    Polynomial pol1 = Polynomial(vector1);
+    pol1.printPolynomial();
+    printf("%.8f\n", pol1.getValueAt(0.5));
+
+    pol1.multiplyByConst(1.5);
+    pol1.printPolynomial();
+
+    Polynomial pol2 = pol1.takeDerivative();
+    pol2.printPolynomial();
+
+    pol2.multiplyByXtoN(2);
+    pol2.printPolynomial();
+
+    Polynomial pol3 = Polynomial::addPolynomials(pol1, pol2);
+    pol3.printPolynomial();
+
+    printf("===========================\n");
+
+    std::vector<Polynomial> legendrePolynomials;
+
+    std::vector<double> vec1;
+    vec1.push_back(1);
+
+    std::vector<double> vec2;
+    vec2.push_back(0);
+    vec2.push_back(1);
+
+    legendrePolynomials.emplace_back(Polynomial(vec1));
+    legendrePolynomials.emplace_back(Polynomial(vec2));
+
+
+
+    int numPol = 20;
+
+    for (int i = 2; i < numPol; ++i)
+    {
+        legendrePolynomials.emplace_back(
+                Polynomial::genLegendrePolynomialN(i, legendrePolynomials[i-1], legendrePolynomials[i-2]));
+    }
+
+    for (int i = 0; i < numPol; i++)
+    {
+        legendrePolynomials[i].printPolynomial();
+    }
 
 //	FILE *input = fopen("values.txt", "r");
 //	FILE *output = fopen("output.txt", "w");

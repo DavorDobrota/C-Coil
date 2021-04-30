@@ -32,6 +32,7 @@ class Polynomial
         std::vector<double> getCoefficients ();
         double getValueAt(double x);
         void printPolynomial();
+        void printForGrapher();
 
         void multiplyByConst (double multiplier);
         void multiplyByXtoN (int n);

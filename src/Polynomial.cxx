@@ -93,6 +93,21 @@ void Polynomial::printPolynomial()
     printf("]\n");
 }
 
+void Polynomial::printForGrapher()
+{
+    int leading_coefficient = getLeadingCoefficient();
+
+    for (int i = 0; i <= leading_coefficient; ++i)
+    {
+        printf("%fx^%d", coefficients[i], i);
+        if (i != leading_coefficient)
+        {
+            printf(" + ");
+        }
+    }
+    printf("\n");
+}
+
 void Polynomial::multiplyByConst(double multiplier)
 {
     int leading_coefficient = getLeadingCoefficient();
@@ -173,7 +188,7 @@ Polynomial Polynomial::genLegendrePolynomialN(int n, Polynomial legendreN_minus_
 {
     legendreN_minus_1.multiplyByXtoN(1);
     legendreN_minus_1.multiplyByConst((2 * n - 1));
-    legendreN_minus_2.multiplyByConst(n - 1);
+    legendreN_minus_2.multiplyByConst(- n + 1);
 
     Polynomial polynomial = addPolynomials(legendreN_minus_1, legendreN_minus_2);
     polynomial.multiplyByConst(1.0 / n);

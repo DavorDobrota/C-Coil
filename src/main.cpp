@@ -46,7 +46,6 @@ int main(){
     legendrePolynomials.emplace_back(Polynomial(vec2));
 
 
-
     int numPol = 20;
 
     for (int i = 2; i < numPol; ++i)
@@ -57,7 +56,7 @@ int main(){
 
     for (int i = 0; i < numPol; i++)
     {
-        legendrePolynomials[i].printPolynomial();
+        legendrePolynomials[i].printForGrapher();
     }
 
 //	FILE *input = fopen("values.txt", "r");

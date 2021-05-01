@@ -17,7 +17,7 @@ class Polynomial
         {
     private:
         static const int size = 100;
-        static const int steps = 1000;
+        static const int steps = 100;
         constexpr static const double tolerance = 1e-9;
 
         std::vector<double> coefficients;
@@ -43,6 +43,7 @@ class Polynomial
         static Polynomial addPolynomials (Polynomial &pol1, Polynomial &pol2);
         static Polynomial multiplyPolynomials (Polynomial &pol1, Polynomial &pol2);
         static double findNewtonZero (double firstGuess, Polynomial inputPolynomial);
+        static double findHouseholderZero(double firstGuess, Polynomial inputPolynomial);
         std::vector<double> getPolynomialRealZeros(double lowerBound, double upperBound);
 
         static Polynomial genLegendrePolynomialN (int n, Polynomial legendreN_minus_1, Polynomial legendreN_minus_2);

@@ -205,7 +205,26 @@ double Polynomial::findNewtonZero(double firstGuess, Polynomial inputPolynomial)
 
     for (int i = 0; i < steps; ++i)
     {
+    //    printf("%.20f\n", currentX);
         currentX -= inputPolynomial.getValueAt(currentX) / inputDerivative.getValueAt(currentX);
+
+    }
+    return currentX;
+}
+
+double Polynomial::findHouseholderZero(double firstGuess, Polynomial inputPolynomial)
+{
+    Polynomial inputFirstDerivative = inputPolynomial.takeDerivative();
+    Polynomial inputSecondDerivative = inputFirstDerivative.takeDerivative();
+    double currentX = firstGuess;
+
+    double temp_h;
+
+    for (int i = 0; i < steps; ++i)
+    {
+        temp_h = inputPolynomial.getValueAt(currentX) / inputFirstDerivative.getValueAt(currentX);
+        currentX -= temp_h / (1 - 0.5 * temp_h *
+                (inputSecondDerivative.getValueAt(currentX) / inputFirstDerivative.getValueAt(currentX)));
     }
     return currentX;
 }
@@ -217,7 +236,7 @@ std::vector<double> Polynomial::getPolynomialRealZeros(double lowerBound, double
 
     for (int i = 0; i <= 2 * size; ++i)
     {
-        zeros_from_Attempts[i] = findNewtonZero(lowerBound + i * step, *this);
+        zeros_from_Attempts[i] = findHouseholderZero(lowerBound + i * step, *this);
     }
 
     std::vector<double> polynomial_zeros;

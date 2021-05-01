@@ -47,6 +47,7 @@ int main(){
         legendrePolynomials[i].printForGrapher();
     }
 
+
     std::vector<double> zeros;
     std::vector<double> weights;
 
@@ -55,16 +56,15 @@ int main(){
         zeros = Polynomial::getLegendreZerosForN(i, legendrePolynomials);
         weights = Polynomial::getLegendreWeightsForN(i, legendrePolynomials);
 
-
         printf("%2d:\n", i);
         for (double j : zeros)
         {
-            printf("%.8f, ", j);
+            printf("%.12f, ", j);
         }
         printf("\n");
 
         for (double j : weights){
-            printf("%.10f, ", j);
+            printf("%.12f, ", j);
         }
         printf("\n");
 

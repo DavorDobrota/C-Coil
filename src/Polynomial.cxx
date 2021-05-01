@@ -195,14 +195,17 @@ Polynomial Polynomial::multiplyPolynomials(Polynomial &pol1, Polynomial &pol2)
     return polynomial;
 }
 
-double Polynomial::findNewtonZero(double firstGuess)
+double Polynomial::findNewtonZero(double firstGuess, Polynomial inputPolynomial)
 {
-    Polynomial inputDerivative = takeDerivative();
+    int leading_index = inputPolynomial.getLeadingCoefficient();
+    inputPolynomial.multiplyByConst(1.0 / inputPolynomial.coefficients[leading_index]);
+
+    Polynomial inputDerivative = inputPolynomial.takeDerivative();
     double currentX = firstGuess;
 
     for (int i = 0; i < steps; ++i)
     {
-        currentX -= getValueAt(currentX) / inputDerivative.getValueAt(currentX);
+        currentX -= inputPolynomial.getValueAt(currentX) / inputDerivative.getValueAt(currentX);
     }
     return currentX;
 }
@@ -214,7 +217,7 @@ std::vector<double> Polynomial::getPolynomialRealZeros(double lowerBound, double
 
     for (int i = 0; i <= 2 * size; ++i)
     {
-        zeros_from_Attempts[i] = findNewtonZero(lowerBound + i * step);
+        zeros_from_Attempts[i] = findNewtonZero(lowerBound + i * step, *this);
     }
 
     std::vector<double> polynomial_zeros;
@@ -274,4 +277,21 @@ std::vector<Polynomial> Polynomial::getLegendreSequence(int maxN)
                 Polynomial::genLegendrePolynomialN(i, legendrePolynomials[i-1], legendrePolynomials[i-2]));
     }
     return legendrePolynomials;
+}
+
+std::vector<double> Polynomial::getLegendreZerosForN(int n, std::vector<Polynomial> &legendreSequence)
+{
+    return legendreSequence[n].getPolynomialRealZeros(-1.0, 1.0);
+}
+
+std::vector<double> Polynomial::getLegendreWeightsForN(int n, std::vector<Polynomial> &legendreSequence)
+{
+    std::vector<double> legendre_zeros = getLegendreZerosForN(n, legendreSequence);
+    std::vector<double> legendre_weight;
+
+    for (double zero : legendre_zeros)
+        {
+            legendre_weight.push_back(2.0 * (1 - zero * zero) / pow((n * legendreSequence[n-1].getValueAt(zero)), 2));
+        }
+    return legendre_weight;
 }

@@ -47,18 +47,30 @@ int main(){
         legendrePolynomials[i].printForGrapher();
     }
 
+    std::vector<double> zeros;
+    std::vector<double> weights;
+
     for (int i = 1; i < numPol; ++i)
     {
-        std::vector<double> zeros1 = legendrePolynomials[i].getPolynomialRealZeros(-1.0, 1.0);
-        printf("%2d: ", i);
-        for (double j : zeros1)
+        zeros = Polynomial::getLegendreZerosForN(i, legendrePolynomials);
+        weights = Polynomial::getLegendreWeightsForN(i, legendrePolynomials);
+
+
+        printf("%2d:\n", i);
+        for (double j : zeros)
         {
-            printf("%.9f, ", j);
+            printf("%.8f, ", j);
         }
         printf("\n");
+
+        for (double j : weights){
+            printf("%.10f, ", j);
+        }
+        printf("\n");
+
+        zeros.resize(0);
+        weights.resize(0);
     }
-
-
 
 //	FILE *input = fopen("values.txt", "r");
 //	FILE *output = fopen("output.txt", "w");

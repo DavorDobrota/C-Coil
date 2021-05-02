@@ -8,9 +8,9 @@
 class Polynomial
 {
 private:
-    static const int size = 100;
-    static const int steps = 50;
-    constexpr static const double tolerance = 1e-9;
+    constexpr static int size = 100;
+    constexpr static int steps = 50;
+    constexpr static double tolerance = 1e-9;
 
     std::vector<double> coefficients;
 

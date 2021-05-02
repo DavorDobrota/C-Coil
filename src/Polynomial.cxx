@@ -47,7 +47,6 @@ void Polynomial::setCoefficientsToZero()
 
 Polynomial::Polynomial()
 {
-
     genDerivativeMatrix();
     setCoefficientsToZero();
 }

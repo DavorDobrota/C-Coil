@@ -12,7 +12,7 @@ int main(){
     // polynomial testing
     int numPol = 26;
 
-    std::vector<Polynomial> legendrePolynomials = Polynomial::getLegendreSequence(numPol);
+    std::vector<Polynomial> legendrePolynomials = Polynomial::getLegendreSequenceUpToN(numPol);
 
     for (int i = 0; i < numPol; i++)
     {
@@ -24,7 +24,7 @@ int main(){
 
     for (int i = 1; i < numPol; ++i)
     {
-        Polynomial::getLegendreParametersForN(i, legendrePolynomials, zeros, weights);
+        Polynomial::getLegendreParametersForN(i, zeros, weights);
 
         printf("%2d:\n", i);
         for (double j : zeros)

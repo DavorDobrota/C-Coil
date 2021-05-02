@@ -1,5 +1,17 @@
+#include <vector>
+#include <cstdio>
+#include <cmath>
+#include <algorithm>
 
 #include "Polynomial.h"
+
+namespace
+{
+    std::vector<std::vector<double>> derivativeMatrix;
+    bool initialised;
+    std::vector<Polynomial> legendreSequence;
+    bool legendreInitialised;
+}
 
 void Polynomial::genDerivativeMatrix()
 {
@@ -26,23 +38,24 @@ void Polynomial::genDerivativeMatrix()
     }
 }
 
-void Polynomial::setCoefficientsTo0()
+void Polynomial::setCoefficientsToZero()
 {
     coefficients.resize(size);
     std::fill(coefficients.begin(), coefficients.end(), 0);
 }
 
-Polynomial::Polynomial() {
+Polynomial::Polynomial()
+{
 
     genDerivativeMatrix();
-    setCoefficientsTo0();
+    setCoefficientsToZero();
 }
 
 Polynomial::Polynomial(std::vector<double> &coefficientList)
 {
 
     genDerivativeMatrix();
-    setCoefficientsTo0();
+    setCoefficientsToZero();
 
     for (int i = 0; i < coefficientList.size(); ++i)
     {
@@ -50,7 +63,7 @@ Polynomial::Polynomial(std::vector<double> &coefficientList)
     }
 }
 
-int Polynomial::getLeadingCoefficient()
+int Polynomial::getLeadingCoefficientIndex()
 {
     int leading_coefficient;
 
@@ -68,7 +81,7 @@ int Polynomial::getLeadingCoefficient()
 std::vector<double> Polynomial::getCoefficients()
 {
     std::vector<double> vector;
-    int leading_coefficient = getLeadingCoefficient();
+    int leading_coefficient = getLeadingCoefficientIndex();
 
     for (int i = 0; i <= leading_coefficient; ++i)
     {
@@ -80,7 +93,7 @@ std::vector<double> Polynomial::getCoefficients()
 void Polynomial::printPolynomial()
 {
     printf("[");
-    int leading_coefficient = getLeadingCoefficient();
+    int leading_coefficient = getLeadingCoefficientIndex();
 
     for (int i = 0; i <= leading_coefficient; ++i)
     {
@@ -95,7 +108,7 @@ void Polynomial::printPolynomial()
 
 void Polynomial::printForGrapher()
 {
-    int leading_coefficient = getLeadingCoefficient();
+    int leading_coefficient = getLeadingCoefficientIndex();
 
     for (int i = 0; i <= leading_coefficient; ++i)
     {
@@ -113,7 +126,7 @@ void Polynomial::printForGrapher()
 
 void Polynomial::multiplyByConst(double multiplier)
 {
-    int leading_coefficient = getLeadingCoefficient();
+    int leading_coefficient = getLeadingCoefficientIndex();
 
     for (int i = 0; i <= leading_coefficient; ++i){
         coefficients[i] *= multiplier;
@@ -138,7 +151,7 @@ Polynomial Polynomial::takeDerivative()
 double Polynomial::getValueAt(double x)
 {
     double value = 0.0;
-    int leading_coefficient = getLeadingCoefficient();
+    int leading_coefficient = getLeadingCoefficientIndex();
 
     for (int i = 0; i <= leading_coefficient; ++i)
     {
@@ -149,7 +162,7 @@ double Polynomial::getValueAt(double x)
 
 void Polynomial::multiplyByXtoN(int n)
 {
-    int leading_coefficient = getLeadingCoefficient();
+    int leading_coefficient = getLeadingCoefficientIndex();
 
     if (leading_coefficient + n < size && n > 0)
     {
@@ -163,8 +176,8 @@ void Polynomial::multiplyByXtoN(int n)
 
 Polynomial Polynomial::addPolynomials(Polynomial &pol1, Polynomial &pol2)
 {
-    int leading_coefficient_1 = pol1.getLeadingCoefficient();
-    int leading_coefficient_2 = pol2.getLeadingCoefficient();
+    int leading_coefficient_1 = pol1.getLeadingCoefficientIndex();
+    int leading_coefficient_2 = pol2.getLeadingCoefficientIndex();
 
     Polynomial polynomial = Polynomial();
 
@@ -177,8 +190,8 @@ Polynomial Polynomial::addPolynomials(Polynomial &pol1, Polynomial &pol2)
 
 Polynomial Polynomial::multiplyPolynomials(Polynomial &pol1, Polynomial &pol2)
 {
-    int leading_coefficient_1 = pol1.getLeadingCoefficient();
-    int leading_coefficient_2 = pol2.getLeadingCoefficient();
+    int leading_coefficient_1 = pol1.getLeadingCoefficientIndex();
+    int leading_coefficient_2 = pol2.getLeadingCoefficientIndex();
 
     Polynomial polynomial = Polynomial();
 
@@ -197,7 +210,7 @@ Polynomial Polynomial::multiplyPolynomials(Polynomial &pol1, Polynomial &pol2)
 
 double Polynomial::findNewtonZero(double firstGuess, Polynomial inputPolynomial)
 {
-    int leading_index = inputPolynomial.getLeadingCoefficient();
+    int leading_index = inputPolynomial.getLeadingCoefficientIndex();
     inputPolynomial.multiplyByConst(1.0 / inputPolynomial.coefficients[leading_index]);
 
     Polynomial inputDerivative = inputPolynomial.takeDerivative();
@@ -276,7 +289,7 @@ Polynomial Polynomial::genLegendrePolynomialN(int n, Polynomial legendreN_minus_
     return polynomial;
 }
 
-std::vector<Polynomial> Polynomial::getLegendreSequence(int maxN)
+std::vector<Polynomial> Polynomial::getLegendreSequenceUpToN(int maxN)
 {
     std::vector<Polynomial> legendrePolynomials;
 
@@ -298,10 +311,17 @@ std::vector<Polynomial> Polynomial::getLegendreSequence(int maxN)
     return legendrePolynomials;
 }
 
-void Polynomial::getLegendreParametersForN(int n, std::vector<Polynomial> &legendreSequence,
-                                           std::vector<double> &zeros,std::vector<double> &weights)
+void Polynomial::genInternalLegendreSequence()
 {
+    if (!legendreInitialised){
+        legendreSequence = getLegendreSequenceUpToN(size);
+        legendreInitialised = true;
+    }
+}
 
+void Polynomial::getLegendreParametersForN(int n, std::vector<double> &zeros,std::vector<double> &weights)
+{
+    genInternalLegendreSequence();
     zeros = legendreSequence[n].getPolynomialRealZeros(-1.0, 1.0);
     weights.resize(0);
 

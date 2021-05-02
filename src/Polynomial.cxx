@@ -81,14 +81,9 @@ int Polynomial::getLeadingCoefficientIndex() const
 
 std::vector<double> Polynomial::getCoefficients() const
 {
-    std::vector<double> vector;
     int leading_coefficient = getLeadingCoefficientIndex();
 
-    for (int i = 0; i <= leading_coefficient; ++i)
-    {
-        vector.push_back(coefficients[i]);
-    }
-    return vector;
+    return std::vector<double>(coefficients.begin(), coefficients.begin() + leading_coefficient + 1);
 }
 
 void Polynomial::printPolynomial() const
@@ -219,7 +214,6 @@ double Polynomial::findNewtonZero(double firstGuess, Polynomial inputPolynomial)
 
     for (int i = 0; i < steps; ++i)
     {
-    //    printf("%.20f\n", currentX);
         currentX -= inputPolynomial.getValueAt(currentX) / inputDerivative.getValueAt(currentX);
 
     }
@@ -294,12 +288,8 @@ std::vector<Polynomial> Polynomial::getLegendreSequenceUpToN(int maxN)
 {
     std::vector<Polynomial> legendrePolynomials;
 
-    std::vector<double> vec1;
-    vec1.push_back(1);
-
-    std::vector<double> vec2;
-    vec2.push_back(0);
-    vec2.push_back(1);
+    std::vector<double> vec1 = {1};
+    std::vector<double> vec2 = {0, 1};
 
     legendrePolynomials.emplace_back(Polynomial(vec1));
     legendrePolynomials.emplace_back(Polynomial(vec2));

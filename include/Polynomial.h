@@ -2,6 +2,9 @@
 #ifndef GENERAL_COIL_PROGRAM_POLYNOMIAL_H
 #define GENERAL_COIL_PROGRAM_POLYNOMIAL_H
 
+#include <vector>
+
+
 class Polynomial
 {
 private:

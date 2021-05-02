@@ -8,31 +8,31 @@
 
 namespace
 {
-    std::vector<std::vector<double>> derivativeMatrix;
-    bool initialised;
-    std::vector<Polynomial> legendreSequence;
-    bool legendreInitialised;
+    std::vector<std::vector<double>> g_derivativeMatrix;
+    bool g_initialised;
+    std::vector<Polynomial> g_legendreSequence;
+    bool g_legendreInitialised;
 }
 
 void Polynomial::genDerivativeMatrix()
 {
-    if (!initialised)
+    if (!g_initialised)
     {
-        initialised = true;
-        derivativeMatrix.resize(size);
+        g_initialised = true;
+        g_derivativeMatrix.resize(size);
 
         for (int i = 0; i < size; ++i)
         {
-            derivativeMatrix[i].resize(size);
+            g_derivativeMatrix[i].resize(size);
 
             for (int j = 0; j < size; ++j)
             {
                 if (j == i + 1)
                 {
-                    derivativeMatrix[i][j] = j;
+                    g_derivativeMatrix[i][j] = j;
                 } else
                 {
-                    derivativeMatrix[i][j] = 0.0;
+                    g_derivativeMatrix[i][j] = 0.0;
                 }
             }
         }
@@ -142,7 +142,7 @@ Polynomial Polynomial::takeDerivative() const
     {
         for (int j = 0; j < size; ++j)
         {
-            polynomial.coefficients[i] += derivativeMatrix[i][j] * coefficients[j];
+            polynomial.coefficients[i] += g_derivativeMatrix[i][j] * coefficients[j];
         }
     }
 
@@ -314,9 +314,9 @@ std::vector<Polynomial> Polynomial::getLegendreSequenceUpToN(int maxN)
 
 void Polynomial::genInternalLegendreSequence()
 {
-    if (!legendreInitialised){
-        legendreSequence = getLegendreSequenceUpToN(size);
-        legendreInitialised = true;
+    if (!g_legendreInitialised){
+        g_legendreSequence = getLegendreSequenceUpToN(size);
+        g_legendreInitialised = true;
     }
 }
 
@@ -324,11 +324,11 @@ void Polynomial::getLegendreParametersForN(int n, std::vector<double> &zeros,
                                                   std::vector<double> &weights)
 {
     genInternalLegendreSequence();
-    zeros = legendreSequence[n].getPolynomialRealZeros(-1.0, 1.0);
+    zeros = g_legendreSequence[n].getPolynomialRealZeros(-1.0, 1.0);
     weights.resize(0);
 
     for (double zero : zeros)
     {
-        weights.push_back(2.0 * (1 - zero * zero) / pow((n * legendreSequence[n-1].getValueAt(zero)), 2));
+        weights.push_back(2.0 * (1 - zero * zero) / pow((n * g_legendreSequence[n-1].getValueAt(zero)), 2));
     }
 }

@@ -10,6 +10,7 @@ namespace
 {
     std::vector<std::vector<double>> g_derivativeMatrix;
     bool g_initialised;
+
     std::vector<Polynomial> g_legendreSequence;
     bool g_legendreInitialised;
 }

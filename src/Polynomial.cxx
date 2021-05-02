@@ -298,19 +298,15 @@ std::vector<Polynomial> Polynomial::getLegendreSequence(int maxN)
     return legendrePolynomials;
 }
 
-std::vector<double> Polynomial::getLegendreZerosForN(int n, std::vector<Polynomial> &legendreSequence)
+void Polynomial::getLegendreParametersForN(int n, std::vector<Polynomial> &legendreSequence,
+                                           std::vector<double> &zeros,std::vector<double> &weights)
 {
-    return legendreSequence[n].getPolynomialRealZeros(-1.0, 1.0);
-}
 
-std::vector<double> Polynomial::getLegendreWeightsForN(int n, std::vector<Polynomial> &legendreSequence)
-{
-    std::vector<double> legendre_zeros = getLegendreZerosForN(n, legendreSequence);
-    std::vector<double> legendre_weight;
+    zeros = legendreSequence[n].getPolynomialRealZeros(-1.0, 1.0);
+    weights.resize(0);
 
-    for (double zero : legendre_zeros)
-        {
-            legendre_weight.push_back(2.0 * (1 - zero * zero) / pow((n * legendreSequence[n-1].getValueAt(zero)), 2));
-        }
-    return legendre_weight;
+    for (double zero : zeros)
+    {
+        weights.push_back(2.0 * (1 - zero * zero) / pow((n * legendreSequence[n-1].getValueAt(zero)), 2));
+    }
 }

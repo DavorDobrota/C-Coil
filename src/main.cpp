@@ -53,8 +53,7 @@ int main(){
 
     for (int i = 1; i < numPol; ++i)
     {
-        zeros = Polynomial::getLegendreZerosForN(i, legendrePolynomials);
-        weights = Polynomial::getLegendreWeightsForN(i, legendrePolynomials);
+        Polynomial::getLegendreParametersForN(i, legendrePolynomials, zeros, weights);
 
         printf("%2d:\n", i);
         for (double j : zeros)

@@ -48,8 +48,8 @@ class Polynomial
 
         static Polynomial genLegendrePolynomialN (int n, Polynomial legendreN_minus_1, Polynomial legendreN_minus_2);
         static std::vector<Polynomial> getLegendreSequence (int maxN);
-        static std::vector<double> getLegendreZerosForN (int n , std::vector<Polynomial> &legendreSequence);
-        static std::vector<double> getLegendreWeightsForN (int n , std::vector<Polynomial> &legendreSequence);
+        static void getLegendreParametersForN (int n , std::vector<Polynomial> &legendreSequence,
+                                               std::vector<double> &zeros, std::vector<double> &weights);
 };
 
 #endif //GENERAL_COIL_PROGRAM_POLYNOMIAL_H

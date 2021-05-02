@@ -10,34 +10,6 @@ int main(){
     tp.resize(16);
 
     // polynomial testing
-    std::vector<double> vector1;
-    vector1.push_back(3);
-    vector1.push_back(4);
-    vector1.push_back(5);
-
-    Polynomial pol1 = Polynomial(vector1);
-    pol1.printPolynomial();
-    printf("%.8f\n", pol1.getValueAt(0.5));
-
-    pol1.multiplyByConst(1.5);
-    pol1.printPolynomial();
-
-    Polynomial pol2 = pol1.takeDerivative();
-    pol2.printPolynomial();
-
-    pol2.multiplyByXtoN(2);
-    pol2.printPolynomial();
-
-    Polynomial pol3 = Polynomial::addPolynomials(pol1, pol2);
-    pol3.printPolynomial();
-
-    pol1.printPolynomial();
-    pol2.printPolynomial();
-    Polynomial pol4 = Polynomial::multiplyPolynomials(pol1, pol2);
-    pol4.printPolynomial();
-
-    printf("===========================\n");
-
     int numPol = 26;
 
     std::vector<Polynomial> legendrePolynomials = Polynomial::getLegendreSequence(numPol);
@@ -46,7 +18,6 @@ int main(){
     {
         legendrePolynomials[i].printForGrapher();
     }
-
 
     std::vector<double> zeros;
     std::vector<double> weights;
@@ -66,9 +37,6 @@ int main(){
             printf("%.12f, ", j);
         }
         printf("\n");
-
-        zeros.resize(0);
-        weights.resize(0);
     }
 
 //	FILE *input = fopen("values.txt", "r");

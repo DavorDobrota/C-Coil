@@ -1,7 +1,8 @@
-#include <vector>
 #include <cstdio>
 #include <cmath>
+
 #include <algorithm>
+#include <vector>
 
 #include "Polynomial.h"
 
@@ -51,7 +52,7 @@ Polynomial::Polynomial()
     setCoefficientsToZero();
 }
 
-Polynomial::Polynomial(std::vector<double> &coefficientList)
+Polynomial::Polynomial(const std::vector<double> &coefficientList)
 {
 
     genDerivativeMatrix();
@@ -63,7 +64,7 @@ Polynomial::Polynomial(std::vector<double> &coefficientList)
     }
 }
 
-int Polynomial::getLeadingCoefficientIndex()
+int Polynomial::getLeadingCoefficientIndex() const
 {
     int leading_coefficient;
 
@@ -78,7 +79,7 @@ int Polynomial::getLeadingCoefficientIndex()
     return leading_coefficient;
 }
 
-std::vector<double> Polynomial::getCoefficients()
+std::vector<double> Polynomial::getCoefficients() const
 {
     std::vector<double> vector;
     int leading_coefficient = getLeadingCoefficientIndex();
@@ -90,7 +91,7 @@ std::vector<double> Polynomial::getCoefficients()
     return vector;
 }
 
-void Polynomial::printPolynomial()
+void Polynomial::printPolynomial() const
 {
     printf("[");
     int leading_coefficient = getLeadingCoefficientIndex();
@@ -106,7 +107,7 @@ void Polynomial::printPolynomial()
     printf("]\n");
 }
 
-void Polynomial::printForGrapher()
+void Polynomial::printForGrapher() const
 {
     int leading_coefficient = getLeadingCoefficientIndex();
 
@@ -133,7 +134,7 @@ void Polynomial::multiplyByConst(double multiplier)
     }
 }
 
-Polynomial Polynomial::takeDerivative()
+Polynomial Polynomial::takeDerivative() const
 {
     Polynomial polynomial = Polynomial();
 
@@ -148,7 +149,7 @@ Polynomial Polynomial::takeDerivative()
     return polynomial;
 }
 
-double Polynomial::getValueAt(double x)
+double Polynomial::getValueAt(double x) const
 {
     double value = 0.0;
     int leading_coefficient = getLeadingCoefficientIndex();
@@ -174,7 +175,7 @@ void Polynomial::multiplyByXtoN(int n)
     }
 }
 
-Polynomial Polynomial::addPolynomials(Polynomial &pol1, Polynomial &pol2)
+Polynomial Polynomial::addPolynomials(const Polynomial &pol1, const Polynomial &pol2)
 {
     int leading_coefficient_1 = pol1.getLeadingCoefficientIndex();
     int leading_coefficient_2 = pol2.getLeadingCoefficientIndex();
@@ -188,7 +189,7 @@ Polynomial Polynomial::addPolynomials(Polynomial &pol1, Polynomial &pol2)
     return polynomial;
 }
 
-Polynomial Polynomial::multiplyPolynomials(Polynomial &pol1, Polynomial &pol2)
+Polynomial Polynomial::multiplyPolynomials(const Polynomial &pol1, const Polynomial &pol2)
 {
     int leading_coefficient_1 = pol1.getLeadingCoefficientIndex();
     int leading_coefficient_2 = pol2.getLeadingCoefficientIndex();
@@ -242,7 +243,7 @@ double Polynomial::findHouseholderZero(double firstGuess, Polynomial inputPolyno
     return currentX;
 }
 
-std::vector<double> Polynomial::getPolynomialRealZeros(double lowerBound, double upperBound)
+std::vector<double> Polynomial::getPolynomialRealZeros(double lowerBound, double upperBound) const
 {
     double zeros_from_Attempts[size * 2 + 1];
     double step = (upperBound - lowerBound) / (2 * size);
@@ -262,7 +263,7 @@ std::vector<double> Polynomial::getPolynomialRealZeros(double lowerBound, double
 
         for (double polynomial_zero : polynomial_zeros)
         {
-            if (std::fabs(temp_zero - polynomial_zero) < tolerance || _isnan(temp_zero))
+            if (std::fabs(temp_zero - polynomial_zero) < tolerance || std::isnan(temp_zero))
             {
                 duplicate = true;
             }
@@ -319,7 +320,8 @@ void Polynomial::genInternalLegendreSequence()
     }
 }
 
-void Polynomial::getLegendreParametersForN(int n, std::vector<double> &zeros,std::vector<double> &weights)
+void Polynomial::getLegendreParametersForN(int n, std::vector<double> &zeros,
+                                                  std::vector<double> &weights)
 {
     genInternalLegendreSequence();
     zeros = legendreSequence[n].getPolynomialRealZeros(-1.0, 1.0);

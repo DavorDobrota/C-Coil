@@ -53,7 +53,6 @@ Polynomial::Polynomial()
 
 Polynomial::Polynomial(const std::vector<double> &coefficientList)
 {
-
     genDerivativeMatrix();
     setCoefficientsToZero();
 

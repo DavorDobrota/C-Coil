@@ -87,7 +87,7 @@ public:
     Type Res;	//Resistance, real part of impedence, skin effect compensated for AC fields
     Type Reac;	//Reactance, imaginary part of impedence, dependent on f and L
     Type Imp;	//Impedence, total dissipative potential in AC fields
-    Type mM;	//OldCoil magnetic moment
+    Type mM;	//Coil magnetic moment
 
     Type DWeights[4][4];	//static weights matrix used for 2D Boole integral smoothening
     vector<Type> FiWeights;	//contains sequence of weights used for 1D Boole smoothening

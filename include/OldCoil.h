@@ -703,7 +703,7 @@ public:
                 }
                 tempN = nF1 * nC1*nC1 * nC2*nC2;
             }
-            printf("%.2f %d %d %d %d %d\n", precision, int(nInc), nF1, nC1, nC2, int(tempN));
+        //    printf("%.2f %d %d %d %d %d\n", precision, int(nInc), nF1, nC1, nC2, int(tempN));
 
             setIncrements(nC1, nC1, nF1);
             sec.setIncrements(nC2, nC2, nF1);

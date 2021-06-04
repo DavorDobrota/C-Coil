@@ -75,7 +75,7 @@ int main(){
     */
 
 
-    /*
+
     OldCoil prim = OldCoil(1, 1.0, 0.1, 0.1, 0.001, 32, 32, 48, 100, true, 100000, ro1);
     OldCoil sec = OldCoil(1, 0.1, 0.1, 0.1, 0.001, 32, 32, 20, 100, true, 100000, ro1);
     int nOp = 2000;
@@ -88,7 +88,7 @@ int main(){
         }
         printf("%f\n", float(clock() - begin_time) / CLOCKS_PER_SEC / nOp * 1000);
     }
-    */
+
 /*
     float temp, theta = Pi/2, dist = 0.1;
     OldCoil test = OldCoil(1, 0.03, 0.03, 0.12, 0.001, 24, 24, 64, 3600, false, 0.0, 1.63e-8);

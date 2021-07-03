@@ -7,7 +7,7 @@ extern thread_pool tp;
 
 int main(){
     //setting the number of threads
-    tp.resize(16);
+    tp.resize(4);
 
     // polynomial testing
 //    int numPol = 26;

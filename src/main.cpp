@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../include/OldCoil.h"
+#include "../include/Coil.h"
 #include "../include/Polynomial.h"
 
 Type ro1 = 1.63e-8;
@@ -39,30 +40,57 @@ int main(){
 //        printf("\n");
 //    }
 
-	FILE *input = fopen("values.txt", "r");
-	FILE *output = fopen("output.txt", "w");
+    Coil testCoil1 = Coil(0.03, 0.03, 0.12, 3600);
+    OldCoil oldCoil = OldCoil(1, 0.03, 0.03, 0.12, 0.001, 16, 16, 32, 3600, true, 50, 1.63e-8);
 
-	Type Rt1, at1, bt1; int Nt1;
-	Type Rt2, at2, bt2; int Nt2;
-	Type distance;
-	OldCoil prim1, sec1;
-	Type Temp;
+    printf("%.15f, %.15f, %.15f\n", testCoil1.getCurrentDensity(), testCoil1.getWireResistivity(), testCoil1.getSineFrequency());
+    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
 
-	while (fscanf(input, "%lf %lf %lf %d %lf %lf %lf %d %lf", &Rt1, &at1, &bt1, &Nt1, &Rt2, &at2, &bt2, &Nt2, &distance) == 9){
-		printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
-		for (Type i = 1; i <= 9.0; i += 1.0){
-			prim1 = OldCoil(1, Rt1, at1, bt1, 0.001, 12, 12, 80, Nt1, true, 100000, ro1);
-			sec1 = OldCoil(1, Rt2, at2, bt2, 0.001, 8, 8, 12, Nt2, true, 100000, ro1);
-			Temp = sec1.MutualInductanceCalc(distance, prim1, true, i);
-			printf(" %.18f\n", Temp);
-			fprintf(output, "%.20f\t", Temp);
-		}
-		printf("====================================================================================\n");
-		fprintf(output, "\n");
-	}
+    printf("%.15f, %.15f, %.15f\n", oldCoil.mM, oldCoil.d, oldCoil.Res);
 
-	fclose(input);
-	fclose(output);
+    PrecisionArguments arguments = PrecisionArguments(2, 1, 1, 12, 8, 8);
+
+    printf("%.15f", arguments.angularIncrementPositions[0]);
+
+    for (double value : arguments.angularIncrementPositions)
+        printf("%.15f", value);
+    printf("\n");
+    for (double value : arguments.angularIncrementWeights)
+        printf("%.15f", value);
+    printf("\n");
+
+    for (double value : arguments.lengthIncrementPositions)
+        printf("%.15f", value);
+    printf("\n");
+    for (double value : arguments.lengthIncrementWeights)
+        printf("%.15f", value);
+    printf("\n");
+
+
+//	FILE *input = fopen("values.txt", "r");
+//	FILE *output = fopen("output.txt", "w");
+//
+//	Type Rt1, at1, bt1; int Nt1;
+//	Type Rt2, at2, bt2; int Nt2;
+//	Type distance;
+//	OldCoil prim1, sec1;
+//	Type Temp;
+//
+//	while (fscanf(input, "%lf %lf %lf %d %lf %lf %lf %d %lf", &Rt1, &at1, &bt1, &Nt1, &Rt2, &at2, &bt2, &Nt2, &distance) == 9){
+//		printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
+//		for (Type i = 1; i <= 9.0; i += 1.0){
+//			prim1 = OldCoil(1, Rt1, at1, bt1, 0.001, 12, 12, 80, Nt1, true, 100000, ro1);
+//			sec1 = OldCoil(1, Rt2, at2, bt2, 0.001, 8, 8, 12, Nt2, true, 100000, ro1);
+//			Temp = sec1.MutualInductanceCalc(distance, prim1, true, i);
+//			printf(" %.18f\n", Temp);
+//			fprintf(output, "%.20f\t", Temp);
+//		}
+//		printf("====================================================================================\n");
+//		fprintf(output, "\n");
+//	}
+//
+//	fclose(input);
+//	fclose(output);
 
     /*
     for (int i = 4; i <= 120; i += 4){
@@ -74,20 +102,18 @@ int main(){
     }
     */
 
-
-
-    OldCoil prim = OldCoil(1, 1.0, 0.1, 0.1, 0.001, 32, 32, 48, 100, true, 100000, ro1);
-    OldCoil sec = OldCoil(1, 0.1, 0.1, 0.1, 0.001, 32, 32, 20, 100, true, 100000, ro1);
-    int nOp = 2000;
-    Type temp;
-
-    for (Type p = 1.0; p <= 9.0; p += 1.0){
-        clock_t begin_time = clock();
-        for (int i = 0; i < nOp; ++i){
-            temp = prim.MutualInductanceCalc(0.2+0.00001*i, sec, true, p);
-        }
-        printf("%f\n", float(clock() - begin_time) / CLOCKS_PER_SEC / nOp * 1000);
-    }
+//    OldCoil prim = OldCoil(1, 1.0, 0.1, 0.1, 0.001, 32, 32, 48, 100, true, 100000, ro1);
+//    OldCoil sec = OldCoil(1, 0.1, 0.1, 0.1, 0.001, 32, 32, 20, 100, true, 100000, ro1);
+//    int nOp = 2000;
+//    Type temp;
+//
+//    for (Type p = 1.0; p <= 9.0; p += 1.0){
+//        clock_t begin_time = clock();
+//        for (int i = 0; i < nOp; ++i){
+//            temp = prim.MutualInductanceCalc(0.2+0.00001*i, sec, true, p);
+//        }
+//        printf("%f\n", float(clock() - begin_time) / CLOCKS_PER_SEC / nOp * 1000);
+//    }
 
 /*
     float temp, theta = Pi/2, dist = 0.1;

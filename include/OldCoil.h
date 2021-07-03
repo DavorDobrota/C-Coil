@@ -146,11 +146,11 @@ public:
 
         initialiseLists();
 
-        /*	SelfInductanceCalc();
+        //	SelfInductanceCalc();
             ResistanceCalc();
-            ReactanceCalc();
-            ImpedenceCalc();
-            mMCalc();*/
+        //    ReactanceCalc();
+        //    ImpedenceCalc();
+            mMCalc();
     }
 
     //Default constructor
@@ -595,7 +595,7 @@ public:
     //Impedance and resistance calculation, executed upon coil creation
     void ResistanceCalc(){
 
-        Type Resistance = N * (R + a/2);
+        Type Resistance = Ro * N * 2*Pi * (R + a/2) / ((d/2)*(d/2) * Pi);
         Type skin = sqrt(Ro / (Pi*f * Mi));
 
         Type normalCrossection = (d/2)*(d/2)*Pi;

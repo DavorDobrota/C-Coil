@@ -5,6 +5,7 @@
 #include <chrono>
 
 #include "Coil.h"
+#include "Polynomial.h"
 
 namespace
 {
@@ -61,12 +62,31 @@ PrecisionArguments::PrecisionArguments(double precisionFactor)
 
 void PrecisionArguments::genPrecisionVectors()
 {
-    //TO-DO
+    Polynomial::getLegendreParametersForN(numOfAngularIncrements,
+                                          angularIncrementPositions, angularIncrementWeights);
+    for (double j : angularIncrementPositions)
+        {
+            printf("%.12f, ", j);
+        }
+        printf("\n");
+
+    Polynomial::getLegendreParametersForN(numOfThicknessIncrements,
+                                          thicknessIncrementPositions, thicknessIncrementWeights);
+
+    Polynomial::getLegendreParametersForN(numOfLengthIncrements,
+                                          lengthIncrementPositions, lengthIncrementWeights);
 }
 
 void PrecisionArguments::genParametersFromPrecision()
 {
-    //TO-DO
+    //TODO - when further analysis is complete a method will be divised, until then
+    numOfAngularBlocks = 2;
+    numOfLengthBlocks = 1;
+    numOfThicknessBlocks = 1;
+
+    numOfAngularIncrements = 12;
+    numOfThicknessIncrements = 12;
+    numOfLengthIncrements = 12;
 }
 
 
@@ -75,7 +95,9 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
            innerRadius(innerRadius), thickness(thickness), length(length), numOfTurns(numOfTurns),
            precisionSettings(precisionSettings)
 {
+
     setCurrent(current);
+    calculateAverageWireThickness();
     setWireResistivity(wireResistivity);
     setSineFrequency(sineFrequency);
 }
@@ -84,13 +106,28 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
         Coil(innerRadius, thickness, length, numOfTurns, current,
              g_defaultResistivity, sineFrequency, g_defaultPrecision) {}
 
+Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
+           const PrecisionArguments &precisionSettings) :
+           Coil(innerRadius, thickness, length, numOfTurns, current,
+                g_defaultResistivity, sineFrequency, precisionSettings) {}
+
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current) :
         Coil(innerRadius, thickness, length, numOfTurns, current,
              g_defaultResistivity, g_defaultSineFrequency, g_defaultPrecision) {}
 
+Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
+           const PrecisionArguments &precisionSettings) :
+           Coil(innerRadius, thickness, length, numOfTurns, current,
+                g_defaultResistivity, g_defaultSineFrequency, precisionSettings) {}
+
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns) :
         Coil(innerRadius, thickness, length, numOfTurns,
              g_defaultCurrent, g_defaultResistivity, g_defaultSineFrequency, g_defaultPrecision) {}
+
+Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns,
+           const PrecisionArguments &precisionSettings) :
+           Coil(innerRadius, thickness, length, numOfTurns, g_defaultCurrent,
+                g_defaultResistivity, g_defaultSineFrequency, precisionSettings) {}
 
 
 double Coil::getCurrentDensity() const
@@ -217,7 +254,7 @@ void Coil::setPrecisionSettings(const PrecisionArguments &precisionSettings)
 void Coil::calculateMagneticMoment()
 {
     magneticMoment = PI * current * numOfTurns *
-            (pow(innerRadius, 2) + pow(thickness, 2) + innerRadius * thickness);
+            (pow(innerRadius, 2) + pow(thickness, 2) + innerRadius * thickness / 3);
 }
 
 void Coil::calculateAverageWireThickness()
@@ -228,7 +265,7 @@ void Coil::calculateAverageWireThickness()
 void Coil::calculateResistance()
 {
     double wireRadius = averageWireThickness / 2;
-    double ohmicResistance = numOfTurns * (innerRadius - thickness / 2);
+    double ohmicResistance = wireResistivity * numOfTurns * 2*PI * (innerRadius + thickness / 2) / (pow(wireRadius, 2) * PI);
     double skinDepth = sqrt(wireResistivity / (PI * sineFrequency * g_MiReduced));
 
     double ohmicSurface = PI * pow(wireRadius, 2);

@@ -75,6 +75,16 @@ int main(){
     printf("%.20f\n", testCoil1.computeBFieldZ(0.0, 0.0));
     printf("%.20f\n", testCoil1.computeBFieldH(0.0, 0.0));
 
+    int nOp = 10000;
+    std::vector<double> temp;
+
+    clock_t begin_time = clock();
+    for (int i = 0; i < nOp; ++i){
+        temp = testCoil1.computeBFieldVector(i*0.000001, 0.0, 0.0);
+    }
+    printf("%.0f dots/s\n", 1.0 / (float(clock() - begin_time) / CLOCKS_PER_SEC / nOp));
+
+
 //    PrecisionArguments precisionArguments = PrecisionArguments(2, 1, 1, 16, 12, 12);
 
 

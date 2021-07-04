@@ -122,6 +122,11 @@ class Coil
         double computeBFieldH(double cylindricalZ, double cylindricalR);
         double computeBFieldZ(double cylindricalZ, double cylindricalR);
         std::vector<double> computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi);
+
+        double computeAPotentialX(double cylindricalZ, double cylindricalR, double cylindricalPhi);
+        double computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi);
+        double computeAPotentialAbs(double cylindricalZ, double cylindricalR);
+        std::vector<double> computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi);
 };
 
 

@@ -95,6 +95,7 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
     calculateAverageWireThickness();
     setWireResistivity(wireResistivity);
     setSineFrequency(sineFrequency);
+    calculateSelfInductance();
 }
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency) :
@@ -503,4 +504,29 @@ std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylind
     fieldVector.push_back(FieldZ);
 
     return fieldVector;
+}
+
+double Coil::computeAPotentialX(double cylindricalZ, double cylindricalR, double cylindricalPhi)
+{
+    return (-1) * calculateAPotential(cylindricalZ, cylindricalR) * sin(cylindricalPhi);
+}
+
+double Coil::computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi)
+{
+    return calculateAPotential(cylindricalZ, cylindricalR) * cos(cylindricalPhi);
+}
+
+double Coil::computeAPotentialAbs(double cylindricalZ, double cylindricalR)
+{
+    return calculateAPotential(cylindricalZ, cylindricalR);
+}
+
+std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi)
+{
+    std::vector<double> potentialVector;
+    double potential = calculateAPotential(cylindricalZ, cylindricalR);
+
+    potentialVector.push_back(potential * (-sin(cylindricalPhi)));
+    potentialVector.push_back(potential * cos(cylindricalPhi));
+    return potentialVector;
 }

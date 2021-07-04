@@ -9,10 +9,10 @@
 namespace
 {
     std::vector<std::vector<double>> g_derivativeMatrix;
-    bool g_initialised;
+    bool g_initialised = false;
 
     std::vector<Polynomial> g_legendreSequence;
-    bool g_legendreInitialised;
+    bool g_legendreInitialised = false;
 }
 
 void Polynomial::genDerivativeMatrix()
@@ -65,7 +65,7 @@ Polynomial::Polynomial(const std::vector<double> &coefficientList)
 
 int Polynomial::getLeadingCoefficientIndex() const
 {
-    int leading_coefficient;
+    int leading_coefficient = 0;
 
     for (int i = size - 1; i >= 0; --i)
     {
@@ -238,12 +238,12 @@ double Polynomial::findHouseholderZero(double firstGuess, Polynomial inputPolyno
 
 std::vector<double> Polynomial::getPolynomialRealZeros(double lowerBound, double upperBound) const
 {
-    double zeros_from_Attempts[size * 2 + 1];
+    std::vector<double> zeros_from_Attempts;
     double step = (upperBound - lowerBound) / (2 * size);
 
     for (int i = 0; i <= 2 * size; ++i)
     {
-        zeros_from_Attempts[i] = findHouseholderZero(lowerBound + i * step, *this);
+        zeros_from_Attempts.push_back(findHouseholderZero(lowerBound + i * step, *this));
     }
 
     std::vector<double> polynomial_zeros;
@@ -303,16 +303,16 @@ std::vector<Polynomial> Polynomial::getLegendreSequenceUpToN(int maxN)
 
 void Polynomial::genInternalLegendreSequence()
 {
-    if (!g_legendreInitialised){
+    if (!g_legendreInitialised || g_legendreSequence.empty()){
         g_legendreSequence = getLegendreSequenceUpToN(size);
         g_legendreInitialised = true;
     }
 }
 
-void Polynomial::getLegendreParametersForN(int n, std::vector<double> &zeros,
-                                                  std::vector<double> &weights)
+void Polynomial::getLegendreParametersForN(int n, std::vector<double> &zeros, std::vector<double> &weights)
 {
     genInternalLegendreSequence();
+    genDerivativeMatrix();
     zeros = g_legendreSequence[n].getPolynomialRealZeros(-1.0, 1.0);
     weights.resize(0);
 

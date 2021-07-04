@@ -64,11 +64,6 @@ void PrecisionArguments::genPrecisionVectors()
 {
     Polynomial::getLegendreParametersForN(numOfAngularIncrements,
                                           angularIncrementPositions, angularIncrementWeights);
-    for (double j : angularIncrementPositions)
-        {
-            printf("%.12f, ", j);
-        }
-        printf("\n");
 
     Polynomial::getLegendreParametersForN(numOfThicknessIncrements,
                                           thicknessIncrementPositions, thicknessIncrementWeights);

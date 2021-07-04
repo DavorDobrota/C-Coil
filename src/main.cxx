@@ -11,21 +11,21 @@ int main(){
     tp.resize(4);
 
     // polynomial testing
-//    int numPol = 26;
-//
+    int numPol = 20;
+
 //    std::vector<Polynomial> legendrePolynomials = Polynomial::getLegendreSequenceUpToN(numPol);
 //
 //    for (int i = 0; i < numPol; i++)
 //    {
 //        legendrePolynomials[i].printForGrapher();
 //    }
-//
+
 //    std::vector<double> zeros;
 //    std::vector<double> weights;
 //
 //    for (int i = 1; i < numPol; ++i)
 //    {
-//        Polynomial::getLegendreParametersForN(i, zeros, weights);
+//        Polynomial::getLegendreParametersForN(i,  zeros,  weights);
 //
 //        printf("%2d:\n", i);
 //        for (double j : zeros)
@@ -43,28 +43,33 @@ int main(){
     Coil testCoil1 = Coil(0.03, 0.03, 0.12, 3600);
     OldCoil oldCoil = OldCoil(1, 0.03, 0.03, 0.12, 0.001, 16, 16, 32, 3600, true, 50, 1.63e-8);
 
-    printf("%.15f, %.15f, %.15f\n", testCoil1.getCurrentDensity(), testCoil1.getWireResistivity(), testCoil1.getSineFrequency());
+    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getCurrentDensity(), testCoil1.getWireResistivity(), testCoil1.getSineFrequency());
+
+    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
+    printf("%.15f, %.15f, %.15f\n\n", oldCoil.mM, oldCoil.d, oldCoil.Res);
+
+    testCoil1.setSineFrequency(100000);
+    testCoil1.setCurrentDensity(500000);
     printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
 
-    printf("%.15f, %.15f, %.15f\n", oldCoil.mM, oldCoil.d, oldCoil.Res);
-
-    PrecisionArguments arguments = PrecisionArguments(2, 1, 1, 12, 8, 8);
-
-    printf("%.15f", arguments.angularIncrementPositions[0]);
+    PrecisionArguments arguments = testCoil1.getPrecisionSettings();
+//    printf("%.15f", arguments.angularIncrementPositions[0]);
 
     for (double value : arguments.angularIncrementPositions)
-        printf("%.15f", value);
+        printf("%.15f ", value);
     printf("\n");
     for (double value : arguments.angularIncrementWeights)
-        printf("%.15f", value);
+        printf("%.15f ", value);
     printf("\n");
 
     for (double value : arguments.lengthIncrementPositions)
-        printf("%.15f", value);
+        printf("%.15f ", value);
     printf("\n");
     for (double value : arguments.lengthIncrementWeights)
-        printf("%.15f", value);
+        printf("%.15f ", value);
     printf("\n");
+
+//    PrecisionArguments precisionArguments = PrecisionArguments(2, 1, 1, 16, 12, 12);
 
 
 //	FILE *input = fopen("values.txt", "r");

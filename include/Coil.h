@@ -59,6 +59,19 @@ class Coil
 
         PrecisionArguments precisionSettings;
 
+
+        void calculateMagneticMoment();
+        void calculateAverageWireThickness();
+        void calculateResistance();
+        void calculateReactance();
+        void calculateImpedance();
+        void calculateSelfInductance();
+
+        double calculateBFieldVertical(double zAxis, double rPolar);
+        double calculateBFieldHorizontal(double zAxis, double rPolar);
+
+        double calculateAPotential(double zAxis, double rPolar);
+
     public:
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
              double current, double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings);
@@ -104,13 +117,11 @@ class Coil
         void setSineFrequency(double sineFrequency);
         void setPrecisionSettings(const PrecisionArguments &precisionSettings);
 
-        void calculateMagneticMoment();
-        void calculateAverageWireThickness();
-        void calculateResistance();
-        void calculateReactance();
-        void calculateImpedance();
-        void calculateSelfInductance();
-
+        double computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi);
+        double computeBFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi);
+        double computeBFieldH(double cylindricalZ, double cylindricalR);
+        double computeBFieldZ(double cylindricalZ, double cylindricalR);
+        std::vector<double> computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi);
 };
 
 

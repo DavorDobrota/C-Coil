@@ -67,7 +67,13 @@ int main(){
     printf("\n");
     for (double value : arguments.lengthIncrementWeights)
         printf("%.15f ", value);
-    printf("\n");
+    printf("\n\n");
+
+
+    testCoil1.setSineFrequency(0);
+    testCoil1.setCurrent(1);
+    printf("%.20f\n", testCoil1.computeBFieldZ(0.0, 0.0));
+    printf("%.20f\n", testCoil1.computeBFieldH(0.0, 0.0));
 
 //    PrecisionArguments precisionArguments = PrecisionArguments(2, 1, 1, 16, 12, 12);
 

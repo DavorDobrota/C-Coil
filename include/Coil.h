@@ -67,6 +67,7 @@ class Coil
         void calculateImpedance();
         void calculateSelfInductance();
 
+        std::pair<double, double> calculateBField(double zAxis, double rPolar);
         double calculateBFieldVertical(double zAxis, double rPolar);
         double calculateBFieldHorizontal(double zAxis, double rPolar);
 

@@ -24,11 +24,10 @@ namespace
 namespace Precision
 {
     const PrecisionArguments defaultPrecision_ULTRAFAST = PrecisionArguments(1, 1, 1, 12, 8, 8);
-    const PrecisionArguments defaultPrecision_FAST = PrecisionArguments(2, 1, 1, 12, 8, 8);
-    const PrecisionArguments defaultPrecision_NORMAL = PrecisionArguments(3, 1, 1, 12, 12, 12);
+    const PrecisionArguments defaultPrecision_FAST = PrecisionArguments(1, 1, 1, 12, 12, 12);
+    const PrecisionArguments defaultPrecision_NORMAL = PrecisionArguments(2, 1, 1, 12, 12, 12);
     const PrecisionArguments defaultPrecision_PRECISE = PrecisionArguments(4, 2, 2, 12, 8, 8);
 }
-
 
 PrecisionArguments::PrecisionArguments(
         int numOfAngularBlocks, int numOfThicknessBlocks, int numOfLengthBlocks,
@@ -290,6 +289,76 @@ void Coil::calculateSelfInductance()
     selfInductance = 0.0;
 }
 
+std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar)
+{
+    double magneticFieldZ = 0.0;
+    double magneticFieldH = 0.0;
+
+    double lengthBlock = length / precisionSettings.numOfLengthBlocks;
+    double thicknessBlock = thickness / precisionSettings.numOfThicknessBlocks;
+    double angularBlock = PI / precisionSettings.numOfAngularBlocks;
+
+    double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2;
+
+    for (int indBlockL = 0; indBlockL < precisionSettings.numOfLengthBlocks; ++indBlockL)
+    {
+        for (int indBlockT = 0; indBlockT < precisionSettings.numOfThicknessBlocks; ++indBlockT)
+        {
+            double blockPositionL = (-1) * (length / 2) + lengthBlock * (indBlockL + 0.5);
+            double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
+
+            for (int incL = 0; incL < precisionSettings.numOfLengthIncrements; ++incL)
+            {
+                for (int incT = 0; incT < precisionSettings.numOfThicknessIncrements; ++incT)
+                {
+                    double incrementPositionL = blockPositionL +
+                            (lengthBlock / 2) * precisionSettings.lengthIncrementPositions[incL];
+                    double incrementPositionT = blockPositionT +
+                            (thicknessBlock / 2) * precisionSettings.thicknessIncrementPositions[incT];
+
+                    double incrementWeightL = precisionSettings.lengthIncrementWeights[incL] / 2;
+                    double incrementWeightT = precisionSettings.thicknessIncrementWeights[incT] / 2;
+
+                    double incrementWeightS = incrementWeightL * incrementWeightT;
+
+                    double tempConstA = pow(incrementPositionT, 2);
+                    double tempConstB = incrementPositionT * (incrementPositionL + zAxis);
+                    double tempConstC = incrementPositionT * rPolar;
+                    double tempConstD = tempConstA + pow(rPolar, 2) + pow((incrementPositionL + zAxis), 2);
+                    double tempConstE = constant * incrementWeightS;
+
+                    for (int indBlockFi = 0; indBlockFi < precisionSettings.numOfAngularBlocks; ++indBlockFi)
+                    {
+                        double blockPositionFi = angularBlock * (indBlockFi + 0.5);
+
+                        for (int incFi = 0; incFi < precisionSettings.numOfAngularIncrements; ++incFi)
+                        {
+                            double incrementPositionFi = blockPositionFi +
+                                    (angularBlock / 2) * precisionSettings.angularIncrementPositions[incFi];
+
+                            double incrementWeightFi = precisionSettings.angularIncrementWeights[incFi] / 2;
+
+                            double cosinePhi = cos(incrementPositionFi);
+                            double tempConstF = 2 * tempConstC * cosinePhi;
+                            double tempConstG = tempConstE * incrementWeightFi;
+
+                            magneticFieldZ += tempConstG *
+                                              (tempConstA - tempConstC * cosinePhi)/pow((tempConstD - tempConstF), 1.5);
+                            magneticFieldH += tempConstG *
+                                              (tempConstB * cosinePhi) /pow((tempConstD - tempConstF), 1.5);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    std::pair<double, double> output;
+    output.first = magneticFieldH;
+    output.second = magneticFieldZ;
+
+    return output;
+}
+
 double Coil::calculateBFieldVertical(double zAxis, double rPolar)
 {
     double magneticFieldZ = 0.0;
@@ -496,12 +565,11 @@ double Coil::computeBFieldZ(double cylindricalZ, double cylindricalR)
 std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi)
 {
     std::vector<double> fieldVector;
-    double FieldZ = calculateBFieldVertical(cylindricalZ, cylindricalR);
-    double FieldH = calculateBFieldHorizontal(cylindricalZ, cylindricalR);
+    std::pair<double, double> fields = calculateBField(cylindricalZ, cylindricalR);
 
-    fieldVector.push_back(FieldH * cos(cylindricalPhi));
-    fieldVector.push_back(FieldH * sin(cylindricalPhi));
-    fieldVector.push_back(FieldZ);
+    fieldVector.push_back(fields.first * cos(cylindricalPhi));
+    fieldVector.push_back(fields.first * sin(cylindricalPhi));
+    fieldVector.push_back(fields.second);
 
     return fieldVector;
 }

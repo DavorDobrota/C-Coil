@@ -2,6 +2,7 @@
 #include "../include/OldCoil.h"
 #include "../include/Coil.h"
 #include "../include/Polynomial.h"
+#include "../include/Precision.h"
 
 Type ro1 = 1.63e-8;
 extern thread_pool tp;
@@ -75,14 +76,35 @@ int main(){
     printf("%.20f\n", testCoil1.computeBFieldZ(0.0, 0.0));
     printf("%.20f\n", testCoil1.computeBFieldH(0.0, 0.0));
 
-    int nOp = 10000;
-    std::vector<double> temp;
+    int nOp = 20000;
+    std::vector<double> temp1;
 
-    clock_t begin_time = clock();
+    clock_t begin_time1 = clock();
     for (int i = 0; i < nOp; ++i){
-        temp = testCoil1.computeBFieldVector(i*0.000001, 0.0, 0.0);
+        temp1 = testCoil1.computeBFieldVector(i*0.000001, 0.0, 0.0);
     }
-    printf("%.0f dots/s\n", 1.0 / (float(clock() - begin_time) / CLOCKS_PER_SEC / nOp));
+    printf("combined B : %.0f dots/s\n", 1.0 / (float(clock() - begin_time1) / CLOCKS_PER_SEC / nOp));
+
+    double temp2;
+    clock_t begin_time2 = clock();
+    for (int i = 0; i < nOp; ++i){
+        temp2 = testCoil1.computeBFieldH(0.0, 0.0);
+    }
+    printf("field Bh : %.0f dots/s\n", 1.0 / (float(clock() - begin_time2) / CLOCKS_PER_SEC / nOp));
+
+    double temp3;
+    clock_t begin_time3 = clock();
+    for (int i = 0; i < nOp; ++i){
+        temp3 = testCoil1.computeBFieldH(0.0, 0.0);
+    }
+    printf("field Bz : %.0f dots/s\n", 1.0 / (float(clock() - begin_time3) / CLOCKS_PER_SEC / nOp));
+
+    double temp4;
+    clock_t begin_time4 = clock();
+    for (int i = 0; i < nOp; ++i){
+        temp4 = testCoil1.computeAPotentialAbs(i*0.000001, 0.0);
+    }
+    printf("potential A : %.0f dots/s\n", 1.0 / (float(clock() - begin_time4) / CLOCKS_PER_SEC / nOp));
 
 
 //    PrecisionArguments precisionArguments = PrecisionArguments(2, 1, 1, 16, 12, 12);

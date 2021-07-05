@@ -67,11 +67,11 @@ class Coil
         void calculateImpedance();
         void calculateSelfInductance();
 
-        std::pair<double, double> calculateBField(double zAxis, double rPolar);
-        double calculateBFieldVertical(double zAxis, double rPolar);
-        double calculateBFieldHorizontal(double zAxis, double rPolar);
+        std::pair<double, double> calculateBField(double zAxis, double rPolar, const PrecisionArguments &precisionSettings);
+        double calculateBFieldVertical(double zAxis, double rPolar, const PrecisionArguments &precisionSettings);
+        double calculateBFieldHorizontal(double zAxis, double rPolar, const PrecisionArguments &precisionSettings);
 
-        double calculateAPotential(double zAxis, double rPolar);
+        double calculateAPotential(double zAxis, double rPolar, const PrecisionArguments &precisionSettings);
 
     public:
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
@@ -119,15 +119,37 @@ class Coil
         void setPrecisionSettings(const PrecisionArguments &precisionSettings);
 
         double computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi);
+        double computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                              const PrecisionArguments &usedPrecision);
+
         double computeBFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi);
+        double computeBFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                              const PrecisionArguments &usedPrecision);
+
         double computeBFieldH(double cylindricalZ, double cylindricalR);
+        double computeBFieldH(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision);
+
         double computeBFieldZ(double cylindricalZ, double cylindricalR);
+        double computeBFieldZ(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision);
+
         std::vector<double> computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi);
+        std::vector<double> computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                                const PrecisionArguments &usedPrecision);
 
         double computeAPotentialX(double cylindricalZ, double cylindricalR, double cylindricalPhi);
+        double computeAPotentialX(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                  const PrecisionArguments &usedPrecision);
+
         double computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi);
+        double computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                  const PrecisionArguments &usedPrecision);
+
         double computeAPotentialAbs(double cylindricalZ, double cylindricalR);
+        double computeAPotentialAbs(double cylindricalZ, double cylindricalR, PrecisionArguments &usedPrecision);
+
         std::vector<double> computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi);
+        std::vector<double> computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                                    PrecisionArguments &usedPrecision);
 };
 
 

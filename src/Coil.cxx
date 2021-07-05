@@ -627,7 +627,7 @@ double Coil::computeAPotentialY(double cylindricalZ, double cylindricalR, double
 }
 
 double Coil::computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                            const PrecisionArguments &usedPrecision)
+                                const PrecisionArguments &usedPrecision)
 {
     return calculateAPotential(cylindricalZ, cylindricalR, usedPrecision) * cos(cylindricalPhi);
 }
@@ -653,7 +653,7 @@ std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cy
 }
 
 std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                                                  PrecisionArguments &usedPrecision)
+                                                  const PrecisionArguments &usedPrecision)
 {
     std::vector<double> potentialVector;
     double potential = calculateAPotential(cylindricalZ, cylindricalR, usedPrecision);
@@ -662,3 +662,4 @@ std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cy
     potentialVector.push_back(potential * cos(cylindricalPhi));
     return potentialVector;
 }
+

@@ -1,7 +1,7 @@
 #include <iostream>
 #include "../include/OldCoil.h"
-#include "../include/Coil.h"
 #include "../include/Polynomial.h"
+#include "../include/Coil.h"
 #include "../include/Precision.h"
 
 Type ro1 = 1.63e-8;

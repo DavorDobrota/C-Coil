@@ -712,7 +712,6 @@ void Coil::calculateAllAPotentialSINGLE(const std::vector<double> &cylindricalZA
 }
 
 
-
 void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
                              const std::vector<double> &cylindricalRArr,
                              const std::vector<double> &cylindricalPhiArr,
@@ -724,7 +723,8 @@ void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
     {
         if (method == SINGLE)
         {
-            calculateAllBFieldHorizontalSINGLE(cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
+            calculateAllBFieldHorizontalSINGLE(
+                    cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
 
             for (int i = 0; i < computedFieldArr.size(); ++i)
             {
@@ -760,7 +760,8 @@ void Coil::computeAllBFieldY(const std::vector<double> &cylindricalZArr,
     {
         if (method == SINGLE)
         {
-            calculateAllBFieldHorizontalSINGLE(cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
+            calculateAllBFieldHorizontalSINGLE(
+                    cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
 
             for (int i = 0; i < computedFieldArr.size(); ++i)
             {
@@ -796,7 +797,8 @@ void Coil::computeAllBFieldH(const std::vector<double> &cylindricalZArr,
     {
         if (method == SINGLE)
         {
-            calculateAllBFieldHorizontalSINGLE(cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
+            calculateAllBFieldHorizontalSINGLE(
+                    cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
         }
         //TODO - other computation methods
     }
@@ -827,7 +829,8 @@ void Coil::computeAllBFieldZ(const std::vector<double> &cylindricalZArr,
     {
         if (method == SINGLE)
         {
-            calculateAllBFieldVerticalSINGLE(cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
+            calculateAllBFieldVerticalSINGLE(
+                    cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
         }
         //TODO - other computation methods
     }
@@ -859,11 +862,17 @@ Coil::computeAllBFieldComponents(const std::vector<double> &cylindricalZArr,
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
     {
+        computedFieldXArr.resize(0);
+        computedFieldYArr.resize(0);
+        computedFieldZArr.resize(0);
+
         if (method == SINGLE)
         {
             std::vector<double> hFieldArray;
             std::vector<double> zFieldArray;
-            calculateAllBFieldSINGLE(cylindricalZArr, cylindricalRArr, hFieldArray, zFieldArray, usedPrecision);
+
+            calculateAllBFieldSINGLE(
+                    cylindricalZArr, cylindricalRArr, hFieldArray, zFieldArray, usedPrecision);
 
             for (int i = 0; i < hFieldArray.size(); ++i)
             {
@@ -895,6 +904,160 @@ Coil::computeAllBFieldComponents(const std::vector<double> &cylindricalZArr,
             precisionSettings, method);
 }
 
+void Coil::computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
+                                 const std::vector<double> &cylindricalRArr,
+                                 const std::vector<double> &cylindricalPhiArr,
+                                 std::vector<double> &computedPotentialArr,
+                                 const PrecisionArguments &usedPrecision,
+                                 ComputeMethod method)
+{
+    if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
+    {
+        if (method == SINGLE)
+        {
+            calculateAllAPotentialSINGLE(
+                    cylindricalZArr, cylindricalRArr, computedPotentialArr, usedPrecision);
 
+            for (int i = 0; i < computedPotentialArr.size(); ++i)
+            {
+                computedPotentialArr[i] *= (-1) * sin(cylindricalPhiArr[i]);
+            }
+        }
+        //TODO - other computation methods
+    }
+    else
+    {
+        throw "Number of elements in input data vectors is not the same!";
+    }
+}
 
+void Coil::computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
+                                 const std::vector<double> &cylindricalRArr,
+                                 const std::vector<double> &cylindricalPhiArr,
+                                 std::vector<double> &computedPotentialArr,
+                                 ComputeMethod method)
+{
+    computeAllAPotentialX(
+            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, precisionSettings, method);
+}
 
+void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
+                                 const std::vector<double> &cylindricalRArr,
+                                 const std::vector<double> &cylindricalPhiArr,
+                                 std::vector<double> &computedPotentialArr,
+                                 const PrecisionArguments &usedPrecision,
+                                 ComputeMethod method)
+{
+    if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
+    {
+        if (method == SINGLE)
+        {
+            calculateAllAPotentialSINGLE(
+                    cylindricalZArr, cylindricalRArr, computedPotentialArr, usedPrecision);
+
+            for (int i = 0; i < computedPotentialArr.size(); ++i)
+            {
+                computedPotentialArr[i] *= cos(cylindricalPhiArr[i]);
+            }
+        }
+        //TODO - other computation methods
+    }
+    else
+    {
+        throw "Number of elements in input data vectors is not the same!";
+    }
+}
+
+void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
+                                 const std::vector<double> &cylindricalRArr,
+                                 const std::vector<double> &cylindricalPhiArr,
+                                 std::vector<double> &computedPotentialArr,
+                                 ComputeMethod method)
+{
+    computeAllAPotentialY(
+            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, precisionSettings, method);
+}
+
+void
+Coil::computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
+                              const std::vector<double> &cylindricalRArr,
+                              const std::vector<double> &cylindricalPhiArr,
+                              std::vector<double> &computedPotentialArr,
+                              const PrecisionArguments &usedPrecision,
+                              ComputeMethod method)
+{
+    if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
+    {
+        if (method == SINGLE)
+        {
+            calculateAllAPotentialSINGLE(
+                    cylindricalZArr, cylindricalRArr, computedPotentialArr, usedPrecision);
+        }
+        //TODO - other computation methods
+    }
+    else
+    {
+        throw "Number of elements in input data vectors is not the same!";
+    }
+}
+
+void
+Coil::computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
+                              const std::vector<double> &cylindricalRArr,
+                              const std::vector<double> &cylindricalPhiArr,
+                              std::vector<double> computedPotentialArr,
+                              ComputeMethod method)
+{
+    computeAllAPotentialAbs(
+            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, precisionSettings, method);
+}
+
+void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindricalZArr,
+                                          const std::vector<double> &cylindricalRArr,
+                                          const std::vector<double> &cylindricalPhiArr,
+                                          std::vector<double> &computedPotentialXArr,
+                                          std::vector<double> &computedPotentialYArr,
+                                          std::vector<double> &computedPotentialZArr,
+                                          const PrecisionArguments &usedPrecision,
+                                          ComputeMethod method)
+{
+    if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
+    {
+        computedPotentialXArr.resize(0);
+        computedPotentialYArr.resize(0);
+        computedPotentialZArr.resize(0);
+
+        if (method == SINGLE)
+        {
+            std::vector<double> potentialArray;
+
+            calculateAllAPotentialSINGLE(
+                    cylindricalZArr, cylindricalRArr, potentialArray, usedPrecision);
+
+            for (int i = 0; i < potentialArray.size(); ++i)
+            {
+                computedPotentialXArr.push_back(potentialArray[i] * (-1) * sin(cylindricalPhiArr[i]));
+                computedPotentialYArr.push_back(potentialArray[i] * cos(cylindricalPhiArr[i]));
+                computedPotentialZArr.push_back(0.0);
+            }
+        }
+        //TODO - other computation methods
+    }
+    else
+    {
+        throw "Number of elements in input data vectors is not the same!";
+    }
+}
+
+void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindricalZArr,
+                                          const std::vector<double> &cylindricalRArr,
+                                          const std::vector<double> &cylindricalPhiArr,
+                                          std::vector<double> &computedPotentialXArr,
+                                          std::vector<double> &computedPotentialYArr,
+                                          std::vector<double> &computedPotentialZArr,
+                                          ComputeMethod method)
+{
+    computeAllAPotentialComponents(
+            cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+            computedPotentialXArr, computedPotentialYArr, computedPotentialZArr, method);
+}

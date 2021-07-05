@@ -292,6 +292,7 @@ class Coil
                                             ComputeMethod method = SINGLE);
 
         double computeMutualInductance(double zDisplacement, Coil secondary);
+
 };
 
 

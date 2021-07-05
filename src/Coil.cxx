@@ -585,17 +585,7 @@ double Coil::computeBFieldZ(double cylindricalZ, double cylindricalR, const Prec
     return calculateBFieldVertical(cylindricalZ, cylindricalR, usedPrecision);
 }
 
-std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi)
-{
-    std::vector<double> fieldVector;
-    std::pair<double, double> fields = calculateBField(cylindricalZ, cylindricalR, precisionSettings);
 
-    fieldVector.push_back(fields.first * cos(cylindricalPhi));
-    fieldVector.push_back(fields.first * sin(cylindricalPhi));
-    fieldVector.push_back(fields.second);
-
-    return fieldVector;
-}
 
 std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
                                               const PrecisionArguments &usedPrecision)
@@ -608,6 +598,10 @@ std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylind
     fieldVector.push_back(fields.second);
 
     return fieldVector;
+}
+std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi)
+{
+    return computeBFieldVector(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
 }
 
 double Coil::computeAPotentialX(double cylindricalZ, double cylindricalR, double cylindricalPhi)
@@ -642,16 +636,6 @@ double Coil::computeAPotentialAbs(double cylindricalZ, double cylindricalR, Prec
     return calculateAPotential(cylindricalZ, cylindricalR, usedPrecision);
 }
 
-std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi)
-{
-    std::vector<double> potentialVector;
-    double potential = calculateAPotential(cylindricalZ, cylindricalR, precisionSettings);
-
-    potentialVector.push_back(potential * (-sin(cylindricalPhi)));
-    potentialVector.push_back(potential * cos(cylindricalPhi));
-    return potentialVector;
-}
-
 std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
                                                   const PrecisionArguments &usedPrecision)
 {
@@ -661,5 +645,96 @@ std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cy
     potentialVector.push_back(potential * (-sin(cylindricalPhi)));
     potentialVector.push_back(potential * cos(cylindricalPhi));
     return potentialVector;
+}
+
+std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi)
+{
+    return computeAPotentialVector(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+}
+
+void Coil::calculateAllBFieldSINGLE(const std::vector<double> &cylindricalZArr,
+                                    const std::vector<double> &cylindricalRArr,
+                                    std::vector<double> &computedFieldHArr,
+                                    std::vector<double> &computedFieldZArr,
+                                    const PrecisionArguments &usedPrecision) {
+    if (cylindricalZArr.size() == cylindricalRArr.size())
+    {
+        computedFieldHArr.resize(0);
+        computedFieldZArr.resize(0);
+
+        for (int i = 0; i < cylindricalZArr.size(); ++i)
+        {
+            std::pair<double, double> values = calculateBField(cylindricalZArr[i], cylindricalRArr[i], usedPrecision);
+            computedFieldHArr.push_back(values.first);
+            computedFieldZArr.push_back(values.second);
+        }
+    }
+    else
+    {
+        throw "Input arrays must be the same size!";
+    }
+}
+
+void Coil::calculateAllBFieldVerticalSINGLE(const std::vector<double> &cylindricalZArr,
+                                            const std::vector<double> &cylindricalRArr,
+                                            std::vector<double> &computedFieldZArr,
+                                            const PrecisionArguments &usedPrecision)
+{
+    if (cylindricalZArr.size() == cylindricalRArr.size())
+    {
+        computedFieldZArr.resize(0);
+
+        for (int i = 0; i < cylindricalZArr.size(); ++i)
+        {
+            double field = calculateBFieldVertical(cylindricalZArr[i], cylindricalRArr[i], usedPrecision);
+            computedFieldZArr.push_back(field);
+        }
+    }
+    else
+    {
+        throw "Input arrays must be the same size!";
+    }
+}
+
+void Coil::calculateAllBFieldHorizontalSINGLE(const std::vector<double> &cylindricalZArr,
+                                              const std::vector<double> &cylindricalRArr,
+                                              std::vector<double> &computedFieldHArr,
+                                              const PrecisionArguments &usedPrecision)
+{
+    if (cylindricalZArr.size() == cylindricalRArr.size())
+    {
+        computedFieldHArr.resize(0);
+
+        for (int i = 0; i < cylindricalZArr.size(); ++i)
+        {
+            double field = calculateBFieldHorizontal(cylindricalZArr[i], cylindricalRArr[i], usedPrecision);
+            computedFieldHArr.push_back(field);
+        }
+    }
+    else
+    {
+        throw "Input arrays must be the same size!";
+    }
+}
+
+void Coil::calculateAllAPotentialSINGLE(const std::vector<double> &cylindricalZArr,
+                                        const std::vector<double> &cylindricalRArr,
+                                        std::vector<double> &computedPotentialArr,
+                                        const PrecisionArguments &usedPrecision)
+{
+    if (cylindricalZArr.size() == cylindricalRArr.size())
+    {
+        computedPotentialArr.resize(0);
+
+        for (int i = 0; i < cylindricalZArr.size(); ++i)
+        {
+            double field = calculateAPotential(cylindricalZArr[i], cylindricalRArr[i], usedPrecision);
+            computedPotentialArr.push_back(field);
+        }
+    }
+    else
+    {
+        throw "Input arrays must be the same size!";
+    }
 }
 

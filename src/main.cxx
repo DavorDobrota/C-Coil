@@ -76,7 +76,7 @@ int main(){
     printf("%.20f\n", testCoil1.computeBFieldZ(0.0, 0.0));
     printf("%.20f\n", testCoil1.computeBFieldH(0.0, 0.0));
 
-    int nOp = 20000;
+    int nOp = 50000;
     std::vector<double> temp1;
 
     clock_t begin_time1 = clock();

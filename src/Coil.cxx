@@ -342,11 +342,10 @@ std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, con
                             double cosinePhi = cos(incrementPositionFi);
                             double tempConstF = 2 * tempConstC * cosinePhi;
                             double tempConstG = tempConstE * incrementWeightFi;
+                            double tempConstH = (tempConstD - tempConstF) * sqrt(tempConstD - tempConstF);
 
-                            magneticFieldZ += tempConstG *
-                                              (tempConstA - tempConstC * cosinePhi)/pow((tempConstD - tempConstF), 1.5);
-                            magneticFieldH += tempConstG *
-                                              (tempConstB * cosinePhi) /pow((tempConstD - tempConstF), 1.5);
+                            magneticFieldZ += tempConstG * (tempConstA - tempConstC * cosinePhi) / tempConstH;
+                            magneticFieldH += tempConstG * (tempConstB * cosinePhi) / tempConstH;
                         }
                     }
                 }
@@ -406,14 +405,16 @@ double Coil::calculateBFieldVertical(double zAxis, double rPolar, const Precisio
 
                             double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] / 2;
 
-                            double tempConstD = tempConstB * cos(incrementPositionFi);
+
+                            double cosinePhi = cos(incrementPositionFi);
+                            double tempConstD = tempConstC - 2 * tempConstB * cosinePhi;
 
 //                            printf("%d %d %d %2d %2d %2d : ", indBlockL, indBlockT, indBlockFi, incL, incT, incFi);
 //                            printf("%.10f %.10f %.10f - ", incrementWeightL, incrementWeightT, incrementWeightFi);
 //                            printf("%.10f %.10f %.10f\n", incrementPositionL, incrementPositionT, incrementPositionFi);
 
                             magneticFieldZ += constant * incrementWeightS * incrementWeightFi *
-                                    (tempConstA - tempConstD)/pow((tempConstC - 2*tempConstD), 1.5);
+                                    (tempConstA - tempConstB * cosinePhi) / (tempConstD * sqrt(tempConstD));
                         }
                     }
                 }
@@ -471,9 +472,10 @@ double Coil::calculateBFieldHorizontal(double zAxis, double rPolar, const Precis
                             double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] / 2;
 
                             double cosinePhi = cos(incrementPositionFi);
+                            double tempConstD = tempConstC - 2*tempConstB * cosinePhi;
 
                             magneticFieldH += constant * incrementWeightS * incrementWeightFi *
-                                    (tempConstA * cosinePhi) /pow((tempConstC - 2*tempConstB * cosinePhi), 1.5);
+                                    (tempConstA * cosinePhi) /(tempConstD * sqrt(tempConstD));
                         }
                     }
                 }

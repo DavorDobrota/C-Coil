@@ -306,7 +306,7 @@ std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, con
     {
         for (int indBlockT = 0; indBlockT < usedPrecision.numOfThicknessBlocks; ++indBlockT)
         {
-            double blockPositionL = (-1) * (length / 2) + lengthBlock * (indBlockL + 0.5);
+            double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
 
             for (int incL = 0; incL < usedPrecision.numOfLengthIncrements; ++incL)
@@ -314,19 +314,20 @@ std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, con
                 for (int incT = 0; incT < usedPrecision.numOfThicknessIncrements; ++incT)
                 {
                     double incrementPositionL = blockPositionL +
-                                                (lengthBlock / 2) * usedPrecision.lengthIncrementPositions[incL];
+                                                (lengthBlock * 0.5) * usedPrecision.lengthIncrementPositions[incL];
                     double incrementPositionT = blockPositionT +
-                                                (thicknessBlock / 2) * usedPrecision.thicknessIncrementPositions[incT];
+                                                (thicknessBlock * 0.5) * usedPrecision.thicknessIncrementPositions[incT];
 
-                    double incrementWeightL = usedPrecision.lengthIncrementWeights[incL] / 2;
-                    double incrementWeightT = usedPrecision.thicknessIncrementWeights[incT] / 2;
+                    double incrementWeightL = usedPrecision.lengthIncrementWeights[incL] * 0.5;
+                    double incrementWeightT = usedPrecision.thicknessIncrementWeights[incT] * 0.5;
 
                     double incrementWeightS = incrementWeightL * incrementWeightT;
 
-                    double tempConstA = pow(incrementPositionT, 2);
+                    double tempConstA = incrementPositionT * incrementPositionT;
                     double tempConstB = incrementPositionT * (incrementPositionL + zAxis);
                     double tempConstC = incrementPositionT * rPolar;
-                    double tempConstD = tempConstA + pow(rPolar, 2) + pow((incrementPositionL + zAxis), 2);
+                    double tempConstD = tempConstA + rPolar * rPolar +
+                            (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
                     double tempConstE = constant * incrementWeightS;
 
                     for (int indBlockFi = 0; indBlockFi < usedPrecision.numOfAngularBlocks; ++indBlockFi)
@@ -336,17 +337,17 @@ std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, con
                         for (int incFi = 0; incFi < usedPrecision.numOfAngularIncrements; ++incFi)
                         {
                             double incrementPositionFi = blockPositionFi +
-                                                         (angularBlock / 2) * usedPrecision.angularIncrementPositions[incFi];
+                                                         (angularBlock * 0.5) * usedPrecision.angularIncrementPositions[incFi];
 
-                            double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] / 2;
+                            double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] * 0.5;
 
                             double cosinePhi = cos(incrementPositionFi);
                             double tempConstF = 2 * tempConstC * cosinePhi;
-                            double tempConstG = tempConstE * incrementWeightFi;
                             double tempConstH = (tempConstD - tempConstF) * sqrt(tempConstD - tempConstF);
+                            double tempConstG = tempConstE * incrementWeightFi / tempConstH;
 
-                            magneticFieldZ += tempConstG * (tempConstA - tempConstC * cosinePhi) / tempConstH;
-                            magneticFieldH += tempConstG * (tempConstB * cosinePhi) / tempConstH;
+                            magneticFieldZ += tempConstG * (tempConstA - tempConstC * cosinePhi);
+                            magneticFieldH += tempConstG * (tempConstB * cosinePhi);
                         }
                     }
                 }
@@ -374,7 +375,7 @@ double Coil::calculateBFieldVertical(double zAxis, double rPolar, const Precisio
     {
         for (int indBlockT = 0; indBlockT < usedPrecision.numOfThicknessBlocks; ++indBlockT)
         {
-            double blockPositionL = (-1) * (length / 2) + lengthBlock * (indBlockL + 0.5);
+            double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
 
             for (int incL = 0; incL < usedPrecision.numOfLengthIncrements; ++incL)
@@ -382,18 +383,19 @@ double Coil::calculateBFieldVertical(double zAxis, double rPolar, const Precisio
                 for (int incT = 0; incT < usedPrecision.numOfThicknessIncrements; ++incT)
                 {
                     double incrementPositionL = blockPositionL +
-                                                (lengthBlock / 2) * usedPrecision.lengthIncrementPositions[incL];
+                            (lengthBlock * 0.5) * usedPrecision.lengthIncrementPositions[incL];
                     double incrementPositionT = blockPositionT +
-                                                (thicknessBlock / 2) * usedPrecision.thicknessIncrementPositions[incT];
+                            (thicknessBlock * 0.5) * usedPrecision.thicknessIncrementPositions[incT];
 
-                    double incrementWeightL = usedPrecision.lengthIncrementWeights[incL] / 2;
-                    double incrementWeightT = usedPrecision.thicknessIncrementWeights[incT] / 2;
+                    double incrementWeightL = usedPrecision.lengthIncrementWeights[incL] * 0.5;
+                    double incrementWeightT = usedPrecision.thicknessIncrementWeights[incT] * 0.5;
 
                     double incrementWeightS = incrementWeightL * incrementWeightT;
 
-                    double tempConstA = pow(incrementPositionT, 2);
+                    double tempConstA = incrementPositionT * incrementPositionT;
                     double tempConstB = incrementPositionT * rPolar;
-                    double tempConstC = tempConstA + pow(rPolar, 2) + pow((incrementPositionL + zAxis), 2);
+                    double tempConstC = tempConstA + rPolar * rPolar +
+                            (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
 
                     for (int indBlockFi = 0; indBlockFi < usedPrecision.numOfAngularBlocks; ++indBlockFi)
                     {
@@ -402,17 +404,13 @@ double Coil::calculateBFieldVertical(double zAxis, double rPolar, const Precisio
                         for (int incFi = 0; incFi < usedPrecision.numOfAngularIncrements; ++incFi)
                         {
                             double incrementPositionFi = blockPositionFi +
-                                                         (angularBlock / 2) * usedPrecision.angularIncrementPositions[incFi];
+                                    (angularBlock * 0.5) * usedPrecision.angularIncrementPositions[incFi];
 
-                            double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] / 2;
+                            double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] * 0.5;
 
 
                             double cosinePhi = cos(incrementPositionFi);
                             double tempConstD = tempConstC - 2 * tempConstB * cosinePhi;
-
-//                            printf("%d %d %d %2d %2d %2d : ", indBlockL, indBlockT, indBlockFi, incL, incT, incFi);
-//                            printf("%.10f %.10f %.10f - ", incrementWeightL, incrementWeightT, incrementWeightFi);
-//                            printf("%.10f %.10f %.10f\n", incrementPositionL, incrementPositionT, incrementPositionFi);
 
                             magneticFieldZ += constant * incrementWeightS * incrementWeightFi *
                                     (tempConstA - tempConstB * cosinePhi) / (tempConstD * sqrt(tempConstD));
@@ -439,7 +437,7 @@ double Coil::calculateBFieldHorizontal(double zAxis, double rPolar, const Precis
     {
         for (int indBlockT = 0; indBlockT < usedPrecision.numOfThicknessBlocks; ++indBlockT)
         {
-            double blockPositionL = (-1) * (length / 2) + lengthBlock * (indBlockL + 0.5);
+            double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
 
             for (int incL = 0; incL < usedPrecision.numOfLengthIncrements; ++incL)
@@ -447,19 +445,19 @@ double Coil::calculateBFieldHorizontal(double zAxis, double rPolar, const Precis
                 for (int incT = 0; incT < usedPrecision.numOfThicknessIncrements; ++incT)
                 {
                     double incrementPositionL = blockPositionL +
-                                                (lengthBlock / 2) * usedPrecision.lengthIncrementPositions[incL];
+                                                (lengthBlock * 0.5) * usedPrecision.lengthIncrementPositions[incL];
                     double incrementPositionT = blockPositionT +
-                                                (thicknessBlock / 2) * usedPrecision.thicknessIncrementPositions[incT];
+                                                (thicknessBlock * 0.5) * usedPrecision.thicknessIncrementPositions[incT];
 
-                    double incrementWeightL = usedPrecision.lengthIncrementWeights[incL] / 2;
-                    double incrementWeightT = usedPrecision.thicknessIncrementWeights[incT] / 2;
+                    double incrementWeightL = usedPrecision.lengthIncrementWeights[incL] * 0.5;
+                    double incrementWeightT = usedPrecision.thicknessIncrementWeights[incT] * 0.5;
 
                     double incrementWeightS = incrementWeightL * incrementWeightT;
 
                     double tempConstA = incrementPositionT * (incrementPositionL + zAxis);
                     double tempConstB = incrementPositionT * rPolar;
-                    double tempConstC = pow(incrementPositionT, 2) +
-                            pow(rPolar, 2) + pow((incrementPositionL + zAxis), 2);
+                    double tempConstC = incrementPositionT * incrementPositionT + rPolar * rPolar +
+                            (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
 
                     for (int indBlockFi = 0; indBlockFi < usedPrecision.numOfAngularBlocks; ++indBlockFi)
                     {
@@ -468,12 +466,12 @@ double Coil::calculateBFieldHorizontal(double zAxis, double rPolar, const Precis
                         for (int incFi = 0; incFi < usedPrecision.numOfAngularIncrements; ++incFi)
                         {
                             double incrementPositionFi = blockPositionFi +
-                                                         (angularBlock / 2) * usedPrecision.angularIncrementPositions[incFi];
+                                    (angularBlock * 0.5) * usedPrecision.angularIncrementPositions[incFi];
 
-                            double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] / 2;
+                            double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] * 0.5;
 
                             double cosinePhi = cos(incrementPositionFi);
-                            double tempConstD = tempConstC - 2*tempConstB * cosinePhi;
+                            double tempConstD = tempConstC - 2 * tempConstB * cosinePhi;
 
                             magneticFieldH += constant * incrementWeightS * incrementWeightFi *
                                     (tempConstA * cosinePhi) /(tempConstD * sqrt(tempConstD));
@@ -500,7 +498,7 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
     {
         for (int indBlockT = 0; indBlockT < usedPrecision.numOfThicknessBlocks; ++indBlockT)
         {
-            double blockPositionL = (-1) * (length / 2) + lengthBlock * (indBlockL + 0.5);
+            double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
 
             for (int incL = 0; incL < usedPrecision.numOfLengthIncrements; ++incL)
@@ -508,19 +506,19 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
                 for (int incT = 0; incT < usedPrecision.numOfThicknessIncrements; ++incT)
                 {
                     double incrementPositionL = blockPositionL +
-                                                (lengthBlock / 2) * usedPrecision.lengthIncrementPositions[incL];
+                                                (lengthBlock * 0.5) * usedPrecision.lengthIncrementPositions[incL];
                     double incrementPositionT = blockPositionT +
-                                                (thicknessBlock / 2) * usedPrecision.thicknessIncrementPositions[incT];
+                                                (thicknessBlock * 0.5) * usedPrecision.thicknessIncrementPositions[incT];
 
-                    double incrementWeightL = usedPrecision.lengthIncrementWeights[incL] / 2;
-                    double incrementWeightT = usedPrecision.thicknessIncrementWeights[incT] / 2;
+                    double incrementWeightL = usedPrecision.lengthIncrementWeights[incL] * 0.5;
+                    double incrementWeightT = usedPrecision.thicknessIncrementWeights[incT] * 0.5;
 
                     double incrementWeightS = incrementWeightL * incrementWeightT;
 
                     double tempConstA = incrementPositionT;
                     double tempConstB = incrementPositionT * rPolar;
-                    double tempConstC = pow(incrementPositionT, 2) +
-                                        pow(rPolar, 2) + pow((incrementPositionL + zAxis), 2);
+                    double tempConstC = incrementPositionT * incrementPositionT + rPolar * rPolar +
+                            (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
 
                     for (int indBlockFi = 0; indBlockFi < usedPrecision.numOfAngularBlocks; ++indBlockFi)
                     {
@@ -529,9 +527,9 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
                         for (int incFi = 0; incFi < usedPrecision.numOfAngularIncrements; ++incFi)
                         {
                             double incrementPositionFi = blockPositionFi +
-                                                         (angularBlock / 2) * usedPrecision.angularIncrementPositions[incFi];
+                                    (angularBlock * 0.5) * usedPrecision.angularIncrementPositions[incFi];
 
-                            double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] / 2;
+                            double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] * 0.5;
 
                             double cosinePhi = cos(incrementPositionFi);
 

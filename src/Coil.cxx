@@ -7,6 +7,7 @@
 #include "Coil.h"
 #include "Polynomial.h"
 #include "ComputeMethod.h"
+#include "hardware_acceleration.h"
 
 namespace
 {
@@ -713,6 +714,65 @@ void Coil::calculateAllAPotentialSINGLE(const std::vector<double> &cylindricalZA
     }
 }
 
+void Coil::convertPolarToCylindrical(double polarR, double polarTheta, double polarPhi,
+                                     double &cylindricalZ, double &cylindricalR, double &cylindricalPhi)
+{
+    cylindricalZ = polarR * cos(polarTheta);
+    cylindricalR = polarR * sin(polarTheta);
+    cylindricalPhi = cylindricalPhi;
+}
+
+void Coil::convertAllPolarToCylindrical(const std::vector<double> &polarRArr,
+                                        const std::vector<double> &polarThetaArr,
+                                        const std::vector<double> &polarPhiArr,
+                                        std::vector<double> &cylindricalZArr,
+                                        std::vector<double> &cylindricalRArr,
+                                        std::vector<double> &cylindricalPhiArr)
+{
+    if (polarRArr.size() == polarThetaArr.size() == polarPhiArr.size())
+    {
+        cylindricalZArr.resize(0);
+        cylindricalRArr.resize(0);
+        cylindricalPhiArr.resize(0);
+
+        for (int i = 0; i < polarRArr.size(); ++i)
+        {
+            cylindricalZArr.push_back(polarRArr[i] * cos(polarThetaArr[i]));
+            cylindricalRArr.push_back(polarRArr[i] * sin(polarThetaArr[i]));
+            cylindricalPhiArr.push_back(polarPhiArr[i]);
+        }
+    }
+}
+
+void Coil::convertCylindricalToPolar(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                     double &polarR, double &polarTheta, double &polarPhi)
+{
+    polarR = sqrt(cylindricalZ * cylindricalZ + cylindricalR * cylindricalR);
+    polarTheta = atan2(cylindricalR, cylindricalZ);
+    polarPhi = cylindricalPhi;
+}
+
+void Coil::convertAllCylindricalToPolar(const std::vector<double> &cylindricalZArr,
+                                        const std::vector<double> &cylindricalRArr,
+                                        const std::vector<double> &cylindricalPhiArr,
+                                        std::vector<double> &polarRArr,
+                                        std::vector<double> &polarThetaArr,
+                                        std::vector<double> &polarPhiArr)
+{
+    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
+    {
+        polarRArr.resize(0);
+        polarThetaArr.resize(0);
+        polarPhiArr.resize(0);
+
+        for (int i = 0; i < cylindricalZArr.size(); ++i)
+        {
+            polarRArr.push_back(sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
+            polarThetaArr.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
+            polarPhiArr.push_back(cylindricalPhiArr[i]);
+        }
+    }
+}
 
 void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
                              const std::vector<double> &cylindricalRArr,
@@ -721,8 +781,10 @@ void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
                              const PrecisionArguments &usedPrecision,
                              ComputeMethod method)
 {
-    if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
+    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
+        computedFieldArr.resize(0);
+
         if (method == SINGLE)
         {
             calculateAllBFieldHorizontalSINGLE(
@@ -731,6 +793,30 @@ void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
             for (int i = 0; i < computedFieldArr.size(); ++i)
             {
                 computedFieldArr[i] *= cos(cylindricalPhiArr[i]);
+            }
+        }
+        else if (method == ACCELERATED)
+        {
+            std::vector<float> polarR;
+            std::vector<float> polarTheta;
+
+            for (int i = 0; i < cylindricalZArr.size(); ++i)
+            {
+                polarR.push_back(sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
+                polarTheta.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
+            }
+
+            std::vector<float> fieldH(polarR.size());
+            std::vector<float> fieldZ(polarR.size());
+
+            Calculate_hardware_accelerated_b(polarR.size(), &polarTheta[0], &polarR[0],
+                                             currentDensity, innerRadius, length, thickness,
+                                             thickness/16, length/16, PI/48,
+                                             &fieldH[0], &fieldZ[0]);
+
+            for (int i = 0; i < fieldH.size(); ++i)
+            {
+                computedFieldArr.push_back(fieldH[i] * cos(cylindricalPhiArr[i]));
             }
         }
         //TODO - other computation methods
@@ -758,7 +844,7 @@ void Coil::computeAllBFieldY(const std::vector<double> &cylindricalZArr,
                              const PrecisionArguments &usedPrecision,
                              ComputeMethod method)
 {
-    if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
+    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
         if (method == SINGLE)
         {
@@ -768,6 +854,30 @@ void Coil::computeAllBFieldY(const std::vector<double> &cylindricalZArr,
             for (int i = 0; i < computedFieldArr.size(); ++i)
             {
                 computedFieldArr[i] *= sin(cylindricalPhiArr[i]);
+            }
+        }
+        else if (method == ACCELERATED)
+        {
+            std::vector<float> polarR;
+            std::vector<float> polarTheta;
+
+            for (int i = 0; i < cylindricalZArr.size(); ++i)
+            {
+                polarR.push_back(sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
+                polarTheta.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
+            }
+
+            std::vector<float> fieldH(polarR.size());
+            std::vector<float> fieldZ(polarR.size());
+
+            Calculate_hardware_accelerated_b(polarR.size(), &polarTheta[0], &polarR[0],
+                                             currentDensity, innerRadius, length, thickness,
+                                             thickness/16, length/16, PI/48,
+                                             &fieldH[0], &fieldZ[0]);
+
+            for (int i = 0; i < fieldH.size(); ++i)
+            {
+                computedFieldArr.push_back(fieldH[i] * sin(cylindricalPhiArr[i]));
             }
         }
         //TODO - other computation methods
@@ -795,12 +905,34 @@ void Coil::computeAllBFieldH(const std::vector<double> &cylindricalZArr,
                              const PrecisionArguments &usedPrecision,
                              ComputeMethod method)
 {
-    if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
+    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
         if (method == SINGLE)
         {
             calculateAllBFieldHorizontalSINGLE(
                     cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
+        }
+        else if (method == ACCELERATED)
+        {
+            std::vector<float> polarR;
+            std::vector<float> polarTheta;
+
+            for (int i = 0; i < cylindricalZArr.size(); ++i)
+            {
+                polarR.push_back(sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
+                polarTheta.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
+            }
+
+            std::vector<float> fieldH(polarR.size());
+            std::vector<float> fieldZ(polarR.size());
+
+            Calculate_hardware_accelerated_b(polarR.size(), &polarTheta[0], &polarR[0],
+                                             currentDensity, innerRadius, length, thickness,
+                                             thickness/16, length/16, PI/48,
+                                             &fieldH[0], &fieldZ[0]);
+
+            for (float i : fieldH)
+                computedFieldArr.push_back(i);
         }
         //TODO - other computation methods
     }
@@ -827,12 +959,34 @@ void Coil::computeAllBFieldZ(const std::vector<double> &cylindricalZArr,
                              const PrecisionArguments &usedPrecision,
                              ComputeMethod method)
 {
-    if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
+    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
         if (method == SINGLE)
         {
             calculateAllBFieldVerticalSINGLE(
                     cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
+        }
+        else if (method == ACCELERATED)
+        {
+            std::vector<float> polarR;
+            std::vector<float> polarTheta;
+
+            for (int i = 0; i < cylindricalZArr.size(); ++i)
+            {
+                polarR.push_back(sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
+                polarTheta.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
+            }
+
+            std::vector<float> fieldH(polarR.size());
+            std::vector<float> fieldZ(polarR.size());
+
+            Calculate_hardware_accelerated_b(polarR.size(), &polarTheta[0], &polarR[0],
+                                             currentDensity, innerRadius, length, thickness,
+                                             thickness/16, length/16, PI/48,
+                                             &fieldH[0], &fieldZ[0]);
+
+            for (float i : fieldZ)
+                computedFieldArr.push_back(i);
         }
         //TODO - other computation methods
     }
@@ -862,7 +1016,7 @@ Coil::computeAllBFieldComponents(const std::vector<double> &cylindricalZArr,
                                  const PrecisionArguments &usedPrecision,
                                  ComputeMethod method)
 {
-    if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
+    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
         computedFieldXArr.resize(0);
         computedFieldYArr.resize(0);
@@ -881,6 +1035,32 @@ Coil::computeAllBFieldComponents(const std::vector<double> &cylindricalZArr,
                 computedFieldXArr.push_back(hFieldArray[i] * cos(cylindricalPhiArr[i]));
                 computedFieldYArr.push_back(hFieldArray[i] * sin(cylindricalPhiArr[i]));
                 computedFieldZArr.push_back(zFieldArray[i]);
+            }
+        }
+        else if (method == ACCELERATED)
+        {
+            std::vector<float> polarR;
+            std::vector<float> polarTheta;
+
+            for (int i = 0; i < cylindricalZArr.size(); ++i)
+            {
+                polarR.push_back(sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
+                polarTheta.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
+            }
+
+            std::vector<float> fieldH(polarR.size());
+            std::vector<float> fieldZ(polarR.size());
+
+            Calculate_hardware_accelerated_b(polarR.size(), &polarTheta[0], &polarR[0],
+                                             currentDensity, innerRadius, length, thickness,
+                                             thickness/16, length/16, PI/48,
+                                             &fieldH[0], &fieldZ[0]);
+
+            for (int i = 0; i < fieldH.size(); ++i)
+            {
+                computedFieldXArr.push_back(fieldH[i] * cos(cylindricalPhiArr[i]));
+                computedFieldYArr.push_back(fieldH[i] * sin(cylindricalPhiArr[i]));
+                computedFieldZArr.push_back(fieldZ[i]);
             }
         }
         //TODO - other computation methods
@@ -913,8 +1093,10 @@ void Coil::computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
                                  const PrecisionArguments &usedPrecision,
                                  ComputeMethod method)
 {
-    if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
+    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
+        computedPotentialArr.resize(0);
+
         if (method == SINGLE)
         {
             calculateAllAPotentialSINGLE(
@@ -924,6 +1106,26 @@ void Coil::computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
             {
                 computedPotentialArr[i] *= (-1) * sin(cylindricalPhiArr[i]);
             }
+        }
+        else if (method == ACCELERATED) {
+            std::vector<float> polarR;
+            std::vector<float> polarTheta;
+
+            for (int i = 0; i < cylindricalZArr.size(); ++i) {
+                polarR.push_back(
+                        sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
+                polarTheta.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
+            }
+
+            std::vector<float> potentialA(polarR.size());
+
+            Calculate_hardware_accelerated_a(polarR.size(), &polarTheta[0], &polarR[0],
+                                             currentDensity, innerRadius, length, thickness,
+                                             thickness / 16, length / 16, PI / 48,
+                                             nullptr, nullptr, &potentialA[0]);
+
+            for (int i = 0; i < potentialA.size(); ++i)
+                computedPotentialArr.push_back(potentialA[i] * (-1) * sin(cylindricalPhiArr[i]));
         }
         //TODO - other computation methods
     }
@@ -950,8 +1152,10 @@ void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
                                  const PrecisionArguments &usedPrecision,
                                  ComputeMethod method)
 {
-    if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
+    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
+        computedPotentialArr.resize(0);
+
         if (method == SINGLE)
         {
             calculateAllAPotentialSINGLE(
@@ -961,6 +1165,26 @@ void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
             {
                 computedPotentialArr[i] *= cos(cylindricalPhiArr[i]);
             }
+        }
+        else if (method == ACCELERATED) {
+            std::vector<float> polarR;
+            std::vector<float> polarTheta;
+
+            for (int i = 0; i < cylindricalZArr.size(); ++i) {
+                polarR.push_back(
+                        sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
+                polarTheta.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
+            }
+
+            std::vector<float> potentialA(polarR.size());
+
+            Calculate_hardware_accelerated_a(polarR.size(), &polarTheta[0], &polarR[0],
+                                             currentDensity, innerRadius, length, thickness,
+                                             thickness / 16, length / 16, PI / 48,
+                                             nullptr, nullptr, &potentialA[0]);
+
+            for (int i = 0; i < potentialA.size(); ++i)
+                computedPotentialArr.push_back(potentialA[i] * cos(cylindricalPhiArr[i]));
         }
         //TODO - other computation methods
     }
@@ -988,12 +1212,35 @@ Coil::computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                               const PrecisionArguments &usedPrecision,
                               ComputeMethod method)
 {
-    if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
+    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
+        computedPotentialArr.resize(0);
+
         if (method == SINGLE)
         {
             calculateAllAPotentialSINGLE(
                     cylindricalZArr, cylindricalRArr, computedPotentialArr, usedPrecision);
+        }
+        else if (method == ACCELERATED)
+        {
+            std::vector<float> polarR;
+            std::vector<float> polarTheta;
+
+            for (int i = 0; i < cylindricalZArr.size(); ++i)
+            {
+                polarR.push_back(sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
+                polarTheta.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
+            }
+
+            std::vector<float> potentialA(polarR.size());
+
+            Calculate_hardware_accelerated_a(polarR.size(), &polarTheta[0], &polarR[0],
+                                             currentDensity, innerRadius, length, thickness,
+                                             thickness/16, length/16, PI/48,
+                                             nullptr, nullptr, &potentialA[0]);
+
+            for (int i = 0; i < potentialA.size(); ++i)
+                computedPotentialArr.push_back(potentialA[i]);
         }
         //TODO - other computation methods
     }
@@ -1023,7 +1270,7 @@ void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindrical
                                           const PrecisionArguments &usedPrecision,
                                           ComputeMethod method)
 {
-    if (cylindricalZArr.size() == cylindricalRArr.size() == cylindricalPhiArr.size())
+    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
         computedPotentialXArr.resize(0);
         computedPotentialYArr.resize(0);
@@ -1040,6 +1287,31 @@ void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindrical
             {
                 computedPotentialXArr.push_back(potentialArray[i] * (-1) * sin(cylindricalPhiArr[i]));
                 computedPotentialYArr.push_back(potentialArray[i] * cos(cylindricalPhiArr[i]));
+                computedPotentialZArr.push_back(0.0);
+            }
+        }
+        else if (method == ACCELERATED)
+        {
+            std::vector<float> polarR;
+            std::vector<float> polarTheta;
+
+            for (int i = 0; i < cylindricalZArr.size(); ++i)
+            {
+                polarR.push_back(sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
+                polarTheta.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
+            }
+
+            std::vector<float> potentialA(polarR.size());
+
+            Calculate_hardware_accelerated_a(polarR.size(), &polarTheta[0], &polarR[0],
+                                             currentDensity, innerRadius, length, thickness,
+                                             thickness/16, length/16, PI/48,
+                                             nullptr, nullptr, &potentialA[0]);
+
+            for (int i = 0; i < potentialA.size(); ++i)
+            {
+                computedPotentialXArr.push_back(potentialA[i] * (-1) * sin(cylindricalPhiArr[i]));
+                computedPotentialYArr.push_back(potentialA[i] * cos(cylindricalPhiArr[i]));
                 computedPotentialZArr.push_back(0.0);
             }
         }
@@ -1061,5 +1333,6 @@ void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindrical
 {
     computeAllAPotentialComponents(
             cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-            computedPotentialXArr, computedPotentialYArr, computedPotentialZArr, method);
+            computedPotentialXArr, computedPotentialYArr, computedPotentialZArr, precisionSettings, method);
 }
+

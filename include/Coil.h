@@ -96,6 +96,26 @@ class Coil
                                           std::vector<double> &computedPotentialArr,
                                           const PrecisionArguments &usedPrecision);
 
+        void convertPolarToCylindrical(double polarR, double polarTheta, double polarPhi,
+                                       double &cylindricalZ, double &cylindricalR, double &cylindricalPhi);
+
+        void convertAllPolarToCylindrical(const std::vector<double> &polarRArr,
+                                          const std::vector<double> &polarThetaArr,
+                                          const std::vector<double> &polarPhiArr,
+                                          std::vector<double> &cylindricalZArr,
+                                          std::vector<double> &cylindricalRArr,
+                                          std::vector<double> &cylindricalPhiArr);
+
+        void convertCylindricalToPolar(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                       double &polarR, double &polarTheta, double &polarPhi);
+
+        void convertAllCylindricalToPolar(const std::vector<double> &cylindricalZArr,
+                                          const std::vector<double> &cylindricalRArr,
+                                          const std::vector<double> &cylindricalPhiArr,
+                                          std::vector<double> &polarRArr,
+                                          std::vector<double> &polarThetaArr,
+                                          std::vector<double> &polarPhiArr);
+
 
     public:
         Coil(double innerRadius, double thickness, double length, int numOfTurns,

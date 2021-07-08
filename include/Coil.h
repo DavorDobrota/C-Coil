@@ -129,6 +129,8 @@ class Coil
 
 
     public:
+        Coil();
+
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
              double current, double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings);
 
@@ -296,12 +298,10 @@ class Coil
 
         void computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                                      const std::vector<double> &cylindricalRArr,
-                                     const std::vector<double> &cylindricalPhiArr,
                                      std::vector<double> &computedPotentialArr,
                                      ComputeMethod method = SINGLE);
         void computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                                      const std::vector<double> &cylindricalRArr,
-                                     const std::vector<double> &cylindricalPhiArr,
                                      std::vector<double> &computedPotentialArr,
                                      const PrecisionArguments &usedPrecision,
                                      ComputeMethod method = SINGLE);

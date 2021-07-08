@@ -19,7 +19,7 @@ namespace
     const double g_defaultCurrent = 1.0;
     const double g_defaultResistivity = 1.63e-8;
     const double g_defaultSineFrequency = 50;
-    const PrecisionArguments g_defaultPrecision = PrecisionArguments(1, 1, 1, 12, 12, 12);
+    const PrecisionArguments g_defaultPrecision = PrecisionArguments(2, 1, 1, 12, 12, 12);
 
 }
 
@@ -38,6 +38,7 @@ PrecisionArguments::PrecisionArguments(
         numOfLengthBlocks(numOfLengthBlocks), numOfAngularIncrements(numOfAngularIncrements),
         numOfThicknessIncrements(numOfThicknessIncrements), numOfLengthIncrements(numOfLengthIncrements)
 {
+    //TODO - fix constructor calls from main
     if (numOfAngularIncrements > g_maxLegendrePol)
     {
         PrecisionArguments::numOfAngularIncrements = 12;
@@ -98,6 +99,9 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
     setSineFrequency(sineFrequency);
     calculateSelfInductance();
 }
+
+Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0,
+                    g_defaultResistivity, g_defaultSineFrequency, g_defaultPrecision){}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency) :
         Coil(innerRadius, thickness, length, numOfTurns, current,
@@ -492,7 +496,7 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
     double thicknessBlock = thickness / usedPrecision.numOfThicknessBlocks;
     double angularBlock = PI / usedPrecision.numOfAngularBlocks;
 
-    double constant = 2*PI * g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2;
+    double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2;
 
     for (int indBlockL = 0; indBlockL < usedPrecision.numOfLengthBlocks; ++indBlockL)
     {
@@ -814,6 +818,9 @@ void Coil::calculateAllAPotentialACCELERATED(const std::vector<double> &cylindri
                                      currentDensity, innerRadius, length, thickness,
                                      thickness / 16, length / 16, PI / 48,
                                      nullptr, nullptr, &computedPotentialArr[0]);
+    //TODO - fix frequency in GPU potential calculation, current temporary fix
+    for (int i = 0; i < polarR.size(); ++i)
+        computedPotentialArr[i] /= 2*PI;
 }
 
 void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
@@ -1171,12 +1178,11 @@ void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
 void
 Coil::computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                               const std::vector<double> &cylindricalRArr,
-                              const std::vector<double> &cylindricalPhiArr,
                               std::vector<double> &computedPotentialArr,
                               const PrecisionArguments &usedPrecision,
                               ComputeMethod method)
 {
-    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
+    if (cylindricalZArr.size() == cylindricalRArr.size())
     {
         computedPotentialArr.resize(0);
 
@@ -1207,12 +1213,11 @@ Coil::computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
 void
 Coil::computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                               const std::vector<double> &cylindricalRArr,
-                              const std::vector<double> &cylindricalPhiArr,
                               std::vector<double> &computedPotentialArr,
                               ComputeMethod method)
 {
     computeAllAPotentialAbs(
-            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, precisionSettings, method);
+            cylindricalZArr, cylindricalRArr, computedPotentialArr, precisionSettings, method);
 }
 
 void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindricalZArr,
@@ -1280,9 +1285,36 @@ void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindrical
 
 double Coil::computeMutualInductance(double zDisplacement, Coil secondary, ComputeMethod method)
 {
-    return 0;
+    std::vector<double> zPositions;
+    std::vector<double> rPositions;
+
+    std::vector<double> weights;
+
+    for (int zIndex = 0; zIndex < secondary.precisionSettings.numOfLengthIncrements; ++zIndex)
+    {
+
+        for (int rIndex = 0; rIndex < secondary.precisionSettings.numOfThicknessIncrements; ++rIndex)
+        {
+            zPositions.push_back(zDisplacement + (secondary.length * 0.5) *
+            secondary.precisionSettings.lengthIncrementPositions[zIndex]);
+
+            rPositions.push_back(secondary.innerRadius + secondary.thickness * 0.5 +
+            (secondary.thickness * 0.5) * secondary.precisionSettings.thicknessIncrementPositions[rIndex]);
+
+            weights.push_back(0.25 * secondary.precisionSettings.lengthIncrementWeights[zIndex] *
+            secondary.precisionSettings.thicknessIncrementWeights[rIndex]);
+        }
+    }
+
+    std::vector<double> potentialA;
+    double mutualInductance = 0.0;
+
+    computeAllAPotentialAbs(zPositions, rPositions, potentialA, method);
+
+    for (int i = 0; i < potentialA.size(); ++i)
+    {
+        mutualInductance += 2*PI * rPositions[i] * potentialA[i] * weights[i];
+    }
+
+    return mutualInductance * secondary.numOfTurns;
 }
-
-
-
-

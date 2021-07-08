@@ -110,67 +110,100 @@ int main(){
 
     //mass method testing
 
-    int nOps = 80000;
-    double radius = 0.1;
+//    int nOps = 2000;
+//    double radius = 0.1;
+//
+//    std::vector<double> cylindricalZArr;
+//    std::vector<double> cylindricalRArr;
+//    std::vector<double> cylindricalPhiArr;
+//
+//    for (int i = 0; i < nOps ; i++)
+//    {
+//        cylindricalZArr.push_back(radius * cos(i * 2*Pi / nOps));
+//        cylindricalRArr.push_back(radius * sin(i * 2*Pi / nOps));
+//        cylindricalPhiArr.push_back(0.0);
+//    }
+//
+//    std::vector<double> singleResultsX;
+//    std::vector<double> singleResultsY;
+//    std::vector<double> singleResultsZ;
+//
+//    std::vector<double> acceleratedResultsX;
+//    std::vector<double> acceleratedResultsY;
+//    std::vector<double> acceleratedResultsZ;
+//
+//    std::vector<double> singlePotential;
+//    std::vector<double> acceleratedPotential;
+//
+//    clock_t begin_time11 = clock();
+//    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+//                                         singleResultsX, singleResultsY, singleResultsZ,
+//                                         SINGLE);
+//    printf("combined  B CPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time11) / CLOCKS_PER_SEC / nOps));
+//
+//    clock_t begin_time12 = clock();
+//    testCoil1.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
+//                                      singlePotential, SINGLE);
+//    printf("Potential A CPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time12) / CLOCKS_PER_SEC / nOps));
+//
+//    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+//                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
+//                                         ACCELERATED);
+//
+//    clock_t begin_time13 = clock();
+//    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+//                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
+//                                         ACCELERATED);
+//    printf("combined  B GPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time13) / CLOCKS_PER_SEC / nOps));
+//
+//    clock_t begin_time14 = clock();
+//    testCoil1.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
+//                                      acceleratedPotential, ACCELERATED);
+//    printf("Potential A GPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time14) / CLOCKS_PER_SEC / nOps));
+//
+//
+//    FILE *output = fopen("output.txt", "w");
+//
+//    for (int i = 0; i < nOps; ++i)
+//    {
+//        fprintf(output, "%.20f\t%.20f\t%.20f\t%.20f\t%.20f\t%.20f\n",
+//               singleResultsX[i], acceleratedResultsX[i],
+//               singleResultsZ[i], acceleratedResultsZ[i],
+//               singlePotential[i], acceleratedPotential[i]);
+//    }
 
-    std::vector<double> cylindricalZArr;
-    std::vector<double> cylindricalRArr;
-    std::vector<double> cylindricalPhiArr;
+    Coil primary = Coil(0.1, 0.1, 0.1, 100);
+    Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
-    for (int i = 0; i < nOps ; i++)
-    {
-        cylindricalZArr.push_back(radius * cos(i * 2*Pi / nOps));
-        cylindricalRArr.push_back(radius * sin(i * 2*Pi / nOps));
-        cylindricalPhiArr.push_back(0.0);
-    }
+    printf("%.20f\n\n", primary.computeMutualInductance(0.2, secondary));
 
-    std::vector<double> singleResultsX;
-    std::vector<double> singleResultsY;
-    std::vector<double> singleResultsZ;
+    FILE *input = fopen("values.txt", "r");
+	FILE *output = fopen("output.txt", "w");
 
-    std::vector<double> acceleratedResultsX;
-    std::vector<double> acceleratedResultsY;
-    std::vector<double> acceleratedResultsZ;
+	double Rt1, at1, bt1; int Nt1;
+	double Rt2, at2, bt2; int Nt2;
+	double distance;
+	double Temp;
 
-    std::vector<double> singlePotential;
-    std::vector<double> acceleratedPotential;
+	while (fscanf(input, "%lf %lf %lf %d %lf %lf %lf %d %lf", &Rt1, &at1, &bt1, &Nt1, &Rt2, &at2, &bt2, &Nt2, &distance) == 9)
+	{
+	//	printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
 
-    clock_t begin_time11 = clock();
-    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                         singleResultsX, singleResultsY, singleResultsZ,
-                                         SINGLE);
-    printf("combined  B CPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time11) / CLOCKS_PER_SEC / nOps));
+		for (double i = 1; i <= 9.0; i += 1.0)
+		{
+			Coil prim1 = Coil(Rt1, at1, bt1, Nt1);
+			Coil sec1 = Coil(Rt2, at2, bt2, Nt2);
+			Temp = prim1.computeMutualInductance(distance, sec1, ACCELERATED);
 
-    clock_t begin_time12 = clock();
-    testCoil1.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                      singlePotential, SINGLE);
-    printf("Potential A CPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time12) / CLOCKS_PER_SEC / nOps));
+			fprintf(output, "%.20f\t", Temp);
+		}
+        printf("%.18f\n", Temp);
+	//	printf("====================================================================================\n");
+	//	fprintf(output, "\n");
+	}
 
-    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
-                                         ACCELERATED);
-
-    clock_t begin_time13 = clock();
-    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
-                                         ACCELERATED);
-    printf("combined  B GPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time13) / CLOCKS_PER_SEC / nOps));
-
-    clock_t begin_time14 = clock();
-    testCoil1.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                      acceleratedPotential, ACCELERATED);
-    printf("Potential A GPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time14) / CLOCKS_PER_SEC / nOps));
-
-
-    FILE *output = fopen("output.txt", "w");
-
-    for (int i = 0; i < nOps; ++i)
-    {
-        fprintf(output, "%.20f\t%.20f\t%.20f\t%.20f\t%.20f\t%.20f\n",
-               singleResultsX[i], acceleratedResultsX[i],
-               singleResultsZ[i], acceleratedResultsZ[i],
-               singlePotential[i], acceleratedPotential[i]);
-    }
+	fclose(input);
+	fclose(output);
 
 //    PrecisionArguments precisionArguments = PrecisionArguments(2, 1, 1, 16, 12, 12);
 

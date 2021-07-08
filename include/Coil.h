@@ -116,6 +116,17 @@ class Coil
                                           std::vector<double> &polarThetaArr,
                                           std::vector<double> &polarPhiArr);
 
+        void calculateAllBFieldACCELERATED(const std::vector<double> &cylindricalZArr,
+                                           const std::vector<double> &cylindricalRArr,
+                                           std::vector<float> &computedFieldHArr,
+                                           std::vector<float> &computedFieldZArr,
+                                           const PrecisionArguments &usedPrecision);
+
+        void calculateAllAPotentialACCELERATED(const std::vector<double> &cylindricalZArr,
+                                               const std::vector<double> &cylindricalRArr,
+                                               std::vector<float> &computedPotentialArr,
+                                               const PrecisionArguments &usedPrecision);
+
 
     public:
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
@@ -286,7 +297,7 @@ class Coil
         void computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                                      const std::vector<double> &cylindricalRArr,
                                      const std::vector<double> &cylindricalPhiArr,
-                                     std::vector<double> computedPotentialArr,
+                                     std::vector<double> &computedPotentialArr,
                                      ComputeMethod method = SINGLE);
         void computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                                      const std::vector<double> &cylindricalRArr,
@@ -311,9 +322,7 @@ class Coil
                                             const PrecisionArguments &usedPrecision,
                                             ComputeMethod method = SINGLE);
 
-        double computeMutualInductance(double zDisplacement, Coil secondary);
-
+        double computeMutualInductance(double zDisplacement, Coil secondary, ComputeMethod method = SINGLE);
 };
-
 
 #endif //GENERAL_COIL_PROGRAM_COIL_H

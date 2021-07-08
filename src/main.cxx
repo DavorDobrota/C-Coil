@@ -77,7 +77,7 @@ int main(){
     printf("%.25f %.25f\n", fieldVector[2], testCoil1.computeBFieldZ(0.0, 0.0));
     printf("%.25f %.25f\n", fieldVector[0], testCoil1.computeBFieldH(0.0, 0.0));
 
-    //SINGLE performance testing
+    //CPU_ST performance testing
 //    int nOp = 50000;
 //    std::vector<double> temp1;
 //
@@ -138,27 +138,27 @@ int main(){
 //    clock_t begin_time11 = clock();
 //    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
 //                                         singleResultsX, singleResultsY, singleResultsZ,
-//                                         SINGLE);
+//                                         CPU_ST);
 //    printf("combined  B CPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time11) / CLOCKS_PER_SEC / nOps));
 //
 //    clock_t begin_time12 = clock();
 //    testCoil1.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
-//                                      singlePotential, SINGLE);
+//                                      singlePotential, CPU_ST);
 //    printf("Potential A CPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time12) / CLOCKS_PER_SEC / nOps));
 //
 //    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
 //                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
-//                                         ACCELERATED);
+//                                         GPU);
 //
 //    clock_t begin_time13 = clock();
 //    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
 //                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
-//                                         ACCELERATED);
+//                                         GPU);
 //    printf("combined  B GPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time13) / CLOCKS_PER_SEC / nOps));
 //
 //    clock_t begin_time14 = clock();
 //    testCoil1.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
-//                                      acceleratedPotential, ACCELERATED);
+//                                      acceleratedPotential, GPU);
 //    printf("Potential A GPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time14) / CLOCKS_PER_SEC / nOps));
 //
 //
@@ -193,7 +193,7 @@ int main(){
 		{
 			Coil prim1 = Coil(Rt1, at1, bt1, Nt1);
 			Coil sec1 = Coil(Rt2, at2, bt2, Nt2);
-			Temp = prim1.computeMutualInductance(distance, sec1, ACCELERATED);
+			Temp = prim1.computeMutualInductance(distance, sec1);
 
 			fprintf(output, "%.20f\t", Temp);
 		}

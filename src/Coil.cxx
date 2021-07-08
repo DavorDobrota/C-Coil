@@ -19,7 +19,7 @@ namespace
     const double g_defaultCurrent = 1.0;
     const double g_defaultResistivity = 1.63e-8;
     const double g_defaultSineFrequency = 50;
-    const PrecisionArguments g_defaultPrecision = PrecisionArguments(2, 1, 1, 12, 12, 12);
+    const PrecisionArguments g_defaultPrecision = PrecisionArguments(12, 2, 2, 12, 8, 8);
 
 }
 
@@ -834,7 +834,7 @@ void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
     {
         computedFieldArr.resize(0);
 
-        if (method == SINGLE)
+        if (method == CPU_ST)
         {
             calculateAllBFieldHorizontalSINGLE(
                     cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
@@ -844,7 +844,7 @@ void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
                 computedFieldArr[i] *= cos(cylindricalPhiArr[i]);
             }
         }
-        else if (method == ACCELERATED)
+        else if (method == GPU)
         {
             std::vector<float> fieldH;
             std::vector<float> fieldZ;
@@ -883,7 +883,7 @@ void Coil::computeAllBFieldY(const std::vector<double> &cylindricalZArr,
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
-        if (method == SINGLE)
+        if (method == CPU_ST)
         {
             calculateAllBFieldHorizontalSINGLE(
                     cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
@@ -893,7 +893,7 @@ void Coil::computeAllBFieldY(const std::vector<double> &cylindricalZArr,
                 computedFieldArr[i] *= sin(cylindricalPhiArr[i]);
             }
         }
-        else if (method == ACCELERATED)
+        else if (method == GPU)
         {
             std::vector<float> fieldH;
             std::vector<float> fieldZ;
@@ -932,12 +932,12 @@ void Coil::computeAllBFieldH(const std::vector<double> &cylindricalZArr,
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
-        if (method == SINGLE)
+        if (method == CPU_ST)
         {
             calculateAllBFieldHorizontalSINGLE(
                     cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
         }
-        else if (method == ACCELERATED)
+        else if (method == GPU)
         {
             std::vector<float> fieldH;
             std::vector<float> fieldZ;
@@ -974,12 +974,12 @@ void Coil::computeAllBFieldZ(const std::vector<double> &cylindricalZArr,
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
-        if (method == SINGLE)
+        if (method == CPU_ST)
         {
             calculateAllBFieldVerticalSINGLE(
                     cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision);
         }
-        else if (method == ACCELERATED)
+        else if (method == GPU)
         {
             std::vector<float> fieldH;
             std::vector<float> fieldZ;
@@ -1023,7 +1023,7 @@ Coil::computeAllBFieldComponents(const std::vector<double> &cylindricalZArr,
         computedFieldYArr.resize(0);
         computedFieldZArr.resize(0);
 
-        if (method == SINGLE)
+        if (method == CPU_ST)
         {
             std::vector<double> hFieldArray;
             std::vector<double> zFieldArray;
@@ -1038,7 +1038,7 @@ Coil::computeAllBFieldComponents(const std::vector<double> &cylindricalZArr,
                 computedFieldZArr.push_back(zFieldArray[i]);
             }
         }
-        else if (method == ACCELERATED)
+        else if (method == GPU)
         {
             std::vector<float> fieldH;
             std::vector<float> fieldZ;
@@ -1086,7 +1086,7 @@ void Coil::computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
     {
         computedPotentialArr.resize(0);
 
-        if (method == SINGLE)
+        if (method == CPU_ST)
         {
             calculateAllAPotentialSINGLE(
                     cylindricalZArr, cylindricalRArr, computedPotentialArr, usedPrecision);
@@ -1096,7 +1096,7 @@ void Coil::computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
                 computedPotentialArr[i] *= (-1) * sin(cylindricalPhiArr[i]);
             }
         }
-        else if (method == ACCELERATED)
+        else if (method == GPU)
         {
             std::vector<float> potentialA;
 
@@ -1136,7 +1136,7 @@ void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
     {
         computedPotentialArr.resize(0);
 
-        if (method == SINGLE)
+        if (method == CPU_ST)
         {
             calculateAllAPotentialSINGLE(
                     cylindricalZArr, cylindricalRArr, computedPotentialArr, usedPrecision);
@@ -1146,7 +1146,7 @@ void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
                 computedPotentialArr[i] *= cos(cylindricalPhiArr[i]);
             }
         }
-        else if (method == ACCELERATED)
+        else if (method == GPU)
         {
             std::vector<float> potentialA;
 
@@ -1186,12 +1186,12 @@ Coil::computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
     {
         computedPotentialArr.resize(0);
 
-        if (method == SINGLE)
+        if (method == CPU_ST)
         {
             calculateAllAPotentialSINGLE(
                     cylindricalZArr, cylindricalRArr, computedPotentialArr, usedPrecision);
         }
-        else if (method == ACCELERATED)
+        else if (method == GPU)
         {
             std::vector<float> potentialA;
 
@@ -1235,7 +1235,7 @@ void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindrical
         computedPotentialYArr.resize(0);
         computedPotentialZArr.resize(0);
 
-        if (method == SINGLE)
+        if (method == CPU_ST)
         {
             std::vector<double> potentialArray;
 
@@ -1249,7 +1249,7 @@ void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindrical
                 computedPotentialZArr.push_back(0.0);
             }
         }
-        else if (method == ACCELERATED)
+        else if (method == GPU)
         {
             std::vector<float> potentialA;
 

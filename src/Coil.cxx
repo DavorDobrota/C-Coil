@@ -19,7 +19,7 @@ namespace
     const double g_defaultCurrent = 1.0;
     const double g_defaultResistivity = 1.63e-8;
     const double g_defaultSineFrequency = 50;
-    const PrecisionArguments g_defaultPrecision = PrecisionArguments(12, 2, 2, 12, 8, 8);
+    const PrecisionArguments g_defaultPrecision = PrecisionArguments(2, 1, 1, 13, 13, 13);
 
 }
 

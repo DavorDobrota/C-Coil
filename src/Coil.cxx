@@ -8,13 +8,14 @@
 #include "Polynomial.h"
 #include "ComputeMethod.h"
 #include "hardware_acceleration.h"
+#include "LegendreMatrix.h"
 
 namespace
 {
     const double PI = 3.14159265357989323;
     const double g_MiReduced = 0.0000001;
 
-    const int g_maxLegendrePol = 20;
+    const int g_maxLegendreOrder = 50;
 
     const double g_defaultCurrent = 1.0;
     const double g_defaultResistivity = 1.63e-8;
@@ -39,39 +40,25 @@ PrecisionArguments::PrecisionArguments(
         numOfThicknessIncrements(numOfThicknessIncrements), numOfLengthIncrements(numOfLengthIncrements)
 {
     //TODO - fix constructor calls from main
-    if (numOfAngularIncrements > g_maxLegendrePol)
+    if (numOfAngularIncrements >= g_maxLegendreOrder)
     {
         PrecisionArguments::numOfAngularIncrements = 12;
     }
-    if(numOfThicknessIncrements > g_maxLegendrePol)
+    if(numOfThicknessIncrements >= g_maxLegendreOrder)
     {
         PrecisionArguments::numOfThicknessIncrements = 12;
     }
-    if(numOfLengthIncrements > g_maxLegendrePol)
+    if(numOfLengthIncrements >= g_maxLegendreOrder)
     {
         PrecisionArguments::numOfLengthIncrements = 12;
     }
 
     precisionFactor = 0.0;
-    genPrecisionVectors();
 }
 
 PrecisionArguments::PrecisionArguments(double precisionFactor)
 {
     genParametersFromPrecision();
-    genPrecisionVectors();
-}
-
-void PrecisionArguments::genPrecisionVectors()
-{
-    Polynomial::getLegendreParametersForN(numOfAngularIncrements,
-                                          angularIncrementPositions, angularIncrementWeights);
-
-    Polynomial::getLegendreParametersForN(numOfThicknessIncrements,
-                                          thicknessIncrementPositions, thicknessIncrementWeights);
-
-    Polynomial::getLegendreParametersForN(numOfLengthIncrements,
-                                          lengthIncrementPositions, lengthIncrementWeights);
 }
 
 void PrecisionArguments::genParametersFromPrecision()

@@ -21,18 +21,8 @@ struct PrecisionArguments
     int numOfThicknessIncrements;
     int numOfLengthIncrements;
 
-    std::vector<double> angularIncrementPositions;
-    std::vector<double> angularIncrementWeights;
-
-    std::vector<double> thicknessIncrementPositions;
-    std::vector<double> thicknessIncrementWeights;
-
-    std::vector<double> lengthIncrementPositions;
-    std::vector<double> lengthIncrementWeights;
-
     private:
         void genParametersFromPrecision();
-        void genPrecisionVectors();
 };
 
 class Coil
@@ -60,73 +50,6 @@ class Coil
         double impedance;
 
         PrecisionArguments precisionSettings;
-
-
-        void calculateMagneticMoment();
-        void calculateAverageWireThickness();
-        void calculateResistance();
-        void calculateReactance();
-        void calculateImpedance();
-        void calculateSelfInductance();
-
-        std::pair<double, double> calculateBField(double zAxis, double rPolar,
-                                                  const PrecisionArguments &precisionSettings);
-        double calculateBFieldVertical(double zAxis, double rPolar,
-                                       const PrecisionArguments &precisionSettings);
-        double calculateBFieldHorizontal(double zAxis, double rPolar,
-                                         const PrecisionArguments &precisionSettings);
-        double calculateAPotential(double zAxis, double rPolar,
-                                   const PrecisionArguments &precisionSettings);
-
-        void calculateAllBFieldSINGLE(const std::vector<double> &cylindricalZArr,
-                                      const std::vector<double> &cylindricalRArr,
-                                      std::vector<double> &computedFieldHArr,
-                                      std::vector<double> &computedFieldZArr,
-                                      const PrecisionArguments &usedPrecision);
-        void calculateAllBFieldVerticalSINGLE(const std::vector<double> &cylindricalZArr,
-                                              const std::vector<double> &cylindricalRArr,
-                                              std::vector<double> &computedFieldZArr,
-                                              const PrecisionArguments &usedPrecision);
-        void calculateAllBFieldHorizontalSINGLE(const std::vector<double> &cylindricalZArr,
-                                                const std::vector<double> &cylindricalRArr,
-                                                std::vector<double> &computedFieldHArr,
-                                                const PrecisionArguments &usedPrecision);
-        void calculateAllAPotentialSINGLE(const std::vector<double> &cylindricalZArr,
-                                          const std::vector<double> &cylindricalRArr,
-                                          std::vector<double> &computedPotentialArr,
-                                          const PrecisionArguments &usedPrecision);
-
-        void convertPolarToCylindrical(double polarR, double polarTheta, double polarPhi,
-                                       double &cylindricalZ, double &cylindricalR, double &cylindricalPhi);
-
-        void convertAllPolarToCylindrical(const std::vector<double> &polarRArr,
-                                          const std::vector<double> &polarThetaArr,
-                                          const std::vector<double> &polarPhiArr,
-                                          std::vector<double> &cylindricalZArr,
-                                          std::vector<double> &cylindricalRArr,
-                                          std::vector<double> &cylindricalPhiArr);
-
-        void convertCylindricalToPolar(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                                       double &polarR, double &polarTheta, double &polarPhi);
-
-        void convertAllCylindricalToPolar(const std::vector<double> &cylindricalZArr,
-                                          const std::vector<double> &cylindricalRArr,
-                                          const std::vector<double> &cylindricalPhiArr,
-                                          std::vector<double> &polarRArr,
-                                          std::vector<double> &polarThetaArr,
-                                          std::vector<double> &polarPhiArr);
-
-        void calculateAllBFieldACCELERATED(const std::vector<double> &cylindricalZArr,
-                                           const std::vector<double> &cylindricalRArr,
-                                           std::vector<float> &computedFieldHArr,
-                                           std::vector<float> &computedFieldZArr,
-                                           const PrecisionArguments &usedPrecision);
-
-        void calculateAllAPotentialACCELERATED(const std::vector<double> &cylindricalZArr,
-                                               const std::vector<double> &cylindricalRArr,
-                                               std::vector<float> &computedPotentialArr,
-                                               const PrecisionArguments &usedPrecision);
-
 
     public:
         Coil();
@@ -323,6 +246,72 @@ class Coil
                                             ComputeMethod method = CPU_ST);
 
         double computeMutualInductance(double zDisplacement, Coil secondary, ComputeMethod method = CPU_ST);
+
+    private:
+        void calculateMagneticMoment();
+        void calculateAverageWireThickness();
+        void calculateResistance();
+        void calculateReactance();
+        void calculateImpedance();
+        void calculateSelfInductance();
+
+        std::pair<double, double> calculateBField(double zAxis, double rPolar,
+                                                  const PrecisionArguments &precisionSettings);
+        double calculateBFieldVertical(double zAxis, double rPolar,
+                                       const PrecisionArguments &precisionSettings);
+        double calculateBFieldHorizontal(double zAxis, double rPolar,
+                                         const PrecisionArguments &precisionSettings);
+        double calculateAPotential(double zAxis, double rPolar,
+                                   const PrecisionArguments &precisionSettings);
+
+        void calculateAllBFieldSINGLE(const std::vector<double> &cylindricalZArr,
+                                      const std::vector<double> &cylindricalRArr,
+                                      std::vector<double> &computedFieldHArr,
+                                      std::vector<double> &computedFieldZArr,
+                                      const PrecisionArguments &usedPrecision);
+        void calculateAllBFieldVerticalSINGLE(const std::vector<double> &cylindricalZArr,
+                                              const std::vector<double> &cylindricalRArr,
+                                              std::vector<double> &computedFieldZArr,
+                                              const PrecisionArguments &usedPrecision);
+        void calculateAllBFieldHorizontalSINGLE(const std::vector<double> &cylindricalZArr,
+                                                const std::vector<double> &cylindricalRArr,
+                                                std::vector<double> &computedFieldHArr,
+                                                const PrecisionArguments &usedPrecision);
+        void calculateAllAPotentialSINGLE(const std::vector<double> &cylindricalZArr,
+                                          const std::vector<double> &cylindricalRArr,
+                                          std::vector<double> &computedPotentialArr,
+                                          const PrecisionArguments &usedPrecision);
+
+        void convertPolarToCylindrical(double polarR, double polarTheta, double polarPhi,
+                                       double &cylindricalZ, double &cylindricalR, double &cylindricalPhi);
+
+        void convertAllPolarToCylindrical(const std::vector<double> &polarRArr,
+                                          const std::vector<double> &polarThetaArr,
+                                          const std::vector<double> &polarPhiArr,
+                                          std::vector<double> &cylindricalZArr,
+                                          std::vector<double> &cylindricalRArr,
+                                          std::vector<double> &cylindricalPhiArr);
+
+        void convertCylindricalToPolar(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                       double &polarR, double &polarTheta, double &polarPhi);
+
+        void convertAllCylindricalToPolar(const std::vector<double> &cylindricalZArr,
+                                          const std::vector<double> &cylindricalRArr,
+                                          const std::vector<double> &cylindricalPhiArr,
+                                          std::vector<double> &polarRArr,
+                                          std::vector<double> &polarThetaArr,
+                                          std::vector<double> &polarPhiArr);
+
+        void calculateAllBFieldACCELERATED(const std::vector<double> &cylindricalZArr,
+                                           const std::vector<double> &cylindricalRArr,
+                                           std::vector<float> &computedFieldHArr,
+                                           std::vector<float> &computedFieldZArr,
+                                           const PrecisionArguments &usedPrecision);
+
+        void calculateAllAPotentialACCELERATED(const std::vector<double> &cylindricalZArr,
+                                               const std::vector<double> &cylindricalRArr,
+                                               std::vector<float> &computedPotentialArr,
+                                               const PrecisionArguments &usedPrecision);
 };
 
 #endif //GENERAL_COIL_PROGRAM_COIL_H

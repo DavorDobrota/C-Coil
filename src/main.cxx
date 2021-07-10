@@ -2,7 +2,6 @@
 #include "../include/OldCoil.h"
 #include "../include/Polynomial.h"
 #include "../include/Coil.h"
-#include "../include/Precision.h"
 
 Type ro1 = 1.63e-8;
 extern thread_pool tp;
@@ -41,77 +40,76 @@ int main(){
 //        printf("\n");
 //    }
 
-    Coil testCoil1 = Coil(0.03, 0.03, 0.12, 3600);
-    OldCoil oldCoil = OldCoil(1, 0.03, 0.03, 0.12, 0.001, 16, 16, 32, 3600, true, 50, 1.63e-8);
+//    Coil testCoil1 = Coil(0.03, 0.03, 0.12, 3600);
+//    OldCoil oldCoil = OldCoil(1, 0.03, 0.03, 0.12, 0.001, 16, 16, 32, 3600, true, 50, 1.63e-8);
+//
+//    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getCurrentDensity(), testCoil1.getWireResistivity(), testCoil1.getSineFrequency());
+//
+//    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
+//    printf("%.15f, %.15f, %.15f\n\n", oldCoil.mM, oldCoil.d, oldCoil.Res);
+//
+//    testCoil1.setSineFrequency(100000);
+//    testCoil1.setCurrentDensity(500000);
+//    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
+//
+//    testCoil1.setSineFrequency(0);
+//    testCoil1.setCurrent(1);
+//    std::vector<double> fieldVector = testCoil1.computeBFieldVector(0.0, 0.0, 0.0);
+//    printf("%.25f %.25f\n", fieldVector[2], testCoil1.computeBFieldZ(0.0, 0.0));
+//    printf("%.25f %.25f\n", fieldVector[0], testCoil1.computeBFieldH(0.0, 0.0));
 
-    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getCurrentDensity(), testCoil1.getWireResistivity(), testCoil1.getSineFrequency());
-
-    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
-    printf("%.15f, %.15f, %.15f\n\n", oldCoil.mM, oldCoil.d, oldCoil.Res);
-
-    testCoil1.setSineFrequency(100000);
-    testCoil1.setCurrentDensity(500000);
-    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
-
-    PrecisionArguments arguments = testCoil1.getPrecisionSettings();
-//    printf("%.15f", arguments.angularIncrementPositions[0]);
-
-    for (double value : arguments.angularIncrementPositions)
-        printf("%.15f ", value);
-    printf("\n");
-    for (double value : arguments.angularIncrementWeights)
-        printf("%.15f ", value);
-    printf("\n");
-
-    for (double value : arguments.lengthIncrementPositions)
-        printf("%.15f ", value);
-    printf("\n");
-    for (double value : arguments.lengthIncrementWeights)
-        printf("%.15f ", value);
-    printf("\n\n");
-
-
-    testCoil1.setSineFrequency(0);
-    testCoil1.setCurrent(1);
-    std::vector<double> fieldVector = testCoil1.computeBFieldVector(0.0, 0.0, 0.0);
-    printf("%.25f %.25f\n", fieldVector[2], testCoil1.computeBFieldZ(0.0, 0.0));
-    printf("%.25f %.25f\n", fieldVector[0], testCoil1.computeBFieldH(0.0, 0.0));
-
-    //CPU_ST performance testing
+//    //CPU_ST performance testing
 //    int nOp = 50000;
 //    std::vector<double> temp1;
+//
+//    PrecisionArguments precision = testCoil1.getPrecisionSettings();
+//
+//    int numOperations = nOp *
+//            precision.numOfThicknessBlocks * precision.numOfThicknessIncrements *
+//            precision.numOfLengthBlocks * precision.numOfLengthIncrements *
+//            precision.numOfAngularBlocks * precision.numOfAngularIncrements;
 //
 //    clock_t begin_time1 = clock();
 //    for (int i = 0; i < nOp; ++i){
 //        temp1 = testCoil1.computeBFieldVector(i*0.000001, 0.0, 0.0);
 //    }
-//    printf("combined B : %.0f dots/s\n", 1.0 / (float(clock() - begin_time1) / CLOCKS_PER_SEC / nOp));
+//    printf("combined B  : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time1) / CLOCKS_PER_SEC / numOperations));
 //
 //    double temp2;
 //    clock_t begin_time2 = clock();
 //    for (int i = 0; i < nOp; ++i){
 //        temp2 = testCoil1.computeBFieldH(0.0, 0.0);
 //    }
-//    printf("field Bh : %.0f dots/s\n", 1.0 / (float(clock() - begin_time2) / CLOCKS_PER_SEC / nOp));
+//    printf("field Bh    : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time2) / CLOCKS_PER_SEC / numOperations));
 //
 //    double temp3;
 //    clock_t begin_time3 = clock();
 //    for (int i = 0; i < nOp; ++i){
 //        temp3 = testCoil1.computeBFieldH(0.0, 0.0);
 //    }
-//    printf("field Bz : %.0f dots/s\n", 1.0 / (float(clock() - begin_time3) / CLOCKS_PER_SEC / nOp));
+//    printf("field Bz    : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time3) / CLOCKS_PER_SEC / numOperations));
 //
 //    double temp4;
 //    clock_t begin_time4 = clock();
 //    for (int i = 0; i < nOp; ++i){
 //        temp4 = testCoil1.computeAPotentialAbs(i*0.000001, 0.0);
 //    }
-//    printf("potential A : %.0f dots/s\n", 1.0 / (float(clock() - begin_time4) / CLOCKS_PER_SEC / nOp));
+//    printf("potential A : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time4) / CLOCKS_PER_SEC / numOperations));
 
     //mass method testing
-
-//    int nOps = 2000;
+//    Coil testCoil1 = Coil(0.03, 0.03, 0.12, 3600);
+//
+//    int nOps = 80000;
 //    double radius = 0.1;
+//
+//    PrecisionArguments precision = testCoil1.getPrecisionSettings();
+//
+//    int numOperations = nOps *
+//                        precision.numOfThicknessBlocks * precision.numOfThicknessIncrements *
+//                        precision.numOfLengthBlocks * precision.numOfLengthIncrements *
+//                        precision.numOfAngularBlocks * precision.numOfAngularIncrements;
+//
+//    int numOperationsGpu = nOps * 48 * 16 * 16;
 //
 //    std::vector<double> cylindricalZArr;
 //    std::vector<double> cylindricalRArr;
@@ -139,12 +137,12 @@ int main(){
 //    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
 //                                         singleResultsX, singleResultsY, singleResultsZ,
 //                                         CPU_ST);
-//    printf("combined  B CPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time11) / CLOCKS_PER_SEC / nOps));
+//    printf("combined  B CPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time11) / CLOCKS_PER_SEC / numOperations));
 //
 //    clock_t begin_time12 = clock();
 //    testCoil1.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
 //                                      singlePotential, CPU_ST);
-//    printf("Potential A CPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time12) / CLOCKS_PER_SEC / nOps));
+//    printf("Potential A CPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time12) / CLOCKS_PER_SEC / numOperations));
 //
 //    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
 //                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
@@ -154,12 +152,12 @@ int main(){
 //    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
 //                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
 //                                         GPU);
-//    printf("combined  B GPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time13) / CLOCKS_PER_SEC / nOps));
+//    printf("combined  B GPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time13) / CLOCKS_PER_SEC / numOperationsGpu));
 //
 //    clock_t begin_time14 = clock();
 //    testCoil1.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
 //                                      acceleratedPotential, GPU);
-//    printf("Potential A GPU : %.0f dots/s\n", 1.0 / (float(clock() - begin_time14) / CLOCKS_PER_SEC / nOps));
+//    printf("Potential A GPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time14) / CLOCKS_PER_SEC / numOperationsGpu));
 //
 //
 //    FILE *output = fopen("output.txt", "w");
@@ -172,38 +170,39 @@ int main(){
 //               singlePotential[i], acceleratedPotential[i]);
 //    }
 
-    Coil primary = Coil(0.1, 0.1, 0.1, 100);
-    Coil secondary = Coil(0.3, 0.1, 0.1, 100);
-
-    printf("%.20f\n\n", primary.computeMutualInductance(0.2, secondary));
-
-    FILE *input = fopen("values.txt", "r");
-	FILE *output = fopen("output.txt", "w");
-
-	double Rt1, at1, bt1; int Nt1;
-	double Rt2, at2, bt2; int Nt2;
-	double distance;
-	double Temp;
-
-	while (fscanf(input, "%lf %lf %lf %d %lf %lf %lf %d %lf", &Rt1, &at1, &bt1, &Nt1, &Rt2, &at2, &bt2, &Nt2, &distance) == 9)
-	{
-	//	printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
-
-		for (double i = 1; i <= 9.0; i += 1.0)
-		{
-			Coil prim1 = Coil(Rt1, at1, bt1, Nt1);
-			Coil sec1 = Coil(Rt2, at2, bt2, Nt2);
-			Temp = prim1.computeMutualInductance(distance, sec1);
-
-			fprintf(output, "%.20f\t", Temp);
-		}
-        printf("%.18f\n", Temp);
-	//	printf("====================================================================================\n");
-	//	fprintf(output, "\n");
-	}
-
-	fclose(input);
-	fclose(output);
+//    Coil primary = Coil(0.1, 0.1, 0.1, 100);
+//    Coil secondary = Coil(0.3, 0.1, 0.1, 100);
+//
+//    printf("%.20f\n\n", primary.computeMutualInductance(0.2, secondary));
+//    printf("%.20f\n\n", primary.computeMutualInductance(0.2, secondary, GPU));
+//
+//    FILE *input = fopen("values.txt", "r");
+//	FILE *output = fopen("output.txt", "w");
+//
+//	double Rt1, at1, bt1; int Nt1;
+//	double Rt2, at2, bt2; int Nt2;
+//	double distance;
+//	double Temp;
+//
+//	while (fscanf(input, "%lf %lf %lf %d %lf %lf %lf %d %lf", &Rt1, &at1, &bt1, &Nt1, &Rt2, &at2, &bt2, &Nt2, &distance) == 9)
+//	{
+//	//	printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
+//
+//		for (double i = 1; i <= 9.0; i += 1.0)
+//		{
+//			Coil prim1 = Coil(Rt1, at1, bt1, Nt1);
+//			Coil sec1 = Coil(Rt2, at2, bt2, Nt2);
+//			Temp = prim1.computeMutualInductance(distance, sec1);
+//
+//			fprintf(output, "%.20f\t", Temp);
+//		}
+//        printf("%.18f\n", Temp);
+//	//	printf("====================================================================================\n");
+//	//	fprintf(output, "\n");
+//	}
+//
+//	fclose(input);
+//	fclose(output);
 
 //    PrecisionArguments precisionArguments = PrecisionArguments(2, 1, 1, 16, 12, 12);
 

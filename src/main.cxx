@@ -2,7 +2,6 @@
 #include "../include/OldCoil.h"
 #include "../include/Polynomial.h"
 #include "../include/Coil.h"
-#include "../include/Precision.h"
 
 Type ro1 = 1.63e-8;
 extern thread_pool tp;
@@ -52,24 +51,6 @@ int main(){
     testCoil1.setSineFrequency(100000);
     testCoil1.setCurrentDensity(500000);
     printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
-
-    PrecisionArguments arguments = testCoil1.getPrecisionSettings();
-//    printf("%.15f", arguments.angularIncrementPositions[0]);
-
-    for (double value : arguments.angularIncrementPositions)
-        printf("%.15f ", value);
-    printf("\n");
-    for (double value : arguments.angularIncrementWeights)
-        printf("%.15f ", value);
-    printf("\n");
-
-    for (double value : arguments.lengthIncrementPositions)
-        printf("%.15f ", value);
-    printf("\n");
-    for (double value : arguments.lengthIncrementWeights)
-        printf("%.15f ", value);
-    printf("\n\n");
-
 
     testCoil1.setSineFrequency(0);
     testCoil1.setCurrent(1);
@@ -176,6 +157,7 @@ int main(){
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
     printf("%.20f\n\n", primary.computeMutualInductance(0.2, secondary));
+    printf("%.20f\n\n", primary.computeMutualInductance(0.2, secondary, GPU));
 
     FILE *input = fopen("values.txt", "r");
 	FILE *output = fopen("output.txt", "w");

@@ -6,7 +6,7 @@
 
 namespace Legendre
 {
-    const double positionMatrix[51][51] =
+    const double positionMatrix[50][50] =
     {
         {0.0},
 
@@ -478,7 +478,7 @@ namespace Legendre
     };
 
 
-    const double weightMatrix[51][51] =
+    const double weightsMatrix[50][50] =
     {
         {2.0},
 

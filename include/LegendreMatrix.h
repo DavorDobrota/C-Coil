@@ -7,8 +7,8 @@
 
 namespace Legendre
 {
-    const extern double positionMatrix[51][51];
-    const extern double weightsMatrix[51][51];
+    const extern double positionMatrix[50][50];
+    const extern double weightsMatrix[50][50];
 }
 
 #endif //GENERAL_COIL_PROGRAM_LEGENDREMATRIX_H

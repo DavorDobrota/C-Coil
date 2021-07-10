@@ -20,7 +20,7 @@ namespace
     const double g_defaultCurrent = 1.0;
     const double g_defaultResistivity = 1.63e-8;
     const double g_defaultSineFrequency = 50;
-    const PrecisionArguments g_defaultPrecision = PrecisionArguments(2, 1, 1, 13, 13, 13);
+    const PrecisionArguments g_defaultPrecision = PrecisionArguments(1, 1, 1, 12, 12, 12);
 
 }
 
@@ -291,7 +291,13 @@ std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, con
     double thicknessBlock = thickness / usedPrecision.numOfThicknessBlocks;
     double angularBlock = PI / usedPrecision.numOfAngularBlocks;
 
-    double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2;
+    //subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    int lengthIncrements = usedPrecision.numOfLengthIncrements - 1;
+    int thicknessIncrements = usedPrecision.numOfThicknessIncrements - 1;
+    int angularIncrements = usedPrecision.numOfThicknessIncrements - 1;
+
+    //multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
+    double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
     for (int indBlockL = 0; indBlockL < usedPrecision.numOfLengthBlocks; ++indBlockL)
     {
@@ -300,37 +306,36 @@ std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, con
             double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
 
-            for (int incL = 0; incL < usedPrecision.numOfLengthIncrements; ++incL)
+            for (int incL = 0; incL <= lengthIncrements; ++incL)
             {
-                for (int incT = 0; incT < usedPrecision.numOfThicknessIncrements; ++incT)
+                for (int incT = 0; incT <= thicknessIncrements; ++incT)
                 {
                     double incrementPositionL = blockPositionL +
-                                                (lengthBlock * 0.5) * usedPrecision.lengthIncrementPositions[incL];
+                            (lengthBlock * 0.5) * Legendre::positionMatrix[lengthIncrements][incL];
                     double incrementPositionT = blockPositionT +
-                                                (thicknessBlock * 0.5) * usedPrecision.thicknessIncrementPositions[incT];
+                            (thicknessBlock * 0.5) * Legendre::positionMatrix[thicknessIncrements][incT];
 
-                    double incrementWeightL = usedPrecision.lengthIncrementWeights[incL] * 0.5;
-                    double incrementWeightT = usedPrecision.thicknessIncrementWeights[incT] * 0.5;
-
-                    double incrementWeightS = incrementWeightL * incrementWeightT;
+                    double incrementWeightS =
+                            Legendre::weightsMatrix[lengthIncrements][incL] *
+                            Legendre::weightsMatrix[thicknessIncrements][incT];
 
                     double tempConstA = incrementPositionT * incrementPositionT;
                     double tempConstB = incrementPositionT * (incrementPositionL + zAxis);
                     double tempConstC = incrementPositionT * rPolar;
                     double tempConstD = tempConstA + rPolar * rPolar +
-                            (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
+                                        (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
                     double tempConstE = constant * incrementWeightS;
 
                     for (int indBlockFi = 0; indBlockFi < usedPrecision.numOfAngularBlocks; ++indBlockFi)
                     {
                         double blockPositionFi = angularBlock * (indBlockFi + 0.5);
 
-                        for (int incFi = 0; incFi < usedPrecision.numOfAngularIncrements; ++incFi)
+                        for (int incFi = 0; incFi <= angularIncrements; ++incFi)
                         {
                             double incrementPositionFi = blockPositionFi +
-                                                         (angularBlock * 0.5) * usedPrecision.angularIncrementPositions[incFi];
+                                    (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incFi];
 
-                            double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] * 0.5;
+                            double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
 
                             double cosinePhi = cos(incrementPositionFi);
                             double tempConstF = 2 * tempConstC * cosinePhi;
@@ -360,7 +365,13 @@ double Coil::calculateBFieldVertical(double zAxis, double rPolar, const Precisio
     double thicknessBlock = thickness / usedPrecision.numOfThicknessBlocks;
     double angularBlock = PI / usedPrecision.numOfAngularBlocks;
 
-    double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2;
+    //subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    int lengthIncrements = usedPrecision.numOfLengthIncrements - 1;
+    int thicknessIncrements = usedPrecision.numOfThicknessIncrements - 1;
+    int angularIncrements = usedPrecision.numOfThicknessIncrements - 1;
+
+    //multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
+    double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
     for (int indBlockL = 0; indBlockL < usedPrecision.numOfLengthBlocks; ++indBlockL)
     {
@@ -369,19 +380,18 @@ double Coil::calculateBFieldVertical(double zAxis, double rPolar, const Precisio
             double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
 
-            for (int incL = 0; incL < usedPrecision.numOfLengthIncrements; ++incL)
+            for (int incL = 0; incL <= lengthIncrements; ++incL)
             {
-                for (int incT = 0; incT < usedPrecision.numOfThicknessIncrements; ++incT)
+                for (int incT = 0; incT <= thicknessIncrements; ++incT)
                 {
                     double incrementPositionL = blockPositionL +
-                            (lengthBlock * 0.5) * usedPrecision.lengthIncrementPositions[incL];
+                            (lengthBlock * 0.5) * Legendre::positionMatrix[lengthIncrements][incL];
                     double incrementPositionT = blockPositionT +
-                            (thicknessBlock * 0.5) * usedPrecision.thicknessIncrementPositions[incT];
+                            (thicknessBlock * 0.5) * Legendre::positionMatrix[thicknessIncrements][incT];
 
-                    double incrementWeightL = usedPrecision.lengthIncrementWeights[incL] * 0.5;
-                    double incrementWeightT = usedPrecision.thicknessIncrementWeights[incT] * 0.5;
-
-                    double incrementWeightS = incrementWeightL * incrementWeightT;
+                    double incrementWeightS =
+                            Legendre::weightsMatrix[lengthIncrements][incL] *
+                            Legendre::weightsMatrix[thicknessIncrements][incT];
 
                     double tempConstA = incrementPositionT * incrementPositionT;
                     double tempConstB = incrementPositionT * rPolar;
@@ -392,13 +402,12 @@ double Coil::calculateBFieldVertical(double zAxis, double rPolar, const Precisio
                     {
                         double blockPositionFi = angularBlock * (indBlockFi + 0.5);
 
-                        for (int incFi = 0; incFi < usedPrecision.numOfAngularIncrements; ++incFi)
+                        for (int incFi = 0; incFi <= angularIncrements; ++incFi)
                         {
                             double incrementPositionFi = blockPositionFi +
-                                    (angularBlock * 0.5) * usedPrecision.angularIncrementPositions[incFi];
+                                    (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incFi];
 
-                            double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] * 0.5;
-
+                            double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
 
                             double cosinePhi = cos(incrementPositionFi);
                             double tempConstD = tempConstC - 2 * tempConstB * cosinePhi;
@@ -422,7 +431,13 @@ double Coil::calculateBFieldHorizontal(double zAxis, double rPolar, const Precis
     double thicknessBlock = thickness / usedPrecision.numOfThicknessBlocks;
     double angularBlock = PI / usedPrecision.numOfAngularBlocks;
 
-    double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2;
+    //subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    int lengthIncrements = usedPrecision.numOfLengthIncrements - 1;
+    int thicknessIncrements = usedPrecision.numOfThicknessIncrements - 1;
+    int angularIncrements = usedPrecision.numOfThicknessIncrements - 1;
+
+    //multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
+    double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
     for (int indBlockL = 0; indBlockL < usedPrecision.numOfLengthBlocks; ++indBlockL)
     {
@@ -431,35 +446,34 @@ double Coil::calculateBFieldHorizontal(double zAxis, double rPolar, const Precis
             double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
 
-            for (int incL = 0; incL < usedPrecision.numOfLengthIncrements; ++incL)
+            for (int incL = 0; incL <= lengthIncrements; ++incL)
             {
-                for (int incT = 0; incT < usedPrecision.numOfThicknessIncrements; ++incT)
+                for (int incT = 0; incT <= thicknessIncrements; ++incT)
                 {
                     double incrementPositionL = blockPositionL +
-                                                (lengthBlock * 0.5) * usedPrecision.lengthIncrementPositions[incL];
+                                                (lengthBlock * 0.5) * Legendre::positionMatrix[lengthIncrements][incL];
                     double incrementPositionT = blockPositionT +
-                                                (thicknessBlock * 0.5) * usedPrecision.thicknessIncrementPositions[incT];
+                                                (thicknessBlock * 0.5) * Legendre::positionMatrix[thicknessIncrements][incT];
 
-                    double incrementWeightL = usedPrecision.lengthIncrementWeights[incL] * 0.5;
-                    double incrementWeightT = usedPrecision.thicknessIncrementWeights[incT] * 0.5;
-
-                    double incrementWeightS = incrementWeightL * incrementWeightT;
+                    double incrementWeightS =
+                            Legendre::weightsMatrix[lengthIncrements][incL] *
+                            Legendre::weightsMatrix[thicknessIncrements][incT];
 
                     double tempConstA = incrementPositionT * (incrementPositionL + zAxis);
                     double tempConstB = incrementPositionT * rPolar;
                     double tempConstC = incrementPositionT * incrementPositionT + rPolar * rPolar +
-                            (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
+                                        (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
 
                     for (int indBlockFi = 0; indBlockFi < usedPrecision.numOfAngularBlocks; ++indBlockFi)
                     {
                         double blockPositionFi = angularBlock * (indBlockFi + 0.5);
 
-                        for (int incFi = 0; incFi < usedPrecision.numOfAngularIncrements; ++incFi)
+                        for (int incFi = 0; incFi <= angularIncrements; ++incFi)
                         {
                             double incrementPositionFi = blockPositionFi +
-                                    (angularBlock * 0.5) * usedPrecision.angularIncrementPositions[incFi];
+                                                         (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incFi];
 
-                            double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] * 0.5;
+                            double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
 
                             double cosinePhi = cos(incrementPositionFi);
                             double tempConstD = tempConstC - 2 * tempConstB * cosinePhi;
@@ -483,7 +497,13 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
     double thicknessBlock = thickness / usedPrecision.numOfThicknessBlocks;
     double angularBlock = PI / usedPrecision.numOfAngularBlocks;
 
-    double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2;
+    //subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    int lengthIncrements = usedPrecision.numOfLengthIncrements - 1;
+    int thicknessIncrements = usedPrecision.numOfThicknessIncrements - 1;
+    int angularIncrements = usedPrecision.numOfThicknessIncrements - 1;
+
+    //multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
+    double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
     for (int indBlockL = 0; indBlockL < usedPrecision.numOfLengthBlocks; ++indBlockL)
     {
@@ -492,40 +512,39 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
             double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
 
-            for (int incL = 0; incL < usedPrecision.numOfLengthIncrements; ++incL)
+            for (int incL = 0; incL <= lengthIncrements; ++incL)
             {
-                for (int incT = 0; incT < usedPrecision.numOfThicknessIncrements; ++incT)
+                for (int incT = 0; incT <= thicknessIncrements; ++incT)
                 {
                     double incrementPositionL = blockPositionL +
-                                                (lengthBlock * 0.5) * usedPrecision.lengthIncrementPositions[incL];
+                                                (lengthBlock * 0.5) * Legendre::positionMatrix[lengthIncrements][incL];
                     double incrementPositionT = blockPositionT +
-                                                (thicknessBlock * 0.5) * usedPrecision.thicknessIncrementPositions[incT];
+                                                (thicknessBlock * 0.5) * Legendre::positionMatrix[thicknessIncrements][incT];
 
-                    double incrementWeightL = usedPrecision.lengthIncrementWeights[incL] * 0.5;
-                    double incrementWeightT = usedPrecision.thicknessIncrementWeights[incT] * 0.5;
-
-                    double incrementWeightS = incrementWeightL * incrementWeightT;
+                    double incrementWeightS =
+                            Legendre::weightsMatrix[lengthIncrements][incL] *
+                            Legendre::weightsMatrix[thicknessIncrements][incT];
 
                     double tempConstA = incrementPositionT;
                     double tempConstB = incrementPositionT * rPolar;
                     double tempConstC = incrementPositionT * incrementPositionT + rPolar * rPolar +
-                            (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
+                                        (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
 
                     for (int indBlockFi = 0; indBlockFi < usedPrecision.numOfAngularBlocks; ++indBlockFi)
                     {
                         double blockPositionFi = angularBlock * (indBlockFi + 0.5);
 
-                        for (int incFi = 0; incFi < usedPrecision.numOfAngularIncrements; ++incFi)
+                        for (int incFi = 0; incFi <= angularIncrements; ++incFi)
                         {
                             double incrementPositionFi = blockPositionFi +
-                                    (angularBlock * 0.5) * usedPrecision.angularIncrementPositions[incFi];
+                                                         (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incFi];
 
-                            double incrementWeightFi = usedPrecision.angularIncrementWeights[incFi] * 0.5;
+                            double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
 
                             double cosinePhi = cos(incrementPositionFi);
 
                             magneticPotential += constant * incrementWeightS * incrementWeightFi *
-                                              (tempConstA * cosinePhi) /sqrt(tempConstC - 2*tempConstB * cosinePhi);
+                                    (tempConstA * cosinePhi) /sqrt(tempConstC - 2*tempConstB * cosinePhi);
                         }
                     }
                 }
@@ -1277,19 +1296,22 @@ double Coil::computeMutualInductance(double zDisplacement, Coil secondary, Compu
 
     std::vector<double> weights;
 
-    for (int zIndex = 0; zIndex < secondary.precisionSettings.numOfLengthIncrements; ++zIndex)
-    {
+    int zIncrements = secondary.precisionSettings.numOfLengthIncrements - 1;
+    int rIncrements = secondary.precisionSettings.numOfThicknessIncrements - 1;
 
-        for (int rIndex = 0; rIndex < secondary.precisionSettings.numOfThicknessIncrements; ++rIndex)
+    for (int zIndex = 0; zIndex <= zIncrements; ++zIndex)
+    {
+        for (int rIndex = 0; rIndex <= rIncrements; ++rIndex)
         {
             zPositions.push_back(zDisplacement + (secondary.length * 0.5) *
-            secondary.precisionSettings.lengthIncrementPositions[zIndex]);
+            Legendre::positionMatrix[zIncrements][zIndex]);
 
             rPositions.push_back(secondary.innerRadius + secondary.thickness * 0.5 +
-            (secondary.thickness * 0.5) * secondary.precisionSettings.thicknessIncrementPositions[rIndex]);
+            (secondary.thickness * 0.5) * Legendre::positionMatrix[rIncrements][rIndex]);
 
-            weights.push_back(0.25 * secondary.precisionSettings.lengthIncrementWeights[zIndex] *
-            secondary.precisionSettings.thicknessIncrementWeights[rIndex]);
+            weights.push_back(0.25 *
+            Legendre::weightsMatrix[zIncrements][zIndex] *
+            Legendre::weightsMatrix[rIncrements][rIndex]);
         }
     }
 

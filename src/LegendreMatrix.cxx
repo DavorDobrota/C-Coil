@@ -6,7 +6,7 @@
 
 namespace Legendre
 {
-    const double positionMatrix[50][50] =
+    const double positionMatrix[maxLegendreOrder][maxLegendreOrder] =
     {
         {0.0},
 
@@ -478,7 +478,7 @@ namespace Legendre
     };
 
 
-    const double weightsMatrix[50][50] =
+    const double weightsMatrix[maxLegendreOrder][maxLegendreOrder] =
     {
         {2.0},
 

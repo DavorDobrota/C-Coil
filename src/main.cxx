@@ -40,23 +40,23 @@ int main(){
 //        printf("\n");
 //    }
 
-    Coil testCoil1 = Coil(0.03, 0.03, 0.12, 3600);
-    OldCoil oldCoil = OldCoil(1, 0.03, 0.03, 0.12, 0.001, 16, 16, 32, 3600, true, 50, 1.63e-8);
-
-    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getCurrentDensity(), testCoil1.getWireResistivity(), testCoil1.getSineFrequency());
-
-    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
-    printf("%.15f, %.15f, %.15f\n\n", oldCoil.mM, oldCoil.d, oldCoil.Res);
-
-    testCoil1.setSineFrequency(100000);
-    testCoil1.setCurrentDensity(500000);
-    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
-
-    testCoil1.setSineFrequency(0);
-    testCoil1.setCurrent(1);
-    std::vector<double> fieldVector = testCoil1.computeBFieldVector(0.0, 0.0, 0.0);
-    printf("%.25f %.25f\n", fieldVector[2], testCoil1.computeBFieldZ(0.0, 0.0));
-    printf("%.25f %.25f\n", fieldVector[0], testCoil1.computeBFieldH(0.0, 0.0));
+//    Coil testCoil1 = Coil(0.03, 0.03, 0.12, 3600);
+//    OldCoil oldCoil = OldCoil(1, 0.03, 0.03, 0.12, 0.001, 16, 16, 32, 3600, true, 50, 1.63e-8);
+//
+//    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getCurrentDensity(), testCoil1.getWireResistivity(), testCoil1.getSineFrequency());
+//
+//    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
+//    printf("%.15f, %.15f, %.15f\n\n", oldCoil.mM, oldCoil.d, oldCoil.Res);
+//
+//    testCoil1.setSineFrequency(100000);
+//    testCoil1.setCurrentDensity(500000);
+//    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
+//
+//    testCoil1.setSineFrequency(0);
+//    testCoil1.setCurrent(1);
+//    std::vector<double> fieldVector = testCoil1.computeBFieldVector(0.0, 0.0, 0.0);
+//    printf("%.25f %.25f\n", fieldVector[2], testCoil1.computeBFieldZ(0.0, 0.0));
+//    printf("%.25f %.25f\n", fieldVector[0], testCoil1.computeBFieldH(0.0, 0.0));
 
 //    //CPU_ST performance testing
 //    int nOp = 50000;
@@ -97,76 +97,78 @@ int main(){
 //    printf("potential A : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time4) / CLOCKS_PER_SEC / numOperations));
 
     //mass method testing
-    int nOps = 80000;
-    double radius = 0.1;
-
-    PrecisionArguments precision = testCoil1.getPrecisionSettings();
-
-    int numOperations = nOps *
-                        precision.numOfThicknessBlocks * precision.numOfThicknessIncrements *
-                        precision.numOfLengthBlocks * precision.numOfLengthIncrements *
-                        precision.numOfAngularBlocks * precision.numOfAngularIncrements;
-
-    int numOperationsGpu = nOps * 48 * 16 * 16;
-
-    std::vector<double> cylindricalZArr;
-    std::vector<double> cylindricalRArr;
-    std::vector<double> cylindricalPhiArr;
-
-    for (int i = 0; i < nOps ; i++)
-    {
-        cylindricalZArr.push_back(radius * cos(i * 2*Pi / nOps));
-        cylindricalRArr.push_back(radius * sin(i * 2*Pi / nOps));
-        cylindricalPhiArr.push_back(0.0);
-    }
-
-    std::vector<double> singleResultsX;
-    std::vector<double> singleResultsY;
-    std::vector<double> singleResultsZ;
-
-    std::vector<double> acceleratedResultsX;
-    std::vector<double> acceleratedResultsY;
-    std::vector<double> acceleratedResultsZ;
-
-    std::vector<double> singlePotential;
-    std::vector<double> acceleratedPotential;
-
-    clock_t begin_time11 = clock();
-    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                         singleResultsX, singleResultsY, singleResultsZ,
-                                         CPU_ST);
-    printf("combined  B CPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time11) / CLOCKS_PER_SEC / numOperations));
-
-    clock_t begin_time12 = clock();
-    testCoil1.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
-                                      singlePotential, CPU_ST);
-    printf("Potential A CPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time12) / CLOCKS_PER_SEC / numOperations));
-
-    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
-                                         GPU);
-
-    clock_t begin_time13 = clock();
-    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
-                                         GPU);
-    printf("combined  B GPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time13) / CLOCKS_PER_SEC / numOperationsGpu));
-
-    clock_t begin_time14 = clock();
-    testCoil1.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
-                                      acceleratedPotential, GPU);
-    printf("Potential A GPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time14) / CLOCKS_PER_SEC / numOperationsGpu));
-
-
-    FILE *output = fopen("output.txt", "w");
-
-    for (int i = 0; i < nOps; ++i)
-    {
-        fprintf(output, "%.20f\t%.20f\t%.20f\t%.20f\t%.20f\t%.20f\n",
-               singleResultsX[i], acceleratedResultsX[i],
-               singleResultsZ[i], acceleratedResultsZ[i],
-               singlePotential[i], acceleratedPotential[i]);
-    }
+//    Coil testCoil1 = Coil(0.03, 0.03, 0.12, 3600);
+//
+//    int nOps = 80000;
+//    double radius = 0.1;
+//
+//    PrecisionArguments precision = testCoil1.getPrecisionSettings();
+//
+//    int numOperations = nOps *
+//                        precision.numOfThicknessBlocks * precision.numOfThicknessIncrements *
+//                        precision.numOfLengthBlocks * precision.numOfLengthIncrements *
+//                        precision.numOfAngularBlocks * precision.numOfAngularIncrements;
+//
+//    int numOperationsGpu = nOps * 48 * 16 * 16;
+//
+//    std::vector<double> cylindricalZArr;
+//    std::vector<double> cylindricalRArr;
+//    std::vector<double> cylindricalPhiArr;
+//
+//    for (int i = 0; i < nOps ; i++)
+//    {
+//        cylindricalZArr.push_back(radius * cos(i * 2*Pi / nOps));
+//        cylindricalRArr.push_back(radius * sin(i * 2*Pi / nOps));
+//        cylindricalPhiArr.push_back(0.0);
+//    }
+//
+//    std::vector<double> singleResultsX;
+//    std::vector<double> singleResultsY;
+//    std::vector<double> singleResultsZ;
+//
+//    std::vector<double> acceleratedResultsX;
+//    std::vector<double> acceleratedResultsY;
+//    std::vector<double> acceleratedResultsZ;
+//
+//    std::vector<double> singlePotential;
+//    std::vector<double> acceleratedPotential;
+//
+//    clock_t begin_time11 = clock();
+//    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+//                                         singleResultsX, singleResultsY, singleResultsZ,
+//                                         CPU_ST);
+//    printf("combined  B CPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time11) / CLOCKS_PER_SEC / numOperations));
+//
+//    clock_t begin_time12 = clock();
+//    testCoil1.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
+//                                      singlePotential, CPU_ST);
+//    printf("Potential A CPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time12) / CLOCKS_PER_SEC / numOperations));
+//
+//    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+//                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
+//                                         GPU);
+//
+//    clock_t begin_time13 = clock();
+//    testCoil1.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+//                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
+//                                         GPU);
+//    printf("combined  B GPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time13) / CLOCKS_PER_SEC / numOperationsGpu));
+//
+//    clock_t begin_time14 = clock();
+//    testCoil1.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
+//                                      acceleratedPotential, GPU);
+//    printf("Potential A GPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time14) / CLOCKS_PER_SEC / numOperationsGpu));
+//
+//
+//    FILE *output = fopen("output.txt", "w");
+//
+//    for (int i = 0; i < nOps; ++i)
+//    {
+//        fprintf(output, "%.20f\t%.20f\t%.20f\t%.20f\t%.20f\t%.20f\n",
+//               singleResultsX[i], acceleratedResultsX[i],
+//               singleResultsZ[i], acceleratedResultsZ[i],
+//               singlePotential[i], acceleratedPotential[i]);
+//    }
 
 //    Coil primary = Coil(0.1, 0.1, 0.1, 100);
 //    Coil secondary = Coil(0.3, 0.1, 0.1, 100);

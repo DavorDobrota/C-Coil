@@ -15,12 +15,12 @@ namespace
     const double PI = 3.14159265357989323;
     const double g_MiReduced = 0.0000001;
 
-    const int g_maxLegendreOrder = 50;
+    const int g_defaultLegendreOrder = 12;
 
     const double g_defaultCurrent = 1.0;
     const double g_defaultResistivity = 1.63e-8;
     const double g_defaultSineFrequency = 50;
-    const PrecisionArguments g_defaultPrecision = PrecisionArguments(1, 1, 1, 12, 12, 12);
+    const PrecisionArguments g_defaultPrecision = PrecisionArguments(1, 1, 1, 14, 14, 14);
 
 }
 
@@ -40,17 +40,17 @@ PrecisionArguments::PrecisionArguments(
         numOfThicknessIncrements(numOfThicknessIncrements), numOfLengthIncrements(numOfLengthIncrements)
 {
     //TODO - fix constructor calls from main
-    if (numOfAngularIncrements >= g_maxLegendreOrder)
+    if (numOfAngularIncrements > Legendre::maxLegendreOrder)
     {
-        PrecisionArguments::numOfAngularIncrements = 12;
+        PrecisionArguments::numOfAngularIncrements = g_defaultLegendreOrder;
     }
-    if(numOfThicknessIncrements >= g_maxLegendreOrder)
+    if(numOfThicknessIncrements >= Legendre::maxLegendreOrder)
     {
-        PrecisionArguments::numOfThicknessIncrements = 12;
+        PrecisionArguments::numOfThicknessIncrements = g_defaultLegendreOrder;
     }
-    if(numOfLengthIncrements >= g_maxLegendreOrder)
+    if(numOfLengthIncrements >= Legendre::maxLegendreOrder)
     {
-        PrecisionArguments::numOfLengthIncrements = 12;
+        PrecisionArguments::numOfLengthIncrements = g_defaultLegendreOrder;
     }
 
     precisionFactor = 0.0;
@@ -118,85 +118,37 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns,
                 g_defaultResistivity, g_defaultSineFrequency, precisionSettings) {}
 
 
-double Coil::getCurrentDensity() const
-{
-    return currentDensity;
-}
+double Coil::getCurrentDensity() const { return currentDensity; }
 
-double Coil::getCurrent() const
-{
-    return current;
-}
+double Coil::getCurrent() const { return current; }
 
-int Coil::getNumOfTurns() const
-{
-    return numOfTurns;
-}
+int Coil::getNumOfTurns() const { return numOfTurns; }
 
-double Coil::getInnerRadius() const
-{
-    return innerRadius;
-}
+double Coil::getInnerRadius() const { return innerRadius; }
 
-double Coil::getThickness() const
-{
-    return thickness;
-}
+double Coil::getThickness() const { return thickness; }
 
-double Coil::getLength() const
-{
-    return length;
-}
+double Coil::getLength() const { return length; }
 
-double Coil::getAverageWireThickness() const
-{
-    return averageWireThickness;
-}
+double Coil::getAverageWireThickness() const { return averageWireThickness; }
 
-bool Coil::isSineDriven1() const
-{
-    return isSineDriven;
-}
+bool Coil::isSineDriven1() const { return isSineDriven; }
 
-double Coil::getSineFrequency() const
-{
-    return sineFrequency;
-}
+double Coil::getSineFrequency() const { return sineFrequency; }
 
-double Coil::getSelfInductance() const
-{
-    return selfInductance;
-}
+double Coil::getSelfInductance() const { return selfInductance; }
 
-double Coil::getMagneticMoment() const
-{
-    return magneticMoment;
-}
+double Coil::getMagneticMoment() const { return magneticMoment; }
 
-double Coil::getWireResistivity() const
-{
-    return wireResistivity;
-}
+double Coil::getWireResistivity() const { return wireResistivity; }
 
-double Coil::getResistance() const
-{
-    return resistance;
-}
+double Coil::getResistance() const { return resistance; }
 
-double Coil::getReactance() const
-{
-    return reactance;
-}
+double Coil::getReactance() const { return reactance; }
 
-double Coil::getImpedance() const
-{
-    return impedance;
-}
+double Coil::getImpedance() const { return impedance; }
 
-const PrecisionArguments &Coil::getPrecisionSettings() const
-{
-    return precisionSettings;
-}
+const PrecisionArguments &Coil::getPrecisionSettings() const { return precisionSettings; }
 
 
 void Coil::setCurrentDensity(double currentDensity)
@@ -291,12 +243,12 @@ std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, con
     double thicknessBlock = thickness / usedPrecision.numOfThicknessBlocks;
     double angularBlock = PI / usedPrecision.numOfAngularBlocks;
 
-    //subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int lengthIncrements = usedPrecision.numOfLengthIncrements - 1;
     int thicknessIncrements = usedPrecision.numOfThicknessIncrements - 1;
     int angularIncrements = usedPrecision.numOfThicknessIncrements - 1;
 
-    //multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
+    // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
     for (int indBlockL = 0; indBlockL < usedPrecision.numOfLengthBlocks; ++indBlockL)
@@ -365,12 +317,12 @@ double Coil::calculateBFieldVertical(double zAxis, double rPolar, const Precisio
     double thicknessBlock = thickness / usedPrecision.numOfThicknessBlocks;
     double angularBlock = PI / usedPrecision.numOfAngularBlocks;
 
-    //subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int lengthIncrements = usedPrecision.numOfLengthIncrements - 1;
     int thicknessIncrements = usedPrecision.numOfThicknessIncrements - 1;
     int angularIncrements = usedPrecision.numOfThicknessIncrements - 1;
 
-    //multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
+    // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
     for (int indBlockL = 0; indBlockL < usedPrecision.numOfLengthBlocks; ++indBlockL)
@@ -431,12 +383,12 @@ double Coil::calculateBFieldHorizontal(double zAxis, double rPolar, const Precis
     double thicknessBlock = thickness / usedPrecision.numOfThicknessBlocks;
     double angularBlock = PI / usedPrecision.numOfAngularBlocks;
 
-    //subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int lengthIncrements = usedPrecision.numOfLengthIncrements - 1;
     int thicknessIncrements = usedPrecision.numOfThicknessIncrements - 1;
     int angularIncrements = usedPrecision.numOfThicknessIncrements - 1;
 
-    //multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
+    // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
     for (int indBlockL = 0; indBlockL < usedPrecision.numOfLengthBlocks; ++indBlockL)
@@ -497,12 +449,12 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
     double thicknessBlock = thickness / usedPrecision.numOfThicknessBlocks;
     double angularBlock = PI / usedPrecision.numOfAngularBlocks;
 
-    //subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int lengthIncrements = usedPrecision.numOfLengthIncrements - 1;
     int thicknessIncrements = usedPrecision.numOfThicknessIncrements - 1;
     int angularIncrements = usedPrecision.numOfThicknessIncrements - 1;
 
-    //multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
+    // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
     for (int indBlockL = 0; indBlockL < usedPrecision.numOfLengthBlocks; ++indBlockL)
@@ -796,6 +748,7 @@ void Coil::calculateAllBFieldACCELERATED(const std::vector<double> &cylindricalZ
         polarR.push_back(sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
         polarTheta.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
     }
+
     computedFieldHArr.resize(polarR.size());
     computedFieldZArr.resize(polarR.size());
 
@@ -824,7 +777,8 @@ void Coil::calculateAllAPotentialACCELERATED(const std::vector<double> &cylindri
                                      currentDensity, innerRadius, length, thickness,
                                      thickness / 16, length / 16, PI / 48,
                                      nullptr, nullptr, &computedPotentialArr[0]);
-    //TODO - fix frequency in GPU potential calculation, current temporary fix
+
+    // TODO - fix frequency in GPU potential calculation, current temporary fix
     for (int i = 0; i < polarR.size(); ++i)
         computedPotentialArr[i] /= 2*PI;
 }
@@ -862,7 +816,7 @@ void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
                 computedFieldArr.push_back(fieldH[i] * cos(cylindricalPhiArr[i]));
             }
         }
-        //TODO - other computation methods
+        // TODO - CPU_MT method
     }
     else
     {
@@ -911,7 +865,7 @@ void Coil::computeAllBFieldY(const std::vector<double> &cylindricalZArr,
                 computedFieldArr.push_back(fieldH[i] * cos(cylindricalPhiArr[i]));
             }
         }
-        //TODO - other computation methods
+        // TODO - CPU_MT method
     }
     else
     {
@@ -953,7 +907,7 @@ void Coil::computeAllBFieldH(const std::vector<double> &cylindricalZArr,
             for (float i : fieldH)
                 computedFieldArr.push_back(i);
         }
-        //TODO - other computation methods
+        // TODO - CPU_MT method
     }
     else
     {
@@ -995,7 +949,7 @@ void Coil::computeAllBFieldZ(const std::vector<double> &cylindricalZArr,
             for (float i : fieldZ)
                 computedFieldArr.push_back(i);
         }
-        //TODO - other computation methods
+        // TODO - CPU_MT method
     }
     else
     {
@@ -1058,7 +1012,7 @@ Coil::computeAllBFieldComponents(const std::vector<double> &cylindricalZArr,
                 computedFieldZArr.push_back(fieldZ[i]);
             }
         }
-        //TODO - other computation methods
+        // TODO - CPU_MT method
     }
     else
     {
@@ -1113,7 +1067,7 @@ void Coil::computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
                 computedPotentialArr.push_back(potentialA[i] * (-1) * sin(cylindricalPhiArr[i]));
             }
         }
-        //TODO - other computation methods
+        // TODO - CPU_MT method
     }
     else
     {
@@ -1163,7 +1117,7 @@ void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
                 computedPotentialArr.push_back(potentialA[i] * cos(cylindricalPhiArr[i]));
             }
         }
-        //TODO - other computation methods
+        // TODO - CPU_MT method
     }
     else
     {
@@ -1208,7 +1162,7 @@ Coil::computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
             }
 
         }
-        //TODO - other computation methods
+        // TODO - CPU_MT method
     }
     else
     {
@@ -1296,6 +1250,7 @@ double Coil::computeMutualInductance(double zDisplacement, Coil secondary, Compu
 
     std::vector<double> weights;
 
+    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int zIncrements = secondary.precisionSettings.numOfLengthIncrements - 1;
     int rIncrements = secondary.precisionSettings.numOfThicknessIncrements - 1;
 

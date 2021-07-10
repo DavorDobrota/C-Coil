@@ -65,9 +65,9 @@ int main(){
 //    PrecisionArguments precision = testCoil1.getPrecisionSettings();
 //
 //    int numOperations = nOp *
-//            precision.numOfThicknessBlocks * precision.numOfThicknessIncrements *
-//            precision.numOfLengthBlocks * precision.numOfLengthIncrements *
-//            precision.numOfAngularBlocks * precision.numOfAngularIncrements;
+//            precision.thicknessBlockCount * precision.thicknessIncrementCount *
+//            precision.lengthBlockCount * precision.lengthIncrementCount *
+//            precision.angularBlockCount * precision.angularIncrementCount;
 //
 //    clock_t begin_time1 = clock();
 //    for (int i = 0; i < nOp; ++i){
@@ -105,9 +105,9 @@ int main(){
 //    PrecisionArguments precision = testCoil1.getPrecisionSettings();
 //
 //    int numOperations = nOps *
-//                        precision.numOfThicknessBlocks * precision.numOfThicknessIncrements *
-//                        precision.numOfLengthBlocks * precision.numOfLengthIncrements *
-//                        precision.numOfAngularBlocks * precision.numOfAngularIncrements;
+//                        precision.thicknessBlockCount * precision.thicknessIncrementCount *
+//                        precision.lengthBlockCount * precision.lengthIncrementCount *
+//                        precision.angularBlockCount * precision.angularIncrementCount;
 //
 //    int numOperationsGpu = nOps * 48 * 16 * 16;
 //

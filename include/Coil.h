@@ -13,13 +13,13 @@ struct PrecisionArguments
 
     double precisionFactor;
 
-    int numOfAngularBlocks;
-    int numOfThicknessBlocks;
-    int numOfLengthBlocks;
+    int angularBlockCount;
+    int thicknessBlockCount;
+    int lengthBlockCount;
 
-    int numOfAngularIncrements;
-    int numOfThicknessIncrements;
-    int numOfLengthIncrements;
+    int angularIncrementCount;
+    int thicknessIncrementCount;
+    int lengthIncrementCount;
 
     private:
         void genParametersFromPrecision();

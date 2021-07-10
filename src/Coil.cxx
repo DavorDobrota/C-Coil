@@ -16,6 +16,7 @@ namespace
     const double g_MiReduced = 0.0000001;
 
     const int g_defaultLegendreOrder = 12;
+    const int g_defaultBlockCount = 1;
 
     const double g_defaultCurrent = 1.0;
     const double g_defaultResistivity = 1.63e-8;
@@ -35,22 +36,35 @@ namespace Precision
 PrecisionArguments::PrecisionArguments(
         int numOfAngularBlocks, int numOfThicknessBlocks, int numOfLengthBlocks,
         int numOfAngularIncrements, int numOfThicknessIncrements, int numOfLengthIncrements) :
-        numOfAngularBlocks(numOfAngularBlocks), numOfThicknessBlocks(numOfThicknessBlocks),
-        numOfLengthBlocks(numOfLengthBlocks), numOfAngularIncrements(numOfAngularIncrements),
-        numOfThicknessIncrements(numOfThicknessIncrements), numOfLengthIncrements(numOfLengthIncrements)
+        angularBlockCount(numOfAngularBlocks), thicknessBlockCount(numOfThicknessBlocks),
+        lengthBlockCount(numOfLengthBlocks), angularIncrementCount(numOfAngularIncrements),
+        thicknessIncrementCount(numOfThicknessIncrements), lengthIncrementCount(numOfLengthIncrements)
 {
     //TODO - fix constructor calls from main
-    if (numOfAngularIncrements > Legendre::maxLegendreOrder)
+    if (numOfAngularIncrements > Legendre::maxLegendreOrder || numOfAngularIncrements < 1)
     {
-        PrecisionArguments::numOfAngularIncrements = g_defaultLegendreOrder;
+        PrecisionArguments::angularIncrementCount = g_defaultLegendreOrder;
     }
-    if(numOfThicknessIncrements >= Legendre::maxLegendreOrder)
+    if (numOfThicknessIncrements >= Legendre::maxLegendreOrder || numOfThicknessIncrements < 1)
     {
-        PrecisionArguments::numOfThicknessIncrements = g_defaultLegendreOrder;
+        PrecisionArguments::thicknessIncrementCount = g_defaultLegendreOrder;
     }
-    if(numOfLengthIncrements >= Legendre::maxLegendreOrder)
+    if (numOfLengthIncrements >= Legendre::maxLegendreOrder || numOfLengthIncrements < 1)
     {
-        PrecisionArguments::numOfLengthIncrements = g_defaultLegendreOrder;
+        PrecisionArguments::lengthIncrementCount = g_defaultLegendreOrder;
+    }
+
+    if (numOfAngularBlocks < 1)
+    {
+        PrecisionArguments::angularBlockCount = g_defaultBlockCount;
+    }
+    if (numOfThicknessBlocks < 1)
+    {
+        PrecisionArguments::thicknessBlockCount = g_defaultBlockCount;
+    }
+    if (numOfLengthIncrements < 1)
+    {
+        PrecisionArguments::lengthBlockCount = g_defaultBlockCount;
     }
 
     precisionFactor = 0.0;
@@ -64,13 +78,13 @@ PrecisionArguments::PrecisionArguments(double precisionFactor)
 void PrecisionArguments::genParametersFromPrecision()
 {
     //TODO - when further analysis is complete a method will be devised, until then
-    numOfAngularBlocks = 2;
-    numOfLengthBlocks = 1;
-    numOfThicknessBlocks = 1;
+    angularBlockCount = 2;
+    lengthBlockCount = 1;
+    thicknessBlockCount = 1;
 
-    numOfAngularIncrements = 12;
-    numOfThicknessIncrements = 12;
-    numOfLengthIncrements = 12;
+    angularIncrementCount = 12;
+    thicknessIncrementCount = 12;
+    lengthIncrementCount = 12;
 }
 
 
@@ -204,13 +218,14 @@ void Coil::calculateAverageWireThickness()
 
 void Coil::calculateResistance()
 {
-    double wireRadius = averageWireThickness / 2;
-    double ohmicResistance = wireResistivity * numOfTurns * 2*PI * (innerRadius + thickness / 2) / (pow(wireRadius, 2) * PI);
+    double wireRadius = averageWireThickness * 0.5;
+    double ohmicResistance = wireResistivity * numOfTurns * 2*PI *
+            (innerRadius + thickness * 0.5) / (wireRadius * wireRadius * PI);
     double skinDepth = sqrt(wireResistivity / (PI * sineFrequency * g_MiReduced));
 
-    double ohmicSurface = PI * pow(wireRadius, 2);
+    double ohmicSurface = PI * wireRadius * wireRadius;
     double sineSurface = 2*PI * (
-            pow(skinDepth, 2) * (exp(-wireRadius / skinDepth) - 1) +
+            skinDepth * skinDepth * (exp(-wireRadius / skinDepth) - 1) +
             skinDepth * wireRadius);
 
     resistance = ohmicResistance * (ohmicSurface / sineSurface);
@@ -225,7 +240,7 @@ void Coil::calculateImpedance()
 {
     calculateResistance();
     calculateReactance();
-    impedance = sqrt(pow(resistance, 2) + pow(reactance, 2));
+    impedance = sqrt(resistance * resistance + reactance * reactance);
 }
 
 void Coil::calculateSelfInductance()
@@ -239,21 +254,21 @@ std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, con
     double magneticFieldZ = 0.0;
     double magneticFieldH = 0.0;
     
-    double lengthBlock = length / usedPrecision.numOfLengthBlocks;
-    double thicknessBlock = thickness / usedPrecision.numOfThicknessBlocks;
-    double angularBlock = PI / usedPrecision.numOfAngularBlocks;
+    double lengthBlock = length / usedPrecision.lengthBlockCount;
+    double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
+    double angularBlock = PI / usedPrecision.angularBlockCount;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int lengthIncrements = usedPrecision.numOfLengthIncrements - 1;
-    int thicknessIncrements = usedPrecision.numOfThicknessIncrements - 1;
-    int angularIncrements = usedPrecision.numOfThicknessIncrements - 1;
+    int lengthIncrements = usedPrecision.lengthIncrementCount - 1;
+    int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
+    int angularIncrements = usedPrecision.angularIncrementCount - 1;
 
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
-    for (int indBlockL = 0; indBlockL < usedPrecision.numOfLengthBlocks; ++indBlockL)
+    for (int indBlockL = 0; indBlockL < usedPrecision.lengthBlockCount; ++indBlockL)
     {
-        for (int indBlockT = 0; indBlockT < usedPrecision.numOfThicknessBlocks; ++indBlockT)
+        for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlockCount; ++indBlockT)
         {
             double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
@@ -278,7 +293,7 @@ std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, con
                                         (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
                     double tempConstE = constant * incrementWeightS;
 
-                    for (int indBlockFi = 0; indBlockFi < usedPrecision.numOfAngularBlocks; ++indBlockFi)
+                    for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlockCount; ++indBlockFi)
                     {
                         double blockPositionFi = angularBlock * (indBlockFi + 0.5);
 
@@ -313,21 +328,21 @@ double Coil::calculateBFieldVertical(double zAxis, double rPolar, const Precisio
 {
     double magneticFieldZ = 0.0;
     
-    double lengthBlock = length / usedPrecision.numOfLengthBlocks;
-    double thicknessBlock = thickness / usedPrecision.numOfThicknessBlocks;
-    double angularBlock = PI / usedPrecision.numOfAngularBlocks;
+    double lengthBlock = length / usedPrecision.lengthBlockCount;
+    double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
+    double angularBlock = PI / usedPrecision.angularBlockCount;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int lengthIncrements = usedPrecision.numOfLengthIncrements - 1;
-    int thicknessIncrements = usedPrecision.numOfThicknessIncrements - 1;
-    int angularIncrements = usedPrecision.numOfThicknessIncrements - 1;
+    int lengthIncrements = usedPrecision.lengthIncrementCount - 1;
+    int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
+    int angularIncrements = usedPrecision.angularIncrementCount - 1;
 
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
-    for (int indBlockL = 0; indBlockL < usedPrecision.numOfLengthBlocks; ++indBlockL)
+    for (int indBlockL = 0; indBlockL < usedPrecision.lengthBlockCount; ++indBlockL)
     {
-        for (int indBlockT = 0; indBlockT < usedPrecision.numOfThicknessBlocks; ++indBlockT)
+        for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlockCount; ++indBlockT)
         {
             double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
@@ -350,7 +365,7 @@ double Coil::calculateBFieldVertical(double zAxis, double rPolar, const Precisio
                     double tempConstC = tempConstA + rPolar * rPolar +
                             (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
 
-                    for (int indBlockFi = 0; indBlockFi < usedPrecision.numOfAngularBlocks; ++indBlockFi)
+                    for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlockCount; ++indBlockFi)
                     {
                         double blockPositionFi = angularBlock * (indBlockFi + 0.5);
 
@@ -379,21 +394,21 @@ double Coil::calculateBFieldHorizontal(double zAxis, double rPolar, const Precis
 {
     double magneticFieldH = 0.0;
     
-    double lengthBlock = length / usedPrecision.numOfLengthBlocks;
-    double thicknessBlock = thickness / usedPrecision.numOfThicknessBlocks;
-    double angularBlock = PI / usedPrecision.numOfAngularBlocks;
+    double lengthBlock = length / usedPrecision.lengthBlockCount;
+    double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
+    double angularBlock = PI / usedPrecision.angularBlockCount;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int lengthIncrements = usedPrecision.numOfLengthIncrements - 1;
-    int thicknessIncrements = usedPrecision.numOfThicknessIncrements - 1;
-    int angularIncrements = usedPrecision.numOfThicknessIncrements - 1;
+    int lengthIncrements = usedPrecision.lengthIncrementCount - 1;
+    int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
+    int angularIncrements = usedPrecision.angularIncrementCount - 1;
 
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
-    for (int indBlockL = 0; indBlockL < usedPrecision.numOfLengthBlocks; ++indBlockL)
+    for (int indBlockL = 0; indBlockL < usedPrecision.lengthBlockCount; ++indBlockL)
     {
-        for (int indBlockT = 0; indBlockT < usedPrecision.numOfThicknessBlocks; ++indBlockT)
+        for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlockCount; ++indBlockT)
         {
             double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
@@ -416,7 +431,7 @@ double Coil::calculateBFieldHorizontal(double zAxis, double rPolar, const Precis
                     double tempConstC = incrementPositionT * incrementPositionT + rPolar * rPolar +
                                         (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
 
-                    for (int indBlockFi = 0; indBlockFi < usedPrecision.numOfAngularBlocks; ++indBlockFi)
+                    for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlockCount; ++indBlockFi)
                     {
                         double blockPositionFi = angularBlock * (indBlockFi + 0.5);
 
@@ -445,21 +460,21 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
 {
     double magneticPotential = 0.0;
 
-    double lengthBlock = length / usedPrecision.numOfLengthBlocks;
-    double thicknessBlock = thickness / usedPrecision.numOfThicknessBlocks;
-    double angularBlock = PI / usedPrecision.numOfAngularBlocks;
+    double lengthBlock = length / usedPrecision.lengthBlockCount;
+    double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
+    double angularBlock = PI / usedPrecision.angularBlockCount;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int lengthIncrements = usedPrecision.numOfLengthIncrements - 1;
-    int thicknessIncrements = usedPrecision.numOfThicknessIncrements - 1;
-    int angularIncrements = usedPrecision.numOfThicknessIncrements - 1;
+    int lengthIncrements = usedPrecision.lengthIncrementCount - 1;
+    int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
+    int angularIncrements = usedPrecision.angularIncrementCount - 1;
 
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
-    for (int indBlockL = 0; indBlockL < usedPrecision.numOfLengthBlocks; ++indBlockL)
+    for (int indBlockL = 0; indBlockL < usedPrecision.lengthBlockCount; ++indBlockL)
     {
-        for (int indBlockT = 0; indBlockT < usedPrecision.numOfThicknessBlocks; ++indBlockT)
+        for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlockCount; ++indBlockT)
         {
             double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
@@ -482,7 +497,7 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
                     double tempConstC = incrementPositionT * incrementPositionT + rPolar * rPolar +
                                         (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
 
-                    for (int indBlockFi = 0; indBlockFi < usedPrecision.numOfAngularBlocks; ++indBlockFi)
+                    for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlockCount; ++indBlockFi)
                     {
                         double blockPositionFi = angularBlock * (indBlockFi + 0.5);
 
@@ -1251,8 +1266,8 @@ double Coil::computeMutualInductance(double zDisplacement, Coil secondary, Compu
     std::vector<double> weights;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int zIncrements = secondary.precisionSettings.numOfLengthIncrements - 1;
-    int rIncrements = secondary.precisionSettings.numOfThicknessIncrements - 1;
+    int zIncrements = secondary.precisionSettings.lengthIncrementCount - 1;
+    int rIncrements = secondary.precisionSettings.thicknessIncrementCount - 1;
 
     for (int zIndex = 0; zIndex <= zIncrements; ++zIndex)
     {

@@ -170,39 +170,39 @@ int main(){
 //               singlePotential[i], acceleratedPotential[i]);
 //    }
 
-//    Coil primary = Coil(0.1, 0.1, 0.1, 100);
-//    Coil secondary = Coil(0.3, 0.1, 0.1, 100);
-//
-//    printf("%.20f\n\n", primary.computeMutualInductance(0.2, secondary));
-//    printf("%.20f\n\n", primary.computeMutualInductance(0.2, secondary, GPU));
-//
-//    FILE *input = fopen("values.txt", "r");
-//	FILE *output = fopen("output.txt", "w");
-//
-//	double Rt1, at1, bt1; int Nt1;
-//	double Rt2, at2, bt2; int Nt2;
-//	double distance;
-//	double Temp;
-//
-//	while (fscanf(input, "%lf %lf %lf %d %lf %lf %lf %d %lf", &Rt1, &at1, &bt1, &Nt1, &Rt2, &at2, &bt2, &Nt2, &distance) == 9)
-//	{
-//	//	printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
-//
-//		for (double i = 1; i <= 9.0; i += 1.0)
-//		{
-//			Coil prim1 = Coil(Rt1, at1, bt1, Nt1);
-//			Coil sec1 = Coil(Rt2, at2, bt2, Nt2);
-//			Temp = prim1.computeMutualInductance(distance, sec1);
-//
-//			fprintf(output, "%.20f\t", Temp);
-//		}
-//        printf("%.18f\n", Temp);
-//	//	printf("====================================================================================\n");
-//	//	fprintf(output, "\n");
-//	}
-//
-//	fclose(input);
-//	fclose(output);
+    Coil primary = Coil(0.1, 0.1, 0.1, 100);
+    Coil secondary = Coil(0.3, 0.1, 0.1, 100);
+
+    printf("%.20f\n\n", primary.computeMutualInductance(0.2, secondary));
+    printf("%.20f\n\n", primary.computeMutualInductance(0.2, secondary, GPU));
+
+    FILE *input = fopen("values.txt", "r");
+	FILE *output = fopen("output.txt", "w");
+
+	double Rt1, at1, bt1; int Nt1;
+	double Rt2, at2, bt2; int Nt2;
+	double distance;
+	double Temp;
+
+	while (fscanf(input, "%lf %lf %lf %d %lf %lf %lf %d %lf", &Rt1, &at1, &bt1, &Nt1, &Rt2, &at2, &bt2, &Nt2, &distance) == 9)
+	{
+		printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
+
+		for (int i = 1; i <= 9; ++i)
+		{
+			Coil prim1 = Coil(Rt1, at1, bt1, Nt1, PrecisionArguments(i, 1, 1, 48, 24, 24));
+			Coil sec1 = Coil(Rt2, at2, bt2, Nt2);
+			Temp = prim1.computeMutualInductance(distance, sec1);
+            printf("%.18f\n", Temp);
+			fprintf(output, "%.20f\t", Temp);
+		}
+
+		printf("====================================================================================\n");
+		fprintf(output, "\n");
+	}
+
+	fclose(input);
+	fclose(output);
 
 //    PrecisionArguments precisionArguments = PrecisionArguments(2, 1, 1, 16, 12, 12);
 

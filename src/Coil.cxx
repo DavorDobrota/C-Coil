@@ -87,6 +87,12 @@ void PrecisionArguments::genParametersFromPrecision()
     lengthIncrementCount = 12;
 }
 
+void PrecisionArguments::getMutualInductancePrecisionSettings(PrecisionArguments &fieldPrecision,
+                                                              int &zIncrements, int &rIncrements)
+{
+
+}
+
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings) :

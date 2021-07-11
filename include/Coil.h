@@ -21,8 +21,17 @@ struct PrecisionArguments
     int thicknessIncrementCount;
     int lengthIncrementCount;
 
+    static int blockPrecisionArray[];
+    static int incrementPrecisionArray[];
+
     private:
         void genParametersFromPrecision();
+
+        void getMutualInductancePrecisionSettings(PrecisionArguments &fieldPrecision,
+                                                  int &zIncrements, int &rIncrements);
+
+        void getMutualInductancePrecisionSettings(PrecisionArguments &fieldPrecision,
+                                                  int &zIncrements, int &rIncrements, int &phiIncrements);
 };
 
 class Coil

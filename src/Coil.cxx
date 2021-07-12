@@ -1,3 +1,4 @@
+
 #include <cstdio>
 #include <cmath>
 #include <vector>
@@ -23,6 +24,16 @@ namespace
     const double g_defaultSineFrequency = 50;
     const PrecisionArguments g_defaultPrecision = PrecisionArguments(4, 1, 1, 14, 14, 14);
 
+    const double g_minPrecisionFactor = 1.0;
+    const double g_maxPrecisionFactor = 7.0;
+
+    const int g_minPrimLinearIncrements = 12;
+    const int g_minPrimAngularIncrements = 12;
+    const int g_minPrimAngularBlocks = 1;
+    const int g_minSecLinearIncrements = 8;
+    const int g_minSecAngularIncrements = 8;
+    const int g_minSecAngularBlocks = 1;
+
 }
 
 namespace Precision
@@ -30,8 +41,10 @@ namespace Precision
     const PrecisionArguments defaultPrecision_ULTRAFAST = PrecisionArguments(1, 1, 1, 12, 8, 8);
     const PrecisionArguments defaultPrecision_FAST = PrecisionArguments(1, 1, 1, 12, 12, 12);
     const PrecisionArguments defaultPrecision_NORMAL = PrecisionArguments(2, 1, 1, 12, 12, 12);
-    const PrecisionArguments defaultPrecision_PRECISE = PrecisionArguments(4, 2, 2, 12, 8, 8);
+    const PrecisionArguments defaultPrecision_PRECISE = PrecisionArguments(1, 1, 1, 48, 16, 16);
 }
+
+PrecisionArguments::PrecisionArguments() : PrecisionArguments(g_defaultPrecision) {}
 
 PrecisionArguments::PrecisionArguments(
         int numOfAngularBlocks, int numOfThicknessBlocks, int numOfLengthBlocks,
@@ -70,6 +83,35 @@ PrecisionArguments::PrecisionArguments(
     precisionFactor = 0.0;
 }
 
+const int PrecisionArguments::blockPrecisionCPUArray[precisionArraySize] =
+        {
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 9,
+        9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14,
+        15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 18, 18, 18, 19, 19, 19, 20, 20, 20, 21, 21, 21, 22, 22, 22, 23,
+        23, 23, 24, 24, 24, 25, 25, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33, 34, 34, 35, 35,
+        36, 36, 37, 37, 38, 38, 39, 39, 40, 40, 41, 41, 42, 42, 43, 43, 44, 44, 45, 45, 46, 46, 47, 47, 48, 48, 49,
+        49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75,
+        76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+        };
+
+const int PrecisionArguments::incrementPrecisionCPUArray[precisionArraySize] =
+        {
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+        31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 26, 27, 28, 29, 30, 31, 32,
+        33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+        43, 44, 45, 46, 47, 48, 49, 50, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 41, 42, 43, 44, 45, 46,
+        47, 48, 49, 50, 42, 43, 44, 45, 46, 47, 48, 49, 50, 43, 44, 45, 46, 47, 48, 49, 50, 44, 45, 46, 47, 48, 49,
+        50, 45, 46, 47, 48, 49, 50, 46, 47, 48, 49, 50, 46, 47, 48, 49, 50, 46, 47, 48, 49, 50, 47, 48, 49, 50, 47,
+        48, 49, 50, 47, 48, 49, 50, 47, 48, 49, 50, 48, 49, 50, 48, 49, 50, 48, 49, 50, 48, 49, 50, 48, 49, 50, 48,
+        49, 50, 48, 49, 50, 48, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49,
+        50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50,
+        49, 50, 49, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
+        };
+
 PrecisionArguments::PrecisionArguments(double precisionFactor)
 {
     genParametersFromPrecision();
@@ -87,9 +129,58 @@ void PrecisionArguments::genParametersFromPrecision()
     lengthIncrementCount = 12;
 }
 
-void PrecisionArguments::getMutualInductancePrecisionSettings(PrecisionArguments &fieldPrecision,
-                                                              int &zIncrements, int &rIncrements)
+void PrecisionArguments::getMutualInductancePrecisionSettingsZCPU(const Coil &primCoil,
+                                                                  const Coil &secCoil,
+                                                                  double precisionFactor,
+                                                                  PrecisionArguments &fieldPrecision,
+                                                                  int &linearIncrements)
 {
+    if (precisionFactor < g_minPrecisionFactor)
+        precisionFactor = g_minPrecisionFactor;
+
+    if (precisionFactor > g_maxPrecisionFactor)
+        precisionFactor = g_maxPrecisionFactor;
+
+    int primLinearIncrements = g_minPrimLinearIncrements;
+    int secLinearIncrements = g_minSecLinearIncrements;
+
+    int primAngularArrayIndex = g_minPrimAngularIncrements - 1;
+
+    int totalIncrements = pow(2, 16 + precisionFactor);
+    int currentIncrements;
+
+    do
+    {
+        double primAngularStep =
+                PI * (primCoil.getInnerRadius() + primCoil.getThickness() * 0.5) /
+                (blockPrecisionCPUArray[primAngularArrayIndex] *
+                 incrementPrecisionCPUArray[primAngularArrayIndex]);
+
+        double primLengthThicknessStep = sqrt(2 * primCoil.getThickness() * primCoil.getLength()) /
+                                         primLinearIncrements;
+
+        double secLengthThicknessStep = sqrt(secCoil.getThickness() * secCoil.getLength()) /
+                                        secLinearIncrements;
+
+        if (primAngularStep / primLengthThicknessStep >= 1.0)
+            primAngularArrayIndex++;
+        else
+        {
+            if (primLengthThicknessStep / secLengthThicknessStep >= 1.0)
+                primLinearIncrements++;
+            else
+                secLinearIncrements++;
+        }
+        currentIncrements =
+                primLinearIncrements * primLinearIncrements * secLinearIncrements * secLinearIncrements *
+                blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex];
+    }
+    while (currentIncrements < totalIncrements);
+
+    fieldPrecision = PrecisionArguments(blockPrecisionCPUArray[primAngularArrayIndex], 1, 1,
+                                        incrementPrecisionCPUArray[primAngularArrayIndex],
+                                        primLinearIncrements, primLinearIncrements);
+    linearIncrements = secLinearIncrements;
 
 }
 
@@ -255,7 +346,7 @@ void Coil::calculateSelfInductance()
     selfInductance = 0.0;
 }
 
-std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, const PrecisionArguments &usedPrecision)
+std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
 {
     double magneticFieldZ = 0.0;
     double magneticFieldH = 0.0;
@@ -330,7 +421,7 @@ std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, con
     return output;
 }
 
-double Coil::calculateBFieldVertical(double zAxis, double rPolar, const PrecisionArguments &usedPrecision)
+double Coil::calculateBFieldVertical(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
 {
     double magneticFieldZ = 0.0;
     
@@ -396,7 +487,7 @@ double Coil::calculateBFieldVertical(double zAxis, double rPolar, const Precisio
     return magneticFieldZ;
 }
 
-double Coil::calculateBFieldHorizontal(double zAxis, double rPolar, const PrecisionArguments &usedPrecision)
+double Coil::calculateBFieldHorizontal(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
 {
     double magneticFieldH = 0.0;
     
@@ -462,7 +553,7 @@ double Coil::calculateBFieldHorizontal(double zAxis, double rPolar, const Precis
     return magneticFieldH;
 }
 
-double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArguments &usedPrecision)
+double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
 {
     double magneticPotential = 0.0;
 
@@ -527,44 +618,44 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
     return magneticPotential;
 }
 
-double Coil::computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi)
+double Coil::computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
     return calculateBFieldHorizontal(cylindricalZ, cylindricalR, precisionSettings) * cos(cylindricalPhi);
 }
 
 double Coil::computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                            const PrecisionArguments &usedPrecision)
+                            const PrecisionArguments &usedPrecision) const
 {
     return calculateBFieldHorizontal(cylindricalZ, cylindricalR, usedPrecision) * cos(cylindricalPhi);
 }
 
-double Coil::computeBFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi)
+double Coil::computeBFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
     return calculateBFieldHorizontal(cylindricalZ, cylindricalR, precisionSettings) * sin(cylindricalPhi);
 }
 
 double Coil::computeBFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                            const PrecisionArguments &usedPrecision)
+                            const PrecisionArguments &usedPrecision) const
 {
     return calculateBFieldHorizontal(cylindricalZ, cylindricalR, usedPrecision) * sin(cylindricalPhi);
 }
 
-double Coil::computeBFieldH(double cylindricalZ, double cylindricalR)
+double Coil::computeBFieldH(double cylindricalZ, double cylindricalR) const
 {
     return calculateBFieldHorizontal(cylindricalZ, cylindricalR, precisionSettings);
 }
 
-double Coil::computeBFieldH(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision)
+double Coil::computeBFieldH(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision) const
 {
     return calculateBFieldHorizontal(cylindricalZ, cylindricalR, usedPrecision);
 }
 
-double Coil::computeBFieldZ(double cylindricalZ, double cylindricalR)
+double Coil::computeBFieldZ(double cylindricalZ, double cylindricalR) const
 {
     return calculateBFieldVertical(cylindricalZ, cylindricalR, precisionSettings);
 }
 
-double Coil::computeBFieldZ(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision)
+double Coil::computeBFieldZ(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision) const
 {
     return calculateBFieldVertical(cylindricalZ, cylindricalR, usedPrecision);
 }
@@ -572,7 +663,7 @@ double Coil::computeBFieldZ(double cylindricalZ, double cylindricalR, const Prec
 
 
 std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                                              const PrecisionArguments &usedPrecision)
+                                              const PrecisionArguments &usedPrecision) const
 {
     std::vector<double> fieldVector;
     std::pair<double, double> fields = calculateBField(cylindricalZ, cylindricalR, usedPrecision);
@@ -583,45 +674,45 @@ std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylind
 
     return fieldVector;
 }
-std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi)
+std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
     return computeBFieldVector(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
 }
 
-double Coil::computeAPotentialX(double cylindricalZ, double cylindricalR, double cylindricalPhi)
+double Coil::computeAPotentialX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
     return (-1) * calculateAPotential(cylindricalZ, cylindricalR, precisionSettings) * sin(cylindricalPhi);
 }
 
 double Coil::computeAPotentialX(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                                const PrecisionArguments &usedPrecision)
+                                const PrecisionArguments &usedPrecision) const
 {
     return (-1) * calculateAPotential(cylindricalZ, cylindricalR, usedPrecision) * sin(cylindricalPhi);
 }
 
-double Coil::computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi)
+double Coil::computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
     return calculateAPotential(cylindricalZ, cylindricalR, precisionSettings) * cos(cylindricalPhi);
 }
 
 double Coil::computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                                const PrecisionArguments &usedPrecision)
+                                const PrecisionArguments &usedPrecision) const
 {
     return calculateAPotential(cylindricalZ, cylindricalR, usedPrecision) * cos(cylindricalPhi);
 }
 
-double Coil::computeAPotentialAbs(double cylindricalZ, double cylindricalR)
+double Coil::computeAPotentialAbs(double cylindricalZ, double cylindricalR) const
 {
     return calculateAPotential(cylindricalZ, cylindricalR, precisionSettings);
 }
 
-double Coil::computeAPotentialAbs(double cylindricalZ, double cylindricalR, PrecisionArguments &usedPrecision)
+double Coil::computeAPotentialAbs(double cylindricalZ, double cylindricalR, PrecisionArguments &usedPrecision) const
 {
     return calculateAPotential(cylindricalZ, cylindricalR, usedPrecision);
 }
 
 std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                                                  const PrecisionArguments &usedPrecision)
+                                                  const PrecisionArguments &usedPrecision) const
 {
     std::vector<double> potentialVector;
     double potential = calculateAPotential(cylindricalZ, cylindricalR, usedPrecision);
@@ -631,7 +722,7 @@ std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cy
     return potentialVector;
 }
 
-std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi)
+std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
     return computeAPotentialVector(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
 }
@@ -640,7 +731,7 @@ void Coil::calculateAllBFieldSINGLE(const std::vector<double> &cylindricalZArr,
                                     const std::vector<double> &cylindricalRArr,
                                     std::vector<double> &computedFieldHArr,
                                     std::vector<double> &computedFieldZArr,
-                                    const PrecisionArguments &usedPrecision)
+                                    const PrecisionArguments &usedPrecision) const
 {
     computedFieldHArr.resize(0);
     computedFieldZArr.resize(0);
@@ -656,7 +747,7 @@ void Coil::calculateAllBFieldSINGLE(const std::vector<double> &cylindricalZArr,
 void Coil::calculateAllBFieldVerticalSINGLE(const std::vector<double> &cylindricalZArr,
                                             const std::vector<double> &cylindricalRArr,
                                             std::vector<double> &computedFieldZArr,
-                                            const PrecisionArguments &usedPrecision)
+                                            const PrecisionArguments &usedPrecision) const
 {
     computedFieldZArr.resize(0);
 
@@ -670,7 +761,7 @@ void Coil::calculateAllBFieldVerticalSINGLE(const std::vector<double> &cylindric
 void Coil::calculateAllBFieldHorizontalSINGLE(const std::vector<double> &cylindricalZArr,
                                               const std::vector<double> &cylindricalRArr,
                                               std::vector<double> &computedFieldHArr,
-                                              const PrecisionArguments &usedPrecision)
+                                              const PrecisionArguments &usedPrecision) const
 {
     computedFieldHArr.resize(0);
 
@@ -684,7 +775,7 @@ void Coil::calculateAllBFieldHorizontalSINGLE(const std::vector<double> &cylindr
 void Coil::calculateAllAPotentialSINGLE(const std::vector<double> &cylindricalZArr,
                                         const std::vector<double> &cylindricalRArr,
                                         std::vector<double> &computedPotentialArr,
-                                        const PrecisionArguments &usedPrecision)
+                                        const PrecisionArguments &usedPrecision) const
 {
     computedPotentialArr.resize(0);
 
@@ -759,7 +850,7 @@ void Coil::calculateAllBFieldACCELERATED(const std::vector<double> &cylindricalZ
                                          const std::vector<double> &cylindricalRArr,
                                          std::vector<float> &computedFieldHArr,
                                          std::vector<float> &computedFieldZArr,
-                                         const PrecisionArguments &usedPrecision)
+                                         const PrecisionArguments &usedPrecision) const
 {
     std::vector<float> polarR;
     std::vector<float> polarTheta;
@@ -782,7 +873,7 @@ void Coil::calculateAllBFieldACCELERATED(const std::vector<double> &cylindricalZ
 void Coil::calculateAllAPotentialACCELERATED(const std::vector<double> &cylindricalZArr,
                                              const std::vector<double> &cylindricalRArr,
                                              std::vector<float> &computedPotentialArr,
-                                             const PrecisionArguments &usedPrecision)
+                                             const PrecisionArguments &usedPrecision) const
 {
     std::vector<float> polarR;
     std::vector<float> polarTheta;
@@ -809,7 +900,7 @@ void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
                              const std::vector<double> &cylindricalPhiArr,
                              std::vector<double> &computedFieldArr,
                              const PrecisionArguments &usedPrecision,
-                             ComputeMethod method)
+                             ComputeMethod method) const
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
@@ -849,7 +940,7 @@ void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
                              const std::vector<double> &cylindricalRArr,
                              const std::vector<double> &cylindricalPhiArr,
                              std::vector<double> &computedFieldArr,
-                             ComputeMethod method)
+                             ComputeMethod method) const
 {
     computeAllBFieldX(
             cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, precisionSettings, method);
@@ -860,7 +951,7 @@ void Coil::computeAllBFieldY(const std::vector<double> &cylindricalZArr,
                              const std::vector<double> &cylindricalPhiArr,
                              std::vector<double> &computedFieldArr,
                              const PrecisionArguments &usedPrecision,
-                             ComputeMethod method)
+                             ComputeMethod method) const
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
@@ -898,7 +989,7 @@ void Coil::computeAllBFieldY(const std::vector<double> &cylindricalZArr,
                              const std::vector<double> &cylindricalRArr,
                              const std::vector<double> &cylindricalPhiArr,
                              std::vector<double> &computedFieldArr,
-                             ComputeMethod method)
+                             ComputeMethod method) const
 {
     computeAllBFieldY(
             cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, precisionSettings, method);
@@ -909,7 +1000,7 @@ void Coil::computeAllBFieldH(const std::vector<double> &cylindricalZArr,
                              const std::vector<double> &cylindricalPhiArr,
                              std::vector<double> &computedFieldArr,
                              const PrecisionArguments &usedPrecision,
-                             ComputeMethod method)
+                             ComputeMethod method) const
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
@@ -940,7 +1031,7 @@ void Coil::computeAllBFieldH(const std::vector<double> &cylindricalZArr,
                              const std::vector<double> &cylindricalRArr,
                              const std::vector<double> &cylindricalPhiArr,
                              std::vector<double> &computedFieldArr,
-                             ComputeMethod method)
+                             ComputeMethod method) const
 {
     computeAllBFieldH(
             cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, precisionSettings, method);
@@ -951,7 +1042,7 @@ void Coil::computeAllBFieldZ(const std::vector<double> &cylindricalZArr,
                              const std::vector<double> &cylindricalPhiArr,
                              std::vector<double> &computedFieldArr,
                              const PrecisionArguments &usedPrecision,
-                             ComputeMethod method)
+                             ComputeMethod method) const
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
@@ -982,7 +1073,7 @@ void Coil::computeAllBFieldZ(const std::vector<double> &cylindricalZArr,
                              const std::vector<double> &cylindricalRArr,
                              const std::vector<double> &cylindricalPhiArr,
                              std::vector<double> &computedFieldArr,
-                             ComputeMethod method)
+                             ComputeMethod method) const
 {
     computeAllBFieldZ(
             cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, precisionSettings, method);
@@ -996,7 +1087,7 @@ Coil::computeAllBFieldComponents(const std::vector<double> &cylindricalZArr,
                                  std::vector<double> &computedFieldYArr,
                                  std::vector<double> &computedFieldZArr,
                                  const PrecisionArguments &usedPrecision,
-                                 ComputeMethod method)
+                                 ComputeMethod method) const
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
@@ -1048,7 +1139,7 @@ Coil::computeAllBFieldComponents(const std::vector<double> &cylindricalZArr,
                                  std::vector<double> &computedFieldXArr,
                                  std::vector<double> &computedFieldYArr,
                                  std::vector<double> &computedFieldZArr,
-                                 ComputeMethod method)
+                                 ComputeMethod method) const
 {
     computeAllBFieldComponents(
             cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
@@ -1061,7 +1152,7 @@ void Coil::computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
                                  const std::vector<double> &cylindricalPhiArr,
                                  std::vector<double> &computedPotentialArr,
                                  const PrecisionArguments &usedPrecision,
-                                 ComputeMethod method)
+                                 ComputeMethod method) const
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
@@ -1100,7 +1191,7 @@ void Coil::computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
                                  const std::vector<double> &cylindricalRArr,
                                  const std::vector<double> &cylindricalPhiArr,
                                  std::vector<double> &computedPotentialArr,
-                                 ComputeMethod method)
+                                 ComputeMethod method) const
 {
     computeAllAPotentialX(
             cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, precisionSettings, method);
@@ -1111,7 +1202,7 @@ void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
                                  const std::vector<double> &cylindricalPhiArr,
                                  std::vector<double> &computedPotentialArr,
                                  const PrecisionArguments &usedPrecision,
-                                 ComputeMethod method)
+                                 ComputeMethod method) const
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
@@ -1150,7 +1241,7 @@ void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
                                  const std::vector<double> &cylindricalRArr,
                                  const std::vector<double> &cylindricalPhiArr,
                                  std::vector<double> &computedPotentialArr,
-                                 ComputeMethod method)
+                                 ComputeMethod method) const
 {
     computeAllAPotentialY(
             cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, precisionSettings, method);
@@ -1161,7 +1252,7 @@ Coil::computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                               const std::vector<double> &cylindricalRArr,
                               std::vector<double> &computedPotentialArr,
                               const PrecisionArguments &usedPrecision,
-                              ComputeMethod method)
+                              ComputeMethod method) const
 {
     if (cylindricalZArr.size() == cylindricalRArr.size())
     {
@@ -1195,7 +1286,7 @@ void
 Coil::computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                               const std::vector<double> &cylindricalRArr,
                               std::vector<double> &computedPotentialArr,
-                              ComputeMethod method)
+                              ComputeMethod method) const
 {
     computeAllAPotentialAbs(
             cylindricalZArr, cylindricalRArr, computedPotentialArr, precisionSettings, method);
@@ -1208,7 +1299,7 @@ void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindrical
                                           std::vector<double> &computedPotentialYArr,
                                           std::vector<double> &computedPotentialZArr,
                                           const PrecisionArguments &usedPrecision,
-                                          ComputeMethod method)
+                                          ComputeMethod method) const
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
@@ -1257,44 +1348,50 @@ void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindrical
                                           std::vector<double> &computedPotentialXArr,
                                           std::vector<double> &computedPotentialYArr,
                                           std::vector<double> &computedPotentialZArr,
-                                          ComputeMethod method)
+                                          ComputeMethod method) const
 {
     computeAllAPotentialComponents(
             cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
             computedPotentialXArr, computedPotentialYArr, computedPotentialZArr, precisionSettings, method);
 }
 
-double Coil::computeMutualInductance(double zDisplacement, Coil secondary, ComputeMethod method)
+double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                     double precisionFactor, ComputeMethod method)
 {
+    PrecisionArguments precisionArguments;
+    int linearIncrements;
+
+    PrecisionArguments::getMutualInductancePrecisionSettingsZCPU(primary, secondary,
+                                                                 precisionFactor,
+                                                                 precisionArguments, linearIncrements);
+    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    linearIncrements--; //
+
     std::vector<double> zPositions;
     std::vector<double> rPositions;
 
     std::vector<double> weights;
 
-    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int zIncrements = secondary.precisionSettings.lengthIncrementCount - 1;
-    int rIncrements = secondary.precisionSettings.thicknessIncrementCount - 1;
-
-    for (int zIndex = 0; zIndex <= zIncrements; ++zIndex)
+    for (int zIndex = 0; zIndex <= linearIncrements; ++zIndex)
     {
-        for (int rIndex = 0; rIndex <= rIncrements; ++rIndex)
+        for (int rIndex = 0; rIndex <= linearIncrements; ++rIndex)
         {
             zPositions.push_back(zDisplacement + (secondary.length * 0.5) *
-            Legendre::positionMatrix[zIncrements][zIndex]);
+            Legendre::positionMatrix[linearIncrements][zIndex]);
 
             rPositions.push_back(secondary.innerRadius + secondary.thickness * 0.5 +
-            (secondary.thickness * 0.5) * Legendre::positionMatrix[rIncrements][rIndex]);
+            (secondary.thickness * 0.5) * Legendre::positionMatrix[linearIncrements][rIndex]);
 
             weights.push_back(0.25 *
-            Legendre::weightsMatrix[zIncrements][zIndex] *
-            Legendre::weightsMatrix[rIncrements][rIndex]);
+            Legendre::weightsMatrix[linearIncrements][zIndex] *
+            Legendre::weightsMatrix[linearIncrements][rIndex]);
         }
     }
 
     std::vector<double> potentialA;
     double mutualInductance = 0.0;
 
-    computeAllAPotentialAbs(zPositions, rPositions, potentialA, method);
+    primary.computeAllAPotentialAbs(zPositions, rPositions, potentialA, precisionArguments, method);
 
     for (int i = 0; i < potentialA.size(); ++i)
     {

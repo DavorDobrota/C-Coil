@@ -1,6 +1,3 @@
-//
-// Created by unit5 on 08/07/2021.
-//
 
 #include "LegendreMatrix.h"
 

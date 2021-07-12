@@ -9,11 +9,17 @@ extern thread_pool tp;
 
 int main(){
 
-//    testCoilMutualInductanceZAxis();
+    testCoilMutualInductanceZAxis();
 
-    for (int i = 51; i < 2000; ++i)
-        if (i % (i / 50 + 1) == 0 || i % 50 == 0)
-            printf("%d, ", i);
+//    for (int i = 1; i <= 5000; ++i)
+//        if (i % (i / 50 + 1) == 0 || i % 50 == 0 || i < 50)
+//        {
+//            if (i % 50 == 0)
+//                printf("%d, ", i / (i / 50));
+//            else
+//                printf("%d, ", i / (i / 50 + 1));
+//
+//        }
 
 
     /*

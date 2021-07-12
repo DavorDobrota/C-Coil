@@ -227,8 +227,7 @@ void testCoilMutualInductanceZAxis()
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
-    printf("%.20f\n\n", primary.computeMutualInductance(0.2, secondary));
-    printf("%.20f\n\n", primary.computeMutualInductance(0.2, secondary, GPU));
+    printf("%.20f\n\n", Coil::computeMutualInductance(primary, secondary, 0.2));
 
     FILE *input = fopen("values.txt", "r");
     FILE *output = fopen("output.txt", "w");
@@ -236,19 +235,19 @@ void testCoilMutualInductanceZAxis()
     double Rt1, at1, bt1; int Nt1;
     double Rt2, at2, bt2; int Nt2;
     double distance;
-    double Temp;
+    double temp;
 
     while (fscanf(input, "%lf %lf %lf %d %lf %lf %lf %d %lf", &Rt1, &at1, &bt1, &Nt1, &Rt2, &at2, &bt2, &Nt2, &distance) == 9)
     {
         printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
 
-        for (int i = 1; i <= 9; ++i)
+        for (double i = 1.0; i <= 7.0; i += 1.0)
         {
-            Coil prim1 = Coil(Rt1, at1, bt1, Nt1, PrecisionArguments(i, 1, 1, 12, 12, 12));
-            Coil sec1 = Coil(Rt2, at2, bt2, Nt2);
-            Temp = prim1.computeMutualInductance(distance, sec1);
-            printf("%.18f\n", Temp);
-            fprintf(output, "%.20f\t", Temp);
+            Coil prim = Coil(Rt1, at1, bt1, Nt1);
+            Coil sec = Coil(Rt2, at2, bt2, Nt2);
+            temp = Coil::computeMutualInductance(prim, sec, distance, i);
+            printf("%.18f\n", temp);
+            fprintf(output, "%.20f\t", temp);
         }
 
         printf("====================================================================================\n");
@@ -272,7 +271,7 @@ void testOldCoilMutualInductanceZAxis()
 
 	while (fscanf(input, "%lf %lf %lf %d %lf %lf %lf %d %lf", &Rt1, &at1, &bt1, &Nt1, &Rt2, &at2, &bt2, &Nt2, &distance) == 9){
 		printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
-		for (Type i = 1; i <= 9.0; i += 1.0){
+		for (Type i = 1.0; i <= 9.0; i += 1.0){
 			prim1 = OldCoil(1, Rt1, at1, bt1, 0.001, 12, 12, 80, Nt1, true, 100000, 1.63e-8);
 			sec1 = OldCoil(1, Rt2, at2, bt2, 0.001, 8, 8, 12, Nt2, true, 100000, 1.63e-8);
 			Temp = sec1.MutualInductanceCalc(distance, prim1, true, i);

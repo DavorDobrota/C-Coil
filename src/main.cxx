@@ -9,17 +9,11 @@ extern thread_pool tp;
 
 int main(){
 
-    testCoilMutualInductanceZAxis();
+//    testCoilMutualInductanceZAxis();
 
-//    for (int i = 1; i <= 5000; ++i)
-//        if (i % (i / 50 + 1) == 0 || i % 50 == 0 || i < 50)
-//        {
-//            if (i % 50 == 0)
-//                printf("%d, ", i / (i / 50));
-//            else
-//                printf("%d, ", i / (i / 50 + 1));
-//
-//        }
+//    testPerformanceForComputeAll();
+    testCoilMutualInductanceZAxisPerformance();
+    testOldCoilMutualInductanceZAxisPerformance();
 
 
     /*
@@ -32,19 +26,6 @@ int main(){
     }
     */
 
-//    OldCoil prim = OldCoil(1, 1.0, 0.1, 0.1, 0.001, 32, 32, 48, 100, true, 100000, ro1);
-//    OldCoil sec = OldCoil(1, 0.1, 0.1, 0.1, 0.001, 32, 32, 20, 100, true, 100000, ro1);
-//    int nOp = 2000;
-//    Type temp;
-//
-//    for (Type p = 1.0; p <= 9.0; p += 1.0){
-//        clock_t begin_time = clock();
-//        for (int i = 0; i < nOp; ++i){
-//            temp = prim.MutualInductanceCalc(0.2+0.00001*i, sec, true, p);
-//        }
-//        printf("%f\n", float(clock() - begin_time) / CLOCKS_PER_SEC / nOp * 1000);
-//    }
-
 /*
     float temp, theta = Pi/2, dist = 0.1;
     OldCoil test = OldCoil(1, 0.03, 0.03, 0.12, 0.001, 24, 24, 64, 3600, false, 0.0, 1.63e-8);
@@ -52,14 +33,6 @@ int main(){
     printf("%.15e", test.L);
 */
 
-    /*
-    for (int i = 4; i <= 128; i += 4){
-
-        prim = OldCoil(1, 0.2, 0.2, 0.2, 0.001, 8, 8, 48, 500, true, 100000, ro1);
-        sec = OldCoil(1, 0.21, 0.2, 0.2, 0.001, i ,i, 24, 500, true, 100000, ro1);
-        printf("%.15f\n", prim.MutualInductanceCalc(0.0, sec));
-    }
-    */
 
 /*	OldCoil prim = OldCoil(1, 0.071335, 0.01397, 0.142748, 0.001, 20, 20, 60, 1142, true, 1, ro1);
 	OldCoil sec = OldCoil(1, 0.096945, 0.041529, 0.02413, 0.001, 20, 20, 80, 516, true, 1, ro1);

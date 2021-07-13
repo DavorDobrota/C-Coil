@@ -8,7 +8,9 @@ void testPerformanceCPU_ST();
 void testPerformanceForComputeAll();
 void testMethodPrecisionCompareCPUvsGPU();
 void testCoilMutualInductanceZAxis();
+void testCoilMutualInductanceZAxisPerformance();
 void testOldCoilMutualInductanceZAxis();
+void testOldCoilMutualInductanceZAxisPerformance();
 
 
 #endif //GENERAL_COIL_PROGRAM_TEST_H

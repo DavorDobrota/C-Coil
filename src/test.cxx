@@ -258,6 +258,26 @@ void testCoilMutualInductanceZAxis()
     fclose(output);
 }
 
+void testCoilMutualInductanceZAxisPerformance()
+{
+    Coil primary = Coil(0.1, 0.1, 0.1, 100);
+    Coil secondary = Coil(0.3, 0.1, 0.1, 100);
+
+    int nOps = 100;
+    double temp;
+
+    for (double i = 1.0; i <= 7.0; i += 1.0)
+    {
+        int numOperations = nOps * pow(2, 16 + i);
+
+        clock_t begin_time = clock();
+        for (int j = 0; j < nOps; ++j)
+            temp = Coil::computeMutualInductance(primary, secondary, 0.2, i);
+        printf("inductance calc time for %.0f : %.1f ms\n", i, 1000 * (float(clock() - begin_time) / CLOCKS_PER_SEC / nOps));
+
+    }
+}
+
 void testOldCoilMutualInductanceZAxis()
 {
     FILE *input = fopen("values.txt", "r");
@@ -284,4 +304,20 @@ void testOldCoilMutualInductanceZAxis()
 
 	fclose(input);
 	fclose(output);
+}
+
+void testOldCoilMutualInductanceZAxisPerformance()
+{
+    OldCoil prim = OldCoil(1, 1.0, 0.1, 0.1, 0.001, 32, 32, 48, 100, true, 100000, 1.63e-8);
+    OldCoil sec = OldCoil(1, 0.1, 0.1, 0.1, 0.001, 32, 32, 20, 100, true, 100000, 1.63e-8);
+    int nOp = 1000;
+    Type temp;
+
+    for (Type p = 1.0; p <= 9.0; p += 1.0){
+        clock_t begin_time = clock();
+        for (int i = 0; i < nOp; ++i){
+            temp = prim.MutualInductanceCalc(0.2+0.00001*i, sec, true, p);
+        }
+        printf("inductance calc time for %.0f : %.2f ms\n", p, 1000 * float(clock() - begin_time) / CLOCKS_PER_SEC / nOp);
+    }
 }

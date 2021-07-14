@@ -321,3 +321,12 @@ void testOldCoilMutualInductanceZAxisPerformance()
         printf("inductance calc time for %.0f : %.2f ms\n", p, 1000 * float(clock() - begin_time) / CLOCKS_PER_SEC / nOp);
     }
 }
+
+void testCoilMutualInductanceGeneral()
+{
+    Coil primary = Coil(0.1, 0.1, 0.1, 100);
+    Coil secondary = Coil(0.3, 0.1, 0.1, 100);
+
+    printf("%.20f\n\n", Coil::computeMutualInductance(
+            primary, secondary, 0.2, 0.0000000000001, PrecisionFactor(5.2)));
+}

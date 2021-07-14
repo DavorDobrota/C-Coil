@@ -8,15 +8,23 @@ const int precisionArraySize = 300;
 
 class Coil;
 
+struct PrecisionFactor
+{
+    PrecisionFactor();
+    explicit PrecisionFactor(double relativePrecision);
+
+    double relativePrecision;
+};
+
 struct PrecisionArguments
 {
     PrecisionArguments();
     explicit PrecisionArguments(int numOfAngularBlocks, int numOfThicknessBlocks, int numOfLengthBlocks,
                        int numOfAngularIncrements, int numOfThicknessIncrements, int numOfLengthIncrements);
 
-    explicit PrecisionArguments(double precisionFactor);
+    explicit PrecisionArguments(double precisionForCoil);
 
-    double precisionFactor;
+    double precisionForCoil;
 
     int angularBlockCount;
     int thicknessBlockCount;
@@ -31,15 +39,16 @@ struct PrecisionArguments
         static const int incrementPrecisionCPUArray[precisionArraySize];
 
     public:
-        static void getMutualInductancePrecisionSettingsZCPU(const Coil &primCoil, const Coil &secCoil,
-                                                             double precisionFactor,
+        static void getMutualInductancePrecisionSettingsZCPU(const Coil &primary, const Coil &secondary,
+                                                             PrecisionFactor precisionFactor,
                                                              PrecisionArguments &fieldPrecision,
                                                              int &linearIncrements);
 
-        static void getMutualInductancePrecisionSettingsGeneralCPU(const Coil &primCoil, const Coil &secCoil,
-                                                                   double precisionFactor,
+        static void getMutualInductancePrecisionSettingsGeneralCPU(const Coil &primary, const Coil &secondary,
+                                                                   PrecisionFactor precisionFactor,
                                                                    PrecisionArguments &fieldPrecision,
-                                                                   int &linearIncrements, int &angularIncrements);
+                                                                   int &linearIncrements,
+                                                                   int &angularBlocks, int &angularIncrements);
 
     private:
         void genParametersFromPrecision();
@@ -267,20 +276,24 @@ class Coil
                                             ComputeMethod method = CPU_ST) const;
 
         static double computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                              double precisionFactor = 5.0, ComputeMethod method = CPU_ST);
+                                              PrecisionFactor precisionFactor = PrecisionFactor(),
+                                              ComputeMethod method = CPU_ST);
 
         static double computeMutualInductance(const Coil &primary, const Coil &secondary,
                                              double zDisplacement, double rDisplacement,
-                                             double precisionFactor = 5.0, ComputeMethod method = CPU_ST);
+                                             PrecisionFactor precisionFactor = PrecisionFactor(),
+                                             ComputeMethod method = CPU_ST);
 
         static double computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                              double zDisplacement, double rDisplacement, double primaryRotationAngle,
-                                              double precisionFactor = 5.0, ComputeMethod method = CPU_ST);
+                                              double zDisplacement, double rDisplacement, double alphaAngle,
+                                              PrecisionFactor precisionFactor = PrecisionFactor(),
+                                              ComputeMethod method = CPU_ST);
 
         static double computeMutualInductance(const Coil &primary, const Coil &secondary,
                                               double zDisplacement, double rDisplacement,
-                                              double primaryRotationAngle, double secondaryRotationAngle,
-                                              double precisionFactor = 5.0, ComputeMethod method = CPU_ST);
+                                              double alphaAngle, double betaAngle,
+                                              PrecisionFactor precisionFactor = PrecisionFactor(),
+                                              ComputeMethod method = CPU_ST);
 
 
 
@@ -292,14 +305,14 @@ class Coil
         void calculateImpedance();
         void calculateSelfInductance();
 
-        std::pair<double, double> calculateBField(double zAxis, double rPolar,
-                                                  const PrecisionArguments &precisionSettings) const;
-        double calculateBFieldVertical(double zAxis, double rPolar,
-                                       const PrecisionArguments &precisionSettings) const;
-        double calculateBFieldHorizontal(double zAxis, double rPolar,
-                                         const PrecisionArguments &precisionSettings) const;
-        double calculateAPotential(double zAxis, double rPolar,
-                                   const PrecisionArguments &precisionSettings) const;
+        [[nodiscard]] std::pair<double, double> calculateBField(double zAxis, double rPolar,
+                                                                const PrecisionArguments &precisionSettings) const;
+        [[nodiscard]] double calculateBFieldVertical(double zAxis, double rPolar,
+                                                     const PrecisionArguments &precisionSettings) const;
+        [[nodiscard]] double calculateBFieldHorizontal(double zAxis, double rPolar,
+                                                       const PrecisionArguments &precisionSettings) const;
+        [[nodiscard]] double calculateAPotential(double zAxis, double rPolar,
+                                                 const PrecisionArguments &precisionSettings) const;
 
         void calculateAllBFieldSINGLE(const std::vector<double> &cylindricalZArr,
                                       const std::vector<double> &cylindricalRArr,
@@ -329,6 +342,12 @@ class Coil
                                                const std::vector<double> &cylindricalRArr,
                                                std::vector<float> &computedPotentialArr,
                                                const PrecisionArguments &usedPrecision) const;
+
+        static void calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
+                                                   double alpha, double beta, double ringIntervalSize,
+                                                   std::vector<double> &ringXPosition,
+                                                   std::vector<double> &ringYPosition,
+                                                   std::vector<double> &ringZPosition);
 };
 
 #endif //GENERAL_COIL_PROGRAM_COIL_H

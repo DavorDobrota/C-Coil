@@ -115,19 +115,20 @@ const int PrecisionArguments::incrementPrecisionCPUArray[precisionArraySize] =
 
 PrecisionArguments::PrecisionArguments(double precisionForCoil)
 {
+    PrecisionArguments::precisionForCoil = precisionForCoil;
     genParametersFromPrecision();
 }
 
 void PrecisionArguments::genParametersFromPrecision()
 {
     //TODO - when further analysis is complete a method will be devised, until then
-    angularBlockCount = 2;
+    angularBlockCount = 1;
     lengthBlockCount = 1;
     thicknessBlockCount = 1;
 
-    angularIncrementCount = 12;
-    thicknessIncrementCount = 12;
-    lengthIncrementCount = 12;
+    angularIncrementCount = g_minPrimAngularIncrements;
+    thicknessIncrementCount = g_minPrimLinearIncrements;
+    lengthIncrementCount = g_minPrimLinearIncrements;
 }
 
 void PrecisionArguments::getMutualInductancePrecisionSettingsZCPU(const Coil &primary,
@@ -205,7 +206,7 @@ void PrecisionArguments::getMutualInductancePrecisionSettingsGeneralCPU(const Co
                                 primLinearIncrements;
 
         double secAngularStep =
-                PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
+                PI * (secondary.getInnerRadius() + secondary.getThickness() * 0.5) /
                 (blockPrecisionCPUArray[secAngularArrayIndex] *
                  incrementPrecisionCPUArray[secAngularArrayIndex]);
 
@@ -231,12 +232,6 @@ void PrecisionArguments::getMutualInductancePrecisionSettingsGeneralCPU(const Co
                 blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex] *
                 blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex];
 
-        printf("%d : %d %d %d %d\n", currentIncrements,
-               primLinearIncrements,
-               blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
-               secLinearIncrements,
-               blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
-
     }
     while (currentIncrements < totalIncrements);
 
@@ -246,6 +241,12 @@ void PrecisionArguments::getMutualInductancePrecisionSettingsGeneralCPU(const Co
     linearIncrements = secLinearIncrements;
     angularBlock = blockPrecisionCPUArray[secAngularArrayIndex];
     angularIncrements = incrementPrecisionCPUArray[secAngularArrayIndex];
+
+    printf("%d : %d %d %d %d\n", currentIncrements,
+           primLinearIncrements,
+           blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
+           secLinearIncrements,
+           blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 }
 
 
@@ -927,11 +928,15 @@ void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncremen
 
     double angularBlock = ringIntervalSize / angularBlocks;
 
-    for (int phiBlock = 0; phiBlock < angularBlocks; ++phiBlock)
+    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    angularBlocks--;
+    angularIncrements--;
+
+    for (int phiBlock = 0; phiBlock <= angularBlocks; ++phiBlock)
     {
         double blockPositionPhi = angularBlock * (phiBlock + 0.5);
 
-        for (int phiIndex = 0; phiIndex < angularIncrements; ++phiIndex)
+        for (int phiIndex = 0; phiIndex <= angularIncrements; ++phiIndex)
         {
             double phi = blockPositionPhi + (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][phiIndex];
 
@@ -1466,8 +1471,8 @@ Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
         PrecisionArguments::getMutualInductancePrecisionSettingsGeneralCPU(primary, secondary, precisionFactor,
                                                                            precisionArguments,linearIncrements,
                                                                            angularBlocks, angularIncrements);
-        // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-        linearIncrements--;
+
+        int numElements = linearIncrements * linearIncrements * angularBlocks * angularIncrements;
 
         // sometimes the function is even so a shortcut can be used to improve performance and efficiency
         double ringIntervalSize;
@@ -1477,21 +1482,24 @@ Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
         else
             ringIntervalSize = 2 * PI;
 
-        int numElements = linearIncrements * linearIncrements * angularBlocks * angularIncrements;
-
         std::vector <double> unitRingPointsX, unitRingPointsY, unitRingPointsZ;
 
         calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle, ringIntervalSize,
                                        unitRingPointsX, unitRingPointsY, unitRingPointsZ);
+
+        // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+        linearIncrements--;
+        angularBlocks--;
+        angularIncrements--;
 
         std::vector<double> zPositions;
         std::vector<double> rPositions;
 
         std::vector<double> weights;
 
-        for (int zIndex = 0; zIndex < linearIncrements; ++zIndex)
+        for (int zIndex = 0; zIndex <= linearIncrements; ++zIndex)
         {
-            for (int rIndex = 0; rIndex < linearIncrements; ++rIndex)
+            for (int rIndex = 0; rIndex <= linearIncrements; ++rIndex)
             {
                 double ringRadius = secondary.innerRadius + secondary.thickness * 0.5 +
                                     (secondary.thickness * 0.5) * Legendre::positionMatrix[linearIncrements][rIndex];
@@ -1499,27 +1507,31 @@ Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
                 double zCenter = zDisplacement +
                                  (secondary.length * 0.5) * Legendre::positionMatrix[linearIncrements][zIndex];
 
-                for (int phiIndex = 0; phiIndex < angularBlocks * angularIncrements; ++phiIndex)
+                for (int phiBlock = 0; phiBlock <= angularBlocks; ++phiBlock)
                 {
+                    for (int phiIndex = 0; phiIndex <= angularIncrements; ++phiIndex)
+                    {
+                        int phiPosition = phiBlock * (angularIncrements + 1) + phiIndex;
 
-                    double displacementX = rDisplacement + ringRadius * unitRingPointsX[phiIndex];
-                    double displacementY = ringRadius * unitRingPointsY[phiIndex];
-                    double displacementZ = zCenter + ringRadius * unitRingPointsZ[phiIndex];
+                        double displacementX = rDisplacement + ringRadius * unitRingPointsX[phiPosition];
+                        double displacementY = ringRadius * unitRingPointsY[phiPosition];
+                        double displacementZ = zCenter + ringRadius * unitRingPointsZ[phiPosition];
 
-                    zPositions.push_back(displacementZ);
-                    rPositions.push_back(sqrt(displacementX * displacementX + displacementY * displacementY));
+                        zPositions.push_back(displacementZ);
+                        rPositions.push_back(sqrt(displacementX * displacementX + displacementY * displacementY));
 
-                    double rhoAngle = atan2(displacementY, displacementX);
+                        double rhoAngle = atan2(displacementY, displacementX);
 
-                    double orientationFactor =
-                            cos(rhoAngle) * unitRingPointsX[phiIndex] +
-                            sin(rhoAngle) * unitRingPointsY[phiIndex];
+                        double orientationFactor =
+                                cos(rhoAngle) * unitRingPointsX[phiPosition] +
+                                sin(rhoAngle) * unitRingPointsY[phiPosition];
 
-                    weights.push_back(
-                            0.125 * orientationFactor * PI * ringRadius *
-                            Legendre::weightsMatrix[linearIncrements][zIndex] *
-                            Legendre::weightsMatrix[linearIncrements][rIndex] *
-                            Legendre::weightsMatrix[angularIncrements][phiIndex % angularIncrements]);
+                        weights.push_back(
+                                0.125 * orientationFactor * 2*PI * ringRadius / (angularBlocks + 1) *
+                                Legendre::weightsMatrix[linearIncrements][zIndex] *
+                                Legendre::weightsMatrix[linearIncrements][rIndex] *
+                                Legendre::weightsMatrix[angularIncrements][phiIndex]);
+                    }
                 }
             }
         }
@@ -1532,7 +1544,7 @@ Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
         for (int i = 0; i < numElements; ++i)
             mutualInductance += potentialArray[i] * weights[i];
 
-        return mutualInductance * secondary.numOfTurns * (2*PI / ringIntervalSize);
+        return mutualInductance * secondary.numOfTurns;
     }
 }
 

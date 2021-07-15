@@ -16,7 +16,7 @@ int main(){
 //    testCoilMutualInductanceZAxisPerformance();
 //    testOldCoilMutualInductanceZAxisPerformance();
 
-    testCoilMutualInductanceGeneral();
+    testCoilMutualInductanceGeneralVsZAxis();
 
 
     /*

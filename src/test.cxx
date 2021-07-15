@@ -245,7 +245,7 @@ void testCoilMutualInductanceZAxis()
         {
             Coil prim = Coil(Rt1, at1, bt1, Nt1);
             Coil sec = Coil(Rt2, at2, bt2, Nt2);
-            temp = Coil::computeMutualInductance(prim, sec, distance, i);
+            temp = Coil::computeMutualInductance(prim, sec, distance, PrecisionFactor(i));
             printf("%.18f\n", temp);
             fprintf(output, "%.20f\t", temp);
         }
@@ -272,7 +272,7 @@ void testCoilMutualInductanceZAxisPerformance()
 
         clock_t begin_time = clock();
         for (int j = 0; j < nOps; ++j)
-            temp = Coil::computeMutualInductance(primary, secondary, 0.2, i);
+            temp = Coil::computeMutualInductance(primary, secondary, 0.2, PrecisionFactor(i));
         printf("inductance calc time for %.0f : %.1f ms\n", i, 1000 * (float(clock() - begin_time) / CLOCKS_PER_SEC / nOps));
 
     }
@@ -322,11 +322,38 @@ void testOldCoilMutualInductanceZAxisPerformance()
     }
 }
 
-void testCoilMutualInductanceGeneral()
+void testCoilMutualInductanceGeneralVsZAxis()
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
-    printf("%.20f\n\n", Coil::computeMutualInductance(
-            primary, secondary, 0.2, 0.0000000000001, PrecisionFactor(5.2)));
+    printf("%.20f\n\n", Coil::computeMutualInductance(primary, secondary, 0.2, 1e-15));
+
+    FILE *input = fopen("values.txt", "r");
+    FILE *output = fopen("output.txt", "w");
+
+    double Rt1, at1, bt1; int Nt1;
+    double Rt2, at2, bt2; int Nt2;
+    double distance;
+    double temp;
+
+    while (fscanf(input, "%lf %lf %lf %d %lf %lf %lf %d %lf", &Rt1, &at1, &bt1, &Nt1, &Rt2, &at2, &bt2, &Nt2, &distance) == 9)
+    {
+        printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
+
+        for (double i = 1.0; i <= 7.0; i += 1.0)
+        {
+            Coil prim = Coil(Rt1, at1, bt1, Nt1);
+            Coil sec = Coil(Rt2, at2, bt2, Nt2);
+            temp = Coil::computeMutualInductance(prim, sec, distance, 1e-15, PrecisionFactor(i));
+            printf("%.18f\n", temp);
+            fprintf(output, "%.20f\t", temp);
+        }
+
+        printf("====================================================================================\n");
+        fprintf(output, "\n");
+    }
+
+    fclose(input);
+    fclose(output);
 }

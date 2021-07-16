@@ -29,10 +29,8 @@ namespace
 
     const int g_minPrimLinearIncrements = 12;
     const int g_minPrimAngularIncrements = 12;
-    const int g_minPrimAngularBlocks = 1;
     const int g_minSecLinearIncrements = 8;
     const int g_minSecAngularIncrements = 8;
-    const int g_minSecAngularBlocks = 1;
 }
 
 namespace Precision
@@ -42,6 +40,47 @@ namespace Precision
     const PrecisionArguments defaultPrecision_NORMAL = PrecisionArguments(2, 1, 1, 12, 12, 12);
     const PrecisionArguments defaultPrecision_PRECISE = PrecisionArguments(1, 1, 1, 48, 16, 16);
 }
+
+const int blockPrecisionCPUArray[precisionArraySize] =
+    {
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 9,
+        9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14,
+        15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 18, 18, 18, 19, 19, 19, 20, 20, 20, 21, 21, 21, 22, 22, 22, 23,
+        23, 23, 24, 24, 24, 25, 25, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33, 34, 34, 35, 35,
+        36, 36, 37, 37, 38, 38, 39, 39, 40, 40, 41, 41, 42, 42, 43, 43, 44, 44, 45, 45, 46, 46, 47, 47, 48, 48, 49,
+        49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75,
+        76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+    };
+
+const int incrementPrecisionCPUArray[precisionArraySize] =
+    {
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+        31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 26, 27, 28, 29, 30, 31, 32,
+        33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+        43, 44, 45, 46, 47, 48, 49, 50, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 41, 42, 43, 44, 45, 46,
+        47, 48, 49, 50, 42, 43, 44, 45, 46, 47, 48, 49, 50, 43, 44, 45, 46, 47, 48, 49, 50, 44, 45, 46, 47, 48, 49,
+        50, 45, 46, 47, 48, 49, 50, 46, 47, 48, 49, 50, 46, 47, 48, 49, 50, 46, 47, 48, 49, 50, 47, 48, 49, 50, 47,
+        48, 49, 50, 47, 48, 49, 50, 47, 48, 49, 50, 48, 49, 50, 48, 49, 50, 48, 49, 50, 48, 49, 50, 48, 49, 50, 48,
+        49, 50, 48, 49, 50, 48, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49,
+        50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50,
+        49, 50, 49, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
+    };
+
+
+PrecisionFactor::PrecisionFactor() : PrecisionFactor(g_defaultPrecisionFactor){}
+
+PrecisionFactor::PrecisionFactor(double relativePrecision)
+{
+    if (relativePrecision < g_minPrecisionFactor || relativePrecision > g_maxPrecisionFactor)
+        PrecisionFactor::relativePrecision = g_defaultPrecisionFactor;
+    else
+        PrecisionFactor::relativePrecision = relativePrecision;
+}
+
 
 PrecisionArguments::PrecisionArguments() : PrecisionArguments(g_defaultPrecision) {}
 
@@ -78,62 +117,48 @@ PrecisionArguments::PrecisionArguments(
     {
         PrecisionArguments::lengthBlockCount = g_defaultBlockCount;
     }
-
-    precisionForCoil = 0.0;
 }
 
-const int PrecisionArguments::blockPrecisionCPUArray[precisionArraySize] =
-        {
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-        2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 9,
-        9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14,
-        15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 18, 18, 18, 19, 19, 19, 20, 20, 20, 21, 21, 21, 22, 22, 22, 23,
-        23, 23, 24, 24, 24, 25, 25, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33, 34, 34, 35, 35,
-        36, 36, 37, 37, 38, 38, 39, 39, 40, 40, 41, 41, 42, 42, 43, 43, 44, 44, 45, 45, 46, 46, 47, 47, 48, 48, 49,
-        49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75,
-        76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99
-        };
-
-const int PrecisionArguments::incrementPrecisionCPUArray[precisionArraySize] =
-        {
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-        31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 26, 27, 28, 29, 30, 31, 32,
-        33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 34, 35, 36, 37, 38, 39, 40, 41, 42,
-        43, 44, 45, 46, 47, 48, 49, 50, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 41, 42, 43, 44, 45, 46,
-        47, 48, 49, 50, 42, 43, 44, 45, 46, 47, 48, 49, 50, 43, 44, 45, 46, 47, 48, 49, 50, 44, 45, 46, 47, 48, 49,
-        50, 45, 46, 47, 48, 49, 50, 46, 47, 48, 49, 50, 46, 47, 48, 49, 50, 46, 47, 48, 49, 50, 47, 48, 49, 50, 47,
-        48, 49, 50, 47, 48, 49, 50, 47, 48, 49, 50, 48, 49, 50, 48, 49, 50, 48, 49, 50, 48, 49, 50, 48, 49, 50, 48,
-        49, 50, 48, 49, 50, 48, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49,
-        50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50,
-        49, 50, 49, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
-        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
-        };
-
-PrecisionArguments::PrecisionArguments(double precisionForCoil)
+PrecisionArguments PrecisionArguments::getPrecisionArgumentsForCoilCPU(const Coil &coil, PrecisionFactor precisionFactor)
 {
-    PrecisionArguments::precisionForCoil = precisionForCoil;
-    genParametersFromPrecision();
+    int linearIncrements = g_minPrimLinearIncrements;
+    int angularArrayIndex = g_minPrimAngularIncrements - 1;
+
+    int totalIncrements = pow(2, 10 + precisionFactor.relativePrecision);
+    int currentIncrements;
+
+    do
+    {
+        double angularStep =
+                PI * (coil.getInnerRadius() + coil.getThickness() * 0.5) /
+                (blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex]);
+
+        double linearStep = sqrt(2 * coil.getThickness() * coil.getLength()) / linearIncrements;
+
+        if (angularStep / linearStep >= 1.0)
+            angularArrayIndex++;
+        else
+            linearStep++;
+
+        currentIncrements = linearIncrements * linearIncrements *
+                            blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex];
+    }
+    while (currentIncrements < totalIncrements);
+
+    return PrecisionArguments(blockPrecisionCPUArray[angularArrayIndex], 1, 1,
+                              incrementPrecisionCPUArray[angularArrayIndex], linearIncrements, linearIncrements);
 }
 
-void PrecisionArguments::genParametersFromPrecision()
+MInductanceArguments::MInductanceArguments() : MInductanceArguments(g_defaultPrecision, g_defaultPrecision) {}
+
+MInductanceArguments::MInductanceArguments(const PrecisionArguments &primaryPrecision,
+                                           const PrecisionArguments &secondaryPrecision)
 {
-    //TODO - when further analysis is complete a method will be devised, until then
-    angularBlockCount = 1;
-    lengthBlockCount = 1;
-    thicknessBlockCount = 1;
-
-    angularIncrementCount = g_minPrimAngularIncrements;
-    thicknessIncrementCount = g_minPrimLinearIncrements;
-    lengthIncrementCount = g_minPrimLinearIncrements;
+    MInductanceArguments::primaryPrecision = primaryPrecision;
+    MInductanceArguments::secondaryPrecision = secondaryPrecision;
 }
-
-void PrecisionArguments::getMutualInductancePrecisionSettingsZCPU(const Coil &primary,
-                                                                  const Coil &secondary,
-                                                                  PrecisionFactor precisionFactor,
-                                                                  PrecisionArguments &fieldPrecision,
-                                                                  int &linearIncrements)
+MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coil &primary, const Coil &secondary,
+                                                                       PrecisionFactor precisionFactor)
 {
     int primLinearIncrements = g_minPrimLinearIncrements;
     int secLinearIncrements = g_minSecLinearIncrements;
@@ -171,24 +196,23 @@ void PrecisionArguments::getMutualInductancePrecisionSettingsZCPU(const Coil &pr
     }
     while (currentIncrements < totalIncrements);
 
-    fieldPrecision = PrecisionArguments(blockPrecisionCPUArray[primAngularArrayIndex], 1, 1,
-                                        incrementPrecisionCPUArray[primAngularArrayIndex],
-                                        primLinearIncrements, primLinearIncrements);
-    linearIncrements = secLinearIncrements;
+    PrecisionArguments primaryPrecision = PrecisionArguments(blockPrecisionCPUArray[primAngularArrayIndex], 1, 1,
+                                                             incrementPrecisionCPUArray[primAngularArrayIndex],
+                                                             primLinearIncrements, primLinearIncrements);
+    PrecisionArguments secondaryPrecision = PrecisionArguments(0, 1, 1, 0,
+                                                               secLinearIncrements, secLinearIncrements);
 
+    return MInductanceArguments(primaryPrecision, secondaryPrecision);
 }
 
-void PrecisionArguments::getMutualInductancePrecisionSettingsGeneralCPU(const Coil &primary, const Coil &secondary,
-                                                                        PrecisionFactor precisionFactor,
-                                                                        PrecisionArguments &fieldPrecision,
-                                                                        int &linearIncrements,
-                                                                        int &angularBlock, int &angularIncrements)
+MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
+                                                                             PrecisionFactor precisionFactor)
 {
     int primLinearIncrements = g_minPrimLinearIncrements;
     int secLinearIncrements = g_minSecLinearIncrements;
 
     int primAngularArrayIndex = g_minPrimAngularIncrements - 1;
-    int secAngularArrayIndex = g_minSecLinearIncrements - 1;
+    int secAngularArrayIndex = g_minSecAngularIncrements - 1;
 
     int totalIncrements = pow(2, 20 + precisionFactor.relativePrecision);
     int currentIncrements;
@@ -209,7 +233,7 @@ void PrecisionArguments::getMutualInductancePrecisionSettingsGeneralCPU(const Co
                  incrementPrecisionCPUArray[secAngularArrayIndex]);
 
         double secLinearStep = sqrt(secondary.getThickness() * secondary.getLength()) /
-                                        secLinearIncrements;
+                               secLinearIncrements;
 
         if ((primLinearStep * secLinearStep) / (primAngularStep * secAngularStep) <= 1.0)
         {
@@ -233,43 +257,28 @@ void PrecisionArguments::getMutualInductancePrecisionSettingsGeneralCPU(const Co
     }
     while (currentIncrements < totalIncrements);
 
-    fieldPrecision = PrecisionArguments(blockPrecisionCPUArray[primAngularArrayIndex], 1, 1,
-                                        incrementPrecisionCPUArray[primAngularArrayIndex],
-                                        primLinearIncrements, primLinearIncrements);
-    linearIncrements = secLinearIncrements;
-    angularBlock = blockPrecisionCPUArray[secAngularArrayIndex];
-    angularIncrements = incrementPrecisionCPUArray[secAngularArrayIndex];
+    PrecisionArguments primaryPrecision = PrecisionArguments(blockPrecisionCPUArray[primAngularArrayIndex], 1, 1,
+                                                             incrementPrecisionCPUArray[primAngularArrayIndex],
+                                                             primLinearIncrements, primLinearIncrements);
+
+    PrecisionArguments secondaryPrecision = PrecisionArguments(blockPrecisionCPUArray[secAngularArrayIndex], 1, 1,
+                                                               incrementPrecisionCPUArray[secAngularArrayIndex],
+                                                               secLinearIncrements, secLinearIncrements);
 
     printf("%d : %d %d %d %d\n", currentIncrements,
            primLinearIncrements,
            blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
            secLinearIncrements,
            blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
+
+    return MInductanceArguments(primaryPrecision, secondaryPrecision);
 }
-
-
-
-PrecisionFactor::PrecisionFactor(double relativePrecision)
-{
-    if (relativePrecision < g_minPrecisionFactor)
-        PrecisionFactor::relativePrecision = g_minPrecisionFactor;
-
-    else if (relativePrecision > g_maxPrecisionFactor)
-        PrecisionFactor::relativePrecision = g_maxPrecisionFactor;
-
-    else
-        PrecisionFactor::relativePrecision = relativePrecision;
-}
-
-PrecisionFactor::PrecisionFactor() : PrecisionFactor(g_defaultPrecisionFactor) {}
-
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings) :
            innerRadius(innerRadius), thickness(thickness), length(length), numOfTurns(numOfTurns),
            precisionSettings(precisionSettings)
 {
-
     setCurrent(current);
     calculateAverageWireThickness();
     setWireResistivity(wireResistivity);
@@ -1163,6 +1172,7 @@ void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindrical
             computedPotentialXArr, computedPotentialYArr, computedPotentialZArr, precisionSettings, method);
 }
 
+
 void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
                                           double alpha, double beta, double ringIntervalSize,
                                           std::vector<double> &ringXPosition,
@@ -1194,15 +1204,12 @@ void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncremen
     }
 }
 
-double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                     PrecisionFactor precisionFactor, ComputeMethod method)
+double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                            MInductanceArguments inductanceArguments, ComputeMethod method)
 {
-    PrecisionArguments precisionArguments;
-    int linearIncrements;
+    PrecisionArguments primaryPrecisionArguments = inductanceArguments.primaryPrecision;
+    int linearIncrements = inductanceArguments.secondaryPrecision.lengthIncrementCount;
 
-    PrecisionArguments::getMutualInductancePrecisionSettingsZCPU(primary, secondary,
-                                                                 precisionFactor,
-                                                                 precisionArguments, linearIncrements);
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int maxLinearIndex = linearIncrements -1;
 
@@ -1216,10 +1223,10 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
         for (int rIndex = 0; rIndex < linearIncrements; ++rIndex)
         {
             zPositions.push_back(zDisplacement + (secondary.length * 0.5) *
-            Legendre::positionMatrix[maxLinearIndex][zIndex]);
+                                                 Legendre::positionMatrix[maxLinearIndex][zIndex]);
 
             rPositions.push_back(secondary.innerRadius + secondary.thickness * 0.5 +
-            (secondary.thickness * 0.5) * Legendre::positionMatrix[maxLinearIndex][rIndex]);
+                                 (secondary.thickness * 0.5) * Legendre::positionMatrix[maxLinearIndex][rIndex]);
 
             weights.push_back(
                     0.25 * Legendre::weightsMatrix[maxLinearIndex][zIndex] *
@@ -1230,7 +1237,7 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
     std::vector<double> potentialA;
     double mutualInductance = 0.0;
 
-    primary.computeAllAPotentialAbs(zPositions, rPositions, potentialA, precisionArguments, method);
+    primary.computeAllAPotentialAbs(zPositions, rPositions, potentialA, primaryPrecisionArguments, method);
 
     for (int i = 0; i < potentialA.size(); ++i)
     {
@@ -1240,26 +1247,20 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
     return mutualInductance * secondary.numOfTurns;
 }
 
-double
-Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
-                              double zDisplacement, double rDisplacement,
-                              double alphaAngle, double betaAngle,
-                              PrecisionFactor precisionFactor, ComputeMethod method)
+double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
+                                              double zDisplacement, double rDisplacement,
+                                              double alphaAngle, double betaAngle,
+                                              MInductanceArguments inductanceArguments, ComputeMethod method)
 {
     if (rDisplacement == 0.0 && alphaAngle == 0.0)
     {
-        return computeMutualInductance(primary, secondary, zDisplacement, precisionFactor, method);
+        return calculateMutualInductanceZAxis(primary, secondary, zDisplacement, inductanceArguments, method);
     }
-    else
-    {
-        PrecisionArguments precisionArguments;
-        int linearIncrements;
-        int angularBlocks;
-        int angularIncrements;
-
-        PrecisionArguments::getMutualInductancePrecisionSettingsGeneralCPU(primary, secondary, precisionFactor,
-                                                                           precisionArguments,linearIncrements,
-                                                                           angularBlocks, angularIncrements);
+    else {
+        PrecisionArguments primaryPrecisionArguments = inductanceArguments.primaryPrecision;
+        int linearIncrements = inductanceArguments.secondaryPrecision.lengthIncrementCount;
+        int angularBlocks = inductanceArguments.secondaryPrecision.angularBlockCount;
+        int angularIncrements = inductanceArguments.secondaryPrecision.angularIncrementCount;
 
         int numElements = linearIncrements * linearIncrements * angularBlocks * angularIncrements;
 
@@ -1271,7 +1272,7 @@ Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
         else
             ringIntervalSize = 2 * PI;
 
-        std::vector <double> unitRingPointsX, unitRingPointsY, unitRingPointsZ;
+        std::vector<double> unitRingPointsX, unitRingPointsY, unitRingPointsZ;
 
         calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle, ringIntervalSize,
                                        unitRingPointsX, unitRingPointsY, unitRingPointsZ);
@@ -1285,20 +1286,16 @@ Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
 
         std::vector<double> weights;
 
-        for (int zIndex = 0; zIndex < linearIncrements; ++zIndex)
-        {
-            for (int rIndex = 0; rIndex < linearIncrements; ++rIndex)
-            {
+        for (int zIndex = 0; zIndex < linearIncrements; ++zIndex) {
+            for (int rIndex = 0; rIndex < linearIncrements; ++rIndex) {
                 double ringRadius = secondary.innerRadius + secondary.thickness * 0.5 +
                                     (secondary.thickness * 0.5) * Legendre::positionMatrix[maxLinearIndex][rIndex];
 
                 double zCenter = zDisplacement +
                                  (secondary.length * 0.5) * Legendre::positionMatrix[maxLinearIndex][zIndex];
 
-                for (int phiBlock = 0; phiBlock < angularBlocks; ++phiBlock)
-                {
-                    for (int phiIndex = 0; phiIndex < angularIncrements; ++phiIndex)
-                    {
+                for (int phiBlock = 0; phiBlock < angularBlocks; ++phiBlock) {
+                    for (int phiIndex = 0; phiIndex < angularIncrements; ++phiIndex) {
                         int phiPosition = phiBlock * angularIncrements + phiIndex;
 
                         double displacementX = rDisplacement + ringRadius * unitRingPointsX[phiPosition];
@@ -1315,7 +1312,7 @@ Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
                                 sin(rhoAngle) * unitRingPointsY[phiPosition];
 
                         weights.push_back(
-                                0.125 * orientationFactor * 2*PI * ringRadius / angularBlocks  *
+                                0.125 * orientationFactor * 2 * PI * ringRadius / angularBlocks *
                                 Legendre::weightsMatrix[maxLinearIndex][zIndex] *
                                 Legendre::weightsMatrix[maxLinearIndex][rIndex] *
                                 Legendre::weightsMatrix[maxAngularIncrementIndex][phiIndex]);
@@ -1327,7 +1324,7 @@ Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
         std::vector<double> potentialArray;
         double mutualInductance = 0.0;
 
-        primary.computeAllAPotentialAbs(zPositions, rPositions, potentialArray, precisionArguments, method);
+        primary.computeAllAPotentialAbs(zPositions, rPositions, potentialArray, primaryPrecisionArguments, method);
 
         for (int i = 0; i < numElements; ++i)
             mutualInductance += potentialArray[i] * weights[i];
@@ -1336,18 +1333,3 @@ Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
     }
 }
 
-double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                     double zDisplacement, double rDisplacement,
-                                     PrecisionFactor precisionFactor, ComputeMethod method)
-{
-    return computeMutualInductance(primary, secondary, zDisplacement, rDisplacement,
-                                   0.0, 0.0, precisionFactor, method);
-}
-
-double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                     double zDisplacement, double rDisplacement, double alphaAngle,
-                                     PrecisionFactor precisionFactor, ComputeMethod method)
-{
-    return computeMutualInductance(primary, secondary, zDisplacement, rDisplacement,
-                                   alphaAngle, 0.0, precisionFactor, method);
-}

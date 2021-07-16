@@ -294,7 +294,7 @@ class Coil
                                               PrecisionFactor precisionFactor = PrecisionFactor(),
                                               ComputeMethod method = CPU_ST);
         static double computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                              MInductanceArguments precisionFactor, ComputeMethod method = CPU_ST);
+                                              MInductanceArguments inductanceArguments, ComputeMethod method = CPU_ST);
 
         static double computeMutualInductance(const Coil &primary, const Coil &secondary,
                                               double zDisplacement, double rDisplacement,
@@ -302,7 +302,7 @@ class Coil
                                               ComputeMethod method = CPU_ST);
         static double computeMutualInductance(const Coil &primary, const Coil &secondary,
                                               double zDisplacement, double rDisplacement,
-                                              MInductanceArguments precisionFactor, ComputeMethod method = CPU_ST);
+                                              MInductanceArguments inductanceArguments, ComputeMethod method = CPU_ST);
 
         static double computeMutualInductance(const Coil &primary, const Coil &secondary,
                                               double zDisplacement, double rDisplacement, double alphaAngle,
@@ -310,7 +310,7 @@ class Coil
                                               ComputeMethod method = CPU_ST);
         static double computeMutualInductance(const Coil &primary, const Coil &secondary,
                                               double zDisplacement, double rDisplacement, double alphaAngle,
-                                              MInductanceArguments precisionFactor, ComputeMethod method = CPU_ST);
+                                              MInductanceArguments inductanceArguments, ComputeMethod method = CPU_ST);
 
         static double computeMutualInductance(const Coil &primary, const Coil &secondary,
                                               double zDisplacement, double rDisplacement,
@@ -320,7 +320,7 @@ class Coil
         static double computeMutualInductance(const Coil &primary, const Coil &secondary,
                                               double zDisplacement, double rDisplacement,
                                               double alphaAngle, double betaAngle,
-                                              MInductanceArguments precisionFactor, ComputeMethod method = CPU_ST);
+                                              MInductanceArguments inductanceArguments, ComputeMethod method = CPU_ST);
 
     private:
         void calculateMagneticMoment();

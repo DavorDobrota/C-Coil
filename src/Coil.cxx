@@ -1,7 +1,6 @@
 
 #include <cmath>
 #include <cstdio>
-#include <cmath>
 #include <vector>
 #include <functional>
 
@@ -1331,5 +1330,67 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
 
         return mutualInductance * secondary.numOfTurns;
     }
+}
+
+double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                     MInductanceArguments inductanceArguments, ComputeMethod method)
+{
+    return calculateMutualInductanceGeneral(primary, secondary, zDisplacement,
+                                            0.0, 0.0, 0.0, inductanceArguments, method);
+}
+
+double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                     PrecisionFactor precisionFactor, ComputeMethod method)
+{
+    MInductanceArguments args = MInductanceArguments::getMInductanceArgumentsZCPU(primary, secondary, precisionFactor);
+    return computeMutualInductance(primary, secondary, zDisplacement, args, method);
+}
+
+double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
+                                     double zDisplacement, double rDisplacement,
+                                     MInductanceArguments inductanceArguments, ComputeMethod method)
+{
+    return calculateMutualInductanceGeneral(primary, secondary, zDisplacement, rDisplacement,
+                                            0.0, 0.0, inductanceArguments, method);
+}
+
+double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
+                                     double zDisplacement, double rDisplacement,
+                                     PrecisionFactor precisionFactor, ComputeMethod method)
+{
+    MInductanceArguments args = MInductanceArguments::getMInductanceArgumentsGeneralCPU(primary, secondary, precisionFactor);
+    return computeMutualInductance(primary, secondary, zDisplacement, rDisplacement, args, method);
+}
+
+double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
+                                     double zDisplacement, double rDisplacement, double alphaAngle,
+                                     MInductanceArguments inductanceArguments, ComputeMethod method)
+{
+    return calculateMutualInductanceGeneral(primary, secondary, zDisplacement, rDisplacement, alphaAngle,
+                                            0.0, inductanceArguments, method);
+}
+
+double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
+                                     double zDisplacement, double rDisplacement, double alphaAngle,
+                                     PrecisionFactor precisionFactor, ComputeMethod method)
+{
+    MInductanceArguments args = MInductanceArguments::getMInductanceArgumentsGeneralCPU(primary, secondary, precisionFactor);
+    return computeMutualInductance(primary, secondary, zDisplacement, rDisplacement, alphaAngle, args, method);
+}
+
+double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
+                                     double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
+                                     MInductanceArguments inductanceArguments, ComputeMethod method)
+{
+    return calculateMutualInductanceGeneral(primary, secondary, zDisplacement, rDisplacement, alphaAngle, betaAngle,
+                                            inductanceArguments, method);
+}
+
+double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
+                                     double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
+                                     PrecisionFactor precisionFactor, ComputeMethod method)
+{
+    MInductanceArguments args = MInductanceArguments::getMInductanceArgumentsGeneralCPU(primary, secondary, precisionFactor);
+    return computeMutualInductance(primary, secondary, zDisplacement, rDisplacement, alphaAngle, betaAngle, args, method);
 }
 

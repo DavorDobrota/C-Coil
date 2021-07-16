@@ -21,7 +21,7 @@ namespace
     const double g_defaultCurrent = 1.0;
     const double g_defaultResistivity = 1.63e-8;
     const double g_defaultSineFrequency = 50;
-    const PrecisionArguments g_defaultPrecision = PrecisionArguments(4, 1, 1, 14, 14, 14);
+    const PrecisionArguments g_defaultPrecision = PrecisionArguments(2, 1, 1, 12, 12, 12);
 
     const double g_minPrecisionFactor = 1.0;
     const double g_maxPrecisionFactor = 7.0;
@@ -618,7 +618,7 @@ double Coil::computeBFieldAbs(double cylindricalZ, double cylindricalR, const Pr
 
 double Coil::computeBFieldAbs(double cylindricalZ, double cylindricalR) const
 {
-    computeBFieldAbs(cylindricalZ, cylindricalR, precisionSettings);
+    return computeBFieldAbs(cylindricalZ, cylindricalR, precisionSettings);
 }
 
 std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
@@ -804,11 +804,11 @@ void Coil::calculateAllBFieldSwitch(const std::vector<double> &cylindricalZArr,
     {
         case GPU:
             calculateAllBFieldGPU(cylindricalZArr, cylindricalRArr,
-                                  computedFieldHArr, computedFieldHArr, usedPrecision);
+                                  computedFieldHArr, computedFieldZArr, usedPrecision);
             break;
         case CPU_MT:
             calculateAllBFieldMT(cylindricalZArr, cylindricalRArr,
-                                 computedFieldHArr, computedFieldHArr, usedPrecision);
+                                 computedFieldHArr, computedFieldZArr, usedPrecision);
             break;
         default:
             calculateAllBFieldST(cylindricalZArr, cylindricalRArr,
@@ -952,7 +952,7 @@ void Coil::computeAllBFieldZ(const std::vector<double> &cylindricalZArr,
             cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, precisionSettings, method);
 }
 
-double Coil::computeAllBFieldAbs(const std::vector<double> &cylindricalZArr,
+void Coil::computeAllBFieldAbs(const std::vector<double> &cylindricalZArr,
                                  const std::vector<double> &cylindricalRArr,
                                  const std::vector<double> &cylindricalPhiArr,
                                  std::vector<double> &computedFieldArr,

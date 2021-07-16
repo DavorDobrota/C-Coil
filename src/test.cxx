@@ -79,28 +79,28 @@ void testPerformanceCPU_ST()
     for (int i = 0; i < nOp; ++i){
         temp1 = testCoil.computeBFieldVector(i*0.000001, 0.0, 0.0);
     }
-    printf("combined B  : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time1) / CLOCKS_PER_SEC / numOperations));
+    printf("combined B  : %.1f MInc/s\n", 1e-6/ (float(clock() - begin_time1) / CLOCKS_PER_SEC / numOperations));
 
     double temp2;
     clock_t begin_time2 = clock();
     for (int i = 0; i < nOp; ++i){
         temp2 = testCoil.computeBFieldH(0.0, 0.0);
     }
-    printf("field Bh    : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time2) / CLOCKS_PER_SEC / numOperations));
+    printf("field Bh    : %.1f <Inc/s\n", 1e-6 / (float(clock() - begin_time2) / CLOCKS_PER_SEC / numOperations));
 
     double temp3;
     clock_t begin_time3 = clock();
     for (int i = 0; i < nOp; ++i){
         temp3 = testCoil.computeBFieldH(0.0, 0.0);
     }
-    printf("field Bz    : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time3) / CLOCKS_PER_SEC / numOperations));
+    printf("field Bz    : %.1f MInc/s\n", 1e-6 / (float(clock() - begin_time3) / CLOCKS_PER_SEC / numOperations));
 
     double temp4;
     clock_t begin_time4 = clock();
     for (int i = 0; i < nOp; ++i){
         temp4 = testCoil.computeAPotentialAbs(i*0.000001, 0.0);
     }
-    printf("potential A : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time4) / CLOCKS_PER_SEC / numOperations));
+    printf("potential A : %.0f MInc/s\n", 1e-6 / (float(clock() - begin_time4) / CLOCKS_PER_SEC / numOperations));
 
 }
 
@@ -146,12 +146,12 @@ void testPerformanceForComputeAll()
     testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
                                         singleResultsX, singleResultsY, singleResultsZ,
                                         CPU_ST);
-    printf("combined  B CPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time11) / CLOCKS_PER_SEC / numOperations));
+    printf("combined  B CPU : %.1f MInc/s\n", 1e-6 / (float(clock() - begin_time11) / CLOCKS_PER_SEC / numOperations));
 
     clock_t begin_time12 = clock();
     testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
                                      singlePotential, CPU_ST);
-    printf("Potential A CPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time12) / CLOCKS_PER_SEC / numOperations));
+    printf("Potential A CPU : %.1f MInc/s\n", 1e-6 / (float(clock() - begin_time12) / CLOCKS_PER_SEC / numOperations));
 
     testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
@@ -161,12 +161,12 @@ void testPerformanceForComputeAll()
     testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
                                         GPU);
-    printf("combined  B GPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time13) / CLOCKS_PER_SEC / numOperationsGpu));
+    printf("combined  B GPU : %.1f MInc/s\n", 1e-6 / (float(clock() - begin_time13) / CLOCKS_PER_SEC / numOperationsGpu));
 
     clock_t begin_time14 = clock();
     testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
                                      acceleratedPotential, GPU);
-    printf("Potential A GPU : %.0f kInc/s\n", 0.001 / (float(clock() - begin_time14) / CLOCKS_PER_SEC / numOperationsGpu));
+    printf("Potential A GPU : %.1f MInc/s\n", 1e-6 / (float(clock() - begin_time14) / CLOCKS_PER_SEC / numOperationsGpu));
 }
 
 void testMethodPrecisionCompareCPUvsGPU()

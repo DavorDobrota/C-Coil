@@ -218,12 +218,12 @@ class Coil
                                  std::vector<double> &computedFieldArr,
                                  ComputeMethod method = CPU_ST) const;
 
-        double computeAllBFieldAbs(const std::vector<double> &cylindricalZArr,
-                                   const std::vector<double> &cylindricalRArr,
-                                   const std::vector<double> &cylindricalPhiArr,
-                                   std::vector<double> &computedFieldArr,
-                                   const PrecisionArguments &usedPrecision,
-                                   ComputeMethod method = CPU_ST) const;
+        void computeAllBFieldAbs(const std::vector<double> &cylindricalZArr,
+                                 const std::vector<double> &cylindricalRArr,
+                                 const std::vector<double> &cylindricalPhiArr,
+                                 std::vector<double> &computedFieldArr,
+                                 const PrecisionArguments &usedPrecision,
+                                 ComputeMethod method = CPU_ST) const;
 
         void computeAllBFieldComponents(const std::vector<double> &cylindricalZArr,
                                         const std::vector<double> &cylindricalRArr,
@@ -342,10 +342,10 @@ class Coil
                                   std::vector<double> &computedFieldZArr,
                                   const PrecisionArguments &usedPrecision) const;
 
-    void calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
-                                  const std::vector<double> &cylindricalRArr,
-                                  std::vector<double> &computedPotentialArr,
-                                  const PrecisionArguments &usedPrecision) const;
+        void calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
+                                      const std::vector<double> &cylindricalRArr,
+                                      std::vector<double> &computedPotentialArr,
+                                      const PrecisionArguments &usedPrecision) const;
 
         void calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
                                    const std::vector<double> &cylindricalRArr,

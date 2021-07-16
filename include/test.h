@@ -17,7 +17,7 @@ void testCoilMutualInductanceZAxisPerformance();
 void testOldCoilMutualInductanceZAxis();
 void testOldCoilMutualInductanceZAxisPerformance();
 
-void testCoilMutualInductanceGeneralVsZAxis();
+void testCoilMutualInductanceGeneralForZAxis();
 
 
 #endif //GENERAL_COIL_PROGRAM_TEST_H

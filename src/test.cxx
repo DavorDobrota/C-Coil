@@ -7,7 +7,6 @@
 #include "Coil.h"
 #include "OldCoil.h"
 #include "Precision.h"
-#include "LegendreMatrix.h"
 #include "ComputeMethod.h"
 
 void testLegendrePolynomials()
@@ -322,7 +321,7 @@ void testOldCoilMutualInductanceZAxisPerformance()
     }
 }
 
-void testCoilMutualInductanceGeneralVsZAxis()
+void testCoilMutualInductanceGeneralForZAxis()
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
@@ -357,3 +356,4 @@ void testCoilMutualInductanceGeneralVsZAxis()
     fclose(input);
     fclose(output);
 }
+

@@ -8,8 +8,8 @@ extern thread_pool tp;
 
 int main(){
 
-    testPerformanceForComputeAll();
-    testCoilMutualInductanceZAxis();
+//    testPerformanceForComputeAll();
+//    testCoilMutualInductanceZAxis();
 
 //    testCoilMutualInductanceZAxisPerformance();
 //    testOldCoilMutualInductanceZAxisPerformance();
@@ -44,28 +44,23 @@ int main(){
 //	Coil secondary = Coil(0.096945, 0.041529, 0.02413, 516);
 //
 //	printf("%.15f\n", Coil::computeMutualInductance(primary, secondary,
-//                                                    0.07366, 0.30988, MInductanceArguments(4.0)));
-//
-//	Coil primaryGeneral = Coil(0.06, 1e-18, 0.12, 120);
-//	Coil secondaryGeneral = Coil(0.05, 1e-18, 1e-18, 1);
-//
-//	for (int i = 0; i <= 10; i++){
-//        printf("%.15f\n", Coil::computeMutualInductance(primaryGeneral, secondaryGeneral,
-//                                                        0.0, 0.0,
-//                                                        acos(i * 0.1), MInductanceArguments(6.0)));
-//	}
-//
+//                                                    0.07366, 0.30988, PrecisionFactor(4.0)));
+
+	Coil primaryGeneral = Coil(0.06, 1e-18, 0.12, 120);
+	Coil secondaryGeneral = Coil(0.05, 1e-18, 1e-18, 1);
+
+	MInductanceArguments inductanceArguments = MInductanceArguments(PrecisionArguments(10, 1, 1, 50, 1, 24),
+                                                                    PrecisionArguments(10, 1, 1, 50, 1, 1));
+
+	for (int i = 0; i <= 10; i++){
+	    printf("%.18f: ", acos(i * 0.1));
+        printf("%.15f\n", Coil::computeMutualInductance(primaryGeneral, secondaryGeneral,
+                                                        0.03, 0.0,
+                                                        acos(i * 0.1), 0.0, inductanceArguments));
+	}
+
 //    printf("%.15f\n", Coil::computeMutualInductance(primaryGeneral, secondaryGeneral,
-//                                                    0.0, 0.0,  MInductanceArguments(7.0)));
-//
-//    printf("%.15f\n", Coil::computeMutualInductance(primaryGeneral, secondaryGeneral,
-//                                                    0.03, 0.0, MInductanceArguments(7.0)));
-//
-//    printf("%.15f\n", Coil::computeMutualInductance(primaryGeneral, secondaryGeneral,
-//                                                    0.06, 0.0, MInductanceArguments(7.0)));
-//
-//    printf("%.15f\n", Coil::computeMutualInductance(primaryGeneral, secondaryGeneral,
-//                                                    0.12, 0.0, MInductanceArguments(7.0)));
+//                                                    0.0, 0.0,  PrecisionFactor(7.0)));
 
 
 

@@ -386,7 +386,10 @@ class Coil
                                                    double alpha, double beta, double ringIntervalSize,
                                                    std::vector<double> &ringXPosition,
                                                    std::vector<double> &ringYPosition,
-                                                   std::vector<double> &ringZPosition);
+                                                   std::vector<double> &ringZPosition,
+                                                   std::vector<double> &ringXTangent,
+                                                   std::vector<double> &ringYTangent,
+                                                   std::vector<double> &ringZTangent);
 
         static double calculateMutualInductanceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                      MInductanceArguments inductanceArguments,

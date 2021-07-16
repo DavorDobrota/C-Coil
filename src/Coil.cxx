@@ -666,7 +666,7 @@ double Coil::computeAPotentialY(double cylindricalZ, double cylindricalR, double
 
 double Coil::computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
-    return computeAPotentialY(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);;
+    return computeAPotentialY(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
 }
 
 double Coil::computeAPotentialAbs(double cylindricalZ, double cylindricalR) const
@@ -1176,11 +1176,18 @@ void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncremen
                                           double alpha, double beta, double ringIntervalSize,
                                           std::vector<double> &ringXPosition,
                                           std::vector<double> &ringYPosition,
-                                          std::vector<double> &ringZPosition)
+                                          std::vector<double> &ringZPosition,
+                                          std::vector<double> &ringXTangent,
+                                          std::vector<double> &ringYTangent,
+                                          std::vector<double> &ringZTangent)
 {
     ringXPosition.resize(0);
     ringYPosition.resize(0);
     ringZPosition.resize(0);
+
+    ringXTangent.resize(0);
+    ringYTangent.resize(0);
+    ringZTangent.resize(0);
 
     double angularBlock = ringIntervalSize / angularBlocks;
 
@@ -1199,6 +1206,10 @@ void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncremen
             ringXPosition.push_back(cos(beta) * cos(phi) - sin(beta) * cos(alpha) * sin(phi));
             ringYPosition.push_back(sin(beta) * cos(phi) + cos(beta) * cos(alpha) * sin(phi));
             ringZPosition.push_back(sin(alpha) * sin(phi));
+
+            ringXTangent.push_back((-1) * cos(beta) * sin(phi) - sin(beta) * cos(alpha) * cos(phi));
+            ringYTangent.push_back((-1) * sin(beta) * sin(phi) + cos(beta) * cos(alpha) * cos(phi));
+            ringZTangent.push_back(sin(alpha) * cos(phi));
         }
     }
 }
@@ -1266,15 +1277,17 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
         // sometimes the function is even so a shortcut can be used to improve performance and efficiency
         double ringIntervalSize;
 
-        if (alphaAngle == 0 || betaAngle == 0 || rDisplacement == 0)
+        if (alphaAngle == 0)
             ringIntervalSize = PI;
         else
             ringIntervalSize = 2 * PI;
 
         std::vector<double> unitRingPointsX, unitRingPointsY, unitRingPointsZ;
+        std::vector<double> unitRingTangentsX, unitRingTangentsY, unitRingTangentsZ;
 
         calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle, ringIntervalSize,
-                                       unitRingPointsX, unitRingPointsY, unitRingPointsZ);
+                                       unitRingPointsX, unitRingPointsY, unitRingPointsZ,
+                                       unitRingTangentsX, unitRingTangentsY, unitRingTangentsZ);
 
         // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
         int maxLinearIndex = linearIncrements - 1;
@@ -1307,14 +1320,18 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
                         double rhoAngle = atan2(displacementY, displacementX);
 
                         double orientationFactor =
-                                cos(rhoAngle) * unitRingPointsX[phiPosition] +
-                                sin(rhoAngle) * unitRingPointsY[phiPosition];
+                                - sin(rhoAngle) * unitRingTangentsX[phiPosition] +
+                                cos(rhoAngle) * unitRingTangentsY[phiPosition];
 
                         weights.push_back(
                                 0.125 * orientationFactor * 2 * PI * ringRadius / angularBlocks *
                                 Legendre::weightsMatrix[maxLinearIndex][zIndex] *
                                 Legendre::weightsMatrix[maxLinearIndex][rIndex] *
                                 Legendre::weightsMatrix[maxAngularIncrementIndex][phiIndex]);
+
+//                        printf("%.18f %.18f %.18f : %.18f %.18f\n",
+//                               displacementX, displacementY, displacementZ,
+//                               rhoAngle, orientationFactor);
                     }
                 }
             }

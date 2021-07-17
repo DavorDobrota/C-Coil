@@ -16,8 +16,11 @@ void testCoilMutualInductanceZAxisPerformance();
 
 void testOldCoilMutualInductanceZAxis();
 void testOldCoilMutualInductanceZAxisPerformance();
+void testOldCoilMutualInductanceGeneralPerformance();
+void testOldCoilSelfInductance();
 
 void testCoilMutualInductanceGeneralForZAxis();
+void testCoilMutualInductanceForSpecialCase();
 void testCoilMutualInductanceGeneralThinCoilAndFilament();
 void testCoilMutualInductanceGeneralThinCoilAndThinCoil();
 

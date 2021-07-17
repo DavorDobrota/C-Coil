@@ -321,6 +321,32 @@ void testOldCoilMutualInductanceZAxisPerformance()
     }
 }
 
+void testOldCoilMutualInductanceGeneralPerformance()
+{
+
+    OldCoil prim = OldCoil(1, 0.071335, 0.01397, 0.142748, 0.001, 20, 20, 60, 1142, true, 1, 1.63e-8);
+    OldCoil sec = OldCoil(1, 0.096945, 0.041529, 0.02413, 0.001, 20, 20, 80, 516, true, 1, 1.63e-8);
+
+    int nOp = 10;
+	double temp;
+
+    clock_t begin_time = clock();
+    for (int i = 0; i < nOp; ++i){
+        temp = prim.MutualInductanceGeneralCalc(sec, 0.5+0.0001*i, 0.0, 0.0, 0.0, true, 2.0);
+    }
+    printf("%f\n", float(clock() - begin_time) / CLOCKS_PER_SEC / nOp * 1000);
+}
+
+void testOldCoilSelfInductance()
+{
+
+    float temp, theta = Pi/2, dist = 0.1;
+    OldCoil test = OldCoil(1, 0.03, 0.03, 0.12, 0.001, 24, 24, 64, 3600, false, 0.0, 1.63e-8);
+    test.newSelfInductanceCalc();
+    printf("%.15e", test.L);
+
+}
+
 void testCoilMutualInductanceGeneralForZAxis()
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
@@ -355,6 +381,21 @@ void testCoilMutualInductanceGeneralForZAxis()
 
     fclose(input);
     fclose(output);
+}
+
+void testCoilMutualInductanceForSpecialCase()
+{
+    OldCoil prim = OldCoil(1, 0.071335, 0.01397, 0.142748, 0.001, 20, 20, 60, 1142, true, 1, 1.63e-8);
+	OldCoil sec = OldCoil(1, 0.096945, 0.041529, 0.02413, 0.001, 20, 20, 80, 516, true, 1, 1.63e-8);
+
+	printf("%.15f\n", prim.MutualInductanceGeneralCalc(sec, 0.07366, 0.30988, 0.0, 0.0, true, 4.5));
+
+	Coil primary = Coil(0.071335, 0.01397, 0.142748, 1142);
+	Coil secondary = Coil(0.096945, 0.041529, 0.02413, 516);
+
+	printf("%.15f\n", Coil::computeMutualInductance(primary, secondary,
+                                                    0.07366, 0.30988,
+                                                    PrecisionFactor(4.0)));
 }
 
 void testCoilMutualInductanceGeneralThinCoilAndFilament()
@@ -415,3 +456,4 @@ void testCoilMutualInductanceGeneralThinCoilAndThinCoil()
     printf("\n");
 
 }
+

@@ -18,6 +18,8 @@ void testOldCoilMutualInductanceZAxis();
 void testOldCoilMutualInductanceZAxisPerformance();
 
 void testCoilMutualInductanceGeneralForZAxis();
+void testCoilMutualInductanceGeneralThinCoilAndFilament();
+void testCoilMutualInductanceGeneralThinCoilAndThinCoil();
 
 
 #endif //GENERAL_COIL_PROGRAM_TEST_H

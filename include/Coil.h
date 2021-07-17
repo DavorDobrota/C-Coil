@@ -22,8 +22,8 @@ struct PrecisionFactor
 struct PrecisionArguments
 {
     PrecisionArguments();
-    explicit PrecisionArguments(int numOfAngularBlocks, int numOfThicknessBlocks, int numOfLengthBlocks,
-                       int numOfAngularIncrements, int numOfThicknessIncrements, int numOfLengthIncrements);
+    explicit PrecisionArguments(int angularBlocks, int thicknessBlocks, int lengthBlocks,
+                                int angularIncrements, int thicknessIncrements, int lengthIncrements);
 
     int angularBlockCount;
     int thicknessBlockCount;
@@ -33,8 +33,7 @@ struct PrecisionArguments
     int thicknessIncrementCount;
     int lengthIncrementCount;
 
-    private:
-        static PrecisionArguments getPrecisionArgumentsForCoilCPU(const Coil &coil, PrecisionFactor precisionFactor);
+    static PrecisionArguments getPrecisionArgumentsForCoilCPU(const Coil &coil, PrecisionFactor precisionFactor);
 };
 
 struct MInductanceArguments
@@ -46,11 +45,10 @@ struct MInductanceArguments
     PrecisionArguments primaryPrecision;
     PrecisionArguments secondaryPrecision;
 
-    public:
-        static MInductanceArguments getMInductanceArgumentsZCPU(const Coil &primary, const Coil &secondary,
+    static MInductanceArguments getMInductanceArgumentsZCPU(const Coil &primary, const Coil &secondary,
                                                                 PrecisionFactor precisionFactor);
 
-        static MInductanceArguments getMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
+    static MInductanceArguments getMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
                                                                       PrecisionFactor precisionFactor);
 };
 
@@ -143,7 +141,7 @@ class Coil
 
         double computeBFieldAbs(double cylindricalZ, double cylindricalR) const;
         double computeBFieldAbs(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision) const;
-
+        // TODO - replace vector
         std::vector<double> computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
         std::vector<double> computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
                                                 const PrecisionArguments &usedPrecision) const;
@@ -158,7 +156,7 @@ class Coil
 
         double computeAPotentialAbs(double cylindricalZ, double cylindricalR) const;
         double computeAPotentialAbs(double cylindricalZ, double cylindricalR, PrecisionArguments &usedPrecision) const;
-
+        // TODO - replace vector
         std::vector<double> computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
         std::vector<double> computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
                                                     const PrecisionArguments &usedPrecision) const;

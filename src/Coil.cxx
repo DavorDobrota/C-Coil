@@ -84,35 +84,35 @@ PrecisionFactor::PrecisionFactor(double relativePrecision)
 PrecisionArguments::PrecisionArguments() : PrecisionArguments(g_defaultPrecision) {}
 
 PrecisionArguments::PrecisionArguments(
-        int numOfAngularBlocks, int numOfThicknessBlocks, int numOfLengthBlocks,
-        int numOfAngularIncrements, int numOfThicknessIncrements, int numOfLengthIncrements) :
-        angularBlockCount(numOfAngularBlocks), thicknessBlockCount(numOfThicknessBlocks),
-        lengthBlockCount(numOfLengthBlocks), angularIncrementCount(numOfAngularIncrements),
-        thicknessIncrementCount(numOfThicknessIncrements), lengthIncrementCount(numOfLengthIncrements)
+        int angularBlocks, int thicknessBlocks, int lengthBlocks,
+        int angularIncrements, int thicknessIncrements, int lengthIncrements) :
+        angularBlockCount(angularBlocks), thicknessBlockCount(thicknessBlocks),
+        lengthBlockCount(lengthBlocks), angularIncrementCount(angularIncrements),
+        thicknessIncrementCount(thicknessIncrements), lengthIncrementCount(lengthIncrements)
 {
     //TODO - fix constructor calls from main
-    if (numOfAngularIncrements > Legendre::maxLegendreOrder || numOfAngularIncrements < 1)
+    if (angularIncrements > Legendre::maxLegendreOrder || angularIncrements < 1)
     {
         PrecisionArguments::angularIncrementCount = g_defaultLegendreOrder;
     }
-    if (numOfThicknessIncrements >= Legendre::maxLegendreOrder || numOfThicknessIncrements < 1)
+    if (thicknessIncrements >= Legendre::maxLegendreOrder || thicknessIncrements < 1)
     {
         PrecisionArguments::thicknessIncrementCount = g_defaultLegendreOrder;
     }
-    if (numOfLengthIncrements >= Legendre::maxLegendreOrder || numOfLengthIncrements < 1)
+    if (lengthIncrements >= Legendre::maxLegendreOrder || lengthIncrements < 1)
     {
         PrecisionArguments::lengthIncrementCount = g_defaultLegendreOrder;
     }
 
-    if (numOfAngularBlocks < 1)
+    if (angularBlocks < 1)
     {
         PrecisionArguments::angularBlockCount = g_defaultBlockCount;
     }
-    if (numOfThicknessBlocks < 1)
+    if (thicknessBlocks < 1)
     {
         PrecisionArguments::thicknessBlockCount = g_defaultBlockCount;
     }
-    if (numOfLengthIncrements < 1)
+    if (lengthIncrements < 1)
     {
         PrecisionArguments::lengthBlockCount = g_defaultBlockCount;
     }
@@ -1201,7 +1201,9 @@ void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncremen
 
         for (int phiIndex = 0; phiIndex <= angularIncrements; ++phiIndex)
         {
-            double phi = blockPositionPhi + (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][phiIndex];
+            // PI/2 added to readjust to an even interval so a shortcut can be used
+            double phi = PI/2 + blockPositionPhi +
+                    (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][phiIndex];
 
             ringXPosition.push_back(cos(beta) * cos(phi) - sin(beta) * cos(alpha) * sin(phi));
             ringYPosition.push_back(sin(beta) * cos(phi) + cos(beta) * cos(alpha) * sin(phi));
@@ -1277,7 +1279,7 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
         // sometimes the function is even so a shortcut can be used to improve performance and efficiency
         double ringIntervalSize;
 
-        if (alphaAngle == 0)
+        if (alphaAngle == 0 || betaAngle == 0)
             ringIntervalSize = PI;
         else
             ringIntervalSize = 2 * PI;
@@ -1298,16 +1300,20 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
 
         std::vector<double> weights;
 
-        for (int zIndex = 0; zIndex < linearIncrements; ++zIndex) {
-            for (int rIndex = 0; rIndex < linearIncrements; ++rIndex) {
+        for (int zIndex = 0; zIndex < linearIncrements; ++zIndex)
+        {
+            for (int rIndex = 0; rIndex < linearIncrements; ++rIndex)
+            {
                 double ringRadius = secondary.innerRadius + secondary.thickness * 0.5 +
                                     (secondary.thickness * 0.5) * Legendre::positionMatrix[maxLinearIndex][rIndex];
 
                 double zCenter = zDisplacement +
                                  (secondary.length * 0.5) * Legendre::positionMatrix[maxLinearIndex][zIndex];
 
-                for (int phiBlock = 0; phiBlock < angularBlocks; ++phiBlock) {
-                    for (int phiIndex = 0; phiIndex < angularIncrements; ++phiIndex) {
+                for (int phiBlock = 0; phiBlock < angularBlocks; ++phiBlock)
+                {
+                    for (int phiIndex = 0; phiIndex < angularIncrements; ++phiIndex)
+                    {
                         int phiPosition = phiBlock * angularIncrements + phiIndex;
 
                         double displacementX = rDisplacement + ringRadius * unitRingPointsX[phiPosition];
@@ -1336,7 +1342,6 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
                 }
             }
         }
-
         std::vector<double> potentialArray;
         double mutualInductance = 0.0;
 

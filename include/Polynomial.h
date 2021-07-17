@@ -4,13 +4,12 @@
 
 #include <vector>
 
-
 class Polynomial
 {
 private:
-    constexpr static int size = 100;
+    constexpr static int size = 25;
     constexpr static int steps = 50;
-    constexpr static double tolerance = 1e-9;
+    constexpr static double tolerance = 1e-10;
 
     std::vector<double> coefficients;
 

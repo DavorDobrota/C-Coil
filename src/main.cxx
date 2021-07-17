@@ -8,8 +8,6 @@ extern thread_pool tp;
 
 int main(){
 
-    testCoilMutualInductanceGeneralThinCoilAndFilament();
-    testCoilMutualInductanceGeneralThinCoilAndThinCoil();
 
     /*
     for (int i = 4; i <= 120; i += 4){

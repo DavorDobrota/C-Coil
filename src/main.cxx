@@ -8,7 +8,10 @@ extern thread_pool tp;
 
 int main(){
 
-
+    testCoilMutualInductanceGeneralThinCoilAndFilament();
+    testCoilMutualInductanceGeneralThinCoilAndThinCoil();
+    testCoilMutualInductanceGeneralPancakeAndPancake();
+    testCoilMutualInductanceGeneralRectangularAndFilament();
 
     return 0;
 }

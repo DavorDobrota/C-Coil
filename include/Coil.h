@@ -2,6 +2,8 @@
 #ifndef GENERAL_COIL_PROGRAM_COIL_H
 #define GENERAL_COIL_PROGRAM_COIL_H
 
+#include <vector>
+
 #include "ComputeMethod.h"
 
 const int precisionArraySize = 300;

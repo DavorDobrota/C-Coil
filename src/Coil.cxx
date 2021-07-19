@@ -24,13 +24,13 @@ namespace
     const PrecisionArguments g_defaultPrecision = PrecisionArguments(2, 1, 1, 12, 12, 12);
 
     const double g_minPrecisionFactor = 1.0;
-    const double g_maxPrecisionFactor = 7.0;
+    const double g_maxPrecisionFactor = 8.0;
     const double g_defaultPrecisionFactor = 5.0;
 
-    const int g_minPrimLinearIncrements = 12;
-    const int g_minPrimAngularIncrements = 12;
-    const int g_minSecLinearIncrements = 8;
-    const int g_minSecAngularIncrements = 8;
+    const int g_minPrimLinearIncrements = 1;
+    const int g_minPrimAngularIncrements = 1;
+    const int g_minSecLinearIncrements = 1;
+    const int g_minSecAngularIncrements = 1;
 }
 
 namespace Precision
@@ -174,15 +174,14 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coi
 
     int primAngularArrayIndex = g_minPrimAngularIncrements - 1;
 
-    int totalIncrements = pow(2, 16 + precisionFactor.relativePrecision);
+    int totalIncrements = pow(2, 15 + precisionFactor.relativePrecision);
     int currentIncrements;
 
     do
     {
         double primAngularStep =
                 PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
-                (blockPrecisionCPUArray[primAngularArrayIndex] *
-                 incrementPrecisionCPUArray[primAngularArrayIndex]);
+                (blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex]);
 
         double primLinearStep = sqrt(2 * primary.getThickness() * primary.getLength()) /
                                 primLinearIncrements;
@@ -211,10 +210,10 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coi
     PrecisionArguments secondaryPrecision = PrecisionArguments(0, 1, 1, 0,
                                                                secLinearIncrements, secLinearIncrements);
 
-    printf("%d : %d %d %d\n", currentIncrements,
-           primLinearIncrements,
-           blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
-           secLinearIncrements);
+//    printf("%d : %d %d %d\n", currentIncrements,
+//           primLinearIncrements,
+//           blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
+//           secLinearIncrements);
 
     return MInductanceArguments(primaryPrecision, secondaryPrecision);
 }
@@ -234,20 +233,16 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
     do
     {
         double primAngularStep =
-                sqrt(2) * PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
-                (blockPrecisionCPUArray[primAngularArrayIndex] *
-                 incrementPrecisionCPUArray[primAngularArrayIndex]);
+                PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
+                (blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex]);
 
-        double primLinearStep = sqrt(2 * primary.getThickness() * primary.getLength()) /
-                                primLinearIncrements;
+        double primLinearStep = sqrt(2 * primary.getThickness() * primary.getLength()) / primLinearIncrements;
 
         double secAngularStep =
                 PI * (secondary.getInnerRadius() + secondary.getThickness() * 0.5) /
-                (blockPrecisionCPUArray[secAngularArrayIndex] *
-                 incrementPrecisionCPUArray[secAngularArrayIndex]);
+                (blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
-        double secLinearStep = sqrt(secondary.getThickness() * secondary.getLength()) /
-                               secLinearIncrements;
+        double secLinearStep = sqrt(secondary.getThickness() * secondary.getLength()) / secLinearIncrements;
 
         if ((primLinearStep * secLinearStep) / (primAngularStep * secAngularStep) <= 1.0)
         {
@@ -279,11 +274,11 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                                                                incrementPrecisionCPUArray[secAngularArrayIndex],
                                                                secLinearIncrements, secLinearIncrements);
 
-    printf("%d : %d %d %d %d\n", currentIncrements,
-           primLinearIncrements,
-           blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
-           secLinearIncrements,
-           blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
+//    printf("%d : %d %d %d %d\n", currentIncrements,
+//           primLinearIncrements,
+//           blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
+//           secLinearIncrements,
+//           blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
     return MInductanceArguments(primaryPrecision, secondaryPrecision);
 }
@@ -1329,8 +1324,6 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
 
                 double lengthDisplacement = (secondary.length * 0.5) * Legendre::positionMatrix[maxLengthIndex][zIndex];
 
-            //    printf("%d %d : %.15f %.15f\n", zIndex, rIndex, ringRadius, lengthDisplacement);
-
                 for (int phiBlock = 0; phiBlock < angularBlocks; ++phiBlock)
                 {
                     for (int phiIndex = 0; phiIndex < angularIncrements; ++phiIndex)
@@ -1360,11 +1353,6 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
                                 Legendre::weightsMatrix[maxLengthIndex][zIndex] *
                                 Legendre::weightsMatrix[maxThicknessIndex][rIndex] *
                                 Legendre::weightsMatrix[maxAngularIncrementIndex][phiIndex]);
-
-//                        if (zIndex == maxLengthIndex && rIndex == maxThicknessIndex)
-//                        printf("%d | %.12f %.12f %.12f : %.18f %.18f\n", phiPosition,
-//                               unitRingPointsX[phiPosition], unitRingPointsY[phiPosition], unitRingPointsZ[phiPosition],
-//                               rhoAngle, orientationFactor);
                     }
                 }
             }

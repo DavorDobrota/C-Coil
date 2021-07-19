@@ -8,7 +8,9 @@ extern thread_pool tp;
 
 int main(){
 
-    testCoilMutualInductanceZAxis();
+//    testCoilMutualInductanceZAxis();
+//    testCoilMutualInductanceZAxisPerformance();
+
 
     return 0;
 }

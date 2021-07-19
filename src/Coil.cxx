@@ -8,7 +8,6 @@
 #include "ComputeMethod.h"
 #include "hardware_acceleration.h"
 #include "LegendreMatrix.h"
-#include "Conversion_Util.h"
 
 namespace
 {
@@ -102,30 +101,23 @@ PrecisionArguments::PrecisionArguments(
 {
     //TODO - fix constructor calls from main
     if (angularIncrements > Legendre::maxLegendreOrder || angularIncrements < 1)
-    {
         PrecisionArguments::angularIncrementCount = g_defaultLegendreOrder;
-    }
+
     if (thicknessIncrements >= Legendre::maxLegendreOrder || thicknessIncrements < 1)
-    {
         PrecisionArguments::thicknessIncrementCount = g_defaultLegendreOrder;
-    }
+
     if (lengthIncrements >= Legendre::maxLegendreOrder || lengthIncrements < 1)
-    {
         PrecisionArguments::lengthIncrementCount = g_defaultLegendreOrder;
-    }
+
 
     if (angularBlocks < 1)
-    {
         PrecisionArguments::angularBlockCount = g_defaultBlockCount;
-    }
+
     if (thicknessBlocks < 1)
-    {
         PrecisionArguments::thicknessBlockCount = g_defaultBlockCount;
-    }
+
     if (lengthIncrements < 1)
-    {
         PrecisionArguments::lengthBlockCount = g_defaultBlockCount;
-    }
 }
 
 PrecisionArguments PrecisionArguments::getPrecisionArgumentsForCoilCPU(const Coil &coil, PrecisionFactor precisionFactor)
@@ -685,7 +677,7 @@ double Coil::computeAPotentialAbs(double cylindricalZ, double cylindricalR) cons
     return calculateAPotential(cylindricalZ, cylindricalR, precisionSettings);
 }
 
-double Coil::computeAPotentialAbs(double cylindricalZ, double cylindricalR, PrecisionArguments &usedPrecision) const
+double Coil::computeAPotentialAbs(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision) const
 {
     return calculateAPotential(cylindricalZ, cylindricalR, usedPrecision);
 }
@@ -698,6 +690,7 @@ std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cy
 
     potentialVector.push_back(potential * (-sin(cylindricalPhi)));
     potentialVector.push_back(potential * cos(cylindricalPhi));
+    potentialVector.push_back(0.0);
     return potentialVector;
 }
 
@@ -705,6 +698,56 @@ std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cy
 {
     return computeAPotentialVector(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
 }
+
+double Coil::computeEFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                            const PrecisionArguments &usedPrecision) const
+{
+    return 2*PI * sineFrequency * computeAPotentialX(cylindricalZ, cylindricalR, cylindricalPhi, usedPrecision);
+}
+
+double Coil::computeEFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
+{
+    return computeEFieldX(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+}
+
+double Coil::computeEFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                            const PrecisionArguments &usedPrecision) const
+{
+    return 2*PI * sineFrequency * computeAPotentialY(cylindricalZ, cylindricalR, cylindricalPhi, usedPrecision);
+}
+
+double Coil::computeEFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
+{
+    return computeEFieldY(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+}
+
+double Coil::computeEFieldAbs(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision) const
+{
+    return 2*PI * sineFrequency * computeAPotentialAbs(cylindricalZ, cylindricalR, usedPrecision);
+}
+
+double Coil::computeEFieldAbs(double cylindricalZ, double cylindricalR) const
+{
+    return computeEFieldAbs(cylindricalZ, cylindricalR, precisionSettings);
+}
+
+std::vector<double> Coil::computeEFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                              const PrecisionArguments &usedPrecision) const
+{
+    std::vector<double> potentialVector;
+    double potential = computeEFieldAbs(cylindricalZ, cylindricalR, usedPrecision);
+
+    potentialVector.push_back(potential * (-sin(cylindricalPhi)));
+    potentialVector.push_back(potential * cos(cylindricalPhi));
+    potentialVector.push_back(0.0);
+    return potentialVector;
+}
+
+std::vector<double> Coil::computeEFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
+{
+    computeEFieldVector(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+}
+
 
 void Coil::calculateAllBFieldST(const std::vector<double> &cylindricalZArr,
                                 const std::vector<double> &cylindricalRArr,
@@ -853,6 +896,7 @@ void Coil::calculateAllAPotentialSwitch(const std::vector<double> &cylindricalZA
             calculateAllAPotentialST(cylindricalZArr, cylindricalRArr, computedPotentialArr, usedPrecision);
     }
 }
+
 
 void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
                              const std::vector<double> &cylindricalRArr,
@@ -1182,6 +1226,60 @@ void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindrical
             computedPotentialXArr, computedPotentialYArr, computedPotentialZArr, precisionSettings, method);
 }
 
+void Coil::computeAllEFieldX(const std::vector<double> &cylindricalZArr, const std::vector<double> &cylindricalRArr,
+                             const std::vector<double> &cylindricalPhiArr, std::vector<double> &computedFieldArr,
+                             const PrecisionArguments &usedPrecision, ComputeMethod method) const
+{
+    computeAllAPotentialX(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+                          computedFieldArr, usedPrecision, method);
+
+    for (double & i : computedFieldArr)
+        i /= (2 * PI * sineFrequency);
+}
+
+void Coil::computeAllEFieldX(const std::vector<double> &cylindricalZArr, const std::vector<double> &cylindricalRArr,
+                             const std::vector<double> &cylindricalPhiArr, std::vector<double> &computedFieldArr,
+                             ComputeMethod method) const
+{
+    computeAllEFieldX(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+                      computedFieldArr, precisionSettings, method);
+}
+
+void Coil::computeAllEFieldY(const std::vector<double> &cylindricalZArr, const std::vector<double> &cylindricalRArr,
+                             const std::vector<double> &cylindricalPhiArr, std::vector<double> &computedFieldArr,
+                             const PrecisionArguments &usedPrecision, ComputeMethod method) const
+{
+    computeAllAPotentialX(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+                          computedFieldArr, usedPrecision, method);
+
+    for (double & i : computedFieldArr)
+        i /= (2 * PI * sineFrequency);
+}
+
+void Coil::computeAllEFieldY(const std::vector<double> &cylindricalZArr, const std::vector<double> &cylindricalRArr,
+                             const std::vector<double> &cylindricalPhiArr, std::vector<double> &computedFieldArr,
+                             ComputeMethod method) const
+{
+    computeAllEFieldY(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+                      computedFieldArr, precisionSettings, method);
+}
+
+void Coil::computeAllEFieldAbs(const std::vector<double> &cylindricalZArr, const std::vector<double> &cylindricalRArr,
+                               std::vector<double> &computedFieldArr, const PrecisionArguments &usedPrecision,
+                               ComputeMethod method) const
+{
+    computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr, computedFieldArr, usedPrecision, method);
+
+    for (double & i : computedFieldArr)
+        i /= (2 * PI * sineFrequency);
+}
+
+void Coil::computeAllEFieldAbs(const std::vector<double> &cylindricalZArr, const std::vector<double> &cylindricalRArr,
+                               std::vector<double> &computedFieldArr, ComputeMethod method) const
+{
+    computeAllEFieldAbs(cylindricalZArr, cylindricalRArr, computedFieldArr, precisionSettings, method);
+}
+
 
 void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
                                           double alpha, double beta, double ringIntervalSize,
@@ -1430,4 +1528,3 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
     MInductanceArguments args = MInductanceArguments::getMInductanceArgumentsGeneralCPU(primary, secondary, precisionFactor);
     return computeMutualInductance(primary, secondary, zDisplacement, rDisplacement, alphaAngle, betaAngle, args, method);
 }
-

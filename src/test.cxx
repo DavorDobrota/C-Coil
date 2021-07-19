@@ -263,17 +263,19 @@ void testCoilMutualInductanceZAxisPerformance()
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
-    int nOps = 200;
+    int nOps = 2560;
+    int numIncrements[] = {78732, 147000, 263296, 547560, 1057500, 2247264, 4528384, 9168896};
     double temp;
 
     for (double i = 1.0; i <= 8.0; i += 1.0)
     {
-        int numOperations = nOps * pow(2, 16 + i);
+        int currentOperations = nOps / pow(2, i);
+        double relativeOperations = currentOperations * numIncrements[int(round(i - 1))] / pow(2, 15 + i);
 
         clock_t begin_time = clock();
-        for (int j = 0; j < nOps; ++j)
+        for (int j = 0; j < currentOperations; ++j)
             temp = Coil::computeMutualInductance(primary, secondary, 0.2, PrecisionFactor(i));
-        printf("inductance calc time for %.0f : %.2f ms\n", i, 1000 * (float(clock() - begin_time) / CLOCKS_PER_SEC / nOps));
+        printf("inductance calc time for %.0f : %.2f ms\n", i, 1000 * (float(clock() - begin_time) / CLOCKS_PER_SEC / relativeOperations));
 
     }
 }

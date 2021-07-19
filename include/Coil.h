@@ -127,41 +127,64 @@ class Coil
         void setSineFrequency(double sineFrequency);
         void setPrecisionSettings(const PrecisionArguments &precisionSettings);
 
-        double computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
-        double computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                              const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] double computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
+        [[nodiscard]] double computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                            const PrecisionArguments &usedPrecision) const;
 
-        double computeBFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
-        double computeBFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                              const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] double computeBFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
+        [[nodiscard]] double computeBFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                            const PrecisionArguments &usedPrecision) const;
 
-        double computeBFieldH(double cylindricalZ, double cylindricalR) const;
-        double computeBFieldH(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] double computeBFieldH(double cylindricalZ, double cylindricalR) const;
+        [[nodiscard]] double computeBFieldH(double cylindricalZ, double cylindricalR,
+                                            const PrecisionArguments &usedPrecision) const;
 
-        double computeBFieldZ(double cylindricalZ, double cylindricalR) const;
-        double computeBFieldZ(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] double computeBFieldZ(double cylindricalZ, double cylindricalR) const;
+        [[nodiscard]] double computeBFieldZ(double cylindricalZ, double cylindricalR,
+                                            const PrecisionArguments &usedPrecision) const;
 
-        double computeBFieldAbs(double cylindricalZ, double cylindricalR) const;
-        double computeBFieldAbs(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] double computeBFieldAbs(double cylindricalZ, double cylindricalR) const;
+        [[nodiscard]] double computeBFieldAbs(double cylindricalZ, double cylindricalR,
+                                              const PrecisionArguments &usedPrecision) const;
         // TODO - replace vector
-        std::vector<double> computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
-        std::vector<double> computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+        [[nodiscard]] std::vector<double> computeBFieldVector(double cylindricalZ, double cylindricalR,
+                                                              double cylindricalPhi) const;
+        [[nodiscard]] std::vector<double> computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                                              const PrecisionArguments &usedPrecision) const;
+
+        [[nodiscard]] double computeAPotentialX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
+        [[nodiscard]] double computeAPotentialX(double cylindricalZ, double cylindricalR, double cylindricalPhi,
                                                 const PrecisionArguments &usedPrecision) const;
 
-        double computeAPotentialX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
-        double computeAPotentialX(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                                  const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] double computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
+        [[nodiscard]] double computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                                const PrecisionArguments &usedPrecision) const;
 
-        double computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
-        double computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                                  const PrecisionArguments &usedPrecision) const;
-
-        double computeAPotentialAbs(double cylindricalZ, double cylindricalR) const;
-        double computeAPotentialAbs(double cylindricalZ, double cylindricalR, PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] double computeAPotentialAbs(double cylindricalZ, double cylindricalR) const;
+        [[nodiscard]] double computeAPotentialAbs(double cylindricalZ, double cylindricalR,
+                                                  const PrecisionArguments &usedPrecision) const;
         // TODO - replace vector
-        std::vector<double> computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
-        std::vector<double> computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
-                                                    const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] std::vector<double> computeAPotentialVector(double cylindricalZ, double cylindricalR,
+                                                                  double cylindricalPhi) const;
+        [[nodiscard]] std::vector<double> computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                                                  const PrecisionArguments &usedPrecision) const;
+
+        [[nodiscard]] double computeEFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
+        [[nodiscard]] double computeEFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                            const PrecisionArguments &usedPrecision) const;
+
+        [[nodiscard]] double computeEFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
+        [[nodiscard]] double computeEFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                            const PrecisionArguments &usedPrecision) const;
+
+        [[nodiscard]] double computeEFieldAbs(double cylindricalZ, double cylindricalR) const;
+        [[nodiscard]] double computeEFieldAbs(double cylindricalZ, double cylindricalR,
+                                              const PrecisionArguments &usedPrecision) const;
+
+        [[nodiscard]] std::vector<double> computeEFieldVector(double cylindricalZ, double cylindricalR,
+                                                              double cylindricalPhi) const;
+        [[nodiscard]] std::vector<double> computeEFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                                              const PrecisionArguments &usedPrecision) const;
 
         void computeAllBFieldX(const std::vector<double> &cylindricalZArr,
                                const std::vector<double> &cylindricalRArr,
@@ -289,6 +312,56 @@ class Coil
                                             std::vector<double> &computedPotentialZArr,
                                             const PrecisionArguments &usedPrecision,
                                             ComputeMethod method = CPU_ST) const;
+
+        void computeAllEFieldX(const std::vector<double> &cylindricalZArr,
+                               const std::vector<double> &cylindricalRArr,
+                               const std::vector<double> &cylindricalPhiArr,
+                               std::vector<double> &computedFieldArr,
+                               ComputeMethod method = CPU_ST) const;
+        void computeAllEFieldX(const std::vector<double> &cylindricalZArr,
+                               const std::vector<double> &cylindricalRArr,
+                               const std::vector<double> &cylindricalPhiArr,
+                               std::vector<double> &computedFieldArr,
+                               const PrecisionArguments &usedPrecision,
+                               ComputeMethod method = CPU_ST) const;
+
+        void computeAllEFieldY(const std::vector<double> &cylindricalZArr,
+                               const std::vector<double> &cylindricalRArr,
+                               const std::vector<double> &cylindricalPhiArr,
+                               std::vector<double> &computedFieldArr,
+                               ComputeMethod method = CPU_ST) const;
+        void computeAllEFieldY(const std::vector<double> &cylindricalZArr,
+                               const std::vector<double> &cylindricalRArr,
+                               const std::vector<double> &cylindricalPhiArr,
+                               std::vector<double> &computedFieldArr,
+                               const PrecisionArguments &usedPrecision,
+                               ComputeMethod method = CPU_ST) const;
+
+        void computeAllEFieldAbs(const std::vector<double> &cylindricalZArr,
+                                 const std::vector<double> &cylindricalRArr,
+                                 std::vector<double> &computedFieldArr,
+                                 ComputeMethod method = CPU_ST) const;
+        void computeAllEFieldAbs(const std::vector<double> &cylindricalZArr,
+                                 const std::vector<double> &cylindricalRArr,
+                                 std::vector<double> &computedFieldArr,
+                                 const PrecisionArguments &usedPrecision,
+                                 ComputeMethod method = CPU_ST) const;
+
+        void computeAllEFieldComponents(const std::vector<double> &cylindricalZArr,
+                                        const std::vector<double> &cylindricalRArr,
+                                        const std::vector<double> &cylindricalPhiArr,
+                                        std::vector<double> &computedFieldXArr,
+                                        std::vector<double> &computedFieldYArr,
+                                        std::vector<double> &computedFieldZArr,
+                                        ComputeMethod method = CPU_ST) const;
+        void computeAllEFieldComponents(const std::vector<double> &cylindricalZArr,
+                                        const std::vector<double> &cylindricalRArr,
+                                        const std::vector<double> &cylindricalPhiArr,
+                                        std::vector<double> &computedFieldXArr,
+                                        std::vector<double> &computedFieldYArr,
+                                        std::vector<double> &computedFieldZArr,
+                                        const PrecisionArguments &usedPrecision,
+                                        ComputeMethod method = CPU_ST) const;
 
         static double computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
                                               PrecisionFactor precisionFactor = PrecisionFactor(),

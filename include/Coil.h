@@ -395,6 +395,36 @@ class Coil
                                               double alphaAngle, double betaAngle,
                                               MInductanceArguments inductanceArguments, ComputeMethod method = CPU_ST);
 
+        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement,
+                                                     PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                     ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement,
+                                                     MInductanceArguments inductanceArguments,
+                                                     ComputeMethod method = CPU_ST) const;
+
+        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                                     PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                     ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                                     MInductanceArguments inductanceArguments,
+                                                     ComputeMethod method = CPU_ST) const;
+
+        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                                     double alphaAngle, PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                     ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                                     double alphaAngle, MInductanceArguments inductanceArguments,
+                                                     ComputeMethod method = CPU_ST) const;
+
+        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                                     double alphaAngle, double betaAngle,
+                                                     PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                     ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                                     double alphaAngle, double betaAngle,
+                                                     MInductanceArguments inductanceArguments,
+                                                     ComputeMethod method = CPU_ST) const;
+
     private:
         void calculateMagneticMoment();
         void calculateAverageWireThickness();

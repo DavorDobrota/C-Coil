@@ -6,11 +6,13 @@
 
 extern thread_pool tp;
 
-int main(){
+int main()
+{
 
-//    testCoilMutualInductanceZAxis();
-    testCoilMutualInductanceZAxisPerformance();
+    testCoilMutualInductanceZAxis();
+//    testCoilMutualInductanceZAxisPerformance();
 
+//    testCoilMutualInductanceGeneralForZAxis();
 
     return 0;
 }

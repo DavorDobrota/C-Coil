@@ -52,7 +52,12 @@ const int blockPrecisionCPUArray[precisionArraySize] =
         23, 23, 24, 24, 24, 25, 25, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33, 34, 34, 35, 35,
         36, 36, 37, 37, 38, 38, 39, 39, 40, 40, 41, 41, 42, 42, 43, 43, 44, 44, 45, 45, 46, 46, 47, 47, 48, 48, 49,
         49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75,
-        76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+        76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 102, 104,
+        106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148,
+        150, 153, 156, 159, 162, 165, 168, 171, 174, 177, 180, 183, 186, 189, 192, 195, 198, 200, 204, 208, 212, 216,
+        220, 224, 228, 232, 236, 240, 244, 248, 250, 255, 260, 265, 270, 275, 280, 285, 290, 295, 300, 306, 312, 318,
+        324, 330, 336, 342, 348, 350, 357, 364, 371, 378, 385, 392, 399, 400, 408, 416, 424, 432, 440, 448, 450, 459,
+        468, 477, 486, 495, 500, 510, 520, 530, 540, 550, 561, 572, 583, 594, 600
     };
 
 const int incrementPrecisionCPUArray[precisionArraySize] =
@@ -67,7 +72,11 @@ const int incrementPrecisionCPUArray[precisionArraySize] =
         49, 50, 48, 49, 50, 48, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49,
         50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50, 49, 50,
         49, 50, 49, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
-        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
     };
 
 
@@ -201,6 +210,11 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coi
                                                              primLinearIncrements, primLinearIncrements);
     PrecisionArguments secondaryPrecision = PrecisionArguments(0, 1, 1, 0,
                                                                secLinearIncrements, secLinearIncrements);
+
+    printf("%d : %d %d %d\n", currentIncrements,
+           primLinearIncrements,
+           blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
+           secLinearIncrements);
 
     return MInductanceArguments(primaryPrecision, secondaryPrecision);
 }
@@ -430,8 +444,9 @@ void Coil::calculateImpedance()
 
 void Coil::calculateSelfInductance()
 {
-    //TODO - complicated task, yet unresolved
-    selfInductance = 0.0;
+    // TODO - firstGen solution applied: not very precise but error is less than 1%
+    selfInductance = computeMutualInductance(*this, *this, 0.0,
+                                             PrecisionFactor(g_maxPrecisionFactor));
 }
 
 std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
@@ -1203,7 +1218,7 @@ void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncremen
         for (int phiIndex = 0; phiIndex <= angularIncrements; ++phiIndex)
         {
             // PI/2 added to readjust to an even interval so a shortcut can be used
-            double phi = blockPositionPhi +
+            double phi = PI/2 + blockPositionPhi +
                     (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][phiIndex];
 
             ringXPosition.push_back(cos(beta) * cos(phi) - sin(beta) * cos(alpha) * sin(phi));
@@ -1283,12 +1298,10 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
         // sometimes the function is even so a shortcut can be used to improve performance and efficiency
         double ringIntervalSize;
 
-        if (alphaAngle == 0 || betaAngle == 0)
+        if (rDisplacement == 0.0 || alphaAngle == 0.0 || betaAngle == 0.0)
             ringIntervalSize = PI;
         else
             ringIntervalSize = 2 * PI;
-
-        ringIntervalSize = 2 * PI;
 
         std::vector<double> unitRingPointsX, unitRingPointsY, unitRingPointsZ;
         std::vector<double> unitRingTangentsX, unitRingTangentsY, unitRingTangentsZ;

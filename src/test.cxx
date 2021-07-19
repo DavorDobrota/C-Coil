@@ -240,10 +240,11 @@ void testCoilMutualInductanceZAxis()
     {
         printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
 
+        Coil prim = Coil(Rt1, at1, bt1, Nt1);
+        Coil sec = Coil(Rt2, at2, bt2, Nt2);
+
         for (double i = 1.0; i <= 7.0; i += 1.0)
         {
-            Coil prim = Coil(Rt1, at1, bt1, Nt1);
-            Coil sec = Coil(Rt2, at2, bt2, Nt2);
             temp = Coil::computeMutualInductance(prim, sec, distance, PrecisionFactor(i));
             printf("%.18f\n", temp);
             fprintf(output, "%.20f\t", temp);
@@ -366,10 +367,11 @@ void testCoilMutualInductanceGeneralForZAxis()
     {
         printf("%f %f %f %d %f %f %f %d %f\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distance);
 
+        Coil prim = Coil(Rt1, at1, bt1, Nt1);
+        Coil sec = Coil(Rt2, at2, bt2, Nt2);
+
         for (double i = 1.0; i <= 7.0; i += 1.0)
         {
-            Coil prim = Coil(Rt1, at1, bt1, Nt1);
-            Coil sec = Coil(Rt2, at2, bt2, Nt2);
             temp = Coil::computeMutualInductance(prim, sec, distance, 1e-15, PrecisionFactor(i));
             printf("%.18f\n", temp);
             fprintf(output, "%.20f\t", temp);
@@ -403,8 +405,8 @@ void testCoilMutualInductanceGeneralThinCoilAndFilament()
     Coil primaryGeneral = Coil(0.06, 1e-15, 0.12, 120);
     Coil secondaryGeneral = Coil(0.05, 1e-15, 1e-15, 1);
 
-    MInductanceArguments inductanceArguments = MInductanceArguments(PrecisionArguments(10, 1, 1, 50, 1, 24),
-                                                                    PrecisionArguments(10, 1, 1, 50, 1, 1));
+    MInductanceArguments inductanceArguments = MInductanceArguments(PrecisionArguments(4, 1, 1, 50, 1, 32),
+                                                                    PrecisionArguments(4, 1, 1, 50, 1, 1));
 
     for (int i = 10; i >= 0; --i){
         printf("cos(alpha) = %.1f: ", i * 0.1);
@@ -444,8 +446,8 @@ void testCoilMutualInductanceGeneralThinCoilAndThinCoil()
     Coil primaryGeneral = Coil(0.06, 1e-18, 0.12, 120);
     Coil secondaryGeneral = Coil(0.05, 1e-18, 0.04, 60);
 
-    MInductanceArguments inductanceArguments = MInductanceArguments(PrecisionArguments(4, 1, 1, 50, 1, 24),
-                                                                    PrecisionArguments(4, 1, 1, 50, 1, 16));
+    MInductanceArguments inductanceArguments = MInductanceArguments(PrecisionArguments(2, 1, 1, 50, 1, 32),
+                                                                    PrecisionArguments(2, 1, 1, 50, 1, 20));
 
     for (int i = 10; i >= 0; --i){
         printf("cos(alpha) = %.1f: ", i * 0.1);
@@ -485,8 +487,8 @@ void testCoilMutualInductanceGeneralPancakeAndPancake()
     Coil primaryGeneral = Coil(0.04, 0.02, 1e-15, 200);
     Coil secondaryGeneral = Coil(0.015, 0.01, 1e-15, 100);
 
-    MInductanceArguments inductanceArguments = MInductanceArguments(PrecisionArguments(4, 1, 1, 50, 24, 1),
-                                                                    PrecisionArguments(4, 1, 1, 50, 16, 1));
+    MInductanceArguments inductanceArguments = MInductanceArguments(PrecisionArguments(2, 1, 1, 50, 32, 1),
+                                                                    PrecisionArguments(2, 1, 1, 50, 20, 1));
 
     for (int i = 10; i >= 0; --i){
         printf("cos(alpha) = %.1f: ", i * 0.1);
@@ -502,8 +504,8 @@ void testCoilMutualInductanceGeneralRectangularAndFilament()
     Coil primaryGeneral = Coil(0.04, 0.02, 0.01, 100);
     Coil secondaryGeneral = Coil(0.02, 1e-15, 1e-15, 1);
 
-    MInductanceArguments inductanceArguments = MInductanceArguments(PrecisionArguments(4, 1, 1, 50, 24, 24),
-                                                                    PrecisionArguments(4, 1, 1, 50, 1, 1));
+    MInductanceArguments inductanceArguments = MInductanceArguments(PrecisionArguments(2, 1, 1, 50, 24, 24),
+                                                                    PrecisionArguments(2, 1, 1, 50, 1, 1));
 
     for (int i = 10; i >= 0; --i){
         printf("cos(alpha) = %.1f: ", i * 0.1);

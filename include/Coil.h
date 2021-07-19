@@ -6,7 +6,7 @@
 
 #include "ComputeMethod.h"
 
-const int precisionArraySize = 300;
+const int precisionArraySize = 406;
 
 const extern int blockPrecisionCPUArray[precisionArraySize];
 const extern int incrementPrecisionCPUArray[precisionArraySize];

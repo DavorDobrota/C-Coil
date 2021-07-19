@@ -1,14 +1,17 @@
 
 #include <cmath>
 #include <cstdio>
-#include <vector>
 #include <functional>
+#include <tuple>
+#include <vector>
 
 #include "Coil.h"
 #include "ComputeMethod.h"
+#include "Conversion_Util.h"
+#include "ctpl.h"
 #include "hardware_acceleration.h"
 #include "LegendreMatrix.h"
-#include "Conversion_Util.h"
+
 
 namespace
 {
@@ -743,7 +746,23 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
                                 std::vector<double> &computedFieldZArr,
                                 const PrecisionArguments &usedPrecision) const
 {
-    // TODO - implement method using ThreadPool and calculateBField
+    // TODO: add to constructor
+    ctpl::thread_pool threadPool;
+    threadPool.resize(8);
+
+    auto calcThread = [this, &usedPrecision](int idx, double cylindricalZ, double cylindricalR, double &computedFieldH, double &computedFieldZ) -> void
+    {
+        auto result = calculateBField(cylindricalZ, cylindricalR, usedPrecision);
+        computedFieldH = result.first;
+        computedFieldZ = result.second;
+    };
+
+    for(int i = 0; i < cylindricalZArr.size(); i++)
+    {
+        threadPool.push(calcThread, cylindricalZArr[i], cylindricalRArr[i], computedFieldHArr[i], computedFieldZArr[i]);
+    }
+
+    threadPool.stop(true);
 }
 
 void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,

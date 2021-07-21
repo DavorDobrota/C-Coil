@@ -6,7 +6,7 @@
 
 #include "ComputeMethod.h"
 
-const int precisionArraySize = 406;
+const int precisionArraySize = 423;
 
 const extern int blockPrecisionCPUArray[precisionArraySize];
 const extern int incrementPrecisionCPUArray[precisionArraySize];
@@ -36,6 +36,8 @@ struct PrecisionArguments
     int lengthIncrementCount;
 
     static PrecisionArguments getPrecisionArgumentsForCoilCPU(const Coil &coil, PrecisionFactor precisionFactor);
+
+    static PrecisionArguments getPrecisionArgumentsForCoilGPU(const Coil &coil, PrecisionFactor precisionFactor);
 };
 
 struct MInductanceArguments
@@ -48,10 +50,14 @@ struct MInductanceArguments
     PrecisionArguments secondaryPrecision;
 
     static MInductanceArguments getMInductanceArgumentsZCPU(const Coil &primary, const Coil &secondary,
-                                                                PrecisionFactor precisionFactor);
+                                                            PrecisionFactor precisionFactor);
 
     static MInductanceArguments getMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
-                                                                      PrecisionFactor precisionFactor);
+                                                                  PrecisionFactor precisionFactor);
+
+    private:
+        static void getMInductanceCaseAndIncrements(const Coil &primary, const Coil &secondary,
+                                                    PrecisionFactor precisionFactor, int &caseIndex, int &totalIncrements);
 };
 
 class Coil

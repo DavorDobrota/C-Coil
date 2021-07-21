@@ -35,9 +35,9 @@ struct PrecisionArguments
     int thicknessIncrementCount;
     int lengthIncrementCount;
 
-    static PrecisionArguments getPrecisionArgumentsForCoilCPU(const Coil &coil, PrecisionFactor precisionFactor);
+    static PrecisionArguments getCoilPrecisionArgumentsCPU(const Coil &coil, PrecisionFactor precisionFactor);
 
-    static PrecisionArguments getPrecisionArgumentsForCoilGPU(const Coil &coil, PrecisionFactor precisionFactor);
+    static PrecisionArguments getCoilPrecisionArgumentsGPU(const Coil &coil, PrecisionFactor precisionFactor);
 };
 
 struct MInductanceArguments

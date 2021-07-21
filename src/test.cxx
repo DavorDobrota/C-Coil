@@ -41,86 +41,6 @@ void testLegendrePolynomials()
     }
 }
 
-void testElementaryFunctions()
-{
-    int nRepeats = 2e3;
-    int nOps = 1e5;
-
-    double numberA[nOps];
-    double numberB[nOps];
-    double temp;
-    clock_t begin_time;
-
-    for (int i = 0; i < nOps; ++i)
-    {
-        numberA[i] = 0.1 + i*1e-6;
-        numberB[i] = 0.15 + i*2e-6;
-    }
-
-    for (int n = 0; n < nRepeats; ++n)
-        for (int i = 0; i < nOps; ++i)
-            temp = std::pow(numberA[i], numberB[i]);
-
-    begin_time = clock();
-    for (int n = 0; n < nRepeats; ++n)
-        for (int i = 0; i < nOps; ++i)
-            temp = std::pow(numberA[i], numberB[i]);
-    printf("pow  : %.2f MInc/s\n", 1e-6 / (double(clock() - begin_time) / CLOCKS_PER_SEC / (nOps * nRepeats)));
-
-    begin_time = clock();
-    for (int n = 0; n < nRepeats; ++n)
-        for (int i = 0; i < nOps; ++i)
-            temp = std::log(numberA[i]);
-    printf("log  : %.2f MInc/s\n", 1e-6 / (double(clock() - begin_time) / CLOCKS_PER_SEC / (nOps * nRepeats)));
-
-    begin_time = clock();
-    for (int n = 0; n < nRepeats; ++n)
-        for (int i = 0; i < nOps; ++i)
-            temp = std::sin(numberA[i]);
-    printf("sin  : %.2f MInc/s\n", 1e-6 / (double(clock() - begin_time) / CLOCKS_PER_SEC / (nOps * nRepeats)));
-
-    begin_time = clock();
-    for (int n = 0; n < nRepeats; ++n)
-        for (int i = 0; i < nOps; ++i)
-            temp = std::cos(numberA[i]);
-    printf("cos  : %.2f MInc/s\n", 1e-6 / (double(clock() - begin_time) / CLOCKS_PER_SEC / (nOps * nRepeats)));
-
-    begin_time = clock();
-    for (int n = 0; n < nRepeats; ++n)
-        for (int i = 0; i < nOps; ++i)
-            temp = std::sqrt(numberA[i]);
-    printf("sqrt : %.2f MInc/s\n", 1e-6 / (float(clock() - begin_time) / CLOCKS_PER_SEC / (nOps * nRepeats)));
-
-}
-
-void testFastElementaryFunctions()
-{
-    long long nOps = 1e10;
-
-    double temp;
-    clock_t begin_time;
-
-    begin_time = clock();
-    for (long long i = 0; i < nOps; ++i)
-        temp = std::log(0.1 + 1e-8 * i);
-    printf("log  : %.2f MInc/s\n", 1e-6 / (double(clock() - begin_time) / CLOCKS_PER_SEC / (nOps)));
-
-    begin_time = clock();
-    for (long long i = 0; i < nOps; ++i)
-        temp = std::sin(0.1 + 1e-10 * i);
-    printf("sin  : %.2f MInc/s\n", 1e-6 / (double(clock() - begin_time) / CLOCKS_PER_SEC / (nOps)));
-
-    begin_time = clock();
-    for (long long i = 0; i < nOps; ++i)
-        temp = std::cos(0.1 + 1e-10 * i);
-    printf("cos  : %.2f MInc/s\n", 1e-6 / (double(clock() - begin_time) / CLOCKS_PER_SEC / (nOps)));
-
-    begin_time = clock();
-    for (long long i = 0; i < nOps; ++i)
-        temp = std::sqrt(0.1 + 1e-8 * i);
-    printf("sqrt : %.2f MInc/s\n", 1e-6 / (float(clock() - begin_time) / CLOCKS_PER_SEC / (nOps)));
-
-}
 
 void testNewCoilParameters()
 {
@@ -723,7 +643,4 @@ void testCoilMutualInductanceGeneralRectangularAndFilament()
     }
     printf("\n");
 }
-
-
-
 

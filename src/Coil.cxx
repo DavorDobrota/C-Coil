@@ -127,7 +127,7 @@ PrecisionArguments::PrecisionArguments(
         PrecisionArguments::lengthBlockCount = g_defaultBlockCount;
 }
 
-PrecisionArguments PrecisionArguments::getPrecisionArgumentsForCoilCPU(const Coil &coil, PrecisionFactor precisionFactor)
+PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &coil, PrecisionFactor precisionFactor)
 {
     int lengthIncrements = g_minPrimLengthIncrements;
     int thicknessIncrements = g_minPrimThicknessIncrements;
@@ -182,7 +182,7 @@ PrecisionArguments PrecisionArguments::getPrecisionArgumentsForCoilCPU(const Coi
                               incrementPrecisionCPUArray[angularArrayIndex], thicknessIncrements, lengthIncrements);
 }
 
-PrecisionArguments PrecisionArguments::getPrecisionArgumentsForCoilGPU(const Coil &coil, PrecisionFactor precisionFactor)
+PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &coil, PrecisionFactor precisionFactor)
 {
     // TODO - implement GPU variant of the adaptive increment function
     return PrecisionArguments();

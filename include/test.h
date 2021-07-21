@@ -3,8 +3,6 @@
 #define GENERAL_COIL_PROGRAM_TEST_H
 
 void testLegendrePolynomials();
-void testElementaryFunctions();
-void testFastElementaryFunctions();
 
 void testNewCoilParameters();
 

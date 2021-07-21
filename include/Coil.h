@@ -1,4 +1,3 @@
-
 #ifndef GENERAL_COIL_PROGRAM_COIL_H
 #define GENERAL_COIL_PROGRAM_COIL_H
 
@@ -166,6 +165,10 @@ class Coil
         [[nodiscard]] double computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
                                                 const PrecisionArguments &usedPrecision) const;
 
+        [[nodiscard]] double computeAPotentialZ(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
+        [[nodiscard]] double computeAPotentialZ(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                                const PrecisionArguments &usedPrecision) const;
+
         [[nodiscard]] double computeAPotentialAbs(double cylindricalZ, double cylindricalR) const;
         [[nodiscard]] double computeAPotentialAbs(double cylindricalZ, double cylindricalR,
                                                   const PrecisionArguments &usedPrecision) const;
@@ -181,6 +184,10 @@ class Coil
 
         [[nodiscard]] double computeEFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
         [[nodiscard]] double computeEFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                            const PrecisionArguments &usedPrecision) const;
+
+        [[nodiscard]] double computeEFieldZ(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
+        [[nodiscard]] double computeEFieldZ(double cylindricalZ, double cylindricalR, double cylindricalPhi,
                                             const PrecisionArguments &usedPrecision) const;
 
         [[nodiscard]] double computeEFieldAbs(double cylindricalZ, double cylindricalR) const;
@@ -293,6 +300,18 @@ class Coil
                                    const PrecisionArguments &usedPrecision,
                                    ComputeMethod method = CPU_ST) const;
 
+    void computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
+                               const std::vector<double> &cylindricalRArr,
+                               const std::vector<double> &cylindricalPhiArr,
+                               std::vector<double> &computedPotentialArr,
+                               ComputeMethod method = CPU_ST) const;
+    void computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
+                               const std::vector<double> &cylindricalRArr,
+                               const std::vector<double> &cylindricalPhiArr,
+                               std::vector<double> &computedPotentialArr,
+                               const PrecisionArguments &usedPrecision,
+                               ComputeMethod method = CPU_ST) const;
+
         void computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                                      const std::vector<double> &cylindricalRArr,
                                      std::vector<double> &computedPotentialArr,
@@ -342,6 +361,19 @@ class Coil
                                std::vector<double> &computedFieldArr,
                                const PrecisionArguments &usedPrecision,
                                ComputeMethod method = CPU_ST) const;
+
+        void computeAllEFieldZ(const std::vector<double> &cylindricalZArr,
+                               const std::vector<double> &cylindricalRArr,
+                               const std::vector<double> &cylindricalPhiArr,
+                               std::vector<double> &computedFieldArr,
+                               ComputeMethod method = CPU_ST) const;
+        void computeAllEFieldZ(const std::vector<double> &cylindricalZArr,
+                               const std::vector<double> &cylindricalRArr,
+                               const std::vector<double> &cylindricalPhiArr,
+                               std::vector<double> &computedFieldArr,
+                               const PrecisionArguments &usedPrecision,
+                               ComputeMethod method = CPU_ST) const;
+
 
         void computeAllEFieldAbs(const std::vector<double> &cylindricalZArr,
                                  const std::vector<double> &cylindricalRArr,
@@ -401,35 +433,35 @@ class Coil
                                               double alphaAngle, double betaAngle,
                                               MInductanceArguments inductanceArguments, ComputeMethod method = CPU_ST);
 
-        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement,
-                                                     PrecisionFactor precisionFactor = PrecisionFactor(),
-                                                     ComputeMethod method = CPU_ST) const;
-        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement,
-                                                     MInductanceArguments inductanceArguments,
-                                                     ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement,
+                                                            PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                            ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement,
+                                                            MInductanceArguments inductanceArguments,
+                                                            ComputeMethod method = CPU_ST) const;
 
-        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                                     PrecisionFactor precisionFactor = PrecisionFactor(),
-                                                     ComputeMethod method = CPU_ST) const;
-        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                                     MInductanceArguments inductanceArguments,
-                                                     ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                                            PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                            ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                                            MInductanceArguments inductanceArguments,
+                                                            ComputeMethod method = CPU_ST) const;
 
-        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                                     double alphaAngle, PrecisionFactor precisionFactor = PrecisionFactor(),
-                                                     ComputeMethod method = CPU_ST) const;
-        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                                     double alphaAngle, MInductanceArguments inductanceArguments,
-                                                     ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                                            double alphaAngle, PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                            ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                                            double alphaAngle, MInductanceArguments inductanceArguments,
+                                                            ComputeMethod method = CPU_ST) const;
 
-        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                                     double alphaAngle, double betaAngle,
-                                                     PrecisionFactor precisionFactor = PrecisionFactor(),
-                                                     ComputeMethod method = CPU_ST) const;
-        [[nodiscard]] double computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                                     double alphaAngle, double betaAngle,
-                                                     MInductanceArguments inductanceArguments,
-                                                     ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                                            double alphaAngle, double betaAngle,
+                                                            PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                            ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                                            double alphaAngle, double betaAngle,
+                                                            MInductanceArguments inductanceArguments,
+                                                            ComputeMethod method = CPU_ST) const;
 
     private:
         void calculateMagneticMoment();

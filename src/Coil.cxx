@@ -1,4 +1,3 @@
-
 #include <cmath>
 #include <cstdio>
 #include <vector>
@@ -7,6 +6,7 @@
 #include "Coil.h"
 #include "ComputeMethod.h"
 #include "hardware_acceleration.h"
+#include "Conversion_Util.h"
 #include "LegendreMatrix.h"
 
 namespace
@@ -1214,6 +1214,18 @@ double Coil::computeAPotentialY(double cylindricalZ, double cylindricalR, double
     return computeAPotentialY(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
 }
 
+double Coil::computeAPotentialZ(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                const PrecisionArguments &usedPrecision) const
+{
+    // TODO - add functionality in the future
+    return 0.0;
+}
+
+double Coil::computeAPotentialZ(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
+{
+    return computeAPotentialZ(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+}
+
 double Coil::computeAPotentialAbs(double cylindricalZ, double cylindricalR) const
 {
     return calculateAPotential(cylindricalZ, cylindricalR, precisionSettings);
@@ -1261,6 +1273,17 @@ double Coil::computeEFieldY(double cylindricalZ, double cylindricalR, double cyl
 double Coil::computeEFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
     return computeEFieldY(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+}
+
+double Coil::computeEFieldZ(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                            const PrecisionArguments &usedPrecision) const
+{
+    return 2*PI * sineFrequency * computeAPotentialZ(cylindricalZ, cylindricalR, cylindricalPhi, usedPrecision);
+}
+
+double Coil::computeEFieldZ(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
+{
+    return computeEFieldZ(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
 }
 
 double Coil::computeEFieldAbs(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision) const
@@ -1698,6 +1721,34 @@ void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
             cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, precisionSettings, method);
 }
 
+void Coil::computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
+                                 const std::vector<double> &cylindricalRArr,
+                                 const std::vector<double> &cylindricalPhiArr,
+                                 std::vector<double> &computedPotentialArr,
+                                 const PrecisionArguments &usedPrecision,
+                                 ComputeMethod method) const
+{
+    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
+    {
+        computedPotentialArr.resize(0);
+
+        for (int i = 0; i < cylindricalZArr.size(); ++i)
+            computedPotentialArr.push_back(0.0);
+    }
+    else
+        throw "Number of elements in input data vectors is not the same!";
+}
+
+void Coil::computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
+                                 const std::vector<double> &cylindricalRArr,
+                                 const std::vector<double> &cylindricalPhiArr,
+                                 std::vector<double> &computedPotentialArr,
+                                 ComputeMethod method) const
+{
+    computeAllAPotentialZ(
+            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, precisionSettings, method);
+}
+
 void
 Coil::computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                               const std::vector<double> &cylindricalRArr,
@@ -1791,7 +1842,7 @@ void Coil::computeAllEFieldY(const std::vector<double> &cylindricalZArr, const s
                              const std::vector<double> &cylindricalPhiArr, std::vector<double> &computedFieldArr,
                              const PrecisionArguments &usedPrecision, ComputeMethod method) const
 {
-    computeAllAPotentialX(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+    computeAllAPotentialY(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
                           computedFieldArr, usedPrecision, method);
 
     for (double & i : computedFieldArr)
@@ -1804,6 +1855,30 @@ void Coil::computeAllEFieldY(const std::vector<double> &cylindricalZArr, const s
 {
     computeAllEFieldY(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
                       computedFieldArr, precisionSettings, method);
+}
+
+void Coil::computeAllEFieldZ(const std::vector<double> &cylindricalZArr,
+                             const std::vector<double> &cylindricalRArr,
+                             const std::vector<double> &cylindricalPhiArr,
+                             std::vector<double> &computedFieldArr,
+                             const PrecisionArguments &usedPrecision,
+                             ComputeMethod method) const
+{
+    computeAllAPotentialZ(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+                          computedFieldArr, usedPrecision, method);
+
+    for (double & i : computedFieldArr)
+        i *= (2 * PI * sineFrequency);
+}
+
+void Coil::computeAllEFieldZ(const std::vector<double> &cylindricalZArr,
+                             const std::vector<double> &cylindricalRArr,
+                             const std::vector<double> &cylindricalPhiArr,
+                             std::vector<double> &computedFieldArr,
+                             ComputeMethod method) const
+{
+    computeAllEFieldZ(
+            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, precisionSettings, method);
 }
 
 void Coil::computeAllEFieldAbs(const std::vector<double> &cylindricalZArr, const std::vector<double> &cylindricalRArr,
@@ -2104,61 +2179,62 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
     return computeMutualInductance(primary, secondary, zDisplacement, rDisplacement, alphaAngle, betaAngle, args, method);
 }
 
-double Coil::computeInducedVoltageOn(const Coil &secondary, double zDisplacement,
-                                     PrecisionFactor precisionFactor, ComputeMethod method) const
+double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement,
+                                            PrecisionFactor precisionFactor, ComputeMethod method) const
 {
     return computeMutualInductance(*this, secondary, zDisplacement, precisionFactor, method) *
            2 * PI * sineFrequency;
 }
 
-double Coil::computeInducedVoltageOn(const Coil &secondary, double zDisplacement,
-                                     MInductanceArguments inductanceArguments, ComputeMethod method) const
+double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement,
+                                            MInductanceArguments inductanceArguments, ComputeMethod method) const
 {
     return computeMutualInductance(*this, secondary, zDisplacement, inductanceArguments, method) *
            2 * PI * sineFrequency;;
 }
 
-double Coil::computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                     PrecisionFactor precisionFactor, ComputeMethod method) const
+double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                            PrecisionFactor precisionFactor, ComputeMethod method) const
 {
     return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, precisionFactor, method) *
            2 * PI * sineFrequency;
 }
 
-double Coil::computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                     MInductanceArguments inductanceArguments, ComputeMethod method) const
+double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                            MInductanceArguments inductanceArguments, ComputeMethod method) const
 {
     return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, inductanceArguments, method) *
            2 * PI * sineFrequency;
 }
 
-double Coil::computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                     double alphaAngle, PrecisionFactor precisionFactor, ComputeMethod method) const
+double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                            double alphaAngle, PrecisionFactor precisionFactor, ComputeMethod method) const
 {
     return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, alphaAngle,
                                    precisionFactor, method) * 2 * PI * sineFrequency;
 }
 
-double Coil::computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                     double alphaAngle, MInductanceArguments inductanceArguments,
-                                     ComputeMethod method) const
+double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                            double alphaAngle, MInductanceArguments inductanceArguments,
+                                            ComputeMethod method) const
 {
     return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, alphaAngle,
                                    inductanceArguments, method) * 2 * PI * sineFrequency;
 }
 
-double Coil::computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                     double alphaAngle, double betaAngle, PrecisionFactor precisionFactor,
-                                     ComputeMethod method) const
+double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                            double alphaAngle, double betaAngle, PrecisionFactor precisionFactor,
+                                            ComputeMethod method) const
 {
     return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, alphaAngle, betaAngle,
                                    precisionFactor, method) * 2 * PI * sineFrequency;
 }
 
-double Coil::computeInducedVoltageOn(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                     double alphaAngle, double betaAngle, MInductanceArguments inductanceArguments,
-                                     ComputeMethod method) const
+double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
+                                            double alphaAngle, double betaAngle, MInductanceArguments inductanceArguments,
+                                            ComputeMethod method) const
 {
     return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, alphaAngle, betaAngle,
                                    inductanceArguments, method) * 2 * PI * sineFrequency;
 }
+

@@ -213,7 +213,6 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coi
 
     getMInductanceCaseAndIncrements(primary, secondary, precisionFactor, caseIndex, totalIncrements);
 
-    printf("case %d; ", caseIndex);
     do
     {
         double primAngularStep = PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
@@ -421,7 +420,7 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coi
     PrecisionArguments secondaryPrecision = PrecisionArguments(0, 1, 1, 0,
                                                                secThicknessIncrements, secLengthIncrements);
 
-    printf("%d : %d %d %d | %d %d\n", currentIncrements,
+    printf("case %d - %d : %d %d %d | %d %d\n", caseIndex, currentIncrements,
            primLengthIncrements, primThicknessIncrements,
            blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
            secLengthIncrements, secThicknessIncrements);
@@ -432,69 +431,316 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coi
 MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
                                                                              PrecisionFactor precisionFactor)
 {
-    int primLinearIncrements = g_minPrimLengthIncrements;
-//    int primThicknessIncrements = g_minPrimThicknessIncrements;
-    int secLinearIncrements = g_minSecLengthIncrements;
+    int primLengthIncrements = g_minPrimLengthIncrements;
+    int primThicknessIncrements = g_minPrimThicknessIncrements;
+    int secLengthIncrements = g_minSecLengthIncrements;
+    int secThicknessIncrements = g_minSecThicknessIncrements;
 
     int primAngularArrayIndex = g_minPrimAngularIncrements - 1;
     int secAngularArrayIndex = g_minSecAngularIncrements - 1;
 
-    int totalIncrements = pow(2, 19 + precisionFactor.relativePrecision);
+    int totalIncrements = 0;
     int currentIncrements;
+    int caseIndex;
+
+    getMInductanceCaseAndIncrements(primary, secondary, precisionFactor, caseIndex, totalIncrements);
+    // multiplying the number of increments by 16 because of one extra degree of freedom
+    totalIncrements *= 16;
 
     do
     {
-        double primAngularStep =
-                PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
+        double primAngularStep = PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
                 (blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex]);
 
-        double primLinearStep = sqrt(2 * primary.getThickness() * primary.getLength()) / primLinearIncrements;
+        double primLengthStep = sqrt(2) * primary.getLength() / primLengthIncrements;
+        double primThicknessStep = sqrt(2) * primary.getThickness() / primThicknessIncrements;
 
-        double secAngularStep =
-                PI * (secondary.getInnerRadius() + secondary.getThickness() * 0.5) /
+        double secAngularStep = PI * (secondary.getInnerRadius() + secondary.getThickness() * 0.5) /
                 (blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
-        double secLinearStep = sqrt(secondary.getThickness() * secondary.getLength()) / secLinearIncrements;
+        double secLengthStep = secondary.getLength() / secLengthIncrements;
+        double secThicknessStep = secondary.getThickness() / secThicknessIncrements;
 
-        if ((primLinearStep * secLinearStep) / (primAngularStep * secAngularStep) <= 1.0)
+        double primLinearStep = sqrt(primLengthStep * primThicknessStep);
+        double secLinearStep = sqrt(secLengthStep * secThicknessStep);
+
+        switch (caseIndex)
         {
-            if (secAngularStep / primAngularStep <= 1.0)
-                primAngularArrayIndex++;
-            else
-                secAngularArrayIndex++;
+            case (1):
+                primThicknessIncrements = 1;
+                secThicknessIncrements = 1; secLengthIncrements = 1;
+
+                if ((primLengthStep * primLengthStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                    primLengthIncrements++;
+                break;
+            case (2):
+                primThicknessIncrements = 1;
+                secThicknessIncrements = 1;
+
+                if ((primLengthStep * secLengthStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                {
+                    if (secLengthStep / primLengthStep <= 1.0)
+                        primLengthIncrements++;
+                    else
+                        secLengthIncrements++;
+                }
+                break;
+            case (3):
+                primThicknessIncrements = 1;
+                secLengthIncrements = 1;
+
+                if ((primLengthStep * secThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                {
+                    if (secThicknessStep / primLengthStep <= 1.0)
+                        primLengthIncrements++;
+                    else
+                        secThicknessIncrements++;
+                }
+                break;
+            case (4):
+                primThicknessIncrements = 1;
+
+                if ((primLengthStep * secLinearStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                {
+                    if (secLinearStep / primLengthStep <= 1.0)
+                        primLengthIncrements++;
+                    else
+                        { secLengthIncrements++; secThicknessIncrements++; }
+                }
+                break;
+            case (5):
+                primLengthIncrements = 1;
+                secThicknessIncrements = 1; secLengthIncrements = 1;
+
+                if ((primThicknessStep * primThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                    primThicknessIncrements++;
+                break;
+            case (6):
+                primLengthIncrements = 1;
+                secThicknessIncrements = 1;
+
+                if ((primThicknessStep * secLengthStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                {
+                    if (secLengthStep / primThicknessStep <= 1.0)
+                        primThicknessIncrements++;
+                    else
+                        secLengthIncrements++;
+                }
+                break;
+            case (7):
+                primLengthIncrements = 1;
+                secLengthIncrements = 1;
+
+                if ((primThicknessStep * secThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                {
+                    if (secThicknessStep / primThicknessStep <= 1.0)
+                        primThicknessIncrements++;
+                    else
+                        secThicknessIncrements++;
+                }
+                break;
+            case (8):
+                primLengthIncrements = 1;
+
+                if ((primThicknessStep * secLinearStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                {
+                    if (secLinearStep / primThicknessStep <= 1.0)
+                        primThicknessIncrements++;
+                    else
+                        { secLengthIncrements++; secThicknessIncrements++; }
+                }
+                break;
+            case (9):
+                primLengthIncrements = 1; primThicknessIncrements = 1;
+                secLengthIncrements = 1; secThicknessIncrements = 1;
+
+                if (secAngularStep / primAngularStep <= 1.0)
+                    primAngularArrayIndex++;
+                else
+                    secAngularArrayIndex++;
+                break;
+            case (10):
+                primLengthIncrements = 1; primThicknessIncrements = 1;
+                secThicknessIncrements = 1;
+
+                if ((secLengthStep * secLengthStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                    secLengthIncrements++;
+                break;
+            case (11):
+                primLengthIncrements = 1; primThicknessIncrements = 1;
+                secLengthIncrements = 1;
+
+                if ((secThicknessStep * secThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                    secThicknessIncrements++;
+                break;
+            case (12):
+                primLengthIncrements = 1; primThicknessIncrements = 1;
+
+                if ((secLengthStep * secThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                    { secThicknessIncrements++; secThicknessIncrements++; }
+                break;
+            case (13):
+                secLengthIncrements = 1; secThicknessIncrements = 1;
+
+                if ((primLengthStep * primThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                { primThicknessIncrements++; primThicknessIncrements++; }
+                break;
+            case (14):
+                secThicknessIncrements = 1;
+
+                if ((primLinearStep * secLengthStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                {
+                    if (secLengthStep / primLinearStep <= 1.0)
+                        { primLengthIncrements++; primThicknessIncrements++; }
+                    else
+                        secLengthIncrements++;
+                }
+                break;
+            case (15):
+                secLengthIncrements = 1;
+
+                if ((primLinearStep * secThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                {
+                    if (secThicknessStep / primLinearStep <= 1.0)
+                    { primLengthIncrements++; primThicknessIncrements++; }
+                    else
+                        secThicknessIncrements++;
+                }
+                break;
+            default:
+                if ((primLinearStep * secLinearStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularArrayIndex++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                {
+                    if (secLinearStep / primLinearStep <= 1.0)
+                        { primLengthIncrements++; primThicknessIncrements++; }
+                    else
+                        { secLengthIncrements++; secThicknessIncrements++; }
+                }
         }
-        else
-        {
-            if (secLinearStep / primLinearStep <= 1.0)
-                primLinearIncrements++;
-            else
-                secLinearIncrements++;
-        }
+
         currentIncrements =
-                primLinearIncrements * primLinearIncrements * secLinearIncrements * secLinearIncrements *
+                primLengthIncrements * primThicknessIncrements * secLengthIncrements * secThicknessIncrements *
                 blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex] *
                 blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex];
-
-        printf("%d : %d %d %d %d\n", currentIncrements,
-               primLinearIncrements,
-               blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
-               secLinearIncrements,
-               blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
     }
     while (currentIncrements < totalIncrements);
 
     PrecisionArguments primaryPrecision = PrecisionArguments(blockPrecisionCPUArray[primAngularArrayIndex], 1, 1,
                                                              incrementPrecisionCPUArray[primAngularArrayIndex],
-                                                             primLinearIncrements, primLinearIncrements);
+                                                             primThicknessIncrements, primLengthIncrements);
 
     PrecisionArguments secondaryPrecision = PrecisionArguments(blockPrecisionCPUArray[secAngularArrayIndex], 1, 1,
                                                                incrementPrecisionCPUArray[secAngularArrayIndex],
-                                                               secLinearIncrements, secLinearIncrements);
+                                                               secThicknessIncrements, secLengthIncrements);
 
-    printf("%d : %d %d %d %d\n", currentIncrements,
-           primLinearIncrements,
+    printf("case %d - %d : %d %d %d | %d %d %d\n", caseIndex, currentIncrements,
+           primLengthIncrements, primThicknessIncrements,
            blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
-           secLinearIncrements,
+           secLengthIncrements, secThicknessIncrements,
            blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
     return MInductanceArguments(primaryPrecision, secondaryPrecision);

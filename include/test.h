@@ -1,4 +1,3 @@
-
 #ifndef GENERAL_COIL_PROGRAM_TEST_H
 #define GENERAL_COIL_PROGRAM_TEST_H
 
@@ -12,6 +11,7 @@ void testPerformanceForComputeAll();
 void testMethodPrecisionCompareCPUvsGPU();
 
 void testCoilMutualInductanceZAxis();
+void testCoilMutualInductanceZAxisDifferentGeometries();
 void testCoilMutualInductanceZAxisPerformance();
 
 void testOldCoilMutualInductanceZAxis();
@@ -20,9 +20,13 @@ void testOldCoilMutualInductanceGeneralPerformance();
 void testOldCoilSelfInductance();
 
 void testCoilMutualInductanceGeneralForZAxis();
+void testCoilMutualInductanceGeneralDifferentGeometries();
 void testCoilMutualInductanceForSpecialCase();
+
 void testCoilMutualInductanceGeneralThinCoilAndFilament();
 void testCoilMutualInductanceGeneralThinCoilAndThinCoil();
+void testCoilMutualInductanceGeneralPancakeAndPancake();
+void testCoilMutualInductanceGeneralRectangularAndFilament();
 
 
 #endif //GENERAL_COIL_PROGRAM_TEST_H

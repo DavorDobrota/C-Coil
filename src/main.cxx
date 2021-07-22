@@ -6,9 +6,8 @@
 
 extern thread_pool tp;
 
-int main(){
-
-
+int main()
+{
 
     return 0;
 }

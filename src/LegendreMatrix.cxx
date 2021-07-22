@@ -1,4 +1,3 @@
-
 #include "LegendreMatrix.h"
 
 namespace Legendre

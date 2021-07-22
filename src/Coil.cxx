@@ -200,12 +200,12 @@ MInductanceArguments::MInductanceArguments(const PrecisionArguments &primaryPrec
 MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coil &primary, const Coil &secondary,
                                                                        PrecisionFactor precisionFactor)
 {
-    int primLengthIncrements = g_minPrimLengthIncrements;
-    int primThicknessIncrements = g_minPrimThicknessIncrements;
-    int secLengthIncrements = g_minSecLengthIncrements;
-    int secThicknessIncrements = g_minSecThicknessIncrements;
-
+    int primLengthArrayIndex = g_minPrimLengthIncrements - 1;
+    int primThicknessArrayIndex = g_minPrimThicknessIncrements -1;
     int primAngularArrayIndex = g_minPrimAngularIncrements - 1;
+
+    int secLengthArrayIndex = g_minSecLengthIncrements - 1;
+    int secThicknessArrayIndex = g_minSecThicknessIncrements - 1;
 
     int totalIncrements = 0;
     int currentIncrements;
@@ -218,11 +218,17 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coi
         double primAngularStep = PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
                 (blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex]);
 
-        double primLengthStep = sqrt(2) * primary.getLength() / primLengthIncrements;
-        double primThicknessStep = sqrt(2) * primary.getThickness() / primThicknessIncrements;
+        double primLengthStep = sqrt(2) * primary.getLength() /
+                (blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex]);
 
-        double secLengthStep = secondary.getLength() / secLengthIncrements;
-        double secThicknessStep = secondary.getThickness() / secThicknessIncrements;
+        double primThicknessStep = sqrt(2) * primary.getThickness() /
+                (blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex]);
+
+        double secLengthStep = secondary.getLength() /
+                (blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex]);
+
+        double secThicknessStep = secondary.getThickness() /
+                (blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
         double primLinearStep = sqrt(primLengthStep * primThicknessStep);
         double secLinearStep = sqrt(secLengthStep * secThicknessStep);
@@ -230,169 +236,169 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coi
         switch (caseIndex)
         {
             case (1):
-                primThicknessIncrements = 1;
-                secThicknessIncrements = 1; secLengthIncrements = 1;
+                primThicknessArrayIndex = 0;
+                secThicknessArrayIndex = 0; secLengthArrayIndex = 0;
 
                 if (primAngularStep / primLengthStep >= 1.0)
                     primAngularArrayIndex++;
                 else
-                    primLengthIncrements++;
+                    primLengthArrayIndex++;
                 break;
             case (2):
-                primThicknessIncrements = 1;
-                secThicknessIncrements = 1;
+                primThicknessArrayIndex = 0;
+                secThicknessArrayIndex = 0;
 
                 if (primAngularStep / primLengthStep >= 1.0)
                     primAngularArrayIndex++;
                 else
                 {
                     if (primLengthStep / secLengthStep >= 1.0)
-                        primLengthIncrements++;
+                        primLengthArrayIndex++;
                     else
-                        secLengthIncrements++;
+                        secLengthArrayIndex++;
                 }
                 break;
             case (3):
-                primThicknessIncrements = 1;
-                secLengthIncrements = 1;
+                primThicknessArrayIndex = 0;
+                secLengthArrayIndex = 0;
 
                 if (primAngularStep / primLengthStep >= 1.0)
                     primAngularArrayIndex++;
                 else
                 {
                     if (primLengthStep / secThicknessStep >= 1.0)
-                        primLengthIncrements++;
+                        primLengthArrayIndex++;
                     else
-                        secThicknessIncrements++;
+                        secThicknessArrayIndex++;
                 }
                 break;
             case (4):
-                primThicknessIncrements = 1;
+                primThicknessArrayIndex = 0;
 
                 if (primAngularStep / primLengthStep >= 1.0)
                     primAngularArrayIndex++;
                 else
                 {
                     if (primLengthStep / secLinearStep >= 1.0)
-                        primLengthIncrements++;
+                        primLengthArrayIndex++;
                     else
-                        { secLengthIncrements++; secThicknessIncrements++; }
+                        { secLengthArrayIndex++; secThicknessArrayIndex++; }
                 }
                 break;
             case (5):
-                primLengthIncrements = 1;
-                secThicknessIncrements = 1; secLengthIncrements = 1;
+                primLengthArrayIndex = 0;
+                secThicknessArrayIndex = 0; secLengthArrayIndex = 0;
 
                 if (primAngularStep / primThicknessStep >= 1.0)
                     primAngularArrayIndex++;
                 else
-                    primThicknessIncrements++;
+                    primThicknessArrayIndex++;
                 break;
             case (6):
-                primLengthIncrements = 1;
-                secThicknessIncrements = 1;
+                primLengthArrayIndex = 0;
+                secThicknessArrayIndex = 0;
 
                 if (primAngularStep / primThicknessStep >= 1.0)
                     primAngularArrayIndex++;
                 else
                 {
                     if (primThicknessStep / secLengthStep >= 1.0)
-                        primThicknessIncrements++;
+                        primThicknessArrayIndex++;
                     else
-                        secLengthIncrements++;
+                        secLengthArrayIndex++;
                 }
                 break;
             case (7):
-                primLengthIncrements = 1;
-                secLengthIncrements = 1;
+                primLengthArrayIndex = 0;
+                secLengthArrayIndex = 0;
 
                 if (primAngularStep / primThicknessStep >= 1.0)
                     primAngularArrayIndex++;
                 else
                 {
                     if (primThicknessStep / secThicknessStep >= 1.0)
-                        primThicknessIncrements++;
+                        primThicknessArrayIndex++;
                     else
-                        secThicknessIncrements++;
+                        secThicknessArrayIndex++;
                 }
                 break;
             case (8):
-                primLengthIncrements = 1;
+                primLengthArrayIndex = 0;
 
                 if (primAngularStep / primThicknessStep >= 1.0)
                     primAngularArrayIndex++;
                 else
                 {
                     if (primThicknessStep / secLinearStep >= 1.0)
-                        primThicknessIncrements++;
+                        primThicknessArrayIndex++;
                     else
-                    { secLengthIncrements++; secThicknessIncrements++; }
+                    { secLengthArrayIndex++; secThicknessArrayIndex++; }
                 }
                 break;
             case (9):
-                primLengthIncrements = 1; primThicknessIncrements = 1;
-                secLengthIncrements = 1; secThicknessIncrements = 1;
+                primLengthArrayIndex = 0; primThicknessArrayIndex = 0;
+                secLengthArrayIndex = 0; secThicknessArrayIndex = 0;
 
                 primAngularArrayIndex++;
                 break;
             case (10):
-                primLengthIncrements = 1; primThicknessIncrements = 1;
-                secThicknessIncrements = 1;
+                primLengthArrayIndex = 0; primThicknessArrayIndex = 0;
+                secThicknessArrayIndex = 0;
 
                 if (primAngularStep / secLengthStep >= 1.0)
                     primAngularArrayIndex++;
                 else
-                    secLengthIncrements++;
+                    secLengthArrayIndex++;
                 break;
             case (11):
-                primLengthIncrements = 1; primThicknessIncrements = 1;
-                secLengthIncrements = 1;
+                primLengthArrayIndex = 0; primThicknessArrayIndex = 0;
+                secLengthArrayIndex = 0;
 
                 if (primAngularStep / secThicknessStep >= 1.0)
                     primAngularArrayIndex++;
                 else
-                    secThicknessIncrements++;
+                    secThicknessArrayIndex++;
                 break;
             case (12):
-                primLengthIncrements = 1; primThicknessIncrements = 1;
+                primLengthArrayIndex = 0; primThicknessArrayIndex = 0;
 
-                if (primAngularStep / secLinearStep >= 1.9)
+                if (primAngularStep / secLinearStep >= 1.0)
                     primAngularArrayIndex++;
                 else
-                    { secLengthIncrements++; secThicknessIncrements++; }
+                    { secLengthArrayIndex++; secThicknessArrayIndex++; }
                 break;
             case (13):
-                secLengthIncrements = 1; secThicknessIncrements = 1;
+                secLengthArrayIndex = 0; secThicknessArrayIndex = 0;
 
                 if (primAngularStep / primLinearStep >= 1.0)
                     primAngularArrayIndex++;
                 else
-                    { primLengthIncrements++; primThicknessIncrements++; }
+                    { primLengthArrayIndex++; primThicknessArrayIndex++; }
                 break;
             case (14):
-                secThicknessIncrements = 1;
+                secThicknessArrayIndex = 0;
 
                 if (primAngularStep / primLinearStep >= 1.0)
                     primAngularArrayIndex++;
                 else
                 {
                     if (primLinearStep / secLengthStep >= 1.0)
-                        { primLengthIncrements++; primThicknessIncrements++; }
+                        { primLengthArrayIndex++; primThicknessArrayIndex++; }
                     else
-                        secLengthIncrements++;
+                        secLengthArrayIndex++;
                 }
                 break;
             case (15):
-                secLengthIncrements = 1;
+                secLengthArrayIndex = 0;
 
                 if (primAngularStep / primLinearStep >= 1.0)
                     primAngularArrayIndex++;
                 else
                 {
                     if (primLinearStep / secThicknessStep >= 1.0)
-                    { primLengthIncrements++; primThicknessIncrements++; }
+                    { primLengthArrayIndex++; primThicknessArrayIndex++; }
                     else
-                        secThicknessIncrements++;
+                        secThicknessArrayIndex++;
                 }
                 break;
             default:
@@ -401,29 +407,41 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coi
                 else
                 {
                     if (primLinearStep / secLinearStep >= 1.0)
-                        { primLengthIncrements++; primThicknessIncrements++; }
+                        { primLengthArrayIndex++; primThicknessArrayIndex++; }
                     else
-                        { secLengthIncrements++; secThicknessIncrements++; }
+                        { secLengthArrayIndex++; secThicknessArrayIndex++; }
                 }
         }
 
         currentIncrements =
-                primLengthIncrements * primThicknessIncrements * secLengthIncrements * secThicknessIncrements *
-                blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex];
+                blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex] *
+                blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex] *
+                blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex] *
+                blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex] *
+                blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex];
     }
     while (currentIncrements < totalIncrements);
 
-    PrecisionArguments primaryPrecision = PrecisionArguments(blockPrecisionCPUArray[primAngularArrayIndex], 1, 1,
+    PrecisionArguments primaryPrecision = PrecisionArguments(blockPrecisionCPUArray[primAngularArrayIndex],
+                                                             blockPrecisionCPUArray[primThicknessArrayIndex],
+                                                             blockPrecisionCPUArray[primLengthArrayIndex],
                                                              incrementPrecisionCPUArray[primAngularArrayIndex],
-                                                             primThicknessIncrements, primLengthIncrements);
+                                                             incrementPrecisionCPUArray[primThicknessArrayIndex],
+                                                             incrementPrecisionCPUArray[primLengthArrayIndex]);
 
-    PrecisionArguments secondaryPrecision = PrecisionArguments(0, 1, 1, 0,
-                                                               secThicknessIncrements, secLengthIncrements);
+    PrecisionArguments secondaryPrecision = PrecisionArguments(0,
+                                                               blockPrecisionCPUArray[secThicknessArrayIndex],
+                                                               blockPrecisionCPUArray[secLengthArrayIndex],
+                                                               0,
+                                                               incrementPrecisionCPUArray[secThicknessArrayIndex],
+                                                               incrementPrecisionCPUArray[secLengthArrayIndex]);
 
     printf("case %d - %d : %d %d %d | %d %d\n", caseIndex, currentIncrements,
-           primLengthIncrements, primThicknessIncrements,
+           blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex],
+           blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex],
            blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
-           secLengthIncrements, secThicknessIncrements);
+           blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
+           blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
     return MInductanceArguments(primaryPrecision, secondaryPrecision);
 }
@@ -431,12 +449,12 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coi
 MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
                                                                              PrecisionFactor precisionFactor)
 {
-    int primLengthIncrements = g_minPrimLengthIncrements;
-    int primThicknessIncrements = g_minPrimThicknessIncrements;
-    int secLengthIncrements = g_minSecLengthIncrements;
-    int secThicknessIncrements = g_minSecThicknessIncrements;
-
+    int primLengthArrayIndex = g_minPrimLengthIncrements - 1;
+    int primThicknessArrayIndex = g_minPrimThicknessIncrements - 1;
     int primAngularArrayIndex = g_minPrimAngularIncrements - 1;
+
+    int secLengthArrayIndex = g_minSecLengthIncrements - 1;
+    int secThicknessArrayIndex = g_minSecThicknessIncrements - 1;
     int secAngularArrayIndex = g_minSecAngularIncrements - 1;
 
     int totalIncrements = 0;
@@ -444,7 +462,7 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
     int caseIndex;
 
     getMInductanceCaseAndIncrements(primary, secondary, precisionFactor, caseIndex, totalIncrements);
-    // multiplying the number of increments by 16 because of one extra degree of freedom
+    // multiplying the number of increments by 16 because of one extra dimension of integration compared to z-axis
     totalIncrements *= 16;
 
     do
@@ -452,14 +470,20 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
         double primAngularStep = PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
                 (blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex]);
 
-        double primLengthStep = sqrt(2) * primary.getLength() / primLengthIncrements;
-        double primThicknessStep = sqrt(2) * primary.getThickness() / primThicknessIncrements;
+        double primLengthStep = sqrt(2) * primary.getLength() /
+                (blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex]);
+
+        double primThicknessStep = sqrt(2) * primary.getThickness() /
+                (blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex]);
+
+        double secLengthStep = secondary.getLength() /
+                (blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex]);
+
+        double secThicknessStep = secondary.getThickness() /
+                (blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
         double secAngularStep = PI * (secondary.getInnerRadius() + secondary.getThickness() * 0.5) /
                 (blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
-
-        double secLengthStep = secondary.getLength() / secLengthIncrements;
-        double secThicknessStep = secondary.getThickness() / secThicknessIncrements;
 
         double primLinearStep = sqrt(primLengthStep * primThicknessStep);
         double secLinearStep = sqrt(secLengthStep * secThicknessStep);
@@ -467,8 +491,8 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
         switch (caseIndex)
         {
             case (1):
-                primThicknessIncrements = 1;
-                secThicknessIncrements = 1; secLengthIncrements = 1;
+                primThicknessArrayIndex = 0;
+                secThicknessArrayIndex = 0; secLengthArrayIndex = 0;
 
                 if ((primLengthStep * primLengthStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -478,11 +502,11 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                         secAngularArrayIndex++;
                 }
                 else
-                    primLengthIncrements++;
+                    primLengthArrayIndex++;
                 break;
             case (2):
-                primThicknessIncrements = 1;
-                secThicknessIncrements = 1;
+                primThicknessArrayIndex = 0;
+                secThicknessArrayIndex = 0;
 
                 if ((primLengthStep * secLengthStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -494,14 +518,14 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                 else
                 {
                     if (secLengthStep / primLengthStep <= 1.0)
-                        primLengthIncrements++;
+                        primLengthArrayIndex++;
                     else
-                        secLengthIncrements++;
+                        secLengthArrayIndex++;
                 }
                 break;
             case (3):
-                primThicknessIncrements = 1;
-                secLengthIncrements = 1;
+                primThicknessArrayIndex = 0;
+                secLengthArrayIndex = 0;
 
                 if ((primLengthStep * secThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -513,13 +537,13 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                 else
                 {
                     if (secThicknessStep / primLengthStep <= 1.0)
-                        primLengthIncrements++;
+                        primLengthArrayIndex++;
                     else
-                        secThicknessIncrements++;
+                        secThicknessArrayIndex++;
                 }
                 break;
             case (4):
-                primThicknessIncrements = 1;
+                primThicknessArrayIndex = 0;
 
                 if ((primLengthStep * secLinearStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -531,14 +555,14 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                 else
                 {
                     if (secLinearStep / primLengthStep <= 1.0)
-                        primLengthIncrements++;
+                        primLengthArrayIndex++;
                     else
-                        { secLengthIncrements++; secThicknessIncrements++; }
+                        { secLengthArrayIndex++; secThicknessArrayIndex++; }
                 }
                 break;
             case (5):
-                primLengthIncrements = 1;
-                secThicknessIncrements = 1; secLengthIncrements = 1;
+                primLengthArrayIndex = 0;
+                secThicknessArrayIndex = 0; secLengthArrayIndex = 0;
 
                 if ((primThicknessStep * primThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -548,11 +572,11 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                         secAngularArrayIndex++;
                 }
                 else
-                    primThicknessIncrements++;
+                    primThicknessArrayIndex++;
                 break;
             case (6):
-                primLengthIncrements = 1;
-                secThicknessIncrements = 1;
+                primLengthArrayIndex = 0;
+                secThicknessArrayIndex = 0;
 
                 if ((primThicknessStep * secLengthStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -564,14 +588,14 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                 else
                 {
                     if (secLengthStep / primThicknessStep <= 1.0)
-                        primThicknessIncrements++;
+                        primThicknessArrayIndex++;
                     else
-                        secLengthIncrements++;
+                        secLengthArrayIndex++;
                 }
                 break;
             case (7):
-                primLengthIncrements = 1;
-                secLengthIncrements = 1;
+                primLengthArrayIndex = 0;
+                secLengthArrayIndex = 0;
 
                 if ((primThicknessStep * secThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -583,13 +607,13 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                 else
                 {
                     if (secThicknessStep / primThicknessStep <= 1.0)
-                        primThicknessIncrements++;
+                        primThicknessArrayIndex++;
                     else
-                        secThicknessIncrements++;
+                        secThicknessArrayIndex++;
                 }
                 break;
             case (8):
-                primLengthIncrements = 1;
+                primLengthArrayIndex = 0;
 
                 if ((primThicknessStep * secLinearStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -601,14 +625,14 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                 else
                 {
                     if (secLinearStep / primThicknessStep <= 1.0)
-                        primThicknessIncrements++;
+                        primThicknessArrayIndex++;
                     else
-                        { secLengthIncrements++; secThicknessIncrements++; }
+                        { secLengthArrayIndex++; secThicknessArrayIndex++; }
                 }
                 break;
             case (9):
-                primLengthIncrements = 1; primThicknessIncrements = 1;
-                secLengthIncrements = 1; secThicknessIncrements = 1;
+                primLengthArrayIndex = 0; primThicknessArrayIndex = 0;
+                secLengthArrayIndex = 0; secThicknessArrayIndex = 0;
 
                 if (secAngularStep / primAngularStep <= 1.0)
                     primAngularArrayIndex++;
@@ -616,8 +640,8 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                     secAngularArrayIndex++;
                 break;
             case (10):
-                primLengthIncrements = 1; primThicknessIncrements = 1;
-                secThicknessIncrements = 1;
+                primLengthArrayIndex = 0; primThicknessArrayIndex = 0;
+                secThicknessArrayIndex = 0;
 
                 if ((secLengthStep * secLengthStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -627,11 +651,11 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                         secAngularArrayIndex++;
                 }
                 else
-                    secLengthIncrements++;
+                    secLengthArrayIndex++;
                 break;
             case (11):
-                primLengthIncrements = 1; primThicknessIncrements = 1;
-                secLengthIncrements = 1;
+                primLengthArrayIndex = 0; primThicknessArrayIndex = 0;
+                secLengthArrayIndex = 0;
 
                 if ((secThicknessStep * secThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -641,10 +665,10 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                         secAngularArrayIndex++;
                 }
                 else
-                    secThicknessIncrements++;
+                    secThicknessArrayIndex++;
                 break;
             case (12):
-                primLengthIncrements = 1; primThicknessIncrements = 1;
+                primLengthArrayIndex = 0; primThicknessArrayIndex = 0;
 
                 if ((secLengthStep * secThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -654,10 +678,10 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                         secAngularArrayIndex++;
                 }
                 else
-                    { secThicknessIncrements++; secThicknessIncrements++; }
+                    { secThicknessArrayIndex++; secThicknessArrayIndex++; }
                 break;
             case (13):
-                secLengthIncrements = 1; secThicknessIncrements = 1;
+                secLengthArrayIndex = 0; secThicknessArrayIndex = 0;
 
                 if ((primLengthStep * primThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -667,10 +691,10 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                         secAngularArrayIndex++;
                 }
                 else
-                { primThicknessIncrements++; primThicknessIncrements++; }
+                { primLengthArrayIndex++; primThicknessArrayIndex++; }
                 break;
             case (14):
-                secThicknessIncrements = 1;
+                secThicknessArrayIndex = 0;
 
                 if ((primLinearStep * secLengthStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -682,13 +706,13 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                 else
                 {
                     if (secLengthStep / primLinearStep <= 1.0)
-                        { primLengthIncrements++; primThicknessIncrements++; }
+                        { primLengthArrayIndex++; primThicknessArrayIndex++; }
                     else
-                        secLengthIncrements++;
+                        secLengthArrayIndex++;
                 }
                 break;
             case (15):
-                secLengthIncrements = 1;
+                secLengthArrayIndex = 0;
 
                 if ((primLinearStep * secThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
                 {
@@ -700,9 +724,9 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                 else
                 {
                     if (secThicknessStep / primLinearStep <= 1.0)
-                    { primLengthIncrements++; primThicknessIncrements++; }
+                    { primLengthArrayIndex++; primThicknessArrayIndex++; }
                     else
-                        secThicknessIncrements++;
+                        secThicknessArrayIndex++;
                 }
                 break;
             default:
@@ -716,31 +740,42 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
                 else
                 {
                     if (secLinearStep / primLinearStep <= 1.0)
-                        { primLengthIncrements++; primThicknessIncrements++; }
+                        { primLengthArrayIndex++; primThicknessArrayIndex++; }
                     else
-                        { secLengthIncrements++; secThicknessIncrements++; }
+                        { secLengthArrayIndex++; secThicknessArrayIndex++; }
                 }
         }
 
         currentIncrements =
-                primLengthIncrements * primThicknessIncrements * secLengthIncrements * secThicknessIncrements *
+                blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex] *
+                blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex] *
                 blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex] *
+                blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex] *
+                blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex] *
                 blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex];
     }
     while (currentIncrements < totalIncrements);
 
-    PrecisionArguments primaryPrecision = PrecisionArguments(blockPrecisionCPUArray[primAngularArrayIndex], 1, 1,
+    PrecisionArguments primaryPrecision = PrecisionArguments(blockPrecisionCPUArray[primAngularArrayIndex],
+                                                             blockPrecisionCPUArray[primThicknessArrayIndex],
+                                                             blockPrecisionCPUArray[primLengthArrayIndex],
                                                              incrementPrecisionCPUArray[primAngularArrayIndex],
-                                                             primThicknessIncrements, primLengthIncrements);
+                                                             incrementPrecisionCPUArray[primThicknessArrayIndex],
+                                                             incrementPrecisionCPUArray[primLengthArrayIndex]);
 
-    PrecisionArguments secondaryPrecision = PrecisionArguments(blockPrecisionCPUArray[secAngularArrayIndex], 1, 1,
+    PrecisionArguments secondaryPrecision = PrecisionArguments(blockPrecisionCPUArray[secAngularArrayIndex],
+                                                               blockPrecisionCPUArray[secThicknessArrayIndex],
+                                                               blockPrecisionCPUArray[secLengthArrayIndex],
                                                                incrementPrecisionCPUArray[secAngularArrayIndex],
-                                                               secThicknessIncrements, secLengthIncrements);
+                                                               incrementPrecisionCPUArray[secThicknessArrayIndex],
+                                                               incrementPrecisionCPUArray[secLengthArrayIndex]);
 
     printf("case %d - %d : %d %d %d | %d %d %d\n", caseIndex, currentIncrements,
-           primLengthIncrements, primThicknessIncrements,
+           blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex],
+           blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex],
            blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
-           secLengthIncrements, secThicknessIncrements,
+           blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
+           blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex],
            blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
     return MInductanceArguments(primaryPrecision, secondaryPrecision);
@@ -1979,31 +2014,49 @@ double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &sec
                                             MInductanceArguments inductanceArguments, ComputeMethod method)
 {
     PrecisionArguments primaryPrecisionArguments = inductanceArguments.primaryPrecision;
+
+    int lengthBlocks = inductanceArguments.secondaryPrecision.lengthBlockCount;
     int lengthIncrements = inductanceArguments.secondaryPrecision.lengthIncrementCount;
+
+    int thicknessBlocks = inductanceArguments.secondaryPrecision.thicknessBlockCount;
     int thicknessIncrements = inductanceArguments.secondaryPrecision.thicknessIncrementCount;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int maxLengthIndex = lengthIncrements - 1;
     int maxThicknessIndex = thicknessIncrements - 1;
 
+    double lengthBlockSize = secondary.length / lengthBlocks;
+    double thicknessBlockSize = secondary.thickness / thicknessBlocks;
+
     std::vector<double> zPositions;
     std::vector<double> rPositions;
 
     std::vector<double> weights;
 
-    for (int zIndex = 0; zIndex < lengthIncrements; ++zIndex)
+    for (int zBlock = 0; zBlock < lengthBlocks; ++zBlock)
     {
-        for (int rIndex = 0; rIndex < thicknessIncrements; ++rIndex)
+        for (int rBlock = 0; rBlock < thicknessBlocks; ++rBlock)
         {
-            zPositions.push_back(zDisplacement + (secondary.length * 0.5) *
-                                                 Legendre::positionMatrix[maxLengthIndex][zIndex]);
+            double zBlockPosition = (-1) * (secondary.length * 0.5) + lengthBlockSize * (zBlock + 0.5);
+            double rBlockPosition = secondary.innerRadius + thicknessBlockSize * (rBlock + 0.5);
 
-            rPositions.push_back(secondary.innerRadius + secondary.thickness * 0.5 +
-                                 (secondary.thickness * 0.5) * Legendre::positionMatrix[maxThicknessIndex][rIndex]);
+            for (int zIndex = 0; zIndex < lengthIncrements; ++zIndex)
+            {
+                for (int rIndex = 0; rIndex < thicknessIncrements; ++rIndex)
+                {
+                    double incrementPositionZ = zDisplacement + zBlockPosition +
+                            (lengthBlockSize * 0.5) * Legendre::positionMatrix[maxLengthIndex][zIndex];
+                    double incrementPositionR = rBlockPosition +
+                            (thicknessBlockSize * 0.5) * Legendre::positionMatrix[maxThicknessIndex][rIndex];
 
-            weights.push_back(
-                    0.25 * Legendre::weightsMatrix[maxLengthIndex][zIndex] *
-                    Legendre::weightsMatrix[maxThicknessIndex][rIndex]);
+                    zPositions.push_back(incrementPositionZ);
+                    rPositions.push_back(incrementPositionR);
+
+                    weights.push_back(
+                            0.25 * Legendre::weightsMatrix[maxLengthIndex][zIndex] *
+                            Legendre::weightsMatrix[maxThicknessIndex][rIndex]);
+                }
+            }
         }
     }
 
@@ -2031,12 +2084,17 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
     }
     else {
         PrecisionArguments primaryPrecisionArguments = inductanceArguments.primaryPrecision;
+
+        int lengthBlocks = inductanceArguments.secondaryPrecision.lengthBlockCount;
         int lengthIncrements = inductanceArguments.secondaryPrecision.lengthIncrementCount;
+
+        int thicknessBlocks = inductanceArguments.secondaryPrecision.thicknessBlockCount;
         int thicknessIncrements = inductanceArguments.secondaryPrecision.thicknessIncrementCount;
+
         int angularBlocks = inductanceArguments.secondaryPrecision.angularBlockCount;
         int angularIncrements = inductanceArguments.secondaryPrecision.angularIncrementCount;
 
-        int numElements = lengthIncrements * thicknessIncrements * angularBlocks * angularIncrements;
+        int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements * angularBlocks * angularIncrements;
 
         // sometimes the function is even so a shortcut can be used to improve performance and efficiency
         double ringIntervalSize;
@@ -2058,49 +2116,62 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
         int maxThicknessIndex = thicknessIncrements - 1;
         int maxAngularIncrementIndex = angularIncrements - 1;
 
+        double lengthBlockSize = secondary.length / lengthBlocks;
+        double thicknessBlockSize = secondary.thickness / thicknessBlocks;
+
         std::vector<double> zPositions;
         std::vector<double> rPositions;
 
         std::vector<double> weights;
 
-        for (int zIndex = 0; zIndex < lengthIncrements; ++zIndex)
+        for (int zBlock = 0; zBlock < lengthBlocks; ++zBlock)
         {
-            for (int rIndex = 0; rIndex < thicknessIncrements; ++rIndex)
+            for (int rBlock = 0; rBlock < thicknessBlocks; ++rBlock)
             {
-                double ringRadius = secondary.innerRadius + secondary.thickness * 0.5 +
-                                    (secondary.thickness * 0.5) * Legendre::positionMatrix[maxThicknessIndex][rIndex];
+                double zBlockPosition = (-1) * (secondary.length * 0.5) + lengthBlockSize * (zBlock + 0.5);
+                double rBlockPosition = secondary.innerRadius + thicknessBlockSize * (rBlock + 0.5);
 
-                double lengthDisplacement = (secondary.length * 0.5) * Legendre::positionMatrix[maxLengthIndex][zIndex];
-
-                for (int phiBlock = 0; phiBlock < angularBlocks; ++phiBlock)
+                for (int zIndex = 0; zIndex < lengthIncrements; ++zIndex)
                 {
-                    for (int phiIndex = 0; phiIndex < angularIncrements; ++phiIndex)
+                    for (int rIndex = 0; rIndex < thicknessIncrements; ++rIndex)
                     {
-                        int phiPosition = phiBlock * angularIncrements + phiIndex;
+                        double ringRadius = rBlockPosition +
+                                (thicknessBlockSize * 0.5) * Legendre::positionMatrix[maxThicknessIndex][rIndex];
 
-                         double displacementX = lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
-                                                ringRadius * unitRingPointsX[phiPosition];
+                        double lengthDisplacement = zBlockPosition +
+                                (lengthBlockSize * 0.5) * Legendre::positionMatrix[maxLengthIndex][zIndex];
 
-                         double displacementY = rDisplacement - lengthDisplacement * sin(alphaAngle) * cos(betaAngle) +
-                                                ringRadius * unitRingPointsY[phiPosition];
+                        for (int phiBlock = 0; phiBlock < angularBlocks; ++phiBlock)
+                        {
+                            for (int phiIndex = 0; phiIndex < angularIncrements; ++phiIndex)
+                            {
+                                int phiPosition = phiBlock * angularIncrements + phiIndex;
 
-                         double displacementZ = zDisplacement + lengthDisplacement * cos(alphaAngle) +
-                                                ringRadius * unitRingPointsZ[phiPosition];
+                                double displacementX = lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
+                                                       ringRadius * unitRingPointsX[phiPosition];
 
-                        zPositions.push_back(displacementZ);
-                        rPositions.push_back(sqrt(displacementX * displacementX + displacementY * displacementY));
+                                double displacementY = rDisplacement - lengthDisplacement * sin(alphaAngle) * cos(betaAngle) +
+                                                       ringRadius * unitRingPointsY[phiPosition];
 
-                        double rhoAngle = atan2(displacementY, displacementX);
+                                double displacementZ = zDisplacement + lengthDisplacement * cos(alphaAngle) +
+                                                       ringRadius * unitRingPointsZ[phiPosition];
 
-                        double orientationFactor =
-                                - sin(rhoAngle) * unitRingTangentsX[phiPosition] +
-                                cos(rhoAngle) * unitRingTangentsY[phiPosition];
+                                zPositions.push_back(displacementZ);
+                                rPositions.push_back(sqrt(displacementX * displacementX + displacementY * displacementY));
 
-                        weights.push_back(
-                                0.125 * orientationFactor * 2 * PI * ringRadius / angularBlocks *
-                                Legendre::weightsMatrix[maxLengthIndex][zIndex] *
-                                Legendre::weightsMatrix[maxThicknessIndex][rIndex] *
-                                Legendre::weightsMatrix[maxAngularIncrementIndex][phiIndex]);
+                                double rhoAngle = atan2(displacementY, displacementX);
+
+                                double orientationFactor =
+                                        - sin(rhoAngle) * unitRingTangentsX[phiPosition] +
+                                        cos(rhoAngle) * unitRingTangentsY[phiPosition];
+
+                                weights.push_back(
+                                        0.125 * orientationFactor * 2 * PI * ringRadius / angularBlocks *
+                                        Legendre::weightsMatrix[maxLengthIndex][zIndex] *
+                                        Legendre::weightsMatrix[maxThicknessIndex][rIndex] *
+                                        Legendre::weightsMatrix[maxAngularIncrementIndex][phiIndex]);
+                            }
+                        }
                     }
                 }
             }

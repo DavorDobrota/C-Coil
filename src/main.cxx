@@ -8,8 +8,12 @@ extern thread_pool tp;
 
 int main()
 {
+//    testCoilMutualInductanceZAxis();
 
-    testCoilMutualInductanceGeneralPancakeAndPancake();
+//    testCoilMutualInductanceGeneralThinCoilAndFilament();
+//    testCoilMutualInductanceGeneralThinCoilAndThinCoil();
+//    testCoilMutualInductanceGeneralPancakeAndPancake();
+//    testCoilMutualInductanceGeneralRectangularAndFilament();
 
     return 0;
 }

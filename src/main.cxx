@@ -9,5 +9,7 @@ extern thread_pool tp;
 int main()
 {
 
+    testCoilMutualInductanceGeneralPancakeAndPancake();
+
     return 0;
 }

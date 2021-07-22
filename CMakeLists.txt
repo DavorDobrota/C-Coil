@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(General_Coil_Program)
 
 set(CMAKE_CXX_STANDARD 17)
+set (CMAKE_CXX_FLAGS "-Ofast")
 
 add_executable(General_Coil_Program src/main.cxx src/OldCoil.cxx include/OldCoil.h src/Polynomial.cxx include/Polynomial.h src/Coil.cxx include/Coil.h include/Precision.h include/ComputeMethod.h src/LegendreMatrix.cxx include/LegendreMatrix.h src/test.cxx include/test.h src/Conversion_Util.cxx include/Conversion_Util.h src/CoilData.cxx include/CoilData.h)
 include_directories(include)

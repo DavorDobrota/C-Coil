@@ -1,5 +1,6 @@
-#include "../include/OldCoil.h"
+#include "OldCoil.h"
 
+#include <cstring>
 #include <vector>
 
 std::vector<OldCoil> backup_vec;
@@ -42,7 +43,7 @@ Type OldCoil::Calc(Type r, Type Theta, std::function<long unsigned int(int, void
 
         ar.resize(tp.size());
     }
-    ZeroMemory(&ar.front(), ar.size() * sizeof(thread_param));
+    memset(&ar.front(), 0, ar.size() * sizeof(thread_param));
     remainder = int(Type(a) / Type(IncA)) % tp.size();
     for(int it = 0; it < tp.size(); ++it)
     {

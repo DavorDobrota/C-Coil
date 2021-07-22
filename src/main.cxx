@@ -1,13 +1,15 @@
 #include <iostream>
-#include "../include/OldCoil.h"
-#include "../include/Polynomial.h"
-#include "../include/Coil.h"
-#include "test.h"
+#include "OldCoil.h"
+#include "Polynomial.h"
+#include "Coil.h"
+#include "Test.h"
 
 extern thread_pool tp;
 
 int main()
 {
-
+//    testCoilMutualInductanceForSpecialCase();
+//    testCoilMutualInductanceZAxis();
+    testMethodPrecisionCompareCPUvsGPU();
     return 0;
 }

@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <vector>
 
-#include "test.h"
+#include "Test.h"
 #include "Polynomial.h"
 #include "Coil.h"
 #include "OldCoil.h"

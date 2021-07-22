@@ -8,7 +8,7 @@
 #include "Coil.h"
 #include "ComputeMethod.h"
 #include "hardware_acceleration.h"
-#include "Conversion_Util.h"
+#include "ConversionUtil.h"
 #include "LegendreMatrix.h"
 
 namespace

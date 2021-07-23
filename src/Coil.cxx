@@ -924,7 +924,7 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZGPU(const Coi
     int caseIndex;
 
     if (secThickness / secRadius < g_thinCoilApproximationRatio && secLength / secRadius < g_thinCoilApproximationRatio)
-        { caseIndex = 1; totalIncrements = pow(2, 12 + precisionFactor.relativePrecision); }
+        { caseIndex = 1; totalIncrements = pow(2, 10 + precisionFactor.relativePrecision); }
 
     else if (secThickness / secLength < g_thinCoilApproximationRatio)
         { caseIndex = 2; totalIncrements = pow(2, 13 + precisionFactor.relativePrecision); }
@@ -940,7 +940,7 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZGPU(const Coi
         double primAngularStep = PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
                                  (primAngularBlocks * primAngularIncrements);
 
-        double primLinearStep = sqrt(2 * primary.getThickness() * primary.getLength()) /
+        double primLinearStep = sqrt(primary.getThickness() * primary.getLength()) /
                                 (primLinearBlocks * primLinearIncrements);
 
         double secLengthStep = secondary.getLength() /
@@ -955,45 +955,47 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZGPU(const Coi
         {
             case (1):
                 secLengthArrayIndex = 0; secThicknessArrayIndex = 0;
-                if (primAngularStep / primLinearStep >= 1.0)
-                    primAngularBlocks++;
-                else
+                if (primAngularStep / primLinearStep <= 1.0)
                     primLinearBlocks++;
+                else
+                    primAngularBlocks++;
                 break;
             case (2):
                 secThicknessArrayIndex = 0;
-                if (primAngularStep / primLinearStep >= 1.0)
-                    primAngularBlocks++;
-                else
+                if (primAngularStep / sqrt(secLengthStep * primLinearStep) <= 1.0)
                 {
                     if (secLengthStep / primLinearStep >= 1.0)
                         secLengthArrayIndex++;
                     else
                         primLinearBlocks++;
                 }
+                else
+                {
+                    primAngularBlocks++;
+                }
                 break;
             case (3):
                 secLengthArrayIndex = 0;
-                if (primAngularStep / primLinearStep >= 1.0)
-                    primAngularBlocks++;
-                else
+                if (primAngularStep / sqrt(secThicknessStep * primLinearStep) <= 1.0)
                 {
                     if (secThicknessStep / primLinearStep >= 1.0)
                         secThicknessArrayIndex++;
                     else
                         primLinearBlocks++;
                 }
+                else
+                    primAngularBlocks++;
                 break;
             default:
-                if (primAngularStep / primLinearStep >= 1.0)
-                    primAngularBlocks++;
-                else
+                if (primAngularStep / sqrt(secLinearStep * primLinearStep) <= 1.0)
                 {
                     if (secLinearStep / primLinearStep >= 1.0)
                         { secLengthArrayIndex++; secThicknessArrayIndex++; }
                     else
                         primLinearBlocks++;
                 }
+                else
+                    primAngularBlocks++;
         }
         currentIncrements = primAngularBlocks * primAngularIncrements *
                 primLinearBlocks * primLinearIncrements * primLinearBlocks * primLinearIncrements *
@@ -1044,23 +1046,23 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralGPU(con
     int caseIndex;
 
     if (secThickness / secRadius < g_thinCoilApproximationRatio && secLength / secRadius < g_thinCoilApproximationRatio)
-    { caseIndex = 1; totalIncrements = pow(2, 12 + precisionFactor.relativePrecision); }
+    { caseIndex = 1; totalIncrements = pow(2, 13     + precisionFactor.relativePrecision); }
 
     else if (secThickness / secLength < g_thinCoilApproximationRatio)
-    { caseIndex = 2; totalIncrements = pow(2, 13 + precisionFactor.relativePrecision); }
+    { caseIndex = 2; totalIncrements = pow(2, 16 + precisionFactor.relativePrecision); }
 
     else if (secLength / secThickness < g_thinCoilApproximationRatio)
-    { caseIndex = 3; totalIncrements = pow(2, 13 + precisionFactor.relativePrecision); }
+    { caseIndex = 3; totalIncrements = pow(2, 16 + precisionFactor.relativePrecision); }
 
     else
-    { caseIndex = 4; totalIncrements = pow(2, 16 + precisionFactor.relativePrecision); }
+    { caseIndex = 4; totalIncrements = pow(2, 19 + precisionFactor.relativePrecision); }
 
     do
     {
         double primAngularStep = PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
                                  (primAngularBlocks * primAngularIncrements);
 
-        double primLinearStep = sqrt(2 * primary.getThickness() * primary.getLength()) /
+        double primLinearStep = sqrt(primary.getThickness() * primary.getLength()) /
                                 (primLinearBlocks * primLinearIncrements);
 
         double secLengthStep = secondary.getLength() /

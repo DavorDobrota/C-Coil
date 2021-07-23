@@ -371,6 +371,38 @@ void testOldCoilMutualInductanceZAxis()
 	fclose(output);
 }
 
+void testCoilMutualInductanceZAxisArgumentGeneration()
+{
+    Coil coil1 = Coil(0.05, 0.1, 0.1, 100);
+    Coil coil2 = Coil(0.05, 0.1, 1e-15, 10);
+    Coil coil3 = Coil(0.05, 1e-15, 0.1, 10);
+    Coil coil4 = Coil(0.05, 1e-15, 1e-15, 1);
+
+    MInductanceArguments args;
+
+    printf("CPU z axis\n");
+    for (double i = 1.0; i <= 8.0; i += 1.0)
+    {
+        printf("precision = %.1f\n", i);
+        args = MInductanceArguments::getMInductanceArgumentsZCPU(coil1, coil1, PrecisionFactor(i));
+        args = MInductanceArguments::getMInductanceArgumentsZCPU(coil1, coil2, PrecisionFactor(i));
+        args = MInductanceArguments::getMInductanceArgumentsZCPU(coil1, coil3, PrecisionFactor(i));
+        args = MInductanceArguments::getMInductanceArgumentsZCPU(coil1, coil4, PrecisionFactor(i));
+        printf("\n");
+    }
+
+    printf("GPU z axis\n");
+    for (double i = 1.0; i <= 8.0; i += 1.0)
+    {
+        printf("precision = %.1f\n", i);
+        args = MInductanceArguments::getMInductanceArgumentsZGPU(coil1, coil1, PrecisionFactor(i));
+        args = MInductanceArguments::getMInductanceArgumentsZGPU(coil1, coil2, PrecisionFactor(i));
+        args = MInductanceArguments::getMInductanceArgumentsZGPU(coil1, coil3, PrecisionFactor(i));
+        args = MInductanceArguments::getMInductanceArgumentsZGPU(coil1, coil4, PrecisionFactor(i));
+        printf("\n");
+    }
+}
+
 void testOldCoilMutualInductanceZAxisPerformance()
 {
     OldCoil prim = OldCoil(1, 1.0, 0.1, 0.1, 0.001, 32, 32, 48, 100, true, 100000, 1.63e-8);
@@ -450,15 +482,35 @@ void testCoilMutualInductanceGeneralForZAxis()
     fclose(output);
 }
 
-void testCoilMutualInductanceZAxisArgumentGeneration()
+void testCoilMutualInductanceGeneralArgumentGeneration()
 {
-    Coil prim = Coil (0.03, 0.03, 0.12, 3600);
-    Coil sec = Coil (0.02, 0.025, 0.04, 1000);
+    Coil coil1 = Coil(0.05, 0.1, 0.1, 100);
+    Coil coil2 = Coil(0.05, 0.1, 1e-15, 10);
+    Coil coil3 = Coil(0.05, 1e-15, 0.1, 10);
+    Coil coil4 = Coil(0.05, 1e-15, 1e-15, 1);
 
+    MInductanceArguments args;
+
+    printf("CPU general\n");
     for (double i = 1.0; i <= 8.0; i += 1.0)
     {
-        auto args1 = MInductanceArguments::getMInductanceArgumentsZCPU(prim, sec, PrecisionFactor(i));
-        auto args2 = MInductanceArguments::getMInductanceArgumentsZGPU(prim, sec, PrecisionFactor(i));
+        printf("precision = %.1f\n", i);
+        args = MInductanceArguments::getMInductanceArgumentsGeneralGPU(coil1, coil1, PrecisionFactor(i));
+        args = MInductanceArguments::getMInductanceArgumentsGeneralGPU(coil1, coil2, PrecisionFactor(i));
+        args = MInductanceArguments::getMInductanceArgumentsGeneralGPU(coil1, coil3, PrecisionFactor(i));
+        args = MInductanceArguments::getMInductanceArgumentsGeneralGPU(coil1, coil4, PrecisionFactor(i));
+        printf("\n");
+    }
+
+    printf("GPU general\n");
+    for (double i = 1.0; i <= 8.0; i += 1.0)
+    {
+        printf("precision = %.1f\n", i);
+        args = MInductanceArguments::getMInductanceArgumentsGeneralGPU(coil1, coil1, PrecisionFactor(i));
+        args = MInductanceArguments::getMInductanceArgumentsGeneralGPU(coil1, coil2, PrecisionFactor(i));
+        args = MInductanceArguments::getMInductanceArgumentsGeneralGPU(coil1, coil3, PrecisionFactor(i));
+        args = MInductanceArguments::getMInductanceArgumentsGeneralGPU(coil1, coil4, PrecisionFactor(i));
+        printf("\n");
     }
 }
 
@@ -657,3 +709,4 @@ void testCoilMutualInductanceGeneralRectangularAndFilament()
     }
     printf("\n");
 }
+

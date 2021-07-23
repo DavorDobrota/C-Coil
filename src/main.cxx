@@ -8,8 +8,5 @@ extern thread_pool tp;
 
 int main()
 {
-//    testCoilMutualInductanceForSpecialCase();
-//    testCoilMutualInductanceZAxis();
-    testMethodPrecisionCompareCPUvsGPU();
     return 0;
 }

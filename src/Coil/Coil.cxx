@@ -37,6 +37,8 @@ namespace
     const int g_minSecAngularIncrements = 4;
 
     const double g_thinCoilApproximationRatio = 1e-6;
+
+    ctpl::thread_pool g_threadPool;
 }
 
 namespace Precision
@@ -819,46 +821,48 @@ void MInductanceArguments::getMInductanceCaseAndIncrements(const Coil &primary, 
 }
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-           double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings) :
+           double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings,
+           int threadCount) :
            innerRadius(innerRadius), thickness(thickness), length(length), numOfTurns(numOfTurns),
-           precisionSettings(precisionSettings)
+           precisionSettings(precisionSettings), threadCount(threadCount)
 {
     setCurrent(current);
     calculateAverageWireThickness();
     setWireResistivity(wireResistivity);
     setSineFrequency(sineFrequency);
     calculateSelfInductance();
+    setThreadCount(threadCount);
 }
 
 Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0,
                     g_defaultResistivity, g_defaultSineFrequency, g_defaultPrecision){}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency) :
-        Coil(innerRadius, thickness, length, numOfTurns, current,
-             g_defaultResistivity, sineFrequency, g_defaultPrecision) {}
+           Coil(innerRadius, thickness, length, numOfTurns, current,
+           g_defaultResistivity, sineFrequency, g_defaultPrecision) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
-           const PrecisionArguments &precisionSettings) :
+           const PrecisionArguments &precisionSettings, int threadCount) :
            Coil(innerRadius, thickness, length, numOfTurns, current,
-                g_defaultResistivity, sineFrequency, precisionSettings) {}
+                g_defaultResistivity, sineFrequency, precisionSettings, threadCount) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current) :
-        Coil(innerRadius, thickness, length, numOfTurns, current,
-             g_defaultResistivity, g_defaultSineFrequency, g_defaultPrecision) {}
+           Coil(innerRadius, thickness, length, numOfTurns, current,
+           g_defaultResistivity, g_defaultSineFrequency, g_defaultPrecision) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-           const PrecisionArguments &precisionSettings) :
+           const PrecisionArguments &precisionSettings, int threadCount) :
            Coil(innerRadius, thickness, length, numOfTurns, current,
-                g_defaultResistivity, g_defaultSineFrequency, precisionSettings) {}
+           g_defaultResistivity, g_defaultSineFrequency, precisionSettings, threadCount) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns) :
-        Coil(innerRadius, thickness, length, numOfTurns,
-             g_defaultCurrent, g_defaultResistivity, g_defaultSineFrequency, g_defaultPrecision) {}
+           Coil(innerRadius, thickness, length, numOfTurns,
+           g_defaultCurrent, g_defaultResistivity, g_defaultSineFrequency, g_defaultPrecision) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns,
-           const PrecisionArguments &precisionSettings) :
+           const PrecisionArguments &precisionSettings, int threadCount) :
            Coil(innerRadius, thickness, length, numOfTurns, g_defaultCurrent,
-                g_defaultResistivity, g_defaultSineFrequency, precisionSettings) {}
+           g_defaultResistivity, g_defaultSineFrequency, precisionSettings, threadCount) {}
 
 
 double Coil::getCurrentDensity() const { return currentDensity; }
@@ -892,6 +896,8 @@ double Coil::getReactance() const { return reactance; }
 double Coil::getImpedance() const { return impedance; }
 
 const PrecisionArguments &Coil::getPrecisionSettings() const { return precisionSettings; }
+
+int Coil::getThreadCount() const { return threadCount; }
 
 
 void Coil::setCurrentDensity(double currentDensity)
@@ -932,6 +938,12 @@ void Coil::setSineFrequency(double sineFrequency)
 void Coil::setPrecisionSettings(const PrecisionArguments &precisionSettings)
 {
     Coil::precisionSettings = precisionSettings;
+}
+
+void Coil::setThreadCount(int threadCount)
+{
+    Coil::threadCount = threadCount;
+    g_threadPool.resize(threadCount);
 }
 
 void Coil::calculateMagneticMoment()
@@ -1353,9 +1365,8 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
                                 std::vector<double> &computedFieldZArr,
                                 const PrecisionArguments &usedPrecision) const
 {
-    // TODO: add to constructor
-    ctpl::thread_pool threadPool;
-    threadPool.resize(8);
+    computedFieldHArr.resize(cylindricalZArr.size());
+    computedFieldZArr.resize(cylindricalZArr.size());
 
     auto calcThread = [this, &usedPrecision](int idx, double cylindricalZ, double cylindricalR, double &computedFieldH, double &computedFieldZ) -> void
     {
@@ -1366,10 +1377,10 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
 
     for(int i = 0; i < cylindricalZArr.size(); i++)
     {
-        threadPool.push(calcThread, cylindricalZArr[i], cylindricalRArr[i], computedFieldHArr[i], computedFieldZArr[i]);
+        g_threadPool.push(calcThread, cylindricalZArr[i], cylindricalRArr[i], computedFieldHArr[i], computedFieldZArr[i]);
     }
 
-    threadPool.stop(true);
+    while(g_threadPool.n_idle() < threadCount);
 }
 
 void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
@@ -1377,7 +1388,20 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
                                     std::vector<double> &computedPotentialArr,
                                     const PrecisionArguments &usedPrecision) const
 {
-    // TODO - implement method using ThreadPool and calculateAPotential
+    computedPotentialArr.resize(cylindricalZArr.size());
+
+    auto calcThread = [this, &usedPrecision](int idx, double cylindricalZ, double cylindricalR, double &computedPotential) -> void
+    {
+        auto result = calculateAPotential(cylindricalZ, cylindricalR, usedPrecision);
+        computedPotential = result;
+    };
+
+    for(int i = 0; i < cylindricalZArr.size(); i++)
+    {
+        g_threadPool.push(calcThread, cylindricalZArr[i], cylindricalRArr[i], computedPotentialArr[i]);
+    }
+
+    while(g_threadPool.n_idle() < threadCount);
 }
 
 void Coil::calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,

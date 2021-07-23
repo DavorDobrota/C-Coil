@@ -11,8 +11,10 @@ void testPerformanceForComputeAll();
 void testMethodPrecisionCompareCPUvsGPU();
 
 void testCoilMutualInductanceZAxis();
+void testCoilMutualInductanceZAxisArgumentGeneration();
 void testCoilMutualInductanceZAxisDifferentGeometries();
 void testCoilMutualInductanceZAxisPerformance();
+void testCoilSelfInductance();
 
 void testOldCoilMutualInductanceZAxis();
 void testOldCoilMutualInductanceZAxisPerformance();

@@ -54,6 +54,14 @@ struct MInductanceArguments
     static MInductanceArguments getMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
                                                                   PrecisionFactor precisionFactor);
 
+    static MInductanceArguments getMInductanceArgumentsZGPU(const Coil &primary, const Coil &secondary,
+                                                            PrecisionFactor precisionFactor);
+
+    static MInductanceArguments getMInductanceArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
+                                                                  PrecisionFactor precisionFactor);
+
+    static MInductanceArguments getSelfInductanceArguments(const Coil &coil, PrecisionFactor precisionFactor);
+
     private:
         static void getMInductanceCaseAndIncrements(const Coil &primary, const Coil &secondary,
                                                     PrecisionFactor precisionFactor, int &caseIndex, int &totalIncrements);
@@ -531,6 +539,10 @@ class Coil
                                                    std::vector<double> &ringXTangent,
                                                    std::vector<double> &ringYTangent,
                                                    std::vector<double> &ringZTangent);
+
+        static MInductanceArguments calculateAppropriateMInductanceArguments(const Coil &primary, const Coil &secondary,
+                                                                             PrecisionFactor precisionFactor,
+                                                                             ComputeMethod method, bool isGeneral = true);
 
         static double calculateMutualInductanceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                      MInductanceArguments inductanceArguments,

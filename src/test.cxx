@@ -233,7 +233,7 @@ void testCoilMutualInductanceZAxis()
         {
             temp = Coil::computeMutualInductance(prim, sec, distance, PrecisionFactor(i));
             printf("%.18f\n", temp);
-            fprintf(output, "%.7g\t", temp);
+            fprintf(output, "%.15g\t", temp);
         }
 
         printf("====================================================================================\n");
@@ -334,6 +334,13 @@ void testCoilMutualInductanceZAxisPerformance()
         printf("inductance calc time for %.0f : %.2f ms\n", i, 1000 * (float(clock() - begin_time) / CLOCKS_PER_SEC / relativeOperations));
 
     }
+}
+
+void testCoilSelfInductance()
+{
+    Coil coil1 = Coil(0.1, 1e-15, 1e-15, 1);
+
+    printf("%.12g\n", coil1.getSelfInductance());
 }
 
 void testOldCoilMutualInductanceZAxis()
@@ -443,6 +450,18 @@ void testCoilMutualInductanceGeneralForZAxis()
     fclose(output);
 }
 
+void testCoilMutualInductanceZAxisArgumentGeneration()
+{
+    Coil prim = Coil (0.03, 0.03, 0.12, 3600);
+    Coil sec = Coil (0.02, 0.025, 0.04, 1000);
+
+    for (double i = 1.0; i <= 8.0; i += 1.0)
+    {
+        auto args1 = MInductanceArguments::getMInductanceArgumentsZCPU(prim, sec, PrecisionFactor(i));
+        auto args2 = MInductanceArguments::getMInductanceArgumentsZGPU(prim, sec, PrecisionFactor(i));
+    }
+}
+
 void testCoilMutualInductanceGeneralDifferentGeometries()
 {
     Coil prim1 = Coil(0.03, 1e-15, 1e-15, 1);
@@ -532,7 +551,7 @@ void testCoilMutualInductanceGeneralThinCoilAndFilament()
     Coil primaryGeneral = Coil(0.06, 1e-15, 0.12, 120);
     Coil secondaryGeneral = Coil(0.05, 1e-15, 1e-15, 1);
 
-    auto precision = PrecisionFactor(8.0);
+    auto precision = PrecisionFactor(6.0);
 
     for (int i = 10; i >= 0; --i){
     //    printf("cos(alpha) = %.1f: ", i * 0.1);
@@ -572,7 +591,7 @@ void testCoilMutualInductanceGeneralThinCoilAndThinCoil()
     Coil primaryGeneral = Coil(0.06, 1e-18, 0.12, 120);
     Coil secondaryGeneral = Coil(0.05, 1e-18, 0.04, 60);
 
-    auto precision = PrecisionFactor(8.0);
+    auto precision = PrecisionFactor(6.0);
 
     for (int i = 10; i >= 0; --i){
     //    printf("cos(alpha) = %.1f: ", i * 0.1);
@@ -612,7 +631,7 @@ void testCoilMutualInductanceGeneralPancakeAndPancake()
     Coil primaryGeneral = Coil(0.04, 0.02, 1e-15, 200);
     Coil secondaryGeneral = Coil(0.015, 0.01, 1e-15, 100);
 
-    auto precision = PrecisionFactor(8.0);
+    auto precision = PrecisionFactor(6.0);
 
     for (int i = 10; i >= 0; --i){
     //    printf("cos(alpha) = %.1f: ", i * 0.1);
@@ -628,7 +647,7 @@ void testCoilMutualInductanceGeneralRectangularAndFilament()
     Coil primaryGeneral = Coil(0.04, 0.02, 0.01, 100);
     Coil secondaryGeneral = Coil(0.02, 1e-15, 1e-15, 1);
 
-    auto precision = PrecisionFactor(8.0);
+    auto precision = PrecisionFactor(6.0);
 
     for (int i = 10; i >= 0; --i){
     //    printf("cos(alpha) = %.1f: ", i * 0.1);
@@ -638,4 +657,3 @@ void testCoilMutualInductanceGeneralRectangularAndFilament()
     }
     printf("\n");
 }
-

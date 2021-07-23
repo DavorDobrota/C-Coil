@@ -6,7 +6,7 @@
 #define TYPE double
 
 // TODO - complete module, it is not supposed to be part of this project
-const int arrSize = 12;
+const int arrSize = 8;
 
 struct CoilData
 {

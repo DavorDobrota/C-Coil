@@ -191,7 +191,7 @@ void testPerformanceForComputeAll(int nOps, int nRepeats, int nThreads)
     }
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A CPU_MT : %.1f MInc/s\n", 1e-6 * (numOperations * nRepeats) / interval);
-   }
+}
 
 void testMethodPrecisionCompareCPUvsGPU()
 {

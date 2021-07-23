@@ -1377,7 +1377,8 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
 
     for(int i = 0; i < cylindricalZArr.size(); i++)
     {
-        g_threadPool.push(calcThread, cylindricalZArr[i], cylindricalRArr[i], computedFieldHArr[i], computedFieldZArr[i]);
+        g_threadPool.push(calcThread, cylindricalZArr[i], cylindricalRArr[i], std::ref(computedFieldHArr[i]),
+                          std::ref(computedFieldZArr[i]));
     }
 
     while(g_threadPool.n_idle() < threadCount);
@@ -1398,7 +1399,7 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
 
     for(int i = 0; i < cylindricalZArr.size(); i++)
     {
-        g_threadPool.push(calcThread, cylindricalZArr[i], cylindricalRArr[i], computedPotentialArr[i]);
+        g_threadPool.push(calcThread, cylindricalZArr[i], cylindricalRArr[i], std::ref(computedPotentialArr[i]));
     }
 
     while(g_threadPool.n_idle() < threadCount);

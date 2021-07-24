@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <vector>
 
-#include "test.h"
+#include "Test.h"
 #include "Polynomial.h"
 #include "Coil.h"
 #include "OldCoil.h"
@@ -90,21 +90,23 @@ void testPerformanceCPU_ST()
 
 }
 
-void testPerformanceForComputeAll()
+void testPerformanceForComputeAll(int nOps, int nRepeats, int nThreads)
 {
-    Coil testCoil = Coil(0.03, 0.03, 0.12, 3600);
+    using namespace std::chrono;
 
-    int nOps = 80000;
-    double radius = 0.1;
+    Coil testCoil = Coil(0.03, 0.03, 0.12, 3600);
+    testCoil.setThreadCount(nThreads);
+
+    const double radius = 0.1;
 
     PrecisionArguments precision = testCoil.getPrecisionSettings();
 
-    int numOperations = nOps *
+    const int numOperations = nOps *
                         precision.thicknessBlockCount * precision.thicknessIncrementCount *
                         precision.lengthBlockCount * precision.lengthIncrementCount *
                         precision.angularBlockCount * precision.angularIncrementCount;
 
-    int numOperationsGpu = nOps * 48 * 16 * 16;
+    const int numOperationsGpu = nOps * 48 * 16 * 16;
 
     std::vector<double> cylindricalZArr;
     std::vector<double> cylindricalRArr;
@@ -128,31 +130,67 @@ void testPerformanceForComputeAll()
     std::vector<double> singlePotential;
     std::vector<double> acceleratedPotential;
 
-    clock_t begin_time11 = clock();
-    testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                        singleResultsX, singleResultsY, singleResultsZ,
-                                        CPU_ST);
-    printf("combined  B CPU : %.1f MInc/s\n", 1e-6 / (float(clock() - begin_time11) / CLOCKS_PER_SEC / numOperations));
+    high_resolution_clock::time_point begin_time = high_resolution_clock::now();
+    for(int i = 0; i < nRepeats; i++)
+    {
+        testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+                                            singleResultsX, singleResultsY, singleResultsZ,
+                                            CPU_ST);
+    }
+    double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("combined  B CPU : %.1f MInc/s\n", 1e-6 * (numOperations * nRepeats) / interval);
 
-    clock_t begin_time12 = clock();
-    testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
-                                     singlePotential, CPU_ST);
-    printf("Potential A CPU : %.1f MInc/s\n", 1e-6 / (float(clock() - begin_time12) / CLOCKS_PER_SEC / numOperations));
+    begin_time = high_resolution_clock::now();
+    for(int i = 0; i < nRepeats; i++)
+    {
+        testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
+                                         singlePotential, CPU_ST);
+    }
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("Potential A CPU : %.1f MInc/s\n", 1e-6 * (numOperations * nRepeats) / interval);
+
 
     testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
                                         acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
                                         GPU);
 
-    clock_t begin_time13 = clock();
-    testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                        acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
-                                        GPU);
-    printf("combined  B GPU : %.1f MInc/s\n", 1e-6 / (float(clock() - begin_time13) / CLOCKS_PER_SEC / numOperationsGpu));
+    begin_time = high_resolution_clock::now();
+    for(int i = 0; i < nRepeats; i++)
+    {
+        testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+                                            acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
+                                            GPU);
+    }
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("combined  B GPU : %.1f MInc/s\n", 1e-6 * (numOperationsGpu * nRepeats) / interval);
 
-    clock_t begin_time14 = clock();
-    testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
-                                     acceleratedPotential, GPU);
-    printf("Potential A GPU : %.1f MInc/s\n", 1e-6 / (float(clock() - begin_time14) / CLOCKS_PER_SEC / numOperationsGpu));
+    begin_time = high_resolution_clock::now();
+    for(int i = 0; i < nRepeats; i++)
+    {
+        testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
+                                         acceleratedPotential, GPU);
+    }
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("Potential A GPU : %.1f MInc/s\n", 1e-6 * (numOperationsGpu * nRepeats) / interval);
+
+    begin_time = high_resolution_clock::now();
+    for(int i = 0; i < nRepeats; i++)
+    {
+        testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+                                            acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
+                                            CPU_MT);
+    }
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("combined  B CPU_MT : %.1f MInc/s\n", 1e-6 * (numOperations * nRepeats) / interval);
+
+    begin_time = high_resolution_clock::now();
+    for(int i = 0; i < nRepeats; i++)
+    {
+        testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
+                                         acceleratedPotential, CPU_MT);
+    }
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("Potential A CPU_MT : %.1f MInc/s\n", 1e-6 * (numOperations * nRepeats) / interval);
 }
 
 void testMethodPrecisionCompareCPUvsGPU()

@@ -486,13 +486,13 @@ public:
                             else{
                                 Temp = EdgeList1[ii];
                             }
-                            printf("%.10e\n", Temp*C);
+                            //printf("%.10e\n", Temp*C);
                             for (Type dFi = 0; dFi <= Pi; dFi += IncFi){
 
                                 ki = int(round(dFi/IncFi));
                                 G = cos(dFi);
                                 TempL += Temp * FiWeights[ki] * C * ((G)/(sqrt(E - F*G)));
-                                printf("%.15f\n", (G)/(sqrt(E - F*G)));
+                                //printf("%.15f\n", (G)/(sqrt(E - F*G)));
                             }
 
                         }

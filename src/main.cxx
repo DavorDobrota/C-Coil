@@ -11,8 +11,11 @@ int main()
 //    testCoilMutualInductanceZAxis();
 //    testCoilMutualInductanceZAxisPerformance();
 
-    testCoilMutualInductanceZAxisArgumentGeneration();
+//    testCoilMutualInductanceZAxisArgumentGeneration();
 
+    testCoilSelfInductance();
+
+    testOldCoilSelfInductance();
 
 
 //    testCoilMutualInductanceGeneralThinCoilAndFilament();

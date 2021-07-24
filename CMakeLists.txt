@@ -4,6 +4,7 @@ project(General_Coil_Program)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "-Ofast")
 
 #######################################
 add_subdirectory(src/Test)
@@ -54,5 +55,3 @@ if(WIN32)
 else()
     target_link_libraries(General_Coil_Program hardware_acceleration pthread)
 endif()
-
-target_compile_options(General_Coil_Program PRIVATE -Ofast)

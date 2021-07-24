@@ -352,10 +352,12 @@ void testCoilMutualInductanceZAxisDifferentGeometries()
     printf("\n");
 }
 
-void testCoilMutualInductanceZAxisPerformance()
+void testCoilMutualInductanceZAxisPerformance(ComputeMethod method)
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
+
+    primary.setThreadCount(16);
 
     int nOps = 2560;
     int numIncrements[] = {78732, 147000, 263296, 547560, 1057500, 2247264, 4528384, 9168896};
@@ -368,7 +370,7 @@ void testCoilMutualInductanceZAxisPerformance()
 
         clock_t begin_time = clock();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeMutualInductance(primary, secondary, 0.2, PrecisionFactor(i));
+            temp = Coil::computeMutualInductance(primary, secondary, 0.2, PrecisionFactor(i), method);
         printf("inductance calc time for %.0f : %.2f ms\n", i, 1000 * (float(clock() - begin_time) / CLOCKS_PER_SEC / relativeOperations));
 
     }

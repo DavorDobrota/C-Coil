@@ -23,7 +23,7 @@ namespace
     const double g_defaultCurrent = 1.0;
     const double g_defaultResistivity = 1.63e-8;
     const double g_defaultSineFrequency = 50;
-    const PrecisionArguments g_defaultPrecision = PrecisionArguments(2, 1, 1, 12, 12, 12);
+    const PrecisionArguments g_defaultPrecision = PrecisionArguments(1, 1, 1, 48, 24, 24);
 
     const double g_minPrecisionFactor = 1.0;
     const double g_maxPrecisionFactor = 8.0;
@@ -160,8 +160,6 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
         caseIndex = 4; totalIncrements = pow(2, 9 + precisionFactor.relativePrecision);
     }
 
-    totalIncrements *= 2;
-
     do
     {
         double angularStep = PI * (coil.getInnerRadius() + coil.getThickness() * 0.5) /
@@ -209,10 +207,10 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
     }
     while (currentIncrements < totalIncrements);
 
-    printf("case %d - %d : %d %d %d\n", caseIndex, currentIncrements,
-           blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex],
-           blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex],
-           blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex]);
+//    printf("case %d - %d : %d %d %d\n", caseIndex, currentIncrements,
+//           blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex],
+//           blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex],
+//           blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex]);
 
     return PrecisionArguments(blockPrecisionCPUArray[angularArrayIndex],
                               blockPrecisionCPUArray[thicknessArrayIndex],
@@ -1455,7 +1453,7 @@ void Coil::calculateSelfInductance()
 //    selfInductance = computeMutualInductance(*this, *this, 0.0, PrecisionFactor(8.0));
     selfInductance = 0.0;
 
-    precisionSettings = PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, PrecisionFactor(8.0));
+    precisionSettings = PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, PrecisionFactor(6.0));
 
     double lengthBlock = length / precisionSettings.lengthBlockCount;
     double thicknessBlock = thickness / precisionSettings.thicknessBlockCount;

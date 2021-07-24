@@ -9,13 +9,14 @@ extern thread_pool tp;
 int main()
 {
 //    testCoilMutualInductanceZAxis();
+
+//    testPerformanceForComputeAll(10'000, 1, 16);
 //    testCoilMutualInductanceZAxisPerformance();
 
 //    testCoilMutualInductanceZAxisArgumentGeneration();
 
-    testCoilSelfInductance();
-
-    testOldCoilSelfInductance();
+//    testCoilMutualInductanceZAxisPerformance();
+    testCoilMutualInductanceZAxisPerformance(CPU_MT);
 
 
 //    testCoilMutualInductanceGeneralThinCoilAndFilament();

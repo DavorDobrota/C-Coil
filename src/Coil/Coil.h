@@ -83,25 +83,28 @@ class Coil
         double reactance;
         double impedance;
 
+        int threadCount;
+
         PrecisionArguments precisionSettings;
 
     public:
         Coil();
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
-             double current, double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings);
+             double current, double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings,
+             int threadCount = 1);
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency);
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
-             const PrecisionArguments &precisionSettings);
+             const PrecisionArguments &precisionSettings, int threadCount = 1);
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current);
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-             const PrecisionArguments &precisionSettings);
+             const PrecisionArguments &precisionSettings, int threadCount = 1);
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns);
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
-             const PrecisionArguments &precisionSettings);
+             const PrecisionArguments &precisionSettings, int threadCount = 1);
 
 
         [[nodiscard]] double getInnerRadius() const;
@@ -125,12 +128,14 @@ class Coil
         [[nodiscard]] double getImpedance() const;
 
         [[nodiscard]] const PrecisionArguments &getPrecisionSettings() const;
+        [[nodiscard]] int getThreadCount() const;
 
         void setCurrentDensity(double currentDensity);
         void setCurrent(double current);
         void setWireResistivity(double wireResistivity);
         void setSineFrequency(double sineFrequency);
         void setPrecisionSettings(const PrecisionArguments &precisionSettings);
+        void setThreadCount(int threadCount);
 
         [[nodiscard]] double computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
         [[nodiscard]] double computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi,

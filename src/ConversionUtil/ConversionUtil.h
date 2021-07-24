@@ -1,5 +1,5 @@
-#ifndef GENERAL_COIL_PROGRAM_CONVERSION_UTIL_H
-#define GENERAL_COIL_PROGRAM_CONVERSION_UTIL_H
+#ifndef GENERAL_COIL_PROGRAM_CONVERSIONUTIL_H
+#define GENERAL_COIL_PROGRAM_CONVERSIONUTIL_H
 
 #include <vector>
 
@@ -25,4 +25,4 @@ void convertAllCylindricalToPolar(const std::vector<double> &cylindricalZArr,
 
 // TODO - add Cartesian transformations
 
-#endif //GENERAL_COIL_PROGRAM_CONVERSION_UTIL_H
+#endif //GENERAL_COIL_PROGRAM_CONVERSIONUTIL_H

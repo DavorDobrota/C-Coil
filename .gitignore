@@ -1,4 +1,10 @@
 cmake-build-debug/
 .idea/
 nbproject/
+
 output.txt
+*.dll
+*.exe
+*.lib
+*.so
+*.a

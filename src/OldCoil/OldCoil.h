@@ -5,12 +5,11 @@
 #include <cstdio>
 #include <cmath>
 #include <vector>
-#include <windows.h>
 #include <chrono>
 #include <functional>
 
-#include "../include/ctpl.h"
-#include "../include/hardware_acceleration.h"
+#include "ctpl.h"
+#include "hardware_acceleration.h"
 
 using namespace std;
 
@@ -31,23 +30,9 @@ public:
 
     thread_pool(int n){Init(n);}
 
-    void Init(int n = 0)
+    void Init(int n = 1)
     {
-        if(!n)
-        {
-            SYSTEM_INFO info;
-            GetSystemInfo(&info);
-            resize(info.dwNumberOfProcessors);
-        }
-        else
-            resize(n);
-    }
-
-    void Set_priority(int priority)
-    {
-        for(int it = 0; it < this->size(); it++)
-            for(int it = 0; it < this->size(); it++)
-                SetThreadPriority(reinterpret_cast<HANDLE>(this->get_thread(it).native_handle()), priority);
+        resize(n);
     }
 };
 

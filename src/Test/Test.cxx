@@ -354,6 +354,8 @@ void testCoilMutualInductanceZAxisDifferentGeometries()
 
 void testCoilMutualInductanceZAxisPerformance(ComputeMethod method)
 {
+    using namespace std::chrono;
+
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
@@ -368,10 +370,11 @@ void testCoilMutualInductanceZAxisPerformance(ComputeMethod method)
         int currentOperations = nOps / pow(2, i);
         double relativeOperations = currentOperations * numIncrements[int(round(i - 1))] / pow(2, 15 + i);
 
-        clock_t begin_time = clock();
+        high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
             temp = Coil::computeMutualInductance(primary, secondary, 0.2, PrecisionFactor(i), method);
-        printf("inductance calc time for %.0f : %.2f ms\n", i, 1000 * (float(clock() - begin_time) / CLOCKS_PER_SEC / relativeOperations));
+        double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("inductance calc time for %.0f : %.2f ms/op\n", i, 1'000.0 * interval / currentOperations);
 
     }
 }

@@ -48,5 +48,11 @@ target_include_directories(
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Polynomial"
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Test"
 )
-target_link_libraries(General_Coil_Program hardware_acceleration pthread)
+
+if(WIN32)
+    target_link_libraries(General_Coil_Program hardware_acceleration)
+else()
+    target_link_libraries(General_Coil_Program hardware_acceleration pthread)
+endif()
+
 target_compile_options(General_Coil_Program PRIVATE -Ofast)

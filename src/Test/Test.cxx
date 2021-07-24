@@ -101,12 +101,12 @@ void testPerformanceForComputeAll(int nOps, int nRepeats, int nThreads)
 
     PrecisionArguments precision = testCoil.getPrecisionSettings();
 
-    const int numOperations = nOps *
+    const int numOperations = (long long) nOps *
                         precision.thicknessBlockCount * precision.thicknessIncrementCount *
                         precision.lengthBlockCount * precision.lengthIncrementCount *
                         precision.angularBlockCount * precision.angularIncrementCount;
 
-    const int numOperationsGpu = nOps * 48 * 16 * 16;
+    const int numOperationsGpu = (long long) nOps * 48 * 16 * 16;
 
     std::vector<double> cylindricalZArr;
     std::vector<double> cylindricalRArr;

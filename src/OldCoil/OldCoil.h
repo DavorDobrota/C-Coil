@@ -34,13 +34,6 @@ public:
     {
         resize(n);
     }
-
-    void Set_priority(int priority)
-    {
-//        for(int it = 0; it < this->size(); it++)
-//            for(int it = 0; it < this->size(); it++)
-//                SetThreadPriority(reinterpret_cast<HANDLE>(this->get_thread(it).native_handle()), priority);
-    }
 };
 
 struct thread_param

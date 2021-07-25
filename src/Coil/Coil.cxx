@@ -250,16 +250,77 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
 }
 
 
-MInductanceArguments::MInductanceArguments() : MInductanceArguments(g_defaultPrecision, g_defaultPrecision) {}
+CoilPairArguments::CoilPairArguments() : CoilPairArguments(g_defaultPrecision, g_defaultPrecision) {}
 
-MInductanceArguments::MInductanceArguments(const PrecisionArguments &primaryPrecision,
-                                           const PrecisionArguments &secondaryPrecision)
+CoilPairArguments::CoilPairArguments(const PrecisionArguments &primaryPrecision,
+                                     const PrecisionArguments &secondaryPrecision)
 {
-    MInductanceArguments::primaryPrecision = primaryPrecision;
-    MInductanceArguments::secondaryPrecision = secondaryPrecision;
+    CoilPairArguments::primaryPrecision = primaryPrecision;
+    CoilPairArguments::secondaryPrecision = secondaryPrecision;
 }
-MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coil &primary, const Coil &secondary,
-                                                                       PrecisionFactor precisionFactor)
+
+void CoilPairArguments::getGeometryCaseAndIncrementsSingleCoil(const Coil &coil, PrecisionFactor precisionFactor,
+                                                               int &caseIndex, int &totalIncrements)
+{
+    double radius = coil.getInnerRadius();
+    double thickness = coil.getThickness();
+    double length = coil.getLength();
+
+    if (thickness / radius < g_thinCoilApproximationRatio && length / radius < g_thinCoilApproximationRatio)
+    { caseIndex = 1; totalIncrements = pow(2, 3 + precisionFactor.relativePrecision); }
+
+    else if (thickness / length < g_thinCoilApproximationRatio)
+    { caseIndex = 2; totalIncrements = pow(2, 6 + precisionFactor.relativePrecision); }
+
+    else if (length / thickness < g_thinCoilApproximationRatio)
+    { caseIndex = 3; totalIncrements = pow(2, 6 + precisionFactor.relativePrecision); }
+
+    else
+    { caseIndex = 4; totalIncrements = pow(2, 9 + precisionFactor.relativePrecision); }
+}
+
+void CoilPairArguments::getGeometryCaseAndIncrementsCoilPair(const Coil &primary, const Coil &secondary,
+                                                             PrecisionFactor precisionFactor,
+                                                             int &caseIndex, int &totalIncrements)
+{
+    double primRadius = primary.getInnerRadius();
+    double primThickness = primary.getThickness();
+    double primLength = primary.getLength();
+
+    double secRadius = secondary.getInnerRadius();
+    double secThickness = secondary.getThickness();
+    double secLength = secondary.getLength();
+
+    if (primThickness / primLength < g_thinCoilApproximationRatio)
+    {
+        getGeometryCaseAndIncrementsSingleCoil(secondary, precisionFactor, caseIndex, totalIncrements);
+
+        totalIncrements *= 8;
+    }
+    else if (primLength / primThickness < g_thinCoilApproximationRatio)
+    {
+        getGeometryCaseAndIncrementsSingleCoil(secondary, precisionFactor, caseIndex, totalIncrements);
+
+        caseIndex += 4;
+        totalIncrements *= 8;
+    }
+    else if (primThickness / primRadius < g_thinCoilApproximationRatio && primLength / primRadius < g_thinCoilApproximationRatio)
+    {
+        getGeometryCaseAndIncrementsSingleCoil(secondary, precisionFactor, caseIndex, totalIncrements);
+
+        caseIndex += 8;
+    }
+    else
+    {
+        getGeometryCaseAndIncrementsSingleCoil(secondary, precisionFactor, caseIndex, totalIncrements);
+
+        caseIndex += 12;
+        totalIncrements *= 8 * 8;
+    }
+}
+
+CoilPairArguments CoilPairArguments::getMInductanceArgumentsZCPU(const Coil &primary, const Coil &secondary,
+                                                                 PrecisionFactor precisionFactor)
 {
     int primLengthArrayIndex = g_minPrimLengthIncrements - 1;
     int primThicknessArrayIndex = g_minPrimThicknessIncrements -1;
@@ -272,7 +333,7 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coi
     int currentIncrements;
     int caseIndex;
 
-    getMInductanceCaseAndIncrements(primary, secondary, precisionFactor, caseIndex, totalIncrements);
+    getGeometryCaseAndIncrementsCoilPair(primary, secondary, precisionFactor, caseIndex, totalIncrements);
 
     do
     {
@@ -497,18 +558,18 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZCPU(const Coi
                                                  incrementPrecisionCPUArray[secThicknessArrayIndex],
                                                  incrementPrecisionCPUArray[secLengthArrayIndex]);
 
-//    printf("case %d - %d : %d %d %d | %d %d\n", caseIndex, currentIncrements,
-//           blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex],
-//           blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex],
-//           blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
-//           blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
-//           blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
+    printf("case %d - %d : %d %d %d | %d %d\n", caseIndex, currentIncrements,
+           blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex],
+           blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex],
+           blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
+           blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
+           blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
-    return MInductanceArguments(primaryPrecision, secondaryPrecision);
+    return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
 
-MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
-                                                                             PrecisionFactor precisionFactor)
+CoilPairArguments CoilPairArguments::getMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
+                                                                       PrecisionFactor precisionFactor)
 {
     int primLengthArrayIndex = g_minPrimLengthIncrements - 1;
     int primThicknessArrayIndex = g_minPrimThicknessIncrements - 1;
@@ -522,7 +583,7 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
     int currentIncrements;
     int caseIndex;
 
-    getMInductanceCaseAndIncrements(primary, secondary, precisionFactor, caseIndex, totalIncrements);
+    getGeometryCaseAndIncrementsCoilPair(primary, secondary, precisionFactor, caseIndex, totalIncrements);
     // multiplying the number of increments by 16 because of one extra dimension of integration compared to z-axis
     totalIncrements *= 16;
 
@@ -839,81 +900,11 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralCPU(con
 //           blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex],
 //           blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
-    return MInductanceArguments(primaryPrecision, secondaryPrecision);
+    return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
 
-void MInductanceArguments::getMInductanceCaseAndIncrements(const Coil &primary, const Coil &secondary,
-                                                           PrecisionFactor precisionFactor,
-                                                           int &caseIndex, int &totalIncrements)
-{
-    double primRadius = primary.getInnerRadius();
-    double primThickness = primary.getThickness();
-    double primLength = primary.getLength();
-
-    double secRadius = secondary.getInnerRadius();
-    double secThickness = secondary.getThickness();
-    double secLength = secondary.getLength();
-
-    if (primThickness / primLength < g_thinCoilApproximationRatio)
-    {
-        if (secThickness / secRadius < g_thinCoilApproximationRatio && secLength / secRadius < g_thinCoilApproximationRatio)
-            { caseIndex = 1; totalIncrements = pow(2, 6 + precisionFactor.relativePrecision); }
-
-        else if (secThickness / secLength < g_thinCoilApproximationRatio)
-            { caseIndex = 2; totalIncrements = pow(2, 9 + precisionFactor.relativePrecision); }
-
-        else if (secLength / secThickness < g_thinCoilApproximationRatio)
-            { caseIndex = 3; totalIncrements = pow(2, 9 + precisionFactor.relativePrecision); }
-
-        else
-            { caseIndex = 4; totalIncrements = pow(2, 12 + precisionFactor.relativePrecision); }
-    }
-    else if (primLength / primThickness < g_thinCoilApproximationRatio)
-    {
-        if (secThickness / secRadius < g_thinCoilApproximationRatio && secLength / secRadius < g_thinCoilApproximationRatio)
-            { caseIndex = 5; totalIncrements = pow(2, 6 + precisionFactor.relativePrecision); }
-
-        else if (secThickness / secLength < g_thinCoilApproximationRatio)
-            { caseIndex = 6; totalIncrements = pow(2, 9 + precisionFactor.relativePrecision); }
-
-        else if (secLength / secThickness < g_thinCoilApproximationRatio)
-            { caseIndex = 7; totalIncrements = pow(2, 9 + precisionFactor.relativePrecision); }
-
-        else
-            { caseIndex = 8; totalIncrements = pow(2, 12 + precisionFactor.relativePrecision); }
-    }
-    else if (primThickness / primRadius < g_thinCoilApproximationRatio && primLength / primRadius < g_thinCoilApproximationRatio)
-    {
-        if (secThickness / secRadius < g_thinCoilApproximationRatio && secLength / secRadius < g_thinCoilApproximationRatio)
-            { caseIndex = 9; totalIncrements = pow(2, 3 + precisionFactor.relativePrecision); }
-
-        else if (secThickness / secLength < g_thinCoilApproximationRatio)
-            { caseIndex = 10; totalIncrements = pow(2, 6 + precisionFactor.relativePrecision); }
-
-        else if (secLength / secThickness < g_thinCoilApproximationRatio)
-            { caseIndex = 11; totalIncrements = pow(2, 6 + precisionFactor.relativePrecision); }
-
-        else
-            { caseIndex = 12; totalIncrements = pow(2, 9 + precisionFactor.relativePrecision); }
-    }
-    else
-    {
-        if (secThickness / secRadius < g_thinCoilApproximationRatio && secLength / secRadius < g_thinCoilApproximationRatio)
-            { caseIndex = 13; totalIncrements = pow(2, 9 + precisionFactor.relativePrecision); }
-
-        else if (secThickness / secLength < g_thinCoilApproximationRatio)
-            { caseIndex = 14; totalIncrements = pow(2, 12 + precisionFactor.relativePrecision); }
-
-        else if (secLength / secThickness < g_thinCoilApproximationRatio)
-            { caseIndex = 15; totalIncrements = pow(2, 12 + precisionFactor.relativePrecision); }
-
-        else
-            { caseIndex = 16; totalIncrements = pow(2, 15 + precisionFactor.relativePrecision); }
-    }
-}
-
-MInductanceArguments MInductanceArguments::getMInductanceArgumentsZGPU(const Coil &primary, const Coil &secondary,
-                                                                       PrecisionFactor precisionFactor)
+CoilPairArguments CoilPairArguments::getMInductanceArgumentsZGPU(const Coil &primary, const Coil &secondary,
+                                                                 PrecisionFactor precisionFactor)
 {
     const int primLinearIncrements = arrSize;
     const int primAngularIncrements = arrSize;
@@ -932,17 +923,9 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZGPU(const Coi
     int currentIncrements;
     int caseIndex;
 
-    if (secThickness / secRadius < g_thinCoilApproximationRatio && secLength / secRadius < g_thinCoilApproximationRatio)
-        { caseIndex = 1; totalIncrements = pow(2, 10 + precisionFactor.relativePrecision); }
-
-    else if (secThickness / secLength < g_thinCoilApproximationRatio)
-        { caseIndex = 2; totalIncrements = pow(2, 13 + precisionFactor.relativePrecision); }
-
-    else if (secLength / secThickness < g_thinCoilApproximationRatio)
-        { caseIndex = 3; totalIncrements = pow(2, 13 + precisionFactor.relativePrecision); }
-
-    else
-        { caseIndex = 4; totalIncrements = pow(2, 16 + precisionFactor.relativePrecision); }
+    getGeometryCaseAndIncrementsSingleCoil(secondary, precisionFactor, caseIndex, totalIncrements);
+    //multiplying total increments by 2^7 to satisfy this specific workload
+    totalIncrements *= 128;
 
     do
     {
@@ -1030,11 +1013,11 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsZGPU(const Coi
 //           blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
 //           blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
-    return MInductanceArguments(primaryPrecision, secondaryPrecision);
+    return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
 
-MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
-                                                                             PrecisionFactor precisionFactor)
+CoilPairArguments CoilPairArguments::getMInductanceArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
+                                                                       PrecisionFactor precisionFactor)
 {
     const int primLinearIncrements = arrSize;
     const int primAngularIncrements = arrSize;
@@ -1054,17 +1037,9 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralGPU(con
     int currentIncrements;
     int caseIndex;
 
-    if (secThickness / secRadius < g_thinCoilApproximationRatio && secLength / secRadius < g_thinCoilApproximationRatio)
-    { caseIndex = 1; totalIncrements = pow(2, 13     + precisionFactor.relativePrecision); }
-
-    else if (secThickness / secLength < g_thinCoilApproximationRatio)
-    { caseIndex = 2; totalIncrements = pow(2, 16 + precisionFactor.relativePrecision); }
-
-    else if (secLength / secThickness < g_thinCoilApproximationRatio)
-    { caseIndex = 3; totalIncrements = pow(2, 16 + precisionFactor.relativePrecision); }
-
-    else
-    { caseIndex = 4; totalIncrements = pow(2, 19 + precisionFactor.relativePrecision); }
+    getGeometryCaseAndIncrementsSingleCoil(secondary, precisionFactor, caseIndex, currentIncrements);
+    //multiplying total increments by 2^10 to satisfy this specific workload
+    totalIncrements *= 1024;
 
     do
     {
@@ -1178,10 +1153,10 @@ MInductanceArguments MInductanceArguments::getMInductanceArgumentsGeneralGPU(con
 //           blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex],
 //           blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
-    return MInductanceArguments(primaryPrecision, secondaryPrecision);
+    return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
 
-MInductanceArguments MInductanceArguments::getSelfInductanceArguments(const Coil &coil, PrecisionFactor precisionFactor)
+CoilPairArguments CoilPairArguments::getSelfInductanceArguments(const Coil &coil, PrecisionFactor precisionFactor)
 {
     int lengthArrayIndex = g_minPrimLengthIncrements - 1;
     int thicknessArrayIndex = g_minPrimThicknessIncrements -1;
@@ -1279,26 +1254,38 @@ MInductanceArguments MInductanceArguments::getSelfInductanceArguments(const Coil
 //           blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex],
 //           blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex]);
 
-    return MInductanceArguments(primaryPrecision, secondaryPrecision);
+    return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
 
+
+Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0,
+                    g_defaultResistivity, g_defaultSineFrequency, g_defaultPrecision){}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings,
            int threadCount) :
            innerRadius(innerRadius), thickness(thickness), length(length), numOfTurns(numOfTurns),
-           precisionSettings(precisionSettings), threadCount(threadCount)
+           precisionSettings(precisionSettings)
 {
     setCurrent(current);
     calculateAverageWireThickness();
     setWireResistivity(wireResistivity);
     setSineFrequency(sineFrequency);
-    calculateSelfInductance();
     setThreadCount(threadCount);
 }
 
-Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0,
-                    g_defaultResistivity, g_defaultSineFrequency, g_defaultPrecision){}
+Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
+           double wireResistivity, double sineFrequency, PrecisionFactor precisionFactor,
+           int threadCount) : innerRadius(innerRadius), thickness(thickness), length(length), numOfTurns(numOfTurns)
+{
+    setCurrent(current);
+    calculateAverageWireThickness();
+    setWireResistivity(wireResistivity);
+    setSineFrequency(sineFrequency);
+    setPrecisionSettings(PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor));
+    setThreadCount(threadCount);
+}
+
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency) :
            Coil(innerRadius, thickness, length, numOfTurns, current,
@@ -1447,106 +1434,6 @@ void Coil::calculateImpedance()
     impedance = sqrt(resistance * resistance + reactance * reactance);
 }
 
-void Coil::calculateSelfInductance()
-{
-    // TODO - firstGen solution applied: not very precise but error is significant
-//    selfInductance = computeMutualInductance(*this, *this, 0.0, PrecisionFactor(8.0));
-    selfInductance = 0.0;
-
-    precisionSettings = PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, PrecisionFactor(6.0));
-
-    double lengthBlock = length / precisionSettings.lengthBlockCount;
-    double thicknessBlock = thickness / precisionSettings.thicknessBlockCount;
-    double angularBlock = PI / precisionSettings.angularBlockCount;
-
-    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int lengthIncrements = precisionSettings.lengthIncrementCount - 1;
-    int thicknessIncrements = precisionSettings.thicknessIncrementCount - 1;
-    int angularIncrements = precisionSettings.angularIncrementCount - 1;
-
-    // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
-    double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
-
-    for (int zBlock = 0; zBlock < precisionSettings.lengthBlockCount; zBlock++)
-    {
-        for (int rBlock = 0; rBlock < precisionSettings.thicknessBlockCount; rBlock++)
-        {
-            double zBlockPosition = (-1) * (length * 0.5) + lengthBlock * (zBlock + 0.5);
-            double rBlockPosition = innerRadius + thicknessBlock * (rBlock + 0.5);
-
-            for (int zIndex = 0; zIndex <= lengthIncrements; ++zIndex)
-            {
-                for (int rIndex = 0; rIndex <= thicknessIncrements; ++rIndex)
-                {
-                    double incrementPositionZ = zBlockPosition +
-                            (lengthBlock * 0.5) * Legendre::positionMatrix[lengthIncrements][zIndex];
-                    double incrementPositionR = rBlockPosition +
-                            (thicknessBlock * 0.5) * Legendre::positionMatrix[thicknessIncrements][rIndex];
-
-                    double potential = 0.0;
-
-                    for (int indBlockL = 0; indBlockL < precisionSettings.lengthBlockCount; ++indBlockL)
-                    {
-                        for (int indBlockT = 0; indBlockT < precisionSettings.thicknessBlockCount; ++indBlockT)
-                        {
-                            double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
-                            double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
-
-                            for (int incL = 0; incL <= lengthIncrements; ++incL)
-                            {
-                                for (int incT = 0; incT <= thicknessIncrements; ++incT)
-                                {
-                                    double incrementPositionL = blockPositionL +
-                                            (lengthBlock * 0.5) * Legendre::positionMatrix[lengthIncrements][incL];
-                                    double incrementPositionT = blockPositionT +
-                                            (thicknessBlock * 0.5) * Legendre::positionMatrix[thicknessIncrements][incT];
-
-                                    if (!(std::fabs(incrementPositionL - incrementPositionZ) / length < 1e-14 &&
-                                        std::fabs(incrementPositionT - incrementPositionR) / thickness < 1e-14))
-                                    {
-                                        double incrementWeightS =
-                                                Legendre::weightsMatrix[lengthIncrements][incL] *
-                                                Legendre::weightsMatrix[thicknessIncrements][incT];
-
-                                        double tempConstA = incrementPositionT;
-                                        double tempConstB = incrementPositionT * incrementPositionR;
-                                        double tempConstC =
-                                                incrementPositionT * incrementPositionT +
-                                                incrementPositionR * incrementPositionR +
-                                                (incrementPositionL + incrementPositionZ) *
-                                                (incrementPositionL + incrementPositionZ);
-
-                                        for (int indBlockFi = 0; indBlockFi < precisionSettings.angularBlockCount; ++indBlockFi)
-                                        {
-                                            double blockPositionFi = angularBlock * (indBlockFi + 0.5);
-
-                                            for (int incFi = 0; incFi <= angularIncrements; ++incFi)
-                                            {
-                                                double incrementPositionFi = blockPositionFi +
-                                                        (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incFi];
-
-                                                double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
-
-                                                double cosinePhi = cos(incrementPositionFi);
-
-                                                potential += constant * incrementWeightS * incrementWeightFi *
-                                                        (tempConstA * cosinePhi) /sqrt(tempConstC - 2*tempConstB * cosinePhi);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    selfInductance += 2 * PI * rBlockPosition * potential * 0.25 *
-                                      Legendre::weightsMatrix[lengthIncrements][zIndex] *
-                                      Legendre::weightsMatrix[thicknessIncrements][rIndex];
-                }
-            }
-        }
-    }
-    selfInductance *= (numOfTurns / current);
-}
 
 std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
 {
@@ -2576,7 +2463,7 @@ void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncremen
 
 
 double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                            MInductanceArguments inductanceArguments, ComputeMethod method)
+                                            CoilPairArguments inductanceArguments, ComputeMethod method)
 {
     PrecisionArguments primaryPrecisionArguments = inductanceArguments.primaryPrecision;
 
@@ -2619,7 +2506,8 @@ double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &sec
 
                     weights.push_back(
                             0.25 * Legendre::weightsMatrix[maxLengthIndex][zIndex] *
-                            Legendre::weightsMatrix[maxThicknessIndex][rIndex]);
+                            Legendre::weightsMatrix[maxThicknessIndex][rIndex]
+                            / (lengthBlocks * thicknessBlocks));
                 }
             }
         }
@@ -2641,7 +2529,7 @@ double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &sec
 double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
                                               double zDisplacement, double rDisplacement,
                                               double alphaAngle, double betaAngle,
-                                              MInductanceArguments inductanceArguments, ComputeMethod method)
+                                              CoilPairArguments inductanceArguments, ComputeMethod method)
 {
     if (rDisplacement == 0.0 && alphaAngle == 0.0)
     {
@@ -2731,10 +2619,11 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
                                         cos(rhoAngle) * unitRingTangentsY[phiPosition];
 
                                 weights.push_back(
-                                        0.125 * orientationFactor * 2 * PI * ringRadius / angularBlocks *
+                                        0.125 * orientationFactor * 2 * PI * ringRadius *
                                         Legendre::weightsMatrix[maxLengthIndex][zIndex] *
                                         Legendre::weightsMatrix[maxThicknessIndex][rIndex] *
-                                        Legendre::weightsMatrix[maxAngularIncrementIndex][phiIndex]);
+                                        Legendre::weightsMatrix[maxAngularIncrementIndex][phiIndex] /
+                                        (lengthBlocks * thicknessBlocks * angularBlocks));
                             }
                         }
                     }
@@ -2753,28 +2642,28 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
     }
 }
 
-MInductanceArguments Coil::calculateAppropriateMInductanceArguments(const Coil &primary, const Coil &secondary,
-                                                                    PrecisionFactor precisionFactor,
-                                                                    ComputeMethod method, bool isGeneral)
+CoilPairArguments Coil::calculateAppropriateMInductanceArguments(const Coil &primary, const Coil &secondary,
+                                                                 PrecisionFactor precisionFactor,
+                                                                 ComputeMethod method, bool isGeneral)
 {
     if (!isGeneral)
     {
         if (method == GPU)
-            return MInductanceArguments::getMInductanceArgumentsZGPU(primary, secondary, precisionFactor);
+            return CoilPairArguments::getMInductanceArgumentsZGPU(primary, secondary, precisionFactor);
         else
-            return MInductanceArguments::getMInductanceArgumentsZCPU(primary, secondary, precisionFactor);
+            return CoilPairArguments::getMInductanceArgumentsZCPU(primary, secondary, precisionFactor);
     }
     else
     {
         if (method == GPU)
-            return MInductanceArguments::getMInductanceArgumentsGeneralGPU(primary, secondary, precisionFactor);
+            return CoilPairArguments::getMInductanceArgumentsGeneralGPU(primary, secondary, precisionFactor);
         else
-            return MInductanceArguments::getMInductanceArgumentsGeneralCPU(primary, secondary, precisionFactor);
+            return CoilPairArguments::getMInductanceArgumentsGeneralCPU(primary, secondary, precisionFactor);
     }
 }
 
 double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                     MInductanceArguments inductanceArguments, ComputeMethod method)
+                                     CoilPairArguments inductanceArguments, ComputeMethod method)
 {
     return calculateMutualInductanceGeneral(primary, secondary, zDisplacement,
                                             0.0, 0.0, 0.0, inductanceArguments, method);
@@ -2789,7 +2678,7 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
 
 double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
                                      double zDisplacement, double rDisplacement,
-                                     MInductanceArguments inductanceArguments, ComputeMethod method)
+                                     CoilPairArguments inductanceArguments, ComputeMethod method)
 {
     return calculateMutualInductanceGeneral(primary, secondary, zDisplacement, rDisplacement,
                                             0.0, 0.0, inductanceArguments, method);
@@ -2805,7 +2694,7 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
 
 double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
                                      double zDisplacement, double rDisplacement, double alphaAngle,
-                                     MInductanceArguments inductanceArguments, ComputeMethod method)
+                                     CoilPairArguments inductanceArguments, ComputeMethod method)
 {
     return calculateMutualInductanceGeneral(primary, secondary, zDisplacement, rDisplacement, alphaAngle,
                                             0.0, inductanceArguments, method);
@@ -2821,7 +2710,7 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
 
 double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
                                      double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
-                                     MInductanceArguments inductanceArguments, ComputeMethod method)
+                                     CoilPairArguments inductanceArguments, ComputeMethod method)
 {
     return calculateMutualInductanceGeneral(primary, secondary, zDisplacement, rDisplacement, alphaAngle, betaAngle,
                                             inductanceArguments, method);
@@ -2843,7 +2732,7 @@ double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDispl
 }
 
 double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement,
-                                            MInductanceArguments inductanceArguments, ComputeMethod method) const
+                                            CoilPairArguments inductanceArguments, ComputeMethod method) const
 {
     return computeMutualInductance(*this, secondary, zDisplacement, inductanceArguments, method) *
            2 * PI * sineFrequency;;
@@ -2857,7 +2746,7 @@ double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDispl
 }
 
 double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                            MInductanceArguments inductanceArguments, ComputeMethod method) const
+                                            CoilPairArguments inductanceArguments, ComputeMethod method) const
 {
     return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, inductanceArguments, method) *
            2 * PI * sineFrequency;
@@ -2871,7 +2760,7 @@ double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDispl
 }
 
 double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                            double alphaAngle, MInductanceArguments inductanceArguments,
+                                            double alphaAngle, CoilPairArguments inductanceArguments,
                                             ComputeMethod method) const
 {
     return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, alphaAngle,
@@ -2887,9 +2776,132 @@ double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDispl
 }
 
 double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                            double alphaAngle, double betaAngle, MInductanceArguments inductanceArguments,
+                                            double alphaAngle, double betaAngle, CoilPairArguments inductanceArguments,
                                             ComputeMethod method) const
 {
     return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, alphaAngle, betaAngle,
                                    inductanceArguments, method) * 2 * PI * sineFrequency;
+}
+
+void Coil::calculateSelfInductance(PrecisionFactor precisionFactor)
+{
+    // TODO - new solution applied: still convergence is slow and not entirely tested, an approximation, future improvement
+    selfInductance = 0.0;
+
+    auto precisionArguments = CoilPairArguments::getSelfInductanceArguments(*this, precisionFactor);
+    PrecisionArguments combinedArguments = precisionArguments.primaryPrecision;
+
+    double lengthBlock = length / combinedArguments.lengthBlockCount;
+    double thicknessBlock = thickness / combinedArguments.thicknessBlockCount;
+    double angularBlock = PI / combinedArguments.angularBlockCount;
+
+    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    int lengthIncrements = combinedArguments.lengthIncrementCount - 1;
+    int thicknessIncrements = combinedArguments.thicknessIncrementCount - 1;
+    int angularIncrements = combinedArguments.angularIncrementCount - 1;
+
+    // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
+    double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
+
+    for (int zBlock = 0; zBlock < combinedArguments.lengthBlockCount; zBlock++)
+    {
+        for (int rBlock = 0; rBlock < combinedArguments.thicknessBlockCount; rBlock++)
+        {
+            double zBlockPosition = (-1) * (length * 0.5) + lengthBlock * (zBlock + 0.5);
+            double rBlockPosition = innerRadius + thicknessBlock * (rBlock + 0.5);
+
+            for (int zIndex = 0; zIndex <= lengthIncrements; ++zIndex)
+            {
+                for (int rIndex = 0; rIndex <= thicknessIncrements; ++rIndex)
+                {
+                    double incrementPositionZ = zBlockPosition +
+                            (lengthBlock * 0.5) * Legendre::positionMatrix[lengthIncrements][zIndex];
+                    double incrementPositionR = rBlockPosition +
+                            (thicknessBlock * 0.5) * Legendre::positionMatrix[thicknessIncrements][rIndex];
+
+                    double potential = 0.0;
+
+                    for (int indBlockL = 0; indBlockL < combinedArguments.lengthBlockCount; ++indBlockL)
+                    {
+                        for (int indBlockT = 0; indBlockT < combinedArguments.thicknessBlockCount; ++indBlockT)
+                        {
+                            double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
+                            double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
+
+                            for (int incL = 0; incL <= lengthIncrements; ++incL)
+                            {
+                                for (int incT = 0; incT <= thicknessIncrements; ++incT)
+                                {
+                                    double incrementPositionL = blockPositionL +
+                                            (lengthBlock * 0.5) * Legendre::positionMatrix[lengthIncrements][incL];
+                                    double incrementPositionT = blockPositionT +
+                                            (thicknessBlock * 0.5) * Legendre::positionMatrix[thicknessIncrements][incT];
+
+                                    if (!(std::fabs(incrementPositionL - incrementPositionZ) / length < 1e-14 &&
+                                          std::fabs(incrementPositionT - incrementPositionR) / thickness < 1e-14))
+                                    {
+                                        double incrementWeightS =
+                                                Legendre::weightsMatrix[lengthIncrements][incL] *
+                                                Legendre::weightsMatrix[thicknessIncrements][incT];
+
+                                        double tempConstA = incrementPositionT;
+                                        double tempConstB = incrementPositionT * incrementPositionR;
+                                        double tempConstC =
+                                                incrementPositionT * incrementPositionT +
+                                                incrementPositionR * incrementPositionR +
+                                                (incrementPositionL + incrementPositionZ) *
+                                                (incrementPositionL + incrementPositionZ);
+
+                                        for (int indBlockFi = 0; indBlockFi < combinedArguments.angularBlockCount; ++indBlockFi)
+                                        {
+                                            double blockPositionFi = angularBlock * (indBlockFi + 0.5);
+
+                                            for (int incFi = 0; incFi <= angularIncrements; ++incFi)
+                                            {
+                                                double incrementPositionFi = blockPositionFi +
+                                                        (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incFi];
+
+                                                double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
+
+                                                double cosinePhi = cos(incrementPositionFi);
+
+                                                potential += constant * incrementWeightS * incrementWeightFi *
+                                                        (tempConstA * cosinePhi) /sqrt(tempConstC - 2*tempConstB * cosinePhi);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    selfInductance += 2 * PI * rBlockPosition * potential * 0.25 *
+                                      Legendre::weightsMatrix[lengthIncrements][zIndex] *
+                                      Legendre::weightsMatrix[thicknessIncrements][rIndex];
+                }
+            }
+        }
+    }
+    selfInductance *= (numOfTurns / current);
+    calculateImpedance();
+}
+
+void Coil::calculateApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method)
+{
+    // this is a simplified solution but produces a significant error because of the inherent divergent integral
+    // however it can be accelerated beyond single thread and thus may prove useful in some instances
+    auto precisionArguments = CoilPairArguments::getSelfInductanceArguments(*this, precisionFactor);
+    selfInductance = computeMutualInductance(*this, *this, 0.0, precisionFactor, method);
+    calculateImpedance();
+}
+
+double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor)
+{
+    calculateSelfInductance(precisionFactor);
+    return selfInductance;
+}
+
+double Coil::computeAndSetApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method)
+{
+    calculateApproximateSelfInductance(precisionFactor, method);
+    return selfInductance;
 }

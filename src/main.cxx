@@ -16,7 +16,9 @@ int main()
 //    testCoilMutualInductanceZAxisArgumentGeneration();
 
 //    testCoilMutualInductanceZAxisPerformance();
-    testCoilMutualInductanceZAxisPerformance(CPU_MT);
+//    testCoilMutualInductanceZAxisPerformance(CPU_MT);
+
+testCoilMutualInductanceZAxisDifferentGeometries();
 
 
 //    testCoilMutualInductanceGeneralThinCoilAndFilament();

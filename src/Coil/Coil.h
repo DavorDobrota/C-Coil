@@ -104,27 +104,24 @@ class Coil
         Coil();
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
-             double current, double wireResistivity, double sineFrequency, PrecisionFactor precisionFactor,
-             int threadCount = 1);
+             double current, double wireResistivity, double sineFrequency,
+             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount);
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
-             double current, double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings,
-             int threadCount = 1);
+             double current, double wireResistivity, double sineFrequency,
+             const PrecisionArguments &precisionSettings, int threadCount = defaultThreadCount);
 
-        Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency);
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
-             PrecisionFactor precisionFactor, int threadCount = 1);
+             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount);
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
              const PrecisionArguments &precisionSettings, int threadCount = 1);
 
-        Coil(double innerRadius, double thickness, double length, int numOfTurns, double current);
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-             PrecisionFactor precisionFactor, int threadCount = 1);
+             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount);
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
              const PrecisionArguments &precisionSettings, int threadCount = 1);
 
-        Coil(double innerRadius, double thickness, double length, int numOfTurns);
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
-             PrecisionFactor precisionFactor, int threadCount = 1);
+             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount);
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
              const PrecisionArguments &precisionSettings, int threadCount = 1);
 

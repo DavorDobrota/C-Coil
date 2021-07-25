@@ -5,7 +5,6 @@
 #include "Polynomial.h"
 #include "Coil.h"
 #include "OldCoil.h"
-#include "Precision.h"
 #include "ComputeMethod.h"
 
 void testLegendrePolynomials()

@@ -23,7 +23,6 @@ namespace
     const double g_defaultCurrent = 1.0;
     const double g_defaultResistivity = 1.63e-8;
     const double g_defaultSineFrequency = 50;
-    const PrecisionArguments g_defaultPrecision = PrecisionArguments(1, 1, 1, 48, 24, 24);
 
     const double g_minPrecisionFactor = 1.0;
     const double g_maxPrecisionFactor = 8.0;
@@ -40,14 +39,6 @@ namespace
     const double g_thinCoilApproximationRatio = 1e-6;
 
     ctpl::thread_pool g_threadPool;
-}
-
-namespace Precision
-{
-    const PrecisionArguments defaultPrecision_ULTRAFAST = PrecisionArguments(1, 1, 1, 12, 8, 8);
-    const PrecisionArguments defaultPrecision_FAST = PrecisionArguments(1, 1, 1, 12, 12, 12);
-    const PrecisionArguments defaultPrecision_NORMAL = PrecisionArguments(2, 1, 1, 12, 12, 12);
-    const PrecisionArguments defaultPrecision_PRECISE = PrecisionArguments(1, 1, 1, 48, 16, 16);
 }
 
 const int blockPrecisionCPUArray[precisionArraySize] =
@@ -102,7 +93,9 @@ PrecisionFactor::PrecisionFactor(double relativePrecision)
 }
 
 
-PrecisionArguments::PrecisionArguments() : PrecisionArguments(g_defaultPrecision) {}
+PrecisionArguments::PrecisionArguments() :
+                    PrecisionArguments(g_defaultBlockCount, g_defaultBlockCount, g_defaultBlockCount,
+                                       g_defaultLegendreOrder, g_defaultLegendreOrder, g_defaultLegendreOrder) {}
 
 PrecisionArguments::PrecisionArguments(
         int angularBlocks, int thicknessBlocks, int lengthBlocks,
@@ -111,7 +104,6 @@ PrecisionArguments::PrecisionArguments(
         lengthBlockCount(lengthBlocks), angularIncrementCount(angularIncrements),
         thicknessIncrementCount(thicknessIncrements), lengthIncrementCount(lengthIncrements)
 {
-    //TODO - fix constructor calls from main
     if (angularIncrements > Legendre::maxLegendreOrder || angularIncrements < 1)
         PrecisionArguments::angularIncrementCount = g_defaultLegendreOrder;
 
@@ -250,7 +242,7 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
 }
 
 
-CoilPairArguments::CoilPairArguments() : CoilPairArguments(g_defaultPrecision, g_defaultPrecision) {}
+CoilPairArguments::CoilPairArguments() : CoilPairArguments(PrecisionArguments(), PrecisionArguments()) {}
 
 CoilPairArguments::CoilPairArguments(const PrecisionArguments &primaryPrecision,
                                      const PrecisionArguments &secondaryPrecision)
@@ -1258,8 +1250,7 @@ CoilPairArguments CoilPairArguments::getSelfInductanceArguments(const Coil &coil
 }
 
 
-Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0,
-                    g_defaultResistivity, g_defaultSineFrequency, g_defaultPrecision){}
+Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings,
@@ -1276,7 +1267,8 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, PrecisionFactor precisionFactor,
-           int threadCount) : innerRadius(innerRadius), thickness(thickness), length(length), numOfTurns(numOfTurns)
+           int threadCount) :
+           innerRadius(innerRadius), thickness(thickness), length(length), numOfTurns(numOfTurns)
 {
     setCurrent(current);
     calculateAverageWireThickness();
@@ -1286,28 +1278,30 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
     setThreadCount(threadCount);
 }
 
-
-Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency) :
-           Coil(innerRadius, thickness, length, numOfTurns, current,
-           g_defaultResistivity, sineFrequency, g_defaultPrecision) {}
+Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
+           PrecisionFactor precisionFactor, int threadCount) :
+           Coil(innerRadius, thickness, length, numOfTurns, current, g_defaultResistivity, sineFrequency,
+                precisionFactor, threadCount) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
            const PrecisionArguments &precisionSettings, int threadCount) :
            Coil(innerRadius, thickness, length, numOfTurns, current,
                 g_defaultResistivity, sineFrequency, precisionSettings, threadCount) {}
 
-Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current) :
-           Coil(innerRadius, thickness, length, numOfTurns, current,
-           g_defaultResistivity, g_defaultSineFrequency, g_defaultPrecision) {}
+Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
+           PrecisionFactor precisionFactor, int threadCount)  :
+           Coil(innerRadius, thickness, length, numOfTurns, current, g_defaultResistivity,
+                g_defaultSineFrequency, precisionFactor, threadCount) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            const PrecisionArguments &precisionSettings, int threadCount) :
-           Coil(innerRadius, thickness, length, numOfTurns, current,
-           g_defaultResistivity, g_defaultSineFrequency, precisionSettings, threadCount) {}
+           Coil(innerRadius, thickness, length, numOfTurns, current, g_defaultResistivity,
+                g_defaultSineFrequency, precisionSettings, threadCount) {}
 
-Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns) :
-           Coil(innerRadius, thickness, length, numOfTurns,
-           g_defaultCurrent, g_defaultResistivity, g_defaultSineFrequency, g_defaultPrecision) {}
+Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, PrecisionFactor precisionFactor,
+           int threadCount) :
+           Coil(innerRadius, thickness, length, numOfTurns, g_defaultCurrent, g_defaultResistivity,
+                g_defaultSineFrequency, precisionSettings, threadCount){}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns,
            const PrecisionArguments &precisionSettings, int threadCount) :
@@ -2506,8 +2500,7 @@ double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &sec
 
                     weights.push_back(
                             0.25 * Legendre::weightsMatrix[maxLengthIndex][zIndex] *
-                            Legendre::weightsMatrix[maxThicknessIndex][rIndex]
-                            / (lengthBlocks * thicknessBlocks));
+                            Legendre::weightsMatrix[maxThicknessIndex][rIndex]);
                 }
             }
         }
@@ -2522,7 +2515,7 @@ double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &sec
     {
         mutualInductance += 2*PI * rPositions[i] * potentialA[i] * weights[i];
     }
-
+    mutualInductance /= (lengthBlocks * thicknessBlocks);
     return mutualInductance * secondary.numOfTurns / primary.current;
 }
 
@@ -2622,8 +2615,7 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
                                         0.125 * orientationFactor * 2 * PI * ringRadius *
                                         Legendre::weightsMatrix[maxLengthIndex][zIndex] *
                                         Legendre::weightsMatrix[maxThicknessIndex][rIndex] *
-                                        Legendre::weightsMatrix[maxAngularIncrementIndex][phiIndex] /
-                                        (lengthBlocks * thicknessBlocks * angularBlocks));
+                                        Legendre::weightsMatrix[maxAngularIncrementIndex][phiIndex]);
                             }
                         }
                     }
@@ -2638,6 +2630,7 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
         for (int i = 0; i < numElements; ++i)
             mutualInductance += potentialArray[i] * weights[i];
 
+        mutualInductance /= (lengthBlocks * thicknessBlocks * angularBlocks);
         return mutualInductance * secondary.numOfTurns / primary.current;
     }
 }

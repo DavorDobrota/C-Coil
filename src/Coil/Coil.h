@@ -489,7 +489,7 @@ class Coil
 
         double computeAndSetSelfInductance(PrecisionFactor precisionFactor);
 
-        double computeAndSetApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod  method = CPU_ST);
+        double computeAndSetApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method = CPU_ST);
 
     private:
         void calculateMagneticMoment();

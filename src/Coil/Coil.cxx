@@ -12,7 +12,7 @@
 #include "LegendreMatrix.h"
 #include "CoilData.h"
 
-#define PRINT_ENABLED 0
+#define PRINT_ENABLED 1
 
 namespace
 {
@@ -2891,7 +2891,7 @@ void Coil::calculateApproximateSelfInductance(PrecisionFactor precisionFactor, C
     // this is a simplified solution but produces a significant error because of the inherent divergent integral
     // however it can be accelerated beyond single thread and thus may prove useful in some instances
     auto precisionArguments = CoilPairArguments::getSelfInductanceArguments(*this, precisionFactor);
-    selfInductance = computeMutualInductance(*this, *this, 0.0, precisionFactor, method);
+    selfInductance = computeMutualInductance(*this, *this, 0.0, precisionArguments, method);
     calculateImpedance();
 }
 

@@ -24,6 +24,7 @@ void testOldCoilMutualInductanceGeneralPerformance();
 void testOldCoilSelfInductance();
 
 void testCoilMutualInductanceGeneralForZAxis();
+void testCoilMutualInductanceGeneralPerformance();
 void testCoilMutualInductanceGeneralArgumentGeneration();
 void testCoilMutualInductanceGeneralDifferentGeometries();
 void testCoilMutualInductanceForSpecialCase();

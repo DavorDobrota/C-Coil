@@ -380,17 +380,15 @@ void testCoilMutualInductanceZAxisPerformance(ComputeMethod method)
 
 void testCoilSelfInductance()
 {
-    Coil coil1 = Coil(1.0, 1.0, 2.0, 100);
+    Coil coil1 = Coil(0.03, 0.03, 0.12, 3600);
 
     for (double i = 1.0; i <= 8.0; i += 0.5)
     {
-        auto args = CoilPairArguments::getSelfInductanceArguments(coil1, PrecisionFactor(i));
-        printf("%.15g\n", Coil::computeMutualInductance(coil1, coil1, 0.0, args));
+        printf("%.15g %.15g\n",
+               coil1.computeAndSetSelfInductance(PrecisionFactor(i)),
+               coil1.computeAndSetApproximateSelfInductance(PrecisionFactor(i)));
     }
 
-    auto args = CoilPairArguments::getSelfInductanceArguments(coil1, PrecisionFactor(8.0));
-
-    printf("%.12g %.12g\n", coil1.getSelfInductance(), Coil::computeMutualInductance(coil1, coil1, 0.0, args));
 }
 
 void testOldCoilMutualInductanceZAxis()
@@ -531,6 +529,12 @@ void testCoilMutualInductanceGeneralForZAxis()
     fclose(input);
     fclose(output);
 }
+
+void testCoilMutualInductanceGeneralPerformance()
+{
+
+}
+
 
 void testCoilMutualInductanceGeneralArgumentGeneration()
 {

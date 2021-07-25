@@ -8,24 +8,6 @@ extern thread_pool tp;
 
 int main()
 {
-//    testCoilMutualInductanceZAxis();
-
-//    testPerformanceForComputeAll(10'000, 1, 16);
-//    testCoilMutualInductanceZAxisPerformance();
-
-//    testCoilMutualInductanceZAxisArgumentGeneration();
-
-//    testCoilMutualInductanceZAxisPerformance();
-//    testCoilMutualInductanceZAxisPerformance(CPU_MT);
-
-testCoilMutualInductanceZAxisDifferentGeometries();
-
-
-//    testCoilMutualInductanceGeneralThinCoilAndFilament();
-//    testCoilMutualInductanceGeneralThinCoilAndThinCoil();
-//    testCoilMutualInductanceGeneralPancakeAndPancake();
-//    testCoilMutualInductanceGeneralRectangularAndFilament();
-
 
     return 0;
 }

@@ -12,6 +12,8 @@
 #include "LegendreMatrix.h"
 #include "CoilData.h"
 
+#define PRINT_ENABLED 0
+
 namespace
 {
     const double PI = 3.14159265357989323;
@@ -199,10 +201,11 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
     }
     while (currentIncrements < totalIncrements);
 
-//    printf("case %d - %d : %d %d %d\n", caseIndex, currentIncrements,
-//           blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex],
-//           blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex],
-//           blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex]);
+    if (PRINT_ENABLED)
+        printf("case %d - %d : %d %d %d\n", caseIndex, currentIncrements,
+               blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex],
+               blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex],
+               blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex]);
 
     return PrecisionArguments(blockPrecisionCPUArray[angularArrayIndex],
                               blockPrecisionCPUArray[thicknessArrayIndex],
@@ -237,6 +240,10 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
                 linearBlocks * linearIncrements * linearIncrements * linearBlocks * angularBlocks * angularIncrements;
     }
     while(currentIncrements < totalIncrements);
+
+    if (PRINT_ENABLED)
+        printf("%d : %d %d %d\n", currentIncrements,
+               linearBlocks * linearIncrements, linearBlocks * linearIncrements, angularBlocks * angularIncrements);
 
     return PrecisionArguments(angularBlocks, linearBlocks, linearBlocks, angularIncrements, linearIncrements, linearIncrements);
 }
@@ -550,12 +557,13 @@ CoilPairArguments CoilPairArguments::getMInductanceArgumentsZCPU(const Coil &pri
                                                  incrementPrecisionCPUArray[secThicknessArrayIndex],
                                                  incrementPrecisionCPUArray[secLengthArrayIndex]);
 
-    printf("case %d - %d : %d %d %d | %d %d\n", caseIndex, currentIncrements,
-           blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex],
-           blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex],
-           blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
-           blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
-           blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
+    if (PRINT_ENABLED)
+        printf("case %d - %d : %d %d %d | %d %d\n", caseIndex, currentIncrements,
+               blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex],
+               blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex],
+               blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
+               blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
+               blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
@@ -883,14 +891,14 @@ CoilPairArguments CoilPairArguments::getMInductanceArgumentsGeneralCPU(const Coi
                                                  incrementPrecisionCPUArray[secAngularArrayIndex],
                                                  incrementPrecisionCPUArray[secThicknessArrayIndex],
                                                  incrementPrecisionCPUArray[secLengthArrayIndex]);
-
-//    printf("case %d - %d : %d %d %d | %d %d %d\n", caseIndex, currentIncrements,
-//           blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex],
-//           blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex],
-//           blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
-//           blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
-//           blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex],
-//           blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
+    if (PRINT_ENABLED)
+        printf("case %d - %d : %d %d %d | %d %d %d\n", caseIndex, currentIncrements,
+               blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex],
+               blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex],
+               blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex],
+               blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
+               blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex],
+               blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
@@ -997,13 +1005,13 @@ CoilPairArguments CoilPairArguments::getMInductanceArgumentsZGPU(const Coil &pri
                                                  0,
                                                  incrementPrecisionCPUArray[secThicknessArrayIndex],
                                                  incrementPrecisionCPUArray[secLengthArrayIndex]);
-
-//    printf("case %d - %d : %d %d %d | %d %d\n", caseIndex, currentIncrements,
-//           primLinearBlocks * primLinearIncrements,
-//           primLinearBlocks * primLinearIncrements,
-//           primAngularBlocks * primAngularIncrements,
-//           blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
-//           blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
+    if (PRINT_ENABLED)
+        printf("case %d - %d : %d %d %d | %d %d\n", caseIndex, currentIncrements,
+               primLinearBlocks * primLinearIncrements,
+               primLinearBlocks * primLinearIncrements,
+               primAngularBlocks * primAngularIncrements,
+               blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
+               blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
@@ -1136,14 +1144,14 @@ CoilPairArguments CoilPairArguments::getMInductanceArgumentsGeneralGPU(const Coi
                                                  incrementPrecisionCPUArray[secAngularArrayIndex],
                                                  incrementPrecisionCPUArray[secThicknessArrayIndex],
                                                  incrementPrecisionCPUArray[secLengthArrayIndex]);
-
-//    printf("case %d - %d : %d %d %d | %d %d %d\n", caseIndex, currentIncrements,
-//           primLinearBlocks * primLinearIncrements,
-//           primLinearBlocks * primLinearIncrements,
-//           primAngularBlocks * primAngularIncrements,
-//           blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
-//           blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex],
-//           blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
+    if (PRINT_ENABLED)
+    printf("case %d - %d : %d %d %d | %d %d %d\n", caseIndex, currentIncrements,
+           primLinearBlocks * primLinearIncrements,
+           primLinearBlocks * primLinearIncrements,
+           primAngularBlocks * primAngularIncrements,
+           blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
+           blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex],
+           blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
@@ -1238,13 +1246,13 @@ CoilPairArguments CoilPairArguments::getSelfInductanceArguments(const Coil &coil
                                                  0,
                                                  incrementPrecisionCPUArray[thicknessArrayIndex],
                                                  incrementPrecisionCPUArray[lengthArrayIndex]);
-
-//    printf("case %d - %d : %d %d %d | %d %d\n", caseIndex, currentIncrements,
-//           blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex],
-//           blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex],
-//           blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex],
-//           blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex],
-//           blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex]);
+    if (PRINT_ENABLED)
+        printf("case %d - %d : %d %d %d | %d %d\n", caseIndex, currentIncrements,
+               blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex],
+               blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex],
+               blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex],
+               blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex],
+               blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex]);
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
@@ -1301,12 +1309,12 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, PrecisionFactor precisionFactor,
            int threadCount) :
            Coil(innerRadius, thickness, length, numOfTurns, g_defaultCurrent, g_defaultResistivity,
-                g_defaultSineFrequency, precisionSettings, threadCount){}
+                g_defaultSineFrequency, precisionFactor, threadCount){}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns,
            const PrecisionArguments &precisionSettings, int threadCount) :
-           Coil(innerRadius, thickness, length, numOfTurns, g_defaultCurrent,
-           g_defaultResistivity, g_defaultSineFrequency, precisionSettings, threadCount) {}
+           Coil(innerRadius, thickness, length, numOfTurns, g_defaultCurrent, g_defaultResistivity,
+                g_defaultSineFrequency, precisionSettings, threadCount) {}
 
 
 double Coil::getCurrentDensity() const { return currentDensity; }

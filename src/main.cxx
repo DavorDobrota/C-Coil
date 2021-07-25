@@ -9,5 +9,7 @@ extern thread_pool tp;
 int main()
 {
 
+    testCoilSelfInductance();
+
     return 0;
 }

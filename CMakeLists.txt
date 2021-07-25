@@ -4,6 +4,7 @@ project(General_Coil_Program)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "-Ofast")
 
 #######################################
 add_subdirectory(src/Test)
@@ -28,8 +29,14 @@ add_subdirectory(src/ConversionUtil)
 list(APPEND LIBS "$<TARGET_OBJECTS:ConversionUtil>")
 #######################################
 
-add_library(hardware_acceleration SHARED IMPORTED)
-set_property(TARGET hardware_acceleration PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/lib/libhardware_acceleration_shared.so")
+if(WIN32)
+    add_library(hardware_acceleration SHARED IMPORTED)
+    set_property(TARGET hardware_acceleration PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/hardware_acceleration.dll")
+    set_property(TARGET hardware_acceleration PROPERTY IMPORTED_IMPLIB "${CMAKE_CURRENT_SOURCE_DIR}/lib/hardware_acceleration.lib")
+else()
+    add_library(hardware_acceleration SHARED IMPORTED)
+    set_property(TARGET hardware_acceleration PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/lib/libhardware_acceleration_shared.so")
+endif()
 
 add_executable(General_Coil_Program src/main.cxx ${LIBS})
 target_include_directories(
@@ -42,5 +49,9 @@ target_include_directories(
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Polynomial"
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Test"
 )
-target_link_libraries(General_Coil_Program hardware_acceleration pthread)
-target_compile_options(General_Coil_Program PRIVATE -Ofast)
+
+if(WIN32)
+    target_link_libraries(General_Coil_Program hardware_acceleration)
+else()
+    target_link_libraries(General_Coil_Program hardware_acceleration pthread)
+endif()

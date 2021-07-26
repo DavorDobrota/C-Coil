@@ -67,12 +67,11 @@ void Coil::computeAllBFieldY(const std::vector<double> &cylindricalZArr,
 
 void Coil::computeAllBFieldH(const std::vector<double> &cylindricalZArr,
                              const std::vector<double> &cylindricalRArr,
-                             const std::vector<double> &cylindricalPhiArr,
                              std::vector<double> &computedFieldArr,
                              const PrecisionArguments &usedPrecision,
                              ComputeMethod method) const
 {
-    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
+    if (cylindricalZArr.size() == cylindricalRArr.size())
     {
         std::vector<double> fieldZ;
 
@@ -84,12 +83,11 @@ void Coil::computeAllBFieldH(const std::vector<double> &cylindricalZArr,
 
 void Coil::computeAllBFieldH(const std::vector<double> &cylindricalZArr,
                              const std::vector<double> &cylindricalRArr,
-                             const std::vector<double> &cylindricalPhiArr,
                              std::vector<double> &computedFieldArr,
                              ComputeMethod method) const
 {
     computeAllBFieldH(
-            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, precisionSettings, method);
+            cylindricalZArr, cylindricalRArr, computedFieldArr, precisionSettings, method);
 }
 
 void Coil::computeAllBFieldZ(const std::vector<double> &cylindricalZArr,

@@ -11,10 +11,7 @@ namespace
     const double g_defaultCurrent = 1.0;
     const double g_defaultResistivity = 1.63e-8;
     const double g_defaultSineFrequency = 50;
-
-    ctpl::thread_pool g_threadPool;
 }
-
 
 
 Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0) {}
@@ -149,12 +146,6 @@ void Coil::setSineFrequency(double sineFrequency)
 void Coil::setPrecisionSettings(const PrecisionArguments &precisionSettings)
 {
     Coil::precisionSettings = precisionSettings;
-}
-
-void Coil::setThreadCount(int threadCount)
-{
-    Coil::threadCount = threadCount;
-    g_threadPool.resize(threadCount);
 }
 
 void Coil::calculateMagneticMoment()

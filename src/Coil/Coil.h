@@ -51,19 +51,11 @@ struct CoilPairArguments
     PrecisionArguments primaryPrecision;
     PrecisionArguments secondaryPrecision;
 
-    static CoilPairArguments getMInductanceArgumentsZCPU(const Coil &primary, const Coil &secondary,
-                                                         PrecisionFactor precisionFactor);
-
-    static CoilPairArguments getMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
-                                                               PrecisionFactor precisionFactor);
-
-    static CoilPairArguments getMInductanceArgumentsZGPU(const Coil &primary, const Coil &secondary,
-                                                         PrecisionFactor precisionFactor);
-
-    static CoilPairArguments getMInductanceArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
-                                                               PrecisionFactor precisionFactor);
-
     static CoilPairArguments getSelfInductanceArguments(const Coil &coil, PrecisionFactor precisionFactor);
+
+    static CoilPairArguments getAppropriateMInductanceArguments(const Coil &primary, const Coil &secondary,
+                                                                PrecisionFactor precisionFactor,
+                                                                ComputeMethod method = CPU_ST, bool isGeneral = true);
 
     private:
         static void getGeometryCaseAndIncrementsSingleCoil(const Coil &coil, PrecisionFactor precisionFactor,
@@ -72,6 +64,18 @@ struct CoilPairArguments
         static void getGeometryCaseAndIncrementsCoilPair(const Coil &primary, const Coil &secondary,
                                                          PrecisionFactor precisionFactor,
                                                          int &caseIndex, int &totalIncrements);
+
+        static CoilPairArguments calculateMInductanceArgumentsZCPU(const Coil &primary, const Coil &secondary,
+                                                                   PrecisionFactor precisionFactor);
+
+        static CoilPairArguments calculateMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
+                                                                         PrecisionFactor precisionFactor);
+
+        static CoilPairArguments calculateMInductanceArgumentsZGPU(const Coil &primary, const Coil &secondary,
+                                                                   PrecisionFactor precisionFactor);
+
+        static CoilPairArguments calculateMInductanceArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
+                                                                         PrecisionFactor precisionFactor);
 };
 
 class Coil
@@ -251,12 +255,10 @@ class Coil
 
         void computeAllBFieldH(const std::vector<double> &cylindricalZArr,
                                const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
                                std::vector<double> &computedFieldArr,
                                ComputeMethod method = CPU_ST) const;
         void computeAllBFieldH(const std::vector<double> &cylindricalZArr,
                                const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
                                std::vector<double> &computedFieldArr,
                                const PrecisionArguments &usedPrecision,
                                ComputeMethod method = CPU_ST) const;
@@ -493,6 +495,12 @@ class Coil
 
         double computeAndSetApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method = CPU_ST);
 
+        static double computeAmpereForce(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                              PrecisionFactor precisionFactor = PrecisionFactor(),
+                                              ComputeMethod method = CPU_ST);
+        static double computeAmpereForce(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                              CoilPairArguments inductanceArguments, ComputeMethod method = CPU_ST);
+
     private:
         void calculateMagneticMoment();
         void calculateAverageWireThickness();
@@ -501,10 +509,11 @@ class Coil
         void calculateImpedance();
 
         [[nodiscard]] std::pair<double, double> calculateBField(double zAxis, double rPolar,
-                                                                const PrecisionArguments &precisionSettings) const;
+                                                                const PrecisionArguments &usedPrecision) const;
 
         [[nodiscard]] double calculateAPotential(double zAxis, double rPolar,
-                                                 const PrecisionArguments &precisionSettings) const;
+                                                 const PrecisionArguments &usedPrecision) const;
+
 
         void calculateAllBFieldST(const std::vector<double> &cylindricalZArr,
                                   const std::vector<double> &cylindricalRArr,
@@ -561,10 +570,6 @@ class Coil
                                                    std::vector<double> &ringYTangent,
                                                    std::vector<double> &ringZTangent);
 
-        static CoilPairArguments calculateAppropriateMInductanceArguments(const Coil &primary, const Coil &secondary,
-                                                                          PrecisionFactor precisionFactor,
-                                                                          ComputeMethod method, bool isGeneral = true);
-
         static double calculateMutualInductanceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                      CoilPairArguments inductanceArguments,
                                                      ComputeMethod method = CPU_ST);
@@ -578,6 +583,10 @@ class Coil
         void calculateSelfInductance(PrecisionFactor precisionFactor);
 
         void calculateApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method = CPU_ST);
+
+        static double calculateAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                                CoilPairArguments inductanceArguments,
+                                                ComputeMethod method = CPU_ST);
 };
 
 #endif //GENERAL_COIL_PROGRAM_COIL_H

@@ -147,4 +147,3 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
     }
     return magneticPotential;
 }
-

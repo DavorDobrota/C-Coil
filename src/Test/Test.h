@@ -27,6 +27,7 @@ void testCoilMutualInductanceGeneralForZAxis();
 void testCoilMutualInductanceGeneralPerformance();
 void testCoilMutualInductanceGeneralArgumentGeneration();
 void testCoilMutualInductanceGeneralDifferentGeometries();
+
 void testCoilMutualInductanceForSpecialCase();
 
 void testCoilMutualInductanceGeneralThinCoilAndFilament();
@@ -34,5 +35,6 @@ void testCoilMutualInductanceGeneralThinCoilAndThinCoil();
 void testCoilMutualInductanceGeneralPancakeAndPancake();
 void testCoilMutualInductanceGeneralRectangularAndFilament();
 
+void testCoilAmpereForceZAxis();
 
 #endif //GENERAL_COIL_PROGRAM_TEST_H

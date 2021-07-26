@@ -1,6 +1,8 @@
 #include "Coil.h"
+#include "LegendreMatrix.h"
 
 #include <cmath>
+
 
 void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
                                           double alpha, double beta, double ringIntervalSize,
@@ -223,26 +225,6 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
 
         mutualInductance /= (lengthBlocks * thicknessBlocks * angularBlocks);
         return mutualInductance * secondary.numOfTurns / primary.current;
-    }
-}
-
-CoilPairArguments Coil::calculateAppropriateMInductanceArguments(const Coil &primary, const Coil &secondary,
-                                                                 PrecisionFactor precisionFactor,
-                                                                 ComputeMethod method, bool isGeneral)
-{
-    if (!isGeneral)
-    {
-        if (method == GPU)
-            return CoilPairArguments::getMInductanceArgumentsZGPU(primary, secondary, precisionFactor);
-        else
-            return CoilPairArguments::getMInductanceArgumentsZCPU(primary, secondary, precisionFactor);
-    }
-    else
-    {
-        if (method == GPU)
-            return CoilPairArguments::getMInductanceArgumentsGeneralGPU(primary, secondary, precisionFactor);
-        else
-            return CoilPairArguments::getMInductanceArgumentsGeneralCPU(primary, secondary, precisionFactor);
     }
 }
 

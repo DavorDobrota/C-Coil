@@ -10,6 +10,12 @@ namespace
     ctpl::thread_pool g_threadPool;
 }
 
+// TODO - fix variable so it is external and setter returned to Coil.cxx
+void Coil::setThreadCount(int threadCount)
+{
+    Coil::threadCount = threadCount;
+    g_threadPool.resize(threadCount);
+}
 
 void Coil::calculateAllBFieldST(const std::vector<double> &cylindricalZArr,
                                 const std::vector<double> &cylindricalRArr,

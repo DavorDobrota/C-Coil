@@ -75,8 +75,8 @@ void CoilPairArguments::getGeometryCaseAndIncrementsCoilPair(const Coil &primary
     }
 }
 
-CoilPairArguments CoilPairArguments::getMInductanceArgumentsZCPU(const Coil &primary, const Coil &secondary,
-                                                                 PrecisionFactor precisionFactor)
+CoilPairArguments CoilPairArguments::calculateMInductanceArgumentsZCPU(const Coil &primary, const Coil &secondary,
+                                                                       PrecisionFactor precisionFactor)
 {
     int primLengthArrayIndex = g_minPrimLengthIncrements - 1;
     int primThicknessArrayIndex = g_minPrimThicknessIncrements -1;
@@ -325,8 +325,8 @@ CoilPairArguments CoilPairArguments::getMInductanceArgumentsZCPU(const Coil &pri
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
 
-CoilPairArguments CoilPairArguments::getMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
-                                                                       PrecisionFactor precisionFactor)
+CoilPairArguments CoilPairArguments::calculateMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
+                                                                             PrecisionFactor precisionFactor)
 {
     int primLengthArrayIndex = g_minPrimLengthIncrements - 1;
     int primThicknessArrayIndex = g_minPrimThicknessIncrements - 1;
@@ -660,8 +660,8 @@ CoilPairArguments CoilPairArguments::getMInductanceArgumentsGeneralCPU(const Coi
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
 
-CoilPairArguments CoilPairArguments::getMInductanceArgumentsZGPU(const Coil &primary, const Coil &secondary,
-                                                                 PrecisionFactor precisionFactor)
+CoilPairArguments CoilPairArguments::calculateMInductanceArgumentsZGPU(const Coil &primary, const Coil &secondary,
+                                                                       PrecisionFactor precisionFactor)
 {
     const int primLinearIncrements = arrSize;
     const int primAngularIncrements = arrSize;
@@ -769,8 +769,8 @@ CoilPairArguments CoilPairArguments::getMInductanceArgumentsZGPU(const Coil &pri
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
 
-CoilPairArguments CoilPairArguments::getMInductanceArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
-                                                                       PrecisionFactor precisionFactor)
+CoilPairArguments CoilPairArguments::calculateMInductanceArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
+                                                                             PrecisionFactor precisionFactor)
 {
     const int primLinearIncrements = arrSize;
     const int primAngularIncrements = arrSize;
@@ -1004,4 +1004,24 @@ CoilPairArguments CoilPairArguments::getSelfInductanceArguments(const Coil &coil
                blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex]);
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
+}
+
+CoilPairArguments CoilPairArguments::getAppropriateMInductanceArguments(const Coil &primary, const Coil &secondary,
+                                                                        PrecisionFactor precisionFactor,
+                                                                        ComputeMethod method, bool isGeneral)
+{
+    if (!isGeneral)
+    {
+        if (method == GPU)
+            return CoilPairArguments::calculateMInductanceArgumentsZGPU(primary, secondary, precisionFactor);
+        else
+            return CoilPairArguments::calculateMInductanceArgumentsZCPU(primary, secondary, precisionFactor);
+    }
+    else
+    {
+        if (method == GPU)
+            return CoilPairArguments::calculateMInductanceArgumentsGeneralGPU(primary, secondary, precisionFactor);
+        else
+            return CoilPairArguments::calculateMInductanceArgumentsGeneralCPU(primary, secondary, precisionFactor);
+    }
 }

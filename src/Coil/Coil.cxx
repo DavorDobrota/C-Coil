@@ -1,4 +1,5 @@
 #include "Coil.h"
+#include "LegendreMatrix.h"
 #include "ctpl.h"
 
 #include <cmath>
@@ -184,4 +185,48 @@ void Coil::calculateImpedance()
     calculateResistance();
     calculateReactance();
     impedance = sqrt(resistance * resistance + reactance * reactance);
+}
+
+void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
+                                          double alpha, double beta, double ringIntervalSize,
+                                          std::vector<double> &ringXPosition,
+                                          std::vector<double> &ringYPosition,
+                                          std::vector<double> &ringZPosition,
+                                          std::vector<double> &ringXTangent,
+                                          std::vector<double> &ringYTangent,
+                                          std::vector<double> &ringZTangent)
+{
+    ringXPosition.resize(0);
+    ringYPosition.resize(0);
+    ringZPosition.resize(0);
+
+    ringXTangent.resize(0);
+    ringYTangent.resize(0);
+    ringZTangent.resize(0);
+
+    double angularBlock = ringIntervalSize / angularBlocks;
+
+    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    angularBlocks--;
+    angularIncrements--;
+
+    for (int phiBlock = 0; phiBlock <= angularBlocks; ++phiBlock)
+    {
+        double blockPositionPhi = angularBlock * (phiBlock + 0.5);
+
+        for (int phiIndex = 0; phiIndex <= angularIncrements; ++phiIndex)
+        {
+            // M_PI/2 added to readjust to an even interval so a shortcut can be used
+            double phi = M_PI/2 + blockPositionPhi +
+                         (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][phiIndex];
+
+            ringXPosition.push_back(cos(beta) * cos(phi) - sin(beta) * cos(alpha) * sin(phi));
+            ringYPosition.push_back(sin(beta) * cos(phi) + cos(beta) * cos(alpha) * sin(phi));
+            ringZPosition.push_back(sin(alpha) * sin(phi));
+
+            ringXTangent.push_back((-1) * cos(beta) * sin(phi) - sin(beta) * cos(alpha) * cos(phi));
+            ringYTangent.push_back((-1) * sin(beta) * sin(phi) + cos(beta) * cos(alpha) * cos(phi));
+            ringZTangent.push_back(sin(alpha) * cos(phi));
+        }
+    }
 }

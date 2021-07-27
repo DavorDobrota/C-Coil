@@ -56,9 +56,9 @@ void testCoilMutualInductanceZAxisArgumentGeneration()
     for (double i = 1.0; i <= 8.0; i += 1.0)
     {
         printf("precision = %.1f\n", i);
-        args = CoilPairArguments::getAppropriateMInductanceArguments(coil1, coil2, PrecisionFactor(i), CPU_ST, false);
-        args = CoilPairArguments::getAppropriateMInductanceArguments(coil1, coil3, PrecisionFactor(i), CPU_ST, false);
-        args = CoilPairArguments::getAppropriateMInductanceArguments(coil1, coil4, PrecisionFactor(i), CPU_ST, false);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil2, PrecisionFactor(i), CPU_ST, false);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil3, PrecisionFactor(i), CPU_ST, false);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil4, PrecisionFactor(i), CPU_ST, false);
         printf("\n");
     }
 
@@ -66,9 +66,9 @@ void testCoilMutualInductanceZAxisArgumentGeneration()
     for (double i = 1.0; i <= 8.0; i += 1.0)
     {
         printf("precision = %.1f\n", i);
-        args = CoilPairArguments::getAppropriateMInductanceArguments(coil1, coil2, PrecisionFactor(i), GPU, false);
-        args = CoilPairArguments::getAppropriateMInductanceArguments(coil1, coil3, PrecisionFactor(i), GPU, false);
-        args = CoilPairArguments::getAppropriateMInductanceArguments(coil1, coil4, PrecisionFactor(i), GPU, false);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil2, PrecisionFactor(i), GPU, false);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil3, PrecisionFactor(i), GPU, false);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil4, PrecisionFactor(i), GPU, false);
         printf("\n");
     }
 }

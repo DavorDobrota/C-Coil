@@ -2,8 +2,7 @@
 #include "Coil.h"
 #include "ctpl.h"
 
-
-
+#include <cmath>
 
 void testPerformanceCPU_ST()
 {
@@ -57,8 +56,8 @@ void testPerformanceForComputeAll(int nOps, int nRepeats, int nThreads)
 
     for (int i = 0; i < nOps ; i++)
     {
-        cylindricalZArr.push_back(radius * cos(i * 2*Pi / nOps));
-        cylindricalRArr.push_back(radius * sin(i * 2*Pi / nOps));
+        cylindricalZArr.push_back(radius * cos(i * 2*M_PI / nOps));
+        cylindricalRArr.push_back(radius * sin(i * 2*M_PI / nOps));
         cylindricalPhiArr.push_back(0.0);
     }
 

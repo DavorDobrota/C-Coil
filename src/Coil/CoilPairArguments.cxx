@@ -75,8 +75,8 @@ void CoilPairArguments::getGeometryCaseAndIncrementsCoilPair(const Coil &primary
     }
 }
 
-CoilPairArguments CoilPairArguments::calculateMInductanceArgumentsZCPU(const Coil &primary, const Coil &secondary,
-                                                                       PrecisionFactor precisionFactor)
+CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisCPU(const Coil &primary, const Coil &secondary,
+                                                                        PrecisionFactor precisionFactor)
 {
     int primLengthArrayIndex = g_minPrimLengthIncrements - 1;
     int primThicknessArrayIndex = g_minPrimThicknessIncrements -1;
@@ -325,8 +325,8 @@ CoilPairArguments CoilPairArguments::calculateMInductanceArgumentsZCPU(const Coi
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
 
-CoilPairArguments CoilPairArguments::calculateMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
-                                                                             PrecisionFactor precisionFactor)
+CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
+                                                                          PrecisionFactor precisionFactor)
 {
     int primLengthArrayIndex = g_minPrimLengthIncrements - 1;
     int primThicknessArrayIndex = g_minPrimThicknessIncrements - 1;
@@ -660,8 +660,8 @@ CoilPairArguments CoilPairArguments::calculateMInductanceArgumentsGeneralCPU(con
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
 
-CoilPairArguments CoilPairArguments::calculateMInductanceArgumentsZGPU(const Coil &primary, const Coil &secondary,
-                                                                       PrecisionFactor precisionFactor)
+CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Coil &primary, const Coil &secondary,
+                                                                        PrecisionFactor precisionFactor)
 {
     const int primLinearIncrements = arrSize;
     const int primAngularIncrements = arrSize;
@@ -769,8 +769,8 @@ CoilPairArguments CoilPairArguments::calculateMInductanceArgumentsZGPU(const Coi
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
 
-CoilPairArguments CoilPairArguments::calculateMInductanceArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
-                                                                             PrecisionFactor precisionFactor)
+CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
+                                                                          PrecisionFactor precisionFactor)
 {
     const int primLinearIncrements = arrSize;
     const int primAngularIncrements = arrSize;
@@ -1006,22 +1006,22 @@ CoilPairArguments CoilPairArguments::getSelfInductanceArguments(const Coil &coil
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }
 
-CoilPairArguments CoilPairArguments::getAppropriateMInductanceArguments(const Coil &primary, const Coil &secondary,
-                                                                        PrecisionFactor precisionFactor,
-                                                                        ComputeMethod method, bool isGeneral)
+CoilPairArguments CoilPairArguments::getAppropriateCoilPairArguments(const Coil &primary, const Coil &secondary,
+                                                                     PrecisionFactor precisionFactor,
+                                                                     ComputeMethod method, bool isGeneral)
 {
     if (!isGeneral)
     {
         if (method == GPU)
-            return CoilPairArguments::calculateMInductanceArgumentsZGPU(primary, secondary, precisionFactor);
+            return CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(primary, secondary, precisionFactor);
         else
-            return CoilPairArguments::calculateMInductanceArgumentsZCPU(primary, secondary, precisionFactor);
+            return CoilPairArguments::calculateCoilPairArgumentsZAxisCPU(primary, secondary, precisionFactor);
     }
     else
     {
         if (method == GPU)
-            return CoilPairArguments::calculateMInductanceArgumentsGeneralGPU(primary, secondary, precisionFactor);
+            return CoilPairArguments::calculateCoilPairArgumentsGeneralGPU(primary, secondary, precisionFactor);
         else
-            return CoilPairArguments::calculateMInductanceArgumentsGeneralCPU(primary, secondary, precisionFactor);
+            return CoilPairArguments::calculateCoilPairArgumentsGeneralCPU(primary, secondary, precisionFactor);
     }
 }

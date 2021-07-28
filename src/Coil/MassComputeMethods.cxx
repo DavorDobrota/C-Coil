@@ -466,3 +466,66 @@ void Coil::computeAllEFieldAbs(const std::vector<double> &cylindricalZArr, const
 {
     computeAllEFieldAbs(cylindricalZArr, cylindricalRArr, computedFieldArr, precisionSettings, method);
 }
+
+void Coil::computeAllBGradientTensors(const std::vector<double> &cylindricalZArr,
+                                      const std::vector<double> &cylindricalRArr,
+                                      const std::vector<double> &cylindricalPhiArr,
+                                      std::vector<double> &computedGradientXX,
+                                      std::vector<double> &computedGradientXY,
+                                      std::vector<double> &computedGradientXZ,
+                                      std::vector<double> &computedGradientYX,
+                                      std::vector<double> &computedGradientYY,
+                                      std::vector<double> &computedGradientYZ,
+                                      std::vector<double> &computedGradientZX,
+                                      std::vector<double> &computedGradientZY,
+                                      std::vector<double> &computedGradientZZ,
+                                      const PrecisionArguments &usedPrecision, ComputeMethod method) const
+{
+    if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
+    {
+        std::vector<double> gradientRPhi;
+        std::vector<double> gradientRR;
+        std::vector<double> gradientRZ;
+        std::vector<double> gradientZZ;
+
+        calculateAllBGradientSwitch(cylindricalZArr, cylindricalRArr,
+                                    gradientRPhi, gradientRR, gradientRZ, gradientZZ, usedPrecision, method);
+
+        for (int i = 0; i < gradientRPhi.size(); ++i)
+        {
+            if (cylindricalRArr[i] / innerRadius < 1e-14)
+            {
+                computedGradientXX.push_back(gradientRPhi[i]);
+                computedGradientXY.push_back(0.0);
+                computedGradientXZ.push_back(0.0);
+
+                computedGradientYX.push_back(0.0);
+                computedGradientYY.push_back(gradientRPhi[i]);
+                computedGradientYZ.push_back(0.0);
+
+                computedGradientZX.push_back(0.0);
+                computedGradientZY.push_back(0.0);
+                computedGradientZZ.push_back(gradientZZ[i]);
+            }
+            else
+            {
+                double cosPhi = cos(cylindricalPhiArr[i]);
+                double sinPhi = sin(cylindricalPhiArr[i]);
+
+                computedGradientXX.push_back(gradientRZ[i] * cosPhi * cosPhi + gradientRPhi[i] * sinPhi * sinPhi);
+                computedGradientXY.push_back(0.5 * sin(2 * cylindricalPhiArr[i]) * (gradientRR[i] - gradientRPhi[i]));
+                computedGradientXZ.push_back(gradientRZ[i] * cosPhi);
+
+                computedGradientYX.push_back(0.5 * sin(2 * cylindricalPhiArr[i]) * (gradientRR[i] - gradientRPhi[i]));
+                computedGradientYY.push_back(gradientRZ[i] * sinPhi * sinPhi + gradientRPhi[i] * cosPhi * cosPhi);
+                computedGradientYZ.push_back(gradientRZ[i] * sinPhi);
+
+                computedGradientZX.push_back(gradientRZ[i] * cosPhi);
+                computedGradientZY.push_back(gradientRZ[i] * sinPhi);
+                computedGradientZZ.push_back(gradientZZ[i]);
+            }
+        }
+    }
+    else
+        throw "Number of elements in input data vectors is not the same!";
+}

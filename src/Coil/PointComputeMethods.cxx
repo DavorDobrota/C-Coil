@@ -223,10 +223,10 @@ std::vector<double> Coil::computeBGradientTensor(double cylindricalZ, double cyl
     else
     {
         bufferValues.push_back(bufferValueRR * cos(cylindricalPhi) * cos(cylindricalPhi) + bufferValueRPhi * sin(cylindricalPhi) * sin(cylindricalPhi));
-        bufferValues.push_back(0.5 * bufferValueRR * sin(2 * cylindricalPhi) - 0.5 * bufferValueRPhi * sin(2 * cylindricalPhi));
+        bufferValues.push_back(0.5 * sin(2 * cylindricalPhi) * (bufferValueRR - cylindricalPhi));
         bufferValues.push_back(bufferValueRZ * cos(cylindricalPhi));
 
-        bufferValues.push_back(0.5 * bufferValueRR * sin(2 * cylindricalPhi) - 0.5 * bufferValueRPhi * sin(2 * cylindricalPhi));
+        bufferValues.push_back(0.5 * sin(2 * cylindricalPhi) * (bufferValueRR - cylindricalPhi));
         bufferValues.push_back(bufferValueRR * sin(cylindricalPhi) * sin(cylindricalPhi) + bufferValueRPhi * cos(cylindricalPhi) * cos(cylindricalPhi));
         bufferValues.push_back(bufferValueRZ * sin(cylindricalPhi));
 

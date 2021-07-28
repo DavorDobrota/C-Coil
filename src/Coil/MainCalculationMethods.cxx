@@ -147,3 +147,98 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
     }
     return magneticPotential;
 }
+
+std::vector<double> Coil::calculateGradientTensor(double zAxis, double rPolar, double anglePolar,
+                                                  const PrecisionArguments &usedPrecision) const
+{
+    double bufferValueRPhi = 0.0;
+    double bufferValueRR = 0.0;
+    double bufferValueZZ = 0.0;
+    double bufferValueRZ = 0.0;
+
+    double lengthBlock = length / usedPrecision.lengthBlockCount;
+    double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
+    double angularBlock = M_PI / usedPrecision.angularBlockCount;
+
+    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    int lengthIncrements = usedPrecision.lengthIncrementCount - 1;
+    int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
+    int angularIncrements = usedPrecision.angularIncrementCount - 1;
+
+    // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
+    double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
+
+    for (int indBlockL = 0; indBlockL < usedPrecision.lengthBlockCount; ++indBlockL)
+    {
+        for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlockCount; ++indBlockT)
+        {
+            double blockPositionL = (-1) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
+            double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
+
+            for (int incL = 0; incL <= lengthIncrements; ++incL)
+            {
+                for (int incT = 0; incT <= thicknessIncrements; ++incT)
+                {
+                    double incrementPositionL = blockPositionL +
+                            (lengthBlock * 0.5) * Legendre::positionMatrix[lengthIncrements][incL];
+                    double incrementPositionT = blockPositionT +
+                            (thicknessBlock * 0.5) * Legendre::positionMatrix[thicknessIncrements][incT];
+
+                    double incrementWeightS =
+                            Legendre::weightsMatrix[lengthIncrements][incL] *
+                            Legendre::weightsMatrix[thicknessIncrements][incT];
+
+                    double tempConstA = incrementPositionT * incrementPositionT;
+                    double tempConstB = rPolar * rPolar;
+                    double tempConstC = (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
+                    double tempConstD = rPolar * incrementPositionT;
+                    double tempConstE = incrementPositionT * (incrementPositionL + zAxis);
+                    double tempConstF = 1 / incrementPositionT;
+
+                    double tempConstG = 2 * tempConstA + 2 * tempConstB - tempConstC;
+                    double tempConstH = tempConstA + tempConstB + tempConstC;
+                    double tempConstI = constant * incrementWeightS;
+
+                    for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlockCount; ++indBlockFi)
+                    {
+                        double blockPositionFi = angularBlock * (indBlockFi + 0.5);
+
+                        for (int incFi = 0; incFi <= angularIncrements; ++incFi)
+                        {
+                            double incrementPositionFi = blockPositionFi +
+                                    (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incFi];
+
+                            double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
+
+                            double cosinePhi = cos(incrementPositionFi);
+
+                            double tempConstJ = tempConstH - 2 * tempConstD * cosinePhi;
+                            double tempConstK = tempConstJ * tempConstJ * sqrt(tempConstJ);
+
+                            double tempConstX = tempConstI * incrementWeightFi / (tempConstJ * sqrt(tempConstJ));
+                            double tempConstY = tempConstI * incrementWeightFi / tempConstK;
+
+                            bufferValueRPhi += tempConstX * (tempConstF * tempConstE * cosinePhi);
+                            bufferValueRR += tempConstY * (3 * tempConstE * (rPolar - incrementPositionT * cosinePhi)) * cosinePhi;
+                            bufferValueZZ += tempConstY * (3 * tempConstE * (incrementPositionT - rPolar * cosinePhi));
+                            bufferValueRZ += tempConstY * (incrementPositionT * tempConstG * cosinePhi - 3 * tempConstA * rPolar);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    std::vector<double> gradientTensor;
+
+    gradientTensor.push_back(bufferValueRR * cos(anglePolar) * cos(anglePolar) + bufferValueRPhi * sin(anglePolar) * sin(anglePolar));
+    gradientTensor.push_back(0.5 * bufferValueRR * sin(2 * anglePolar) - 0.5 * bufferValueRPhi * sin(2 * anglePolar));
+    gradientTensor.push_back(bufferValueRZ * cos(anglePolar));
+
+    gradientTensor.push_back(bufferValueRR * sin(anglePolar) * sin(anglePolar) + bufferValueRPhi * cos(anglePolar) * cos(anglePolar));
+    gradientTensor.push_back(0.5 * bufferValueRR * sin(2 * anglePolar) - 0.5 * bufferValueRPhi * sin(2 * anglePolar));
+    gradientTensor.push_back(bufferValueRZ * sin(anglePolar));
+
+    gradientTensor.push_back(bufferValueRZ * cos(anglePolar));
+    gradientTensor.push_back(bufferValueRZ * sin(anglePolar));
+    gradientTensor.push_back(bufferValueZZ);
+}

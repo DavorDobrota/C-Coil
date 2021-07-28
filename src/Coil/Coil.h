@@ -5,7 +5,7 @@
 
 #include "ComputeMethod.h"
 
-#define PRINT_ENABLED 0
+#define PRINT_ENABLED 1
 
 const int precisionArraySize = 423;
 const int defaultThreadCount = 4;
@@ -540,6 +540,9 @@ class Coil
 
         [[nodiscard]] double calculateAPotential(double zAxis, double rPolar,
                                                  const PrecisionArguments &usedPrecision) const;
+
+        std::vector<double> calculateGradientTensor(double zAxis, double rPolar, double anglePolar,
+                                                    const PrecisionArguments &usedPrecision) const;
 
 
         void calculateAllBFieldST(const std::vector<double> &cylindricalZArr,

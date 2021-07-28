@@ -529,3 +529,24 @@ void Coil::computeAllBGradientTensors(const std::vector<double> &cylindricalZArr
     else
         throw "Number of elements in input data vectors is not the same!";
 }
+
+void Coil::computeAllBGradientTensors(const std::vector<double> &cylindricalZArr,
+                                      const std::vector<double> &cylindricalRArr,
+                                      const std::vector<double> &cylindricalPhiArr,
+                                      std::vector<double> &computedGradientXX,
+                                      std::vector<double> &computedGradientXY,
+                                      std::vector<double> &computedGradientXZ,
+                                      std::vector<double> &computedGradientYX,
+                                      std::vector<double> &computedGradientYY,
+                                      std::vector<double> &computedGradientYZ,
+                                      std::vector<double> &computedGradientZX,
+                                      std::vector<double> &computedGradientZY,
+                                      std::vector<double> &computedGradientZZ,
+                                      ComputeMethod method) const
+{
+    computeAllBGradientTensors(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
+                               computedGradientXX, computedGradientXY, computedGradientXZ,
+                               computedGradientYX, computedGradientYY, computedGradientYZ,
+                               computedGradientZX, computedGradientZY, computedGradientZZ,
+                               precisionSettings, method);
+}

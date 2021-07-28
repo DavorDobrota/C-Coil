@@ -48,6 +48,30 @@ void Coil::calculateAllAPotentialST(const std::vector<double> &cylindricalZArr,
     }
 }
 
+void Coil::calculateAllBGradientST(const std::vector<double> &cylindricalZArr,
+                                   const std::vector<double> &cylindricalRArr,
+                                   std::vector<double> &computedGradientRPhi,
+                                   std::vector<double> &computedGradientRR,
+                                   std::vector<double> &computedGradientRZ,
+                                   std::vector<double> &computedGradientZZ,
+                                   const PrecisionArguments &usedPrecision) const
+{
+    computedGradientRPhi.resize(0);
+    computedGradientRR.resize(0);
+    computedGradientRZ.resize(0);
+    computedGradientZZ.resize(0);
+
+    for (int i = 0; i < cylindricalZArr.size(); ++i)
+    {
+        std::vector<double> gradient = calculateBGradient(cylindricalZArr[i], cylindricalRArr[i], usedPrecision);
+
+        computedGradientRPhi.push_back(gradient[0]);
+        computedGradientRR.push_back(gradient[1]);
+        computedGradientRZ.push_back(gradient[2]);
+        computedGradientZZ.push_back(gradient[3]);
+    }
+}
+
 void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
                                 const std::vector<double> &cylindricalRArr,
                                 std::vector<double> &computedFieldHArr,
@@ -92,6 +116,17 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
     }
 
     while(g_threadPool.n_idle() < threadCount);
+}
+
+void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
+                                   const std::vector<double> &cylindricalRArr,
+                                   std::vector<double> &computedGradientRPhi,
+                                   std::vector<double> &computedGradientRR,
+                                   std::vector<double> &computedGradientRZ,
+                                   std::vector<double> &computedGradientZZ,
+                                   const PrecisionArguments &usedPrecision) const
+{
+    // TODO - implement MT method like its siblings
 }
 
 void Coil::calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
@@ -152,6 +187,17 @@ void Coil::calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
         computedPotentialArr.push_back(potentialArr[i] / (2 * M_PI));
 }
 
+void Coil::calculateAllBGradientGPU(const std::vector<double> &cylindricalZArr,
+                                    const std::vector<double> &cylindricalRArr,
+                                    std::vector<double> &computedGradientRPhi,
+                                    std::vector<double> &computedGradientRR,
+                                    std::vector<double> &computedGradientRZ,
+                                    std::vector<double> &computedGradientZZ,
+                                    const PrecisionArguments &usedPrecision) const
+{
+    // TODO - sometime in the distant future, this may be implemented
+}
+
 void Coil::calculateAllBFieldSwitch(const std::vector<double> &cylindricalZArr,
                                     const std::vector<double> &cylindricalRArr,
                                     std::vector<double> &computedFieldHArr,
@@ -191,5 +237,33 @@ void Coil::calculateAllAPotentialSwitch(const std::vector<double> &cylindricalZA
             break;
         default:
             calculateAllAPotentialST(cylindricalZArr, cylindricalRArr, computedPotentialArr, usedPrecision);
+    }
+}
+
+void Coil::calculateAllBGradientSwitch(const std::vector<double> &cylindricalZArr,
+                                       const std::vector<double> &cylindricalRArr,
+                                       std::vector<double> &computedGradientRPhi,
+                                       std::vector<double> &computedGradientRR,
+                                       std::vector<double> &computedGradientRZ,
+                                       std::vector<double> &computedGradientZZ,
+                                       const PrecisionArguments &usedPrecision,
+                                       ComputeMethod method) const
+{
+    switch (method)
+    {
+        case GPU:
+            calculateAllBGradientGPU(cylindricalZArr, cylindricalRArr,
+                                     computedGradientRPhi, computedGradientRR, computedGradientRZ, computedGradientZZ,
+                                     usedPrecision);
+            break;
+        case CPU_MT:
+            calculateAllBGradientMT(cylindricalZArr, cylindricalRArr,
+                                     computedGradientRPhi, computedGradientRR, computedGradientRZ, computedGradientZZ,
+                                     usedPrecision);
+            break;
+        default:
+            calculateAllBGradientST(cylindricalZArr, cylindricalRArr,
+                                    computedGradientRPhi, computedGradientRR, computedGradientRZ, computedGradientZZ,
+                                    usedPrecision);
     }
 }

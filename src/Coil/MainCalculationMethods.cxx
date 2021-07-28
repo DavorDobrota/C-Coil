@@ -148,8 +148,7 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
     return magneticPotential;
 }
 
-std::vector<double> Coil::calculateGradientTensor(double zAxis, double rPolar, double anglePolar,
-                                                  const PrecisionArguments &usedPrecision) const
+std::vector<double> Coil::calculateBGradient(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
 {
     double bufferValueRPhi = 0.0;
     double bufferValueRR = 0.0;
@@ -228,17 +227,12 @@ std::vector<double> Coil::calculateGradientTensor(double zAxis, double rPolar, d
             }
         }
     }
-    std::vector<double> gradientTensor;
+    std::vector<double> bufferValues;
 
-    gradientTensor.push_back(bufferValueRR * cos(anglePolar) * cos(anglePolar) + bufferValueRPhi * sin(anglePolar) * sin(anglePolar));
-    gradientTensor.push_back(0.5 * bufferValueRR * sin(2 * anglePolar) - 0.5 * bufferValueRPhi * sin(2 * anglePolar));
-    gradientTensor.push_back(bufferValueRZ * cos(anglePolar));
+    bufferValues.push_back(bufferValueRPhi);
+    bufferValues.push_back(bufferValueRR);
+    bufferValues.push_back(bufferValueRZ);
+    bufferValues.push_back(bufferValueZZ);
 
-    gradientTensor.push_back(bufferValueRR * sin(anglePolar) * sin(anglePolar) + bufferValueRPhi * cos(anglePolar) * cos(anglePolar));
-    gradientTensor.push_back(0.5 * bufferValueRR * sin(2 * anglePolar) - 0.5 * bufferValueRPhi * sin(2 * anglePolar));
-    gradientTensor.push_back(bufferValueRZ * sin(anglePolar));
-
-    gradientTensor.push_back(bufferValueRZ * cos(anglePolar));
-    gradientTensor.push_back(bufferValueRZ * sin(anglePolar));
-    gradientTensor.push_back(bufferValueZZ);
+    return bufferValues;
 }

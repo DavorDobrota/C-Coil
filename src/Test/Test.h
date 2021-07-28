@@ -34,5 +34,7 @@ void testCoilMutualInductanceGeneralRectangularAndFilament();
 
 void testCoilAmpereForceZAxis();
 void testCoilAmpereForceGeneralForZAxis();
+void testCoilGradientTensor();
+
 
 #endif //GENERAL_COIL_PROGRAM_TEST_H

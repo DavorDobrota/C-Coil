@@ -196,3 +196,49 @@ std::vector<double> Coil::computeEFieldVector(double cylindricalZ, double cylind
 {
     return computeEFieldVector(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
 }
+
+std::vector<double> Coil::computeBGradientTensor(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                                 const PrecisionArguments &usedPrecision) const
+{
+    std::vector<double> bufferValues = calculateBGradient(cylindricalZ, cylindricalR, usedPrecision);
+    double bufferValueRPhi = bufferValues[0];
+    double bufferValueRR = bufferValues[1];
+    double bufferValueRZ = bufferValues[2];
+    double bufferValueZZ = bufferValues[3];
+
+    if (cylindricalR / innerRadius < 1e-14)
+    {
+        bufferValues.push_back(bufferValueRPhi);
+        bufferValues.push_back(0.0);
+        bufferValues.push_back(0.0);
+
+        bufferValues.push_back(0.0);
+        bufferValues.push_back(bufferValueRPhi);
+        bufferValues.push_back(0.0);
+
+        bufferValues.push_back(0.0);
+        bufferValues.push_back(0.0);
+        bufferValues.push_back(bufferValues[3]);
+    }
+    else
+    {
+        bufferValues.push_back(bufferValueRR * cos(cylindricalPhi) * cos(cylindricalPhi) + bufferValueRPhi * sin(cylindricalPhi) * sin(cylindricalPhi));
+        bufferValues.push_back(0.5 * bufferValueRR * sin(2 * cylindricalPhi) - 0.5 * bufferValueRPhi * sin(2 * cylindricalPhi));
+        bufferValues.push_back(bufferValueRZ * cos(cylindricalPhi));
+
+        bufferValues.push_back(0.5 * bufferValueRR * sin(2 * cylindricalPhi) - 0.5 * bufferValueRPhi * sin(2 * cylindricalPhi));
+        bufferValues.push_back(bufferValueRR * sin(cylindricalPhi) * sin(cylindricalPhi) + bufferValueRPhi * cos(cylindricalPhi) * cos(cylindricalPhi));
+        bufferValues.push_back(bufferValueRZ * sin(cylindricalPhi));
+
+        bufferValues.push_back(bufferValueRZ * cos(cylindricalPhi));
+        bufferValues.push_back(bufferValueRZ * sin(cylindricalPhi));
+        bufferValues.push_back(bufferValueZZ);
+    }
+    return bufferValues;
+}
+
+std::vector<double> Coil::computeBGradientTensor(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
+
+{
+    return computeEFieldVector(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+}

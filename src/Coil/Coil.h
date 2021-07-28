@@ -230,6 +230,11 @@ class Coil
         [[nodiscard]] std::vector<double> computeEFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
                                                               const PrecisionArguments &usedPrecision) const;
 
+        [[nodiscard]] std::vector<double> computeBGradientTensor(double cylindricalZ, double cylindricalR,
+                                                                 double cylindricalPhi) const;
+        [[nodiscard]] std::vector<double> computeBGradientTensor(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                                                 const PrecisionArguments &usedPrecision) const;
+
         void computeAllBFieldX(const std::vector<double> &cylindricalZArr,
                                const std::vector<double> &cylindricalRArr,
                                const std::vector<double> &cylindricalPhiArr,
@@ -329,17 +334,17 @@ class Coil
                                    const PrecisionArguments &usedPrecision,
                                    ComputeMethod method = CPU_ST) const;
 
-    void computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedPotentialArr,
-                               ComputeMethod method = CPU_ST) const;
-    void computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedPotentialArr,
-                               const PrecisionArguments &usedPrecision,
-                               ComputeMethod method = CPU_ST) const;
+        void computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
+                                   const std::vector<double> &cylindricalRArr,
+                                   const std::vector<double> &cylindricalPhiArr,
+                                   std::vector<double> &computedPotentialArr,
+                                   ComputeMethod method = CPU_ST) const;
+        void computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
+                                   const std::vector<double> &cylindricalRArr,
+                                   const std::vector<double> &cylindricalPhiArr,
+                                   std::vector<double> &computedPotentialArr,
+                                   const PrecisionArguments &usedPrecision,
+                                   ComputeMethod method = CPU_ST) const;
 
         void computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                                      const std::vector<double> &cylindricalRArr,
@@ -429,6 +434,34 @@ class Coil
                                         std::vector<double> &computedFieldZArr,
                                         const PrecisionArguments &usedPrecision,
                                         ComputeMethod method = CPU_ST) const;
+
+        void computeAllBFieldGradientTensors(const std::vector<double> &cylindricalZArr,
+                                             const std::vector<double> &cylindricalRArr,
+                                             const std::vector<double> &cylindricalPhiArr,
+                                             std::vector<double> &computedGradientXX,
+                                             std::vector<double> &computedGradientXY,
+                                             std::vector<double> &computedGradientXZ,
+                                             std::vector<double> &computedGradientYX,
+                                             std::vector<double> &computedGradientYY,
+                                             std::vector<double> &computedGradientYZ,
+                                             std::vector<double> &computedGradientZX,
+                                             std::vector<double> &computedGradientZY,
+                                             std::vector<double> &computedGradientZZ,
+                                             ComputeMethod method = CPU_ST) const;
+        void computeAllBFieldGradientTensors(const std::vector<double> &cylindricalZArr,
+                                             const std::vector<double> &cylindricalRArr,
+                                             const std::vector<double> &cylindricalPhiArr,
+                                             std::vector<double> &computedGradientXX,
+                                             std::vector<double> &computedGradientXY,
+                                             std::vector<double> &computedGradientXZ,
+                                             std::vector<double> &computedGradientYX,
+                                             std::vector<double> &computedGradientYY,
+                                             std::vector<double> &computedGradientYZ,
+                                             std::vector<double> &computedGradientZX,
+                                             std::vector<double> &computedGradientZY,
+                                             std::vector<double> &computedGradientZZ,
+                                             const PrecisionArguments &usedPrecision,
+                                             ComputeMethod method = CPU_ST) const;
 
         static double computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
                                               PrecisionFactor precisionFactor = PrecisionFactor(),
@@ -541,9 +574,8 @@ class Coil
         [[nodiscard]] double calculateAPotential(double zAxis, double rPolar,
                                                  const PrecisionArguments &usedPrecision) const;
 
-        std::vector<double> calculateGradientTensor(double zAxis, double rPolar, double anglePolar,
-                                                    const PrecisionArguments &usedPrecision) const;
-
+        [[nodiscard]] std::vector<double> calculateBGradient(double zAxis, double rPolar,
+                                                             const PrecisionArguments &usedPrecision) const;
 
         void calculateAllBFieldST(const std::vector<double> &cylindricalZArr,
                                   const std::vector<double> &cylindricalRArr,
@@ -556,6 +588,14 @@ class Coil
                                       std::vector<double> &computedPotentialArr,
                                       const PrecisionArguments &usedPrecision) const;
 
+        void calculateAllBGradientST(const std::vector<double> &cylindricalZArr,
+                                     const std::vector<double> &cylindricalRArr,
+                                     std::vector<double> &computedGradientRPhi,
+                                     std::vector<double> &computedGradientRR,
+                                     std::vector<double> &computedGradientRZ,
+                                     std::vector<double> &computedGradientZZ,
+                                     const PrecisionArguments &usedPrecision) const;
+
         void calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
                                   const std::vector<double> &cylindricalRArr,
                                   std::vector<double> &computedFieldHArr,
@@ -566,6 +606,14 @@ class Coil
                                       const std::vector<double> &cylindricalRArr,
                                       std::vector<double> &computedPotentialArr,
                                       const PrecisionArguments &usedPrecision) const;
+
+        void calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
+                                     const std::vector<double> &cylindricalRArr,
+                                     std::vector<double> &computedGradientRPhi,
+                                     std::vector<double> &computedGradientRR,
+                                     std::vector<double> &computedGradientRZ,
+                                     std::vector<double> &computedGradientZZ,
+                                     const PrecisionArguments &usedPrecision) const;
 
         void calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
                                    const std::vector<double> &cylindricalRArr,
@@ -578,6 +626,14 @@ class Coil
                                        std::vector<double> &computedPotentialArr,
                                        const PrecisionArguments &usedPrecision) const;
 
+        void calculateAllBGradientGPU(const std::vector<double> &cylindricalZArr,
+                                      const std::vector<double> &cylindricalRArr,
+                                      std::vector<double> &computedGradientRPhi,
+                                      std::vector<double> &computedGradientRR,
+                                      std::vector<double> &computedGradientRZ,
+                                      std::vector<double> &computedGradientZZ,
+                                      const PrecisionArguments &usedPrecision) const;
+
         void calculateAllBFieldSwitch(const std::vector<double> &cylindricalZArr,
                                       const std::vector<double> &cylindricalRArr,
                                       std::vector<double> &computedFieldHArr,
@@ -586,8 +642,17 @@ class Coil
                                       ComputeMethod method) const;
 
         void calculateAllAPotentialSwitch(const std::vector<double> &cylindricalZArr,
+                                          const std::vector<double> &cylindricalRArr,
+                                          std::vector<double> &computedPotentialArr,
+                                          const PrecisionArguments &usedPrecision,
+                                          ComputeMethod method) const;
+
+        void calculateAllBGradientSwitch(const std::vector<double> &cylindricalZArr,
                                          const std::vector<double> &cylindricalRArr,
-                                         std::vector<double> &computedPotentialArr,
+                                         std::vector<double> &computedGradientRPhi,
+                                         std::vector<double> &computedGradientRR,
+                                         std::vector<double> &computedGradientRZ,
+                                         std::vector<double> &computedGradientZZ,
                                          const PrecisionArguments &usedPrecision,
                                          ComputeMethod method) const;
 

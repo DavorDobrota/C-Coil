@@ -6,8 +6,12 @@
 
 void testPerformanceCPU_ST()
 {
-    int nOp = 100000;
-    std::vector<double> temp1;
+    int nOp = 50000;
+
+    double temp1;
+    std::vector<double> temp2;
+    std::vector<double> temp3;
+
     Coil testCoil = Coil(0.03, 0.03, 0.12, 3600);
 
     PrecisionArguments precision = testCoil.getPrecisionSettings();
@@ -17,19 +21,24 @@ void testPerformanceCPU_ST()
                         precision.lengthBlockCount * precision.lengthIncrementCount *
                         precision.angularBlockCount * precision.angularIncrementCount;
 
-    clock_t begin_time1 = clock();
-    for (int i = 0; i < nOp; ++i){
-        temp1 = testCoil.computeBFieldVector(i*0.000001, 0.0, 0.0);
-    }
-    printf("combined B  : %.1f MInc/s\n", 1e-6/ (float(clock() - begin_time1) / CLOCKS_PER_SEC / numOperations));
 
-    double temp2;
-    clock_t begin_time2 = clock();
+    clock_t begin_time = clock();
     for (int i = 0; i < nOp; ++i){
-        temp2 = testCoil.computeAPotentialAbs(i*0.000001, 0.0);
+        temp1 = testCoil.computeAPotentialAbs(i*0.000001, 0.0);
     }
-    printf("potential A : %.1f MInc/s\n", 1e-6 / (float(clock() - begin_time2) / CLOCKS_PER_SEC / numOperations));
+    printf("potential A : %.1f MInc/s\n", 1e-6 / (float(clock() - begin_time) / CLOCKS_PER_SEC / numOperations));
 
+    begin_time = clock();
+    for (int i = 0; i < nOp; ++i){
+        temp2 = testCoil.computeBFieldVector(i*0.000001, 0.0, 0.0);
+    }
+    printf("combined B  : %.1f MInc/s\n", 1e-6 / (float(clock() - begin_time) / CLOCKS_PER_SEC / numOperations));
+
+    begin_time = clock();
+    for (int i = 0; i < nOp; ++i){
+        temp3 = testCoil.computeBGradientTensor(i*0.000001, 0.0, 0.0);
+    }
+    printf("gradient G  : %.1f MInc/s\n", 1e-6 / (float(clock() - begin_time) / CLOCKS_PER_SEC / numOperations));
 }
 
 void testPerformanceForComputeAll(int nOps, int nRepeats, int nThreads)

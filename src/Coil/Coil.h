@@ -5,7 +5,7 @@
 
 #include "ComputeMethod.h"
 
-#define PRINT_ENABLED 1
+#define PRINT_ENABLED 0
 
 const int precisionArraySize = 423;
 const int defaultThreadCount = 4;

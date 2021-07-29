@@ -45,47 +45,50 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Co
         {
             case (1):
                 secLengthArrayIndex = 0; secThicknessArrayIndex = 0;
+
                 if (primAngularStep / primLinearStep <= 1.0)
                     primLinearBlocks++;
                 else
                     primAngularBlocks++;
                 break;
-                case (2):
-                    secThicknessArrayIndex = 0;
-                    if (primAngularStep / sqrt(secLengthStep * primLinearStep) <= 1.0)
-                    {
-                        if (secLengthStep / primLinearStep >= 1.0)
-                            secLengthArrayIndex++;
-                        else
-                            primLinearBlocks++;
-                    }
+            case (2):
+                secThicknessArrayIndex = 0;
+
+                if (primAngularStep / sqrt(secLengthStep * primLinearStep) <= 1.0)
+                {
+                    if (secLengthStep / primLinearStep >= 1.0)
+                        secLengthArrayIndex++;
                     else
-                    {
-                        primAngularBlocks++;
-                    }
-                    break;
-                    case (3):
-                        secLengthArrayIndex = 0;
-                        if (primAngularStep / sqrt(secThicknessStep * primLinearStep) <= 1.0)
-                        {
-                            if (secThicknessStep / primLinearStep >= 1.0)
-                                secThicknessArrayIndex++;
-                            else
-                                primLinearBlocks++;
-                        }
-                        else
-                            primAngularBlocks++;
-                        break;
-                        default:
-                            if (primAngularStep / sqrt(secLinearStep * primLinearStep) <= 1.0)
-                            {
-                                if (secLinearStep / primLinearStep >= 1.0)
-                                { secLengthArrayIndex++; secThicknessArrayIndex++; }
-                                else
-                                    primLinearBlocks++;
-                            }
-                            else
-                                primAngularBlocks++;
+                        primLinearBlocks++;
+                }
+                else
+                {
+                    primAngularBlocks++;
+                }
+                break;
+            case (3):
+                secLengthArrayIndex = 0;
+
+                if (primAngularStep / sqrt(secThicknessStep * primLinearStep) <= 1.0)
+                {
+                    if (secThicknessStep / primLinearStep >= 1.0)
+                        secThicknessArrayIndex++;
+                    else
+                        primLinearBlocks++;
+                }
+                else
+                    primAngularBlocks++;
+                break;
+            default:
+                if (primAngularStep / sqrt(secLinearStep * primLinearStep) <= 1.0)
+                {
+                    if (secLinearStep / primLinearStep >= 1.0)
+                        { secLengthArrayIndex++; secThicknessArrayIndex++; }
+                    else
+                        primLinearBlocks++;
+                }
+                else
+                    primAngularBlocks++;
         }
         currentIncrements = primAngularBlocks * primAngularIncrements *
                 primLinearBlocks * primLinearIncrements * primLinearBlocks * primLinearIncrements *
@@ -103,13 +106,14 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Co
                                                  0,
                                                  incrementPrecisionCPUArray[secThicknessArrayIndex],
                                                  incrementPrecisionCPUArray[secLengthArrayIndex]);
-    if (PRINT_ENABLED)
+    #if PRINT_ENABLED
         printf("case %d - %d : %d %d %d | %d %d\n", caseIndex, currentIncrements,
                primLinearBlocks * primLinearIncrements,
                primLinearBlocks * primLinearIncrements,
                primAngularBlocks * primAngularIncrements,
                blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
                blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
+    #endif // PRINT_ENABLED
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
                                                                         }
@@ -169,57 +173,57 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Co
                 else
                     primLinearBlocks++;
                 break;
-                case (2):
-                    secThicknessArrayIndex = 0;
+            case (2):
+                secThicknessArrayIndex = 0;
 
-                    if ((primLinearStep * secLengthStep) / (primAngularStep * secAngularStep) <= 1.0)
-                    {
-                        if (secAngularStep / primAngularStep <= 1.0)
-                            primAngularBlocks++;
-                        else
-                            secAngularArrayIndex++;
-                    }
+                if ((primLinearStep * secLengthStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularBlocks++;
                     else
-                    {
-                        if (secLengthStep / primLinearStep <= 1.0)
-                            primLinearBlocks++;
-                        else
-                            secLengthArrayIndex++;
-                    }
-                    break;
-                    case (3):
-                        secLengthArrayIndex = 0;
+                        secAngularArrayIndex++;
+                }
+                else
+                {
+                    if (secLengthStep / primLinearStep <= 1.0)
+                        primLinearBlocks++;
+                    else
+                        secLengthArrayIndex++;
+                }
+                break;
+            case (3):
+                secLengthArrayIndex = 0;
 
-                        if ((primLinearStep * secThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
-                        {
-                            if (secAngularStep / primAngularStep <= 1.0)
-                                primAngularBlocks++;
-                            else
-                                secAngularArrayIndex++;
-                        }
-                        else
-                        {
-                            if (secThicknessStep / primLinearStep <= 1.0)
-                                primLinearBlocks++;
-                            else
-                                secThicknessArrayIndex++;
-                        }
-                        break;
-                        default:
-                            if ((primLinearStep * secLinearStep) / (primAngularStep * secAngularStep) <= 1.0)
-                            {
-                                if (secAngularStep / primAngularStep <= 1.0)
-                                    primAngularBlocks++;
-                                else
-                                    secAngularArrayIndex++;
-                            }
-                            else
-                            {
-                                if (secLinearStep / primLinearStep <= 1.0)
-                                    primLinearBlocks++;
-                                else
-                                { secLengthArrayIndex++; secThicknessArrayIndex++; }
-                            }
+                if ((primLinearStep * secThicknessStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularBlocks++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                {
+                    if (secThicknessStep / primLinearStep <= 1.0)
+                        primLinearBlocks++;
+                    else
+                        secThicknessArrayIndex++;
+                }
+                break;
+            default:
+                if ((primLinearStep * secLinearStep) / (primAngularStep * secAngularStep) <= 1.0)
+                {
+                    if (secAngularStep / primAngularStep <= 1.0)
+                        primAngularBlocks++;
+                    else
+                        secAngularArrayIndex++;
+                }
+                else
+                {
+                    if (secLinearStep / primLinearStep <= 1.0)
+                        primLinearBlocks++;
+                    else
+                        { secLengthArrayIndex++; secThicknessArrayIndex++; }
+                }
         }
         currentIncrements = primAngularBlocks * primAngularIncrements *
                 primLinearBlocks * primLinearIncrements * primLinearBlocks * primLinearIncrements *
@@ -238,7 +242,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Co
                                                  incrementPrecisionCPUArray[secAngularArrayIndex],
                                                  incrementPrecisionCPUArray[secThicknessArrayIndex],
                                                  incrementPrecisionCPUArray[secLengthArrayIndex]);
-    if (PRINT_ENABLED)
+    #if PRINT_ENABLED
         printf("case %d - %d : %d %d %d | %d %d %d\n", caseIndex, currentIncrements,
                primLinearBlocks * primLinearIncrements,
                primLinearBlocks * primLinearIncrements,
@@ -246,6 +250,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Co
                blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
                blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex],
                blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
+    #endif // PRINT_ENABLED
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
-                                                                                                                                                  }
+}

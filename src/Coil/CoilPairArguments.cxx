@@ -10,8 +10,8 @@ CoilPairArguments::CoilPairArguments() : CoilPairArguments(PrecisionArguments(),
 CoilPairArguments::CoilPairArguments(const PrecisionArguments &primaryPrecision,
                                      const PrecisionArguments &secondaryPrecision)
 {
-    CoilPairArguments::primaryPrecision = primaryPrecision;
-    CoilPairArguments::secondaryPrecision = secondaryPrecision;
+    this->primaryPrecision = primaryPrecision;
+    this->secondaryPrecision = secondaryPrecision;
 }
 
 void CoilPairArguments::getGeometryCaseAndIncrementsSingleCoil(const Coil &coil, PrecisionFactor precisionFactor,
@@ -77,7 +77,7 @@ void CoilPairArguments::getGeometryCaseAndIncrementsCoilPair(const Coil &primary
 CoilPairArguments CoilPairArguments::getAppropriateCoilPairArguments(const Coil &primary, const Coil &secondary,
                                                                      PrecisionFactor precisionFactor,
                                                                      ComputeMethod method, bool isGeneral)
-                                                                     {
+{
     if (!isGeneral)
     {
         if (method == GPU)
@@ -92,7 +92,7 @@ CoilPairArguments CoilPairArguments::getAppropriateCoilPairArguments(const Coil 
         else
             return CoilPairArguments::calculateCoilPairArgumentsGeneralCPU(primary, secondary, precisionFactor);
     }
-                                                                     }
+}
 
 CoilPairArguments CoilPairArguments::getSelfInductanceArguments(const Coil &coil, PrecisionFactor precisionFactor)
 {
@@ -184,13 +184,14 @@ CoilPairArguments CoilPairArguments::getSelfInductanceArguments(const Coil &coil
                                                  0,
                                                  incrementPrecisionCPUArray[thicknessArrayIndex],
                                                  incrementPrecisionCPUArray[lengthArrayIndex]);
-    if (PRINT_ENABLED)
+    #if PRINT_ENABLED
         printf("case %d - %d : %d %d %d | %d %d\n", caseIndex, currentIncrements,
                blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex],
                blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex],
                blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex],
                blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex],
                blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex]);
+    #endif // PRINT_ENABLED
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }

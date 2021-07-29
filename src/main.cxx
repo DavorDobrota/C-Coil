@@ -9,10 +9,5 @@ extern thread_pool tp;
 int main()
 {
 
-//    testCoilSelfInductance();
-
-    testCoilAmpereForceZAxis();
-    testCoilAmpereForceGeneralForZAxis();
-
     return 0;
 }

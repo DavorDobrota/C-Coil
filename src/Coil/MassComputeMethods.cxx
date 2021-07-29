@@ -495,12 +495,12 @@ void Coil::computeAllBGradientTensors(const std::vector<double> &cylindricalZArr
         {
             if (cylindricalRArr[i] / innerRadius < 1e-14)
             {
-                computedGradientXX.push_back(gradientRPhi[i]);
+                computedGradientXX.push_back(gradientRR[i]);
                 computedGradientXY.push_back(0.0);
                 computedGradientXZ.push_back(0.0);
 
                 computedGradientYX.push_back(0.0);
-                computedGradientYY.push_back(gradientRPhi[i]);
+                computedGradientYY.push_back(gradientRR[i]);
                 computedGradientYZ.push_back(0.0);
 
                 computedGradientZX.push_back(0.0);

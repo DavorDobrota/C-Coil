@@ -2,6 +2,7 @@
 #include "LegendreMatrix.h"
 
 #include <cmath>
+#include <cstdio>
 
 namespace
 {
@@ -192,7 +193,7 @@ std::vector<double> Coil::calculateBGradient(double zAxis, double rPolar, const 
                     double tempConstC = (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
                     double tempConstD = rPolar * incrementPositionT;
                     double tempConstE = incrementPositionT * (incrementPositionL + zAxis);
-                    double tempConstF = 1 / incrementPositionT;
+                    double tempConstF = 1 / rPolar;
 
                     double tempConstG = 2 * tempConstA + 2 * tempConstB - tempConstC;
                     double tempConstH = tempConstA + tempConstB + tempConstC;
@@ -218,9 +219,10 @@ std::vector<double> Coil::calculateBGradient(double zAxis, double rPolar, const 
                             double tempConstY = tempConstI * incrementWeightFi / tempConstK;
 
                             bufferValueRPhi += tempConstX * (tempConstF * tempConstE * cosinePhi);
-                            bufferValueRR += tempConstY * (3 * tempConstE * (rPolar - incrementPositionT * cosinePhi)) * cosinePhi;
-                            bufferValueZZ += tempConstY * (3 * tempConstE * (incrementPositionT - rPolar * cosinePhi));
-                            bufferValueRZ += tempConstY * (incrementPositionT * tempConstG * cosinePhi - 3 * tempConstA * rPolar);
+                            bufferValueRR += tempConstY * (-3 * tempConstE * (rPolar - incrementPositionT * cosinePhi)) * cosinePhi;
+                            bufferValueZZ += tempConstY * (-3 * tempConstE * (incrementPositionT - rPolar * cosinePhi));
+                            bufferValueRZ += tempConstY *
+                                    (incrementPositionT * (tempConstG - tempConstD * cosinePhi) * cosinePhi -3 * tempConstA * rPolar);
                         }
                     }
                 }
@@ -228,6 +230,8 @@ std::vector<double> Coil::calculateBGradient(double zAxis, double rPolar, const 
         }
     }
     std::vector<double> bufferValues;
+
+//    printf("%.18f %.18f %.18f %.18f\n", bufferValueRPhi, bufferValueRR, bufferValueRZ, bufferValueZZ);
 
     bufferValues.push_back(bufferValueRPhi);
     bufferValues.push_back(bufferValueRR);

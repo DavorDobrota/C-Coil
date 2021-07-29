@@ -206,39 +206,44 @@ std::vector<double> Coil::computeBGradientTensor(double cylindricalZ, double cyl
     double bufferValueRZ = bufferValues[2];
     double bufferValueZZ = bufferValues[3];
 
+    std::vector<double> outputValues;
+
     if (cylindricalR / innerRadius < 1e-14)
     {
-        bufferValues.push_back(bufferValueRPhi);
-        bufferValues.push_back(0.0);
-        bufferValues.push_back(0.0);
+        outputValues.push_back(bufferValueRR);
+        outputValues.push_back(0.0);
+        outputValues.push_back(0.0);
 
-        bufferValues.push_back(0.0);
-        bufferValues.push_back(bufferValueRPhi);
-        bufferValues.push_back(0.0);
+        outputValues.push_back(0.0);
+        outputValues.push_back(bufferValueRR);
+        outputValues.push_back(0.0);
 
-        bufferValues.push_back(0.0);
-        bufferValues.push_back(0.0);
-        bufferValues.push_back(bufferValues[3]);
+        outputValues.push_back(0.0);
+        outputValues.push_back(0.0);
+        outputValues.push_back(bufferValueZZ);
     }
     else
     {
-        bufferValues.push_back(bufferValueRR * cos(cylindricalPhi) * cos(cylindricalPhi) + bufferValueRPhi * sin(cylindricalPhi) * sin(cylindricalPhi));
-        bufferValues.push_back(0.5 * sin(2 * cylindricalPhi) * (bufferValueRR - cylindricalPhi));
-        bufferValues.push_back(bufferValueRZ * cos(cylindricalPhi));
+        double cosPhi = cos(cylindricalPhi);
+        double sinPhi = sin(cylindricalPhi);
 
-        bufferValues.push_back(0.5 * sin(2 * cylindricalPhi) * (bufferValueRR - cylindricalPhi));
-        bufferValues.push_back(bufferValueRR * sin(cylindricalPhi) * sin(cylindricalPhi) + bufferValueRPhi * cos(cylindricalPhi) * cos(cylindricalPhi));
-        bufferValues.push_back(bufferValueRZ * sin(cylindricalPhi));
+        outputValues.push_back(bufferValueRR * cosPhi * cosPhi + bufferValueRPhi * sinPhi* sinPhi);
+        outputValues.push_back(0.5 * sin(2 * cylindricalPhi) * (bufferValueRR - bufferValueRPhi));
+        outputValues.push_back(bufferValueRZ * cos(cylindricalPhi));
 
-        bufferValues.push_back(bufferValueRZ * cos(cylindricalPhi));
-        bufferValues.push_back(bufferValueRZ * sin(cylindricalPhi));
-        bufferValues.push_back(bufferValueZZ);
+        outputValues.push_back(0.5 * sin(2 * cylindricalPhi) * (bufferValueRR - bufferValueRPhi));
+        outputValues.push_back(bufferValueRR * sinPhi * sinPhi + bufferValueRPhi * cosPhi * cosPhi);
+        outputValues.push_back(bufferValueRZ * sin(cylindricalPhi));
+
+        outputValues.push_back(bufferValueRZ * cosPhi);
+        outputValues.push_back(bufferValueRZ * sinPhi);
+        outputValues.push_back(bufferValueZZ);
     }
-    return bufferValues;
+    return outputValues;
 }
 
 std::vector<double> Coil::computeBGradientTensor(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 
 {
-    return computeEFieldVector(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+    return computeBGradientTensor(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
 }

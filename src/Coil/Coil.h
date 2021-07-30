@@ -5,6 +5,8 @@
 
 #include "ComputeMethod.h"
 
+#define PRINT_ENABLED 0
+
 const int precisionArraySize = 423;
 const int defaultThreadCount = 4;
 
@@ -12,6 +14,7 @@ const extern int blockPrecisionCPUArray[precisionArraySize];
 const extern int incrementPrecisionCPUArray[precisionArraySize];
 
 class Coil;
+
 
 struct PrecisionFactor
 {
@@ -49,19 +52,11 @@ struct CoilPairArguments
     PrecisionArguments primaryPrecision;
     PrecisionArguments secondaryPrecision;
 
-    static CoilPairArguments getMInductanceArgumentsZCPU(const Coil &primary, const Coil &secondary,
-                                                         PrecisionFactor precisionFactor);
-
-    static CoilPairArguments getMInductanceArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
-                                                               PrecisionFactor precisionFactor);
-
-    static CoilPairArguments getMInductanceArgumentsZGPU(const Coil &primary, const Coil &secondary,
-                                                         PrecisionFactor precisionFactor);
-
-    static CoilPairArguments getMInductanceArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
-                                                               PrecisionFactor precisionFactor);
-
     static CoilPairArguments getSelfInductanceArguments(const Coil &coil, PrecisionFactor precisionFactor);
+
+    static CoilPairArguments getAppropriateCoilPairArguments(const Coil &primary, const Coil &secondary,
+                                                             PrecisionFactor precisionFactor,
+                                                             ComputeMethod method = CPU_ST, bool isGeneral = true);
 
     private:
         static void getGeometryCaseAndIncrementsSingleCoil(const Coil &coil, PrecisionFactor precisionFactor,
@@ -70,6 +65,18 @@ struct CoilPairArguments
         static void getGeometryCaseAndIncrementsCoilPair(const Coil &primary, const Coil &secondary,
                                                          PrecisionFactor precisionFactor,
                                                          int &caseIndex, int &totalIncrements);
+
+        static CoilPairArguments calculateCoilPairArgumentsZAxisCPU(const Coil &primary, const Coil &secondary,
+                                                                    PrecisionFactor precisionFactor);
+
+        static CoilPairArguments calculateCoilPairArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
+                                                                      PrecisionFactor precisionFactor);
+
+        static CoilPairArguments calculateCoilPairArgumentsZAxisGPU(const Coil &primary, const Coil &secondary,
+                                                                    PrecisionFactor precisionFactor);
+
+        static CoilPairArguments calculateCoilPairArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
+                                                                      PrecisionFactor precisionFactor);
 };
 
 class Coil
@@ -81,24 +88,24 @@ class Coil
         const double length;
         const int numOfTurns;
 
-        double currentDensity;
-        double current;
+        double currentDensity{};
+        double current{};
 
-        double wireResistivity;
-        bool isSineDriven;
-        double sineFrequency;
+        double wireResistivity{};
+        bool isSineDriven{};
+        double sineFrequency{};
 
-        double magneticMoment;
-        double averageWireThickness;
+        double magneticMoment{};
+        double averageWireThickness{};
 
-        double resistance;
-        double selfInductance;
-        double reactance;
-        double impedance;
+        double resistance{};
+        double selfInductance{};
+        double reactance{};
+        double impedance{};
 
-        int threadCount;
+        int threadCount{};
 
-        PrecisionArguments precisionSettings;
+        PrecisionArguments defaultPrecision;
 
     public:
         Coil();
@@ -138,13 +145,13 @@ class Coil
         [[nodiscard]] bool isSineDriven1() const;
         [[nodiscard]] double getSineFrequency() const;
 
-        [[nodiscard]] double getMagneticMoment() const;
+        [[nodiscard]] double getMagneticMoment();
         [[nodiscard]] double getAverageWireThickness() const;
 
-        [[nodiscard]] double getResistance() const;
         [[nodiscard]] double getSelfInductance() const;
-        [[nodiscard]] double getReactance() const;
-        [[nodiscard]] double getImpedance() const;
+        [[nodiscard]] double getResistance();
+        [[nodiscard]] double getReactance();
+        [[nodiscard]] double getImpedance();
 
         [[nodiscard]] const PrecisionArguments &getPrecisionSettings() const;
         [[nodiscard]] int getThreadCount() const;
@@ -154,7 +161,10 @@ class Coil
         void setWireResistivity(double wireResistivity);
         void setSineFrequency(double sineFrequency);
         void setPrecisionSettings(const PrecisionArguments &precisionSettings);
+
         void setThreadCount(int threadCount);
+
+        void setSelfInductance(double selfInductance);
 
         [[nodiscard]] double computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
         [[nodiscard]] double computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi,
@@ -223,6 +233,11 @@ class Coil
         [[nodiscard]] std::vector<double> computeEFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
                                                               const PrecisionArguments &usedPrecision) const;
 
+        [[nodiscard]] std::vector<double> computeBGradientTensor(double cylindricalZ, double cylindricalR,
+                                                                 double cylindricalPhi) const;
+        [[nodiscard]] std::vector<double> computeBGradientTensor(double cylindricalZ, double cylindricalR, double cylindricalPhi,
+                                                                 const PrecisionArguments &usedPrecision) const;
+
         void computeAllBFieldX(const std::vector<double> &cylindricalZArr,
                                const std::vector<double> &cylindricalRArr,
                                const std::vector<double> &cylindricalPhiArr,
@@ -249,12 +264,10 @@ class Coil
 
         void computeAllBFieldH(const std::vector<double> &cylindricalZArr,
                                const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
                                std::vector<double> &computedFieldArr,
                                ComputeMethod method = CPU_ST) const;
         void computeAllBFieldH(const std::vector<double> &cylindricalZArr,
                                const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
                                std::vector<double> &computedFieldArr,
                                const PrecisionArguments &usedPrecision,
                                ComputeMethod method = CPU_ST) const;
@@ -324,17 +337,17 @@ class Coil
                                    const PrecisionArguments &usedPrecision,
                                    ComputeMethod method = CPU_ST) const;
 
-    void computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedPotentialArr,
-                               ComputeMethod method = CPU_ST) const;
-    void computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedPotentialArr,
-                               const PrecisionArguments &usedPrecision,
-                               ComputeMethod method = CPU_ST) const;
+        void computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
+                                   const std::vector<double> &cylindricalRArr,
+                                   const std::vector<double> &cylindricalPhiArr,
+                                   std::vector<double> &computedPotentialArr,
+                                   ComputeMethod method = CPU_ST) const;
+        void computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
+                                   const std::vector<double> &cylindricalRArr,
+                                   const std::vector<double> &cylindricalPhiArr,
+                                   std::vector<double> &computedPotentialArr,
+                                   const PrecisionArguments &usedPrecision,
+                                   ComputeMethod method = CPU_ST) const;
 
         void computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                                      const std::vector<double> &cylindricalRArr,
@@ -425,6 +438,34 @@ class Coil
                                         const PrecisionArguments &usedPrecision,
                                         ComputeMethod method = CPU_ST) const;
 
+        void computeAllBGradientTensors(const std::vector<double> &cylindricalZArr,
+                                        const std::vector<double> &cylindricalRArr,
+                                        const std::vector<double> &cylindricalPhiArr,
+                                        std::vector<double> &computedGradientXX,
+                                        std::vector<double> &computedGradientXY,
+                                        std::vector<double> &computedGradientXZ,
+                                        std::vector<double> &computedGradientYX,
+                                        std::vector<double> &computedGradientYY,
+                                        std::vector<double> &computedGradientYZ,
+                                        std::vector<double> &computedGradientZX,
+                                        std::vector<double> &computedGradientZY,
+                                        std::vector<double> &computedGradientZZ,
+                                        ComputeMethod method = CPU_ST) const;
+        void computeAllBGradientTensors(const std::vector<double> &cylindricalZArr,
+                                        const std::vector<double> &cylindricalRArr,
+                                        const std::vector<double> &cylindricalPhiArr,
+                                        std::vector<double> &computedGradientXX,
+                                        std::vector<double> &computedGradientXY,
+                                        std::vector<double> &computedGradientXZ,
+                                        std::vector<double> &computedGradientYX,
+                                        std::vector<double> &computedGradientYY,
+                                        std::vector<double> &computedGradientYZ,
+                                        std::vector<double> &computedGradientZX,
+                                        std::vector<double> &computedGradientZY,
+                                        std::vector<double> &computedGradientZZ,
+                                        const PrecisionArguments &usedPrecision,
+                                        ComputeMethod method = CPU_ST) const;
+
         static double computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
                                               PrecisionFactor precisionFactor = PrecisionFactor(),
                                               ComputeMethod method = CPU_ST);
@@ -491,6 +532,38 @@ class Coil
 
         double computeAndSetApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method = CPU_ST);
 
+        static double computeAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                              PrecisionFactor precisionFactor = PrecisionFactor(),
+                                              ComputeMethod method = CPU_ST);
+        static double computeAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                              CoilPairArguments inductanceArguments, ComputeMethod method = CPU_ST);
+
+        static std::vector<double> computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
+                                                             double zDisplacement, double rDisplacement,
+                                                             PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                             ComputeMethod method = CPU_ST);
+        static std::vector<double> computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
+                                                             double zDisplacement, double rDisplacement,
+                                                             CoilPairArguments forceArguments, ComputeMethod method = CPU_ST);
+
+        static std::vector<double> computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
+                                                             double zDisplacement, double rDisplacement, double alphaAngle,
+                                                             PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                             ComputeMethod method = CPU_ST);
+        static std::vector<double> computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
+                                                             double zDisplacement, double rDisplacement, double alphaAngle,
+                                                             CoilPairArguments forceArguments, ComputeMethod method = CPU_ST);
+
+        static std::vector<double> computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
+                                                             double zDisplacement, double rDisplacement,
+                                                             double alphaAngle, double betaAngle,
+                                                             PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                             ComputeMethod method = CPU_ST);
+        static std::vector<double> computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
+                                                             double zDisplacement, double rDisplacement,
+                                                             double alphaAngle, double betaAngle,
+                                                             CoilPairArguments forceArguments, ComputeMethod method = CPU_ST);
+
     private:
         void calculateMagneticMoment();
         void calculateAverageWireThickness();
@@ -499,10 +572,13 @@ class Coil
         void calculateImpedance();
 
         [[nodiscard]] std::pair<double, double> calculateBField(double zAxis, double rPolar,
-                                                                const PrecisionArguments &precisionSettings) const;
+                                                                const PrecisionArguments &usedPrecision) const;
 
         [[nodiscard]] double calculateAPotential(double zAxis, double rPolar,
-                                                 const PrecisionArguments &precisionSettings) const;
+                                                 const PrecisionArguments &usedPrecision) const;
+
+        [[nodiscard]] std::vector<double> calculateBGradient(double zAxis, double rPolar,
+                                                             const PrecisionArguments &usedPrecision) const;
 
         void calculateAllBFieldST(const std::vector<double> &cylindricalZArr,
                                   const std::vector<double> &cylindricalRArr,
@@ -515,6 +591,14 @@ class Coil
                                       std::vector<double> &computedPotentialArr,
                                       const PrecisionArguments &usedPrecision) const;
 
+        void calculateAllBGradientST(const std::vector<double> &cylindricalZArr,
+                                     const std::vector<double> &cylindricalRArr,
+                                     std::vector<double> &computedGradientRPhi,
+                                     std::vector<double> &computedGradientRR,
+                                     std::vector<double> &computedGradientRZ,
+                                     std::vector<double> &computedGradientZZ,
+                                     const PrecisionArguments &usedPrecision) const;
+
         void calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
                                   const std::vector<double> &cylindricalRArr,
                                   std::vector<double> &computedFieldHArr,
@@ -525,6 +609,14 @@ class Coil
                                       const std::vector<double> &cylindricalRArr,
                                       std::vector<double> &computedPotentialArr,
                                       const PrecisionArguments &usedPrecision) const;
+
+        void calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
+                                     const std::vector<double> &cylindricalRArr,
+                                     std::vector<double> &computedGradientRPhi,
+                                     std::vector<double> &computedGradientRR,
+                                     std::vector<double> &computedGradientRZ,
+                                     std::vector<double> &computedGradientZZ,
+                                     const PrecisionArguments &usedPrecision) const;
 
         void calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
                                    const std::vector<double> &cylindricalRArr,
@@ -537,6 +629,14 @@ class Coil
                                        std::vector<double> &computedPotentialArr,
                                        const PrecisionArguments &usedPrecision) const;
 
+        void calculateAllBGradientGPU(const std::vector<double> &cylindricalZArr,
+                                      const std::vector<double> &cylindricalRArr,
+                                      std::vector<double> &computedGradientRPhi,
+                                      std::vector<double> &computedGradientRR,
+                                      std::vector<double> &computedGradientRZ,
+                                      std::vector<double> &computedGradientZZ,
+                                      const PrecisionArguments &usedPrecision) const;
+
         void calculateAllBFieldSwitch(const std::vector<double> &cylindricalZArr,
                                       const std::vector<double> &cylindricalRArr,
                                       std::vector<double> &computedFieldHArr,
@@ -545,8 +645,17 @@ class Coil
                                       ComputeMethod method) const;
 
         void calculateAllAPotentialSwitch(const std::vector<double> &cylindricalZArr,
+                                          const std::vector<double> &cylindricalRArr,
+                                          std::vector<double> &computedPotentialArr,
+                                          const PrecisionArguments &usedPrecision,
+                                          ComputeMethod method) const;
+
+        void calculateAllBGradientSwitch(const std::vector<double> &cylindricalZArr,
                                          const std::vector<double> &cylindricalRArr,
-                                         std::vector<double> &computedPotentialArr,
+                                         std::vector<double> &computedGradientRPhi,
+                                         std::vector<double> &computedGradientRR,
+                                         std::vector<double> &computedGradientRZ,
+                                         std::vector<double> &computedGradientZZ,
                                          const PrecisionArguments &usedPrecision,
                                          ComputeMethod method) const;
 
@@ -559,10 +668,6 @@ class Coil
                                                    std::vector<double> &ringYTangent,
                                                    std::vector<double> &ringZTangent);
 
-        static CoilPairArguments calculateAppropriateMInductanceArguments(const Coil &primary, const Coil &secondary,
-                                                                          PrecisionFactor precisionFactor,
-                                                                          ComputeMethod method, bool isGeneral = true);
-
         static double calculateMutualInductanceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                      CoilPairArguments inductanceArguments,
                                                      ComputeMethod method = CPU_ST);
@@ -573,9 +678,18 @@ class Coil
                                                        CoilPairArguments inductanceArguments,
                                                        ComputeMethod method = CPU_ST);
 
-        void calculateSelfInductance(PrecisionFactor precisionFactor);
+        void calculateAndSetSelfInductance(PrecisionFactor precisionFactor);
 
-        void calculateApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method = CPU_ST);
+        void calculateAndSetApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method = CPU_ST);
+
+        static double calculateAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                                CoilPairArguments forceArguments,
+                                                ComputeMethod method = CPU_ST);
+
+        static std::vector<double> calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
+                                                               double zDisplacement, double rDisplacement,
+                                                               double alphaAngle, double betaAngle,
+                                                               CoilPairArguments forceArguments, ComputeMethod method);
 };
 
 #endif //GENERAL_COIL_PROGRAM_COIL_H

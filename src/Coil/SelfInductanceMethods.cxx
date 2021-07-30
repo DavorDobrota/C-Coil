@@ -8,7 +8,7 @@ namespace
     const double g_MiReduced = 0.0000001;
 }
 
-void Coil::calculateSelfInductance(PrecisionFactor precisionFactor)
+void Coil::calculateAndSetSelfInductance(PrecisionFactor precisionFactor)
 {
     // TODO - new solution applied: still convergence is slow and not entirely tested, an approximation, future improvement
     double inductance = 0.0;
@@ -110,7 +110,7 @@ void Coil::calculateSelfInductance(PrecisionFactor precisionFactor)
     setSelfInductance(inductance);
 }
 
-void Coil::calculateApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method)
+void Coil::calculateAndSetApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method)
 {
     // this is a simplified solution but produces a significant error because of the inherent divergent integral
     // however it can be accelerated beyond single thread and thus may prove useful in some instances
@@ -121,12 +121,12 @@ void Coil::calculateApproximateSelfInductance(PrecisionFactor precisionFactor, C
 
 double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor)
 {
-    calculateSelfInductance(precisionFactor);
+    calculateAndSetSelfInductance(precisionFactor);
     return selfInductance;
 }
 
 double Coil::computeAndSetApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method)
 {
-    calculateApproximateSelfInductance(precisionFactor, method);
+    calculateAndSetApproximateSelfInductance(precisionFactor, method);
     return selfInductance;
 }

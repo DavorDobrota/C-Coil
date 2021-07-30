@@ -678,9 +678,9 @@ class Coil
                                                        CoilPairArguments inductanceArguments,
                                                        ComputeMethod method = CPU_ST);
 
-        void calculateSelfInductance(PrecisionFactor precisionFactor);
+        void calculateAndSetSelfInductance(PrecisionFactor precisionFactor);
 
-        void calculateApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method = CPU_ST);
+        void calculateAndSetApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method = CPU_ST);
 
         static double calculateAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                 CoilPairArguments forceArguments,

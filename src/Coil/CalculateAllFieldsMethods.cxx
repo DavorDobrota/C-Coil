@@ -115,13 +115,39 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
 
 void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
                                    const std::vector<double> &cylindricalRArr,
-                                   std::vector<double> &computedGradientRPhi,
-                                   std::vector<double> &computedGradientRR,
-                                   std::vector<double> &computedGradientRZ,
-                                   std::vector<double> &computedGradientZZ,
+                                   std::vector<double> &computedGradientRPhiArr,
+                                   std::vector<double> &computedGradientRRArr,
+                                   std::vector<double> &computedGradientRZArr,
+                                   std::vector<double> &computedGradientZZArr,
                                    const PrecisionArguments &usedPrecision) const
 {
-    // TODO - implement MT method like its siblings
+    computedGradientRPhiArr.resize(cylindricalZArr.size());
+    computedGradientRRArr.resize(cylindricalZArr.size());
+    computedGradientRZArr.resize(cylindricalZArr.size());
+    computedGradientZZArr.resize(cylindricalZArr.size());
+
+    auto calcThread = [this, &usedPrecision] (
+        int idx, double cylindricalZ, double cylindricalR, double computedGradientRPhi, double computedGradientRR,
+        double computedGradientRZ, double computedGradientZZ
+    )
+    {
+        auto result = calculateBGradient(cylindricalZ, cylindricalR, usedPrecision);
+        computedGradientRPhi = result[0];
+        computedGradientRR = result[1];
+        computedGradientRZ = result[2];
+        computedGradientZZ = result[3];
+    };
+
+    for(int i = 0; i < cylindricalZArr.size(); i++)
+    {
+        g_threadPool.push (
+            calcThread, cylindricalZArr[i], cylindricalRArr[i],
+            std::ref(computedGradientRPhiArr[i]), std::ref(computedGradientRRArr[i]),
+            std::ref(computedGradientRZArr[i]), std::ref(computedGradientZZArr[i])
+        );
+    }
+
+    while(g_threadPool.n_idle() < threadCount);
 }
 
 void Coil::calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,

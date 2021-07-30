@@ -145,13 +145,13 @@ class Coil
         [[nodiscard]] bool isSineDriven1() const;
         [[nodiscard]] double getSineFrequency() const;
 
-        [[nodiscard]] double getMagneticMoment() const;
+        [[nodiscard]] double getMagneticMoment();
         [[nodiscard]] double getAverageWireThickness() const;
 
-        [[nodiscard]] double getResistance() const;
         [[nodiscard]] double getSelfInductance() const;
-        [[nodiscard]] double getReactance() const;
-        [[nodiscard]] double getImpedance() const;
+        [[nodiscard]] double getResistance();
+        [[nodiscard]] double getReactance();
+        [[nodiscard]] double getImpedance();
 
         [[nodiscard]] const PrecisionArguments &getPrecisionSettings() const;
         [[nodiscard]] int getThreadCount() const;

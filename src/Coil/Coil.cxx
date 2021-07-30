@@ -92,17 +92,33 @@ bool Coil::isSineDriven1() const { return isSineDriven; }
 
 double Coil::getSineFrequency() const { return sineFrequency; }
 
-double Coil::getSelfInductance() const { return selfInductance; }
-
-double Coil::getMagneticMoment() const { return magneticMoment; }
+double Coil::getMagneticMoment()
+{
+    calculateMagneticMoment();
+    return magneticMoment;
+}
 
 double Coil::getWireResistivity() const { return wireResistivity; }
 
-double Coil::getResistance() const { return resistance; }
+double Coil::getSelfInductance() const { return selfInductance; }
 
-double Coil::getReactance() const { return reactance; }
+double Coil::getResistance()
+{
+    calculateResistance();
+    return resistance;
+}
 
-double Coil::getImpedance() const { return impedance; }
+double Coil::getReactance()
+{
+    calculateReactance();
+    return reactance;
+}
+
+double Coil::getImpedance()
+{
+    calculateImpedance();
+    return impedance;
+}
 
 const PrecisionArguments &Coil::getPrecisionSettings() const { return defaultPrecision; }
 
@@ -113,20 +129,17 @@ void Coil::setCurrentDensity(double currentDensity)
 {
     this->currentDensity = currentDensity;
     current = currentDensity * length * thickness / numOfTurns;
-    calculateMagneticMoment();
 }
 
 void Coil::setCurrent(double current)
 {
     this->current = current;
     currentDensity = current * numOfTurns / (length * thickness);
-    calculateMagneticMoment();
 }
 
 void Coil::setWireResistivity(double wireResistivity)
 {
     this->wireResistivity = wireResistivity;
-    calculateImpedance();
 }
 
 void Coil::setSineFrequency(double sineFrequency)
@@ -134,12 +147,12 @@ void Coil::setSineFrequency(double sineFrequency)
     if (sineFrequency > 0.0)
     {
         isSineDriven = true;
-        Coil::sineFrequency = sineFrequency;
+        this->sineFrequency = sineFrequency;
     }
     else
     {
         isSineDriven = false;
-        Coil::sineFrequency = 0.0;
+        this->sineFrequency = 0.0;
     }
     calculateImpedance();
 }
@@ -152,7 +165,6 @@ void Coil::setPrecisionSettings(const PrecisionArguments &precisionSettings)
 void Coil::setSelfInductance(double selfInductance)
 {
     this->selfInductance = selfInductance;
-    calculateImpedance();
 }
 
 void Coil::calculateMagneticMoment()

@@ -482,13 +482,25 @@ void Coil::computeAllBGradientTensors(const std::vector<double> &cylindricalZArr
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
-        std::vector<double> gradientRPhi(cylindricalZArr.size());
-        std::vector<double> gradientRR(cylindricalZArr.size());
-        std::vector<double> gradientRZ(cylindricalZArr.size());
-        std::vector<double> gradientZZ(cylindricalZArr.size());
+        std::vector<double> gradientRPhi;
+        std::vector<double> gradientRR;
+        std::vector<double> gradientRZ;
+        std::vector<double> gradientZZ;
 
         calculateAllBGradientSwitch(cylindricalZArr, cylindricalRArr,
                                     gradientRPhi, gradientRR, gradientRZ, gradientZZ, usedPrecision, method);
+
+        computedGradientXX.resize(gradientRPhi.size());
+        computedGradientXY.resize(gradientRPhi.size());
+        computedGradientXZ.resize(gradientRPhi.size());
+
+        computedGradientYX.resize(gradientRPhi.size());
+        computedGradientYY.resize(gradientRPhi.size());
+        computedGradientYZ.resize(gradientRPhi.size());
+
+        computedGradientZX.resize(gradientRPhi.size());
+        computedGradientZY.resize(gradientRPhi.size());
+        computedGradientZZ.resize(gradientRPhi.size());
 
         for (int i = 0; i < gradientRPhi.size(); ++i)
         {

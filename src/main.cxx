@@ -9,5 +9,8 @@ extern thread_pool tp;
 int main()
 {
 
+//    testPerformanceCPU_ST();
+    testPerformanceForComputeAll(20000, 10, 32);
+
     return 0;
 }

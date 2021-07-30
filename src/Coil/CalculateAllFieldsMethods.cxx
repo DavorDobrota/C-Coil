@@ -60,7 +60,6 @@ void Coil::calculateAllBGradientST(const std::vector<double> &cylindricalZArr,
     for (int i = 0; i < cylindricalZArr.size(); ++i)
     {
         std::vector<double> gradient = calculateBGradient(cylindricalZArr[i], cylindricalRArr[i], usedPrecision);
-
         computedGradientRPhi[i] = gradient[0];
         computedGradientRR[i] = gradient[1];
         computedGradientRZ[i] = gradient[2];

@@ -8,7 +8,7 @@ void testNewCoilParameters();
 void testMethodPrecisionCompareCPUvsGPU();
 void testCoilMutualInductanceForSpecialCase();
 
-void testPerformanceCPU_ST();
+void testPerformanceCPU_ST(int nOps = 50'000);
 void testPerformanceForComputeAll(int nOps = 80'000, int nRepeats = 1, int nThreads = 16);
 
 void testCoilMutualInductanceZAxis();

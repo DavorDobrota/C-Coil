@@ -88,22 +88,22 @@ class Coil
         const double length;
         const int numOfTurns;
 
-        double currentDensity;
-        double current;
+        double currentDensity{};
+        double current{};
 
-        double wireResistivity;
-        bool isSineDriven;
-        double sineFrequency;
+        double wireResistivity{};
+        bool isSineDriven{};
+        double sineFrequency{};
 
-        double magneticMoment;
-        double averageWireThickness;
+        double magneticMoment{};
+        double averageWireThickness{};
 
-        double resistance;
-        double selfInductance;
-        double reactance;
-        double impedance;
+        double resistance{};
+        double selfInductance{};
+        double reactance{};
+        double impedance{};
 
-        int threadCount;
+        int threadCount{};
 
         PrecisionArguments defaultPrecision;
 
@@ -161,7 +161,10 @@ class Coil
         void setWireResistivity(double wireResistivity);
         void setSineFrequency(double sineFrequency);
         void setPrecisionSettings(const PrecisionArguments &precisionSettings);
+
         void setThreadCount(int threadCount);
+
+        void setSelfInductance(double selfInductance);
 
         [[nodiscard]] double computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const;
         [[nodiscard]] double computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi,

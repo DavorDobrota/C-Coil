@@ -89,17 +89,17 @@ void testPerformanceForComputeAll(int nOps, int nRepeats, int nThreads)
 
     //repetitions removed for single core, it is just too slow compared to the rest
     begin_time = high_resolution_clock::now();
+    testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
+                                     singlePotential, CPU_ST);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("Potential A CPU_ST : %.1f MInc/s\n", 1e-6 * numOperations / interval);
+
+    begin_time = high_resolution_clock::now();
     testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
                                         singleResultsX, singleResultsY, singleResultsZ,
                                         CPU_ST);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("combined  B CPU_ST : %.1f MInc/s\n", 1e-6 * numOperations / interval);
-
-    begin_time = high_resolution_clock::now();
-    testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
-                                     singlePotential, CPU_ST);
-    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("Potential A CPU_ST : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 
     begin_time = high_resolution_clock::now();
     testCoil.computeAllBGradientTensors(cylindricalZArr, cylindricalRArr, singlePotential,

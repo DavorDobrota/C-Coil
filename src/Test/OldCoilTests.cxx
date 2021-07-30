@@ -33,22 +33,30 @@ void testOldCoilMutualInductanceZAxis()
 
 void testOldCoilMutualInductanceZAxisPerformance()
 {
+    using namespace std::chrono;
+
     OldCoil prim = OldCoil(1, 1.0, 0.1, 0.1, 0.001, 32, 32, 48, 100, true, 100000, 1.63e-8);
     OldCoil sec = OldCoil(1, 0.1, 0.1, 0.1, 0.001, 32, 32, 20, 100, true, 100000, 1.63e-8);
+
     int nOp = 1000;
     Type temp;
 
-    for (Type p = 1.0; p <= 9.0; p += 1.0){
-        clock_t begin_time = clock();
-        for (int i = 0; i < nOp; ++i){
+    high_resolution_clock::time_point begin_time;
+    double interval;
+
+    for (Type p = 1.0; p <= 9.0; p += 1.0)
+    {
+        begin_time = high_resolution_clock::now();
+        for (int i = 0; i < nOp; ++i)
             temp = prim.MutualInductanceCalc(0.2+0.00001*i, sec, true, p);
-        }
-        printf("inductance calc time for %.0f : %.2f ms\n", p, 1000 * float(clock() - begin_time) / CLOCKS_PER_SEC / nOp);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("inductance calc time for %.0f : %.2f ms/op\n", p, 1000 * interval / nOp);
     }
 }
 
 void testOldCoilMutualInductanceGeneralPerformance()
 {
+    using namespace std::chrono;
 
     OldCoil prim = OldCoil(1, 0.071335, 0.01397, 0.142748, 0.001, 20, 20, 60, 1142, true, 1, 1.63e-8);
     OldCoil sec = OldCoil(1, 0.096945, 0.041529, 0.02413, 0.001, 20, 20, 80, 516, true, 1, 1.63e-8);
@@ -56,19 +64,21 @@ void testOldCoilMutualInductanceGeneralPerformance()
     int nOp = 10;
     double temp;
 
-    clock_t begin_time = clock();
-    for (int i = 0; i < nOp; ++i){
+    high_resolution_clock::time_point begin_time;
+    double interval;
+
+    begin_time = high_resolution_clock::now();
+    for (int i = 0; i < nOp; ++i)
         temp = prim.MutualInductanceGeneralCalc(sec, 0.5+0.0001*i, 0.0, 0.0, 0.0, true, 2.0);
-    }
-    printf("%f\n", float(clock() - begin_time) / CLOCKS_PER_SEC / nOp * 1000);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("%.1f ms/op\n", 1000 * interval / nOp);
 }
 
 void testOldCoilSelfInductance()
 {
 
-    float temp, theta = Pi/2, dist = 0.1;
+    float temp, theta = M_PI/2, dist = 0.1;
     OldCoil test = OldCoil(1, 1.0, 1.0, 2.0, 0.1, 24, 24, 64, 100, false, 0.0, 1.63e-8);
     test.SelfInductanceCalc();
     printf("%.15e", test.L);
-
 }

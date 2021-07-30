@@ -111,21 +111,21 @@ int Coil::getThreadCount() const { return threadCount; }
 
 void Coil::setCurrentDensity(double currentDensity)
 {
-    Coil::currentDensity = currentDensity;
+    this->currentDensity = currentDensity;
     current = currentDensity * length * thickness / numOfTurns;
     calculateMagneticMoment();
 }
 
 void Coil::setCurrent(double current)
 {
-    Coil::current = current;
+    this->current = current;
     currentDensity = current * numOfTurns / (length * thickness);
     calculateMagneticMoment();
 }
 
 void Coil::setWireResistivity(double wireResistivity)
 {
-    Coil::wireResistivity = wireResistivity;
+    this->wireResistivity = wireResistivity;
     calculateImpedance();
 }
 
@@ -146,7 +146,13 @@ void Coil::setSineFrequency(double sineFrequency)
 
 void Coil::setPrecisionSettings(const PrecisionArguments &precisionSettings)
 {
-    Coil::defaultPrecision = precisionSettings;
+    this->defaultPrecision = precisionSettings;
+}
+
+void Coil::setSelfInductance(double selfInductance)
+{
+    this->selfInductance = selfInductance;
+    calculateImpedance();
 }
 
 void Coil::calculateMagneticMoment()

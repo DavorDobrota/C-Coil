@@ -11,7 +11,7 @@ namespace
 void Coil::calculateSelfInductance(PrecisionFactor precisionFactor)
 {
     // TODO - new solution applied: still convergence is slow and not entirely tested, an approximation, future improvement
-    selfInductance = 0.0;
+    double inductance = 0.0;
 
     auto precisionArguments = CoilPairArguments::getSelfInductanceArguments(*this, precisionFactor);
     PrecisionArguments combinedArguments = precisionArguments.primaryPrecision;
@@ -99,15 +99,15 @@ void Coil::calculateSelfInductance(PrecisionFactor precisionFactor)
                             }
                         }
                     }
-                    selfInductance += 2 * M_PI * rBlockPosition * potential * 0.25 *
+                    inductance += 2 * M_PI * rBlockPosition * potential * 0.25 *
                                       Legendre::weightsMatrix[lengthIncrements][zIndex] *
                                       Legendre::weightsMatrix[thicknessIncrements][rIndex];
                 }
             }
         }
     }
-    selfInductance *= (numOfTurns / current);
-    calculateImpedance();
+    inductance *= (numOfTurns / current);
+    setSelfInductance(inductance);
 }
 
 void Coil::calculateApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method)
@@ -115,8 +115,8 @@ void Coil::calculateApproximateSelfInductance(PrecisionFactor precisionFactor, C
     // this is a simplified solution but produces a significant error because of the inherent divergent integral
     // however it can be accelerated beyond single thread and thus may prove useful in some instances
     auto precisionArguments = CoilPairArguments::getSelfInductanceArguments(*this, precisionFactor);
-    selfInductance = computeMutualInductance(*this, *this, 0.0, precisionArguments, method);
-    calculateImpedance();
+    double inductance = computeMutualInductance(*this, *this, 0.0, precisionArguments, method);
+    setSelfInductance(inductance);
 }
 
 double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor)

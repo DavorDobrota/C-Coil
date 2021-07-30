@@ -87,7 +87,7 @@ void testPerformanceForComputeAll(int nOps, int nRepeats, int nThreads)
     high_resolution_clock::time_point begin_time;
     double interval;
 
-    //repetitions removed for single core, it is just too slow compared to the rest
+    // ST methods - repetitions removed for single core, it is just too slow compared to the rest
     begin_time = high_resolution_clock::now();
     testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
                                      singlePotential, CPU_ST);
@@ -110,6 +110,16 @@ void testPerformanceForComputeAll(int nOps, int nRepeats, int nThreads)
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_ST : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 
+    // MT methods
+    begin_time = high_resolution_clock::now();
+    for(int i = 0; i < nRepeats; i++)
+    {
+        testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
+                                         acceleratedPotential, CPU_MT);
+    }
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("Potential A CPU_MT : %.1f MInc/s\n", 1e-6 * (numOperations * nRepeats) / interval);
+
     begin_time = high_resolution_clock::now();
     for(int i = 0; i < nRepeats; i++)
     {
@@ -121,15 +131,6 @@ void testPerformanceForComputeAll(int nOps, int nRepeats, int nThreads)
     printf("combined  B CPU_MT : %.1f MInc/s\n", 1e-6 * (numOperations * nRepeats) / interval);
 
     begin_time = high_resolution_clock::now();
-    for(int i = 0; i < nRepeats; i++)
-    {
-        testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
-                                         acceleratedPotential, CPU_MT);
-    }
-    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("Potential A CPU_MT : %.1f MInc/s\n", 1e-6 * (numOperations * nRepeats) / interval);
-
-    begin_time = high_resolution_clock::now();
     testCoil.computeAllBGradientTensors(cylindricalZArr, cylindricalRArr, singlePotential,
                                         tensorXX, tensorXY, tensorXZ,
                                         tensorYX, tensorYY, tensorYZ,
@@ -138,6 +139,7 @@ void testPerformanceForComputeAll(int nOps, int nRepeats, int nThreads)
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_MT : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 
+    // GPU methods
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < nRepeats; i++)
     {

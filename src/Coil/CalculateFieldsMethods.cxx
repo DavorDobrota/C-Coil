@@ -77,11 +77,7 @@ std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, con
             }
         }
     }
-    std::pair<double, double> output;
-    output.first = magneticFieldH;
-    output.second = magneticFieldZ;
-
-    return output;
+    return std::make_pair(magneticFieldH, magneticFieldZ);
 }
 
 double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
@@ -229,14 +225,12 @@ std::vector<double> Coil::calculateBGradient(double zAxis, double rPolar, const 
             }
         }
     }
-    std::vector<double> bufferValues;
+    std::vector<double> bufferValues(4);
 
-//    printf("%.18f %.18f %.18f %.18f\n", bufferValueRPhi, bufferValueRR, bufferValueRZ, bufferValueZZ);
-
-    bufferValues.push_back(bufferValueRPhi);
-    bufferValues.push_back(bufferValueRR);
-    bufferValues.push_back(bufferValueRZ);
-    bufferValues.push_back(bufferValueZZ);
+    bufferValues[0] = bufferValueRPhi;
+    bufferValues[1] = bufferValueRR;
+    bufferValues[2] = bufferValueRZ;
+    bufferValues[3] = bufferValueZZ;
 
     return bufferValues;
 }

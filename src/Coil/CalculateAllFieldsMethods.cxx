@@ -4,7 +4,6 @@
 
 #include <cmath>
 
-
 namespace
 {
     ctpl::thread_pool g_threadPool;
@@ -23,14 +22,14 @@ void Coil::calculateAllBFieldST(const std::vector<double> &cylindricalZArr,
                                 std::vector<double> &computedFieldZArr,
                                 const PrecisionArguments &usedPrecision) const
 {
-    computedFieldHArr.resize(0);
-    computedFieldZArr.resize(0);
+    computedFieldHArr.resize(cylindricalZArr.size());
+    computedFieldZArr.resize(cylindricalZArr.size());
 
     for (int i = 0; i < cylindricalZArr.size(); ++i)
     {
         std::pair<double, double> values = calculateBField(cylindricalZArr[i], cylindricalRArr[i], usedPrecision);
-        computedFieldHArr.push_back(values.first);
-        computedFieldZArr.push_back(values.second);
+        computedFieldHArr[i] = values.first;
+        computedFieldZArr[i] = values.second;
     }
 }
 
@@ -39,13 +38,10 @@ void Coil::calculateAllAPotentialST(const std::vector<double> &cylindricalZArr,
                                     std::vector<double> &computedPotentialArr,
                                     const PrecisionArguments &usedPrecision) const
 {
-    computedPotentialArr.resize(0);
+    computedPotentialArr.resize(cylindricalZArr.size());
 
     for (int i = 0; i < cylindricalZArr.size(); ++i)
-    {
-        double field = calculateAPotential(cylindricalZArr[i], cylindricalRArr[i], usedPrecision);
-        computedPotentialArr.push_back(field);
-    }
+        computedPotentialArr[i] = calculateAPotential(cylindricalZArr[i], cylindricalRArr[i], usedPrecision);
 }
 
 void Coil::calculateAllBGradientST(const std::vector<double> &cylindricalZArr,
@@ -56,19 +52,19 @@ void Coil::calculateAllBGradientST(const std::vector<double> &cylindricalZArr,
                                    std::vector<double> &computedGradientZZ,
                                    const PrecisionArguments &usedPrecision) const
 {
-    computedGradientRPhi.resize(0);
-    computedGradientRR.resize(0);
-    computedGradientRZ.resize(0);
-    computedGradientZZ.resize(0);
+    computedGradientRPhi.resize(cylindricalZArr.size());
+    computedGradientRR.resize(cylindricalZArr.size());
+    computedGradientRZ.resize(cylindricalZArr.size());
+    computedGradientZZ.resize(cylindricalZArr.size());
 
     for (int i = 0; i < cylindricalZArr.size(); ++i)
     {
         std::vector<double> gradient = calculateBGradient(cylindricalZArr[i], cylindricalRArr[i], usedPrecision);
 
-        computedGradientRPhi.push_back(gradient[0]);
-        computedGradientRR.push_back(gradient[1]);
-        computedGradientRZ.push_back(gradient[2]);
-        computedGradientZZ.push_back(gradient[3]);
+        computedGradientRPhi[i] = gradient[0];
+        computedGradientRR[i] = gradient[1];
+        computedGradientRZ[i] = gradient[2];
+        computedGradientZZ[i] = gradient[3];
     }
 }
 
@@ -135,15 +131,16 @@ void Coil::calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
                                  std::vector<double> &computedFieldZArr,
                                  const PrecisionArguments &usedPrecision) const
 {
-    computedFieldHArr.resize(0);
-    computedFieldZArr.resize(0);
+    computedFieldHArr.resize(cylindricalZArr.size());
+    computedFieldZArr.resize(cylindricalZArr.size());
 
-    std::vector<float> polarR, polarTheta;
+    std::vector<float> polarR(cylindricalZArr.size());
+    std::vector<float> polarTheta(cylindricalZArr.size());
 
     for (int i = 0; i < cylindricalZArr.size(); ++i)
     {
-        polarR.push_back(sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
-        polarTheta.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
+        polarR[i] = sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]);
+        polarTheta[i] = atan2(cylindricalRArr[i], cylindricalZArr[i]);
     }
 
     std::vector<float> fieldHArr(polarR.size());
@@ -156,8 +153,8 @@ void Coil::calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
 
     for (int i = 0; i < polarR.size(); ++i)
     {
-        computedFieldHArr.push_back(fieldHArr[i]);
-        computedFieldZArr.push_back(fieldZArr[i]);
+        computedFieldHArr[i] = fieldHArr[i];
+        computedFieldZArr[i] = fieldZArr[i];
     }
 }
 
@@ -166,14 +163,15 @@ void Coil::calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
                                      std::vector<double> &computedPotentialArr,
                                      const PrecisionArguments &usedPrecision) const
 {
-    computedPotentialArr.resize(0);
+    computedPotentialArr.resize(cylindricalZArr.size());
 
-    std::vector<float> polarR, polarTheta;
+    std::vector<float> polarR(cylindricalZArr.size());
+    std::vector<float> polarTheta(cylindricalZArr.size());
 
     for (int i = 0; i < cylindricalZArr.size(); ++i)
     {
-        polarR.push_back(sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
-        polarTheta.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
+        polarR[i] = sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]);
+        polarTheta[i] = atan2(cylindricalRArr[i], cylindricalZArr[i]);
     }
     std::vector<float> potentialArr(polarR.size());
 
@@ -184,7 +182,7 @@ void Coil::calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
 
     // TODO - fix frequency in GPU potential calculation, current temporary fix
     for (int i = 0; i < polarR.size(); ++i)
-        computedPotentialArr.push_back(potentialArr[i] / (2 * M_PI));
+        computedPotentialArr[i] = potentialArr[i] / (2 * M_PI);
 }
 
 void Coil::calculateAllBGradientGPU(const std::vector<double> &cylindricalZArr,

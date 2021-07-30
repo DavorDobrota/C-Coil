@@ -11,7 +11,7 @@ double Coil::computeBFieldH(double cylindricalZ, double cylindricalR, const Prec
 
 double Coil::computeBFieldH(double cylindricalZ, double cylindricalR) const
 {
-    return computeBFieldH(cylindricalZ, cylindricalR, precisionSettings);
+    return computeBFieldH(cylindricalZ, cylindricalR, defaultPrecision);
 }
 
 double Coil::computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi,
@@ -22,7 +22,7 @@ double Coil::computeBFieldX(double cylindricalZ, double cylindricalR, double cyl
 
 double Coil::computeBFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
-    return computeBFieldX(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+    return computeBFieldX(cylindricalZ, cylindricalR, cylindricalPhi, defaultPrecision);
 }
 
 double Coil::computeBFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
@@ -33,7 +33,7 @@ double Coil::computeBFieldY(double cylindricalZ, double cylindricalR, double cyl
 
 double Coil::computeBFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
-    return computeBFieldY(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+    return computeBFieldY(cylindricalZ, cylindricalR, cylindricalPhi, defaultPrecision);
 }
 
 double Coil::computeBFieldZ(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision) const
@@ -44,7 +44,7 @@ double Coil::computeBFieldZ(double cylindricalZ, double cylindricalR, const Prec
 
 double Coil::computeBFieldZ(double cylindricalZ, double cylindricalR) const
 {
-    return computeBFieldZ(cylindricalZ, cylindricalR, precisionSettings);
+    return computeBFieldZ(cylindricalZ, cylindricalR, defaultPrecision);
 }
 
 double Coil::computeBFieldAbs(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision) const
@@ -55,7 +55,7 @@ double Coil::computeBFieldAbs(double cylindricalZ, double cylindricalR, const Pr
 
 double Coil::computeBFieldAbs(double cylindricalZ, double cylindricalR) const
 {
-    return computeBFieldAbs(cylindricalZ, cylindricalR, precisionSettings);
+    return computeBFieldAbs(cylindricalZ, cylindricalR, defaultPrecision);
 }
 
 std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
@@ -72,7 +72,7 @@ std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylind
 }
 std::vector<double> Coil::computeBFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
-    return computeBFieldVector(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+    return computeBFieldVector(cylindricalZ, cylindricalR, cylindricalPhi, defaultPrecision);
 }
 
 
@@ -84,7 +84,7 @@ double Coil::computeAPotentialX(double cylindricalZ, double cylindricalR, double
 
 double Coil::computeAPotentialX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
-    return computeAPotentialX(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+    return computeAPotentialX(cylindricalZ, cylindricalR, cylindricalPhi, defaultPrecision);
 }
 
 double Coil::computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
@@ -95,7 +95,7 @@ double Coil::computeAPotentialY(double cylindricalZ, double cylindricalR, double
 
 double Coil::computeAPotentialY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
-    return computeAPotentialY(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+    return computeAPotentialY(cylindricalZ, cylindricalR, cylindricalPhi, defaultPrecision);
 }
 
 double Coil::computeAPotentialZ(double cylindricalZ, double cylindricalR, double cylindricalPhi,
@@ -107,12 +107,12 @@ double Coil::computeAPotentialZ(double cylindricalZ, double cylindricalR, double
 
 double Coil::computeAPotentialZ(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
-    return computeAPotentialZ(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+    return computeAPotentialZ(cylindricalZ, cylindricalR, cylindricalPhi, defaultPrecision);
 }
 
 double Coil::computeAPotentialAbs(double cylindricalZ, double cylindricalR) const
 {
-    return calculateAPotential(cylindricalZ, cylindricalR, precisionSettings);
+    return calculateAPotential(cylindricalZ, cylindricalR, defaultPrecision);
 }
 
 double Coil::computeAPotentialAbs(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision) const
@@ -134,7 +134,7 @@ std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cy
 
 std::vector<double> Coil::computeAPotentialVector(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
-    return computeAPotentialVector(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+    return computeAPotentialVector(cylindricalZ, cylindricalR, cylindricalPhi, defaultPrecision);
 }
 
 double Coil::computeEFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi,
@@ -145,7 +145,7 @@ double Coil::computeEFieldX(double cylindricalZ, double cylindricalR, double cyl
 
 double Coil::computeEFieldX(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
-    return computeEFieldX(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+    return computeEFieldX(cylindricalZ, cylindricalR, cylindricalPhi, defaultPrecision);
 }
 
 double Coil::computeEFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi,
@@ -156,7 +156,7 @@ double Coil::computeEFieldY(double cylindricalZ, double cylindricalR, double cyl
 
 double Coil::computeEFieldY(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
-    return computeEFieldY(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+    return computeEFieldY(cylindricalZ, cylindricalR, cylindricalPhi, defaultPrecision);
 }
 
 double Coil::computeEFieldZ(double cylindricalZ, double cylindricalR, double cylindricalPhi,
@@ -167,7 +167,7 @@ double Coil::computeEFieldZ(double cylindricalZ, double cylindricalR, double cyl
 
 double Coil::computeEFieldZ(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
-    return computeEFieldZ(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+    return computeEFieldZ(cylindricalZ, cylindricalR, cylindricalPhi, defaultPrecision);
 }
 
 double Coil::computeEFieldAbs(double cylindricalZ, double cylindricalR, const PrecisionArguments &usedPrecision) const
@@ -177,7 +177,7 @@ double Coil::computeEFieldAbs(double cylindricalZ, double cylindricalR, const Pr
 
 double Coil::computeEFieldAbs(double cylindricalZ, double cylindricalR) const
 {
-    return computeEFieldAbs(cylindricalZ, cylindricalR, precisionSettings);
+    return computeEFieldAbs(cylindricalZ, cylindricalR, defaultPrecision);
 }
 
 std::vector<double> Coil::computeEFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi,
@@ -194,7 +194,7 @@ std::vector<double> Coil::computeEFieldVector(double cylindricalZ, double cylind
 
 std::vector<double> Coil::computeEFieldVector(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 {
-    return computeEFieldVector(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+    return computeEFieldVector(cylindricalZ, cylindricalR, cylindricalPhi, defaultPrecision);
 }
 
 std::vector<double> Coil::computeBGradientTensor(double cylindricalZ, double cylindricalR, double cylindricalPhi,
@@ -245,5 +245,5 @@ std::vector<double> Coil::computeBGradientTensor(double cylindricalZ, double cyl
 std::vector<double> Coil::computeBGradientTensor(double cylindricalZ, double cylindricalR, double cylindricalPhi) const
 
 {
-    return computeBGradientTensor(cylindricalZ, cylindricalR, cylindricalPhi, precisionSettings);
+    return computeBGradientTensor(cylindricalZ, cylindricalR, cylindricalPhi, defaultPrecision);
 }

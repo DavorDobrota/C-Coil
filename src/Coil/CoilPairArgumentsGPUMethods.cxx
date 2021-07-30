@@ -116,11 +116,11 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Co
     #endif // PRINT_ENABLED
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
-                                                                        }
+}
 
-                                                                        CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
-                                                                                                                                                  PrecisionFactor precisionFactor)
-                                                                                                                                                  {
+CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
+                                                                          PrecisionFactor precisionFactor)
+{
     const int primLinearIncrements = arrSize;
     const int primAngularIncrements = arrSize;
 

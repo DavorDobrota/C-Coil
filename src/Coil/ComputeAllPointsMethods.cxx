@@ -11,13 +11,14 @@ void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
-        computedFieldArr.resize(0);
         std::vector<double> fieldH, fieldZ;
 
         calculateAllBFieldSwitch(cylindricalZArr, cylindricalRArr, fieldH, fieldZ, usedPrecision, method);
 
+        computedFieldArr.resize(fieldH.size());
+
         for (int i = 0; i < fieldH.size(); ++i)
-            computedFieldArr.push_back(fieldH[i] * cos(cylindricalPhiArr[i]));
+            computedFieldArr[i] = fieldH[i] * cos(cylindricalPhiArr[i]);
     }
     else
         throw "Number of elements in input data vectors is not the same!";
@@ -30,7 +31,7 @@ void Coil::computeAllBFieldX(const std::vector<double> &cylindricalZArr,
                              ComputeMethod method) const
 {
     computeAllBFieldX(
-            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, precisionSettings, method);
+            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, defaultPrecision, method);
 }
 
 void Coil::computeAllBFieldY(const std::vector<double> &cylindricalZArr,
@@ -42,14 +43,14 @@ void Coil::computeAllBFieldY(const std::vector<double> &cylindricalZArr,
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
-        computedFieldArr.resize(0);
-
         std::vector<double> fieldH, fieldZ;
 
         calculateAllBFieldSwitch(cylindricalZArr, cylindricalRArr, fieldH, fieldZ, usedPrecision, method);
 
+        computedFieldArr.resize(fieldH.size());
+
         for (int i = 0; i < fieldH.size(); ++i)
-            computedFieldArr.push_back(fieldH[i] * sin(cylindricalPhiArr[i]));
+            computedFieldArr[i] = fieldH[i] * sin(cylindricalPhiArr[i]);
     }
     else
         throw "Number of elements in input data vectors is not the same!";
@@ -62,7 +63,7 @@ void Coil::computeAllBFieldY(const std::vector<double> &cylindricalZArr,
                              ComputeMethod method) const
 {
     computeAllBFieldY(
-            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, precisionSettings, method);
+            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, defaultPrecision, method);
 }
 
 void Coil::computeAllBFieldH(const std::vector<double> &cylindricalZArr,
@@ -87,7 +88,7 @@ void Coil::computeAllBFieldH(const std::vector<double> &cylindricalZArr,
                              ComputeMethod method) const
 {
     computeAllBFieldH(
-            cylindricalZArr, cylindricalRArr, computedFieldArr, precisionSettings, method);
+            cylindricalZArr, cylindricalRArr, computedFieldArr, defaultPrecision, method);
 }
 
 void Coil::computeAllBFieldZ(const std::vector<double> &cylindricalZArr,
@@ -114,7 +115,7 @@ void Coil::computeAllBFieldZ(const std::vector<double> &cylindricalZArr,
                              ComputeMethod method) const
 {
     computeAllBFieldZ(
-            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, precisionSettings, method);
+            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, defaultPrecision, method);
 }
 
 void Coil::computeAllBFieldAbs(const std::vector<double> &cylindricalZArr,
@@ -126,14 +127,14 @@ void Coil::computeAllBFieldAbs(const std::vector<double> &cylindricalZArr,
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
-        computedFieldArr.resize(0);
-
         std::vector<double> fieldH, fieldZ;
 
         calculateAllBFieldSwitch(cylindricalZArr, cylindricalRArr, fieldH, fieldZ, usedPrecision, method);
 
+        computedFieldArr.resize(fieldH.size());
+
         for (int i = 0; i < fieldH.size(); ++i)
-            computedFieldArr.push_back(std::sqrt(fieldH[i] * fieldH[i] + fieldZ[i] * fieldZ[i]));
+            computedFieldArr[i] = std::sqrt(fieldH[i] * fieldH[i] + fieldZ[i] * fieldZ[i]);
     }
     else
         throw "Number of elements in input data vectors is not the same!";
@@ -146,7 +147,7 @@ void Coil::computeAllBFieldAbs(const std::vector<double> &cylindricalZArr,
                                ComputeMethod method) const
 {
     computeAllBFieldAbs(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                        computedFieldArr, precisionSettings, method);
+                        computedFieldArr, defaultPrecision, method);
 }
 
 void Coil::computeAllBFieldComponents(const std::vector<double> &cylindricalZArr,
@@ -160,19 +161,19 @@ void Coil::computeAllBFieldComponents(const std::vector<double> &cylindricalZArr
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
-        computedFieldXArr.resize(0);
-        computedFieldYArr.resize(0);
-        computedFieldZArr.resize(0);
-
         std::vector<double> fieldH, fieldZ;
 
         calculateAllBFieldSwitch(cylindricalZArr, cylindricalRArr, fieldH, fieldZ, usedPrecision, method);
 
+        computedFieldXArr.resize(fieldH.size());
+        computedFieldYArr.resize(fieldH.size());
+        computedFieldZArr.resize(fieldH.size());
+
         for (int i = 0; i < fieldH.size(); ++i)
         {
-            computedFieldXArr.push_back(fieldH[i] * cos(cylindricalPhiArr[i]));
-            computedFieldYArr.push_back(fieldH[i] * sin(cylindricalPhiArr[i]));
-            computedFieldZArr.push_back(fieldZ[i]);
+            computedFieldXArr[i] = fieldH[i] * cos(cylindricalPhiArr[i]);
+            computedFieldYArr[i] = fieldH[i] * sin(cylindricalPhiArr[i]);
+            computedFieldZArr[i] = fieldZ[i];
         }
     }
     else
@@ -190,7 +191,7 @@ void Coil::computeAllBFieldComponents(const std::vector<double> &cylindricalZArr
     computeAllBFieldComponents(
             cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
             computedFieldXArr, computedFieldYArr, computedFieldZArr,
-            precisionSettings, method);
+            defaultPrecision, method);
 }
 
 void Coil::computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
@@ -202,11 +203,11 @@ void Coil::computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
-        computedPotentialArr.resize(0);
-
         std::vector<double> potentialA;
 
         calculateAllAPotentialSwitch(cylindricalZArr, cylindricalRArr, potentialA, usedPrecision, method);
+
+        computedPotentialArr.resize(potentialA.size());
 
         for (int i = 0; i < potentialA.size(); ++i)
             computedPotentialArr.push_back(potentialA[i] * (-1) * sin(cylindricalPhiArr[i]));
@@ -223,7 +224,7 @@ void Coil::computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
                                  ComputeMethod method) const
 {
     computeAllAPotentialX(
-            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, precisionSettings, method);
+            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, defaultPrecision, method);
 }
 
 void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
@@ -235,14 +236,14 @@ void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
-        computedPotentialArr.resize(0);
-
         std::vector<double> potentialA;
 
         calculateAllAPotentialSwitch(cylindricalZArr, cylindricalRArr, potentialA, usedPrecision, method);
 
+        computedPotentialArr.resize(potentialA.size());
+
         for (int i = 0; i < potentialA.size(); ++i)
-            computedPotentialArr.push_back(potentialA[i] * cos(cylindricalPhiArr[i]));
+            computedPotentialArr[i] = potentialA[i] * cos(cylindricalPhiArr[i]);
     }
     else
         throw "Number of elements in input data vectors is not the same!";
@@ -255,7 +256,7 @@ void Coil::computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
                                  ComputeMethod method) const
 {
     computeAllAPotentialY(
-            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, precisionSettings, method);
+            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, defaultPrecision, method);
 }
 
 void Coil::computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
@@ -267,10 +268,8 @@ void Coil::computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
-        computedPotentialArr.resize(0);
-
-        for (int i = 0; i < cylindricalZArr.size(); ++i)
-            computedPotentialArr.push_back(0.0);
+        computedPotentialArr.resize(cylindricalZArr.size());
+        std::fill(computedPotentialArr.begin(), computedPotentialArr.end(), 0.0);
     }
     else
         throw "Number of elements in input data vectors is not the same!";
@@ -283,7 +282,7 @@ void Coil::computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
                                  ComputeMethod method) const
 {
     computeAllAPotentialZ(
-            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, precisionSettings, method);
+            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedPotentialArr, defaultPrecision, method);
 }
 
 void
@@ -310,7 +309,7 @@ Coil::computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
                               ComputeMethod method) const
 {
     computeAllAPotentialAbs(
-            cylindricalZArr, cylindricalRArr, computedPotentialArr, precisionSettings, method);
+            cylindricalZArr, cylindricalRArr, computedPotentialArr, defaultPrecision, method);
 }
 
 void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindricalZArr,
@@ -324,19 +323,19 @@ void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindrical
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
-        computedPotentialXArr.resize(0);
-        computedPotentialYArr.resize(0);
-        computedPotentialZArr.resize(0);
-
         std::vector<double> potentialA;
 
         calculateAllAPotentialSwitch(cylindricalZArr, cylindricalRArr, potentialA, usedPrecision, method);
 
+        computedPotentialXArr.resize(potentialA.size());
+        computedPotentialYArr.resize(potentialA.size());
+        computedPotentialZArr.resize(potentialA.size());
+
         for (int i = 0; i < potentialA.size(); ++i)
         {
-            computedPotentialXArr.push_back(potentialA[i] * (-1) * sin(cylindricalPhiArr[i]));
-            computedPotentialYArr.push_back(potentialA[i] * cos(cylindricalPhiArr[i]));
-            computedPotentialZArr.push_back(0.0);
+            computedPotentialXArr[i] = potentialA[i] * (-1) * sin(cylindricalPhiArr[i]);
+            computedPotentialYArr[i] = potentialA[i] * cos(cylindricalPhiArr[i]);
+            computedPotentialZArr[i] = 0.0;
         }
     }
     else
@@ -353,7 +352,7 @@ void Coil::computeAllAPotentialComponents(const std::vector<double> &cylindrical
 {
     computeAllAPotentialComponents(
             cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-            computedPotentialXArr, computedPotentialYArr, computedPotentialZArr, precisionSettings, method);
+            computedPotentialXArr, computedPotentialYArr, computedPotentialZArr, defaultPrecision, method);
 }
 
 void Coil::computeAllEFieldX(const std::vector<double> &cylindricalZArr, const std::vector<double> &cylindricalRArr,
@@ -372,7 +371,7 @@ void Coil::computeAllEFieldX(const std::vector<double> &cylindricalZArr, const s
                              ComputeMethod method) const
 {
     computeAllEFieldX(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                      computedFieldArr, precisionSettings, method);
+                      computedFieldArr, defaultPrecision, method);
 }
 
 void Coil::computeAllEFieldY(const std::vector<double> &cylindricalZArr, const std::vector<double> &cylindricalRArr,
@@ -391,7 +390,7 @@ void Coil::computeAllEFieldY(const std::vector<double> &cylindricalZArr, const s
                              ComputeMethod method) const
 {
     computeAllEFieldY(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                      computedFieldArr, precisionSettings, method);
+                      computedFieldArr, defaultPrecision, method);
 }
 
 void Coil::computeAllEFieldZ(const std::vector<double> &cylindricalZArr,
@@ -415,7 +414,7 @@ void Coil::computeAllEFieldZ(const std::vector<double> &cylindricalZArr,
                              ComputeMethod method) const
 {
     computeAllEFieldZ(
-            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, precisionSettings, method);
+            cylindricalZArr, cylindricalRArr, cylindricalPhiArr, computedFieldArr, defaultPrecision, method);
 }
 
 void Coil::computeAllEFieldAbs(const std::vector<double> &cylindricalZArr, const std::vector<double> &cylindricalRArr,
@@ -458,13 +457,13 @@ void Coil::computeAllEFieldComponents(const std::vector<double> &cylindricalZArr
 {
     computeAllEFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
                                computedFieldXArr, computedFieldYArr, computedFieldZArr,
-                               precisionSettings, method);
+                               defaultPrecision, method);
 }
 
 void Coil::computeAllEFieldAbs(const std::vector<double> &cylindricalZArr, const std::vector<double> &cylindricalRArr,
                                std::vector<double> &computedFieldArr, ComputeMethod method) const
 {
-    computeAllEFieldAbs(cylindricalZArr, cylindricalRArr, computedFieldArr, precisionSettings, method);
+    computeAllEFieldAbs(cylindricalZArr, cylindricalRArr, computedFieldArr, defaultPrecision, method);
 }
 
 void Coil::computeAllBGradientTensors(const std::vector<double> &cylindricalZArr,
@@ -483,10 +482,10 @@ void Coil::computeAllBGradientTensors(const std::vector<double> &cylindricalZArr
 {
     if (cylindricalZArr.size() == cylindricalRArr.size() && cylindricalRArr.size() == cylindricalPhiArr.size())
     {
-        std::vector<double> gradientRPhi;
-        std::vector<double> gradientRR;
-        std::vector<double> gradientRZ;
-        std::vector<double> gradientZZ;
+        std::vector<double> gradientRPhi(cylindricalZArr.size());
+        std::vector<double> gradientRR(cylindricalZArr.size());
+        std::vector<double> gradientRZ(cylindricalZArr.size());
+        std::vector<double> gradientZZ(cylindricalZArr.size());
 
         calculateAllBGradientSwitch(cylindricalZArr, cylindricalRArr,
                                     gradientRPhi, gradientRR, gradientRZ, gradientZZ, usedPrecision, method);
@@ -495,34 +494,34 @@ void Coil::computeAllBGradientTensors(const std::vector<double> &cylindricalZArr
         {
             if (cylindricalRArr[i] / innerRadius < 1e-14)
             {
-                computedGradientXX.push_back(gradientRR[i]);
-                computedGradientXY.push_back(0.0);
-                computedGradientXZ.push_back(0.0);
+                computedGradientXX[i] = gradientRR[i];
+                computedGradientXY[i] = 0.0;
+                computedGradientXZ[i] = 0.0;
 
-                computedGradientYX.push_back(0.0);
-                computedGradientYY.push_back(gradientRR[i]);
-                computedGradientYZ.push_back(0.0);
+                computedGradientYX[i] = 0.0;
+                computedGradientYY[i] = gradientRR[i];
+                computedGradientYZ[i] = 0.0;
 
-                computedGradientZX.push_back(0.0);
-                computedGradientZY.push_back(0.0);
-                computedGradientZZ.push_back(gradientZZ[i]);
+                computedGradientZX[i] = 0.0;
+                computedGradientZY[i] = 0.0;
+                computedGradientZZ[i] = gradientZZ[i];
             }
             else
             {
                 double cosPhi = cos(cylindricalPhiArr[i]);
                 double sinPhi = sin(cylindricalPhiArr[i]);
 
-                computedGradientXX.push_back(gradientRZ[i] * cosPhi * cosPhi + gradientRPhi[i] * sinPhi * sinPhi);
-                computedGradientXY.push_back(0.5 * sin(2 * cylindricalPhiArr[i]) * (gradientRR[i] - gradientRPhi[i]));
-                computedGradientXZ.push_back(gradientRZ[i] * cosPhi);
+                computedGradientXX[i] = gradientRZ[i] * cosPhi * cosPhi + gradientRPhi[i] * sinPhi * sinPhi;
+                computedGradientXY[i] = 0.5 * sin(2 * cylindricalPhiArr[i]) * (gradientRR[i] - gradientRPhi[i]);
+                computedGradientXZ[i] = gradientRZ[i] * cosPhi;
 
-                computedGradientYX.push_back(0.5 * sin(2 * cylindricalPhiArr[i]) * (gradientRR[i] - gradientRPhi[i]));
-                computedGradientYY.push_back(gradientRZ[i] * sinPhi * sinPhi + gradientRPhi[i] * cosPhi * cosPhi);
-                computedGradientYZ.push_back(gradientRZ[i] * sinPhi);
+                computedGradientYX[i] = 0.5 * sin(2 * cylindricalPhiArr[i]) * (gradientRR[i] - gradientRPhi[i]);
+                computedGradientYY[i] = gradientRZ[i] * sinPhi * sinPhi + gradientRPhi[i] * cosPhi * cosPhi;
+                computedGradientYZ[i] = gradientRZ[i] * sinPhi;
 
-                computedGradientZX.push_back(gradientRZ[i] * cosPhi);
-                computedGradientZY.push_back(gradientRZ[i] * sinPhi);
-                computedGradientZZ.push_back(gradientZZ[i]);
+                computedGradientZX[i] = gradientRZ[i] * cosPhi;
+                computedGradientZY[i] = gradientRZ[i] * sinPhi;
+                computedGradientZZ[i] = gradientZZ[i];
             }
         }
     }
@@ -548,5 +547,5 @@ void Coil::computeAllBGradientTensors(const std::vector<double> &cylindricalZArr
                                computedGradientXX, computedGradientXY, computedGradientXZ,
                                computedGradientYX, computedGradientYY, computedGradientYZ,
                                computedGradientZX, computedGradientZY, computedGradientZZ,
-                               precisionSettings, method);
+                               defaultPrecision, method);
 }

@@ -15,6 +15,8 @@ double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &sec
     int thicknessBlocks = inductanceArguments.secondaryPrecision.thicknessBlockCount;
     int thicknessIncrements = inductanceArguments.secondaryPrecision.thicknessIncrementCount;
 
+    int numElements = lengthBlocks * lengthIncrements * thicknessBlocks* thicknessIncrements;
+
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int maxLengthIndex = lengthIncrements - 1;
     int maxThicknessIndex = thicknessIncrements - 1;
@@ -24,8 +26,11 @@ double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &sec
 
     std::vector<double> zPositions;
     std::vector<double> rPositions;
-
     std::vector<double> weights;
+
+    zPositions.reserve(numElements);
+    rPositions.reserve(numElements);
+    weights.reserve(numElements);
 
     for (int zBlock = 0; zBlock < lengthBlocks; ++zBlock)
     {
@@ -115,8 +120,11 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
 
         std::vector<double> zPositions;
         std::vector<double> rPositions;
-
         std::vector<double> weights;
+
+        zPositions.reserve(numElements);
+        rPositions.reserve(numElements);
+        weights.reserve(numElements);
 
         for (int zBlock = 0; zBlock < lengthBlocks; ++zBlock)
         {

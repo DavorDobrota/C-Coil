@@ -42,10 +42,6 @@ void CoilPairArguments::getGeometryCaseAndIncrementsCoilPair(const Coil &primary
     double primThickness = primary.getThickness();
     double primLength = primary.getLength();
 
-    double secRadius = secondary.getInnerRadius();
-    double secThickness = secondary.getThickness();
-    double secLength = secondary.getLength();
-
     if (primThickness / primLength < g_thinCoilApproximationRatio)
     {
         getGeometryCaseAndIncrementsSingleCoil(secondary, precisionFactor, caseIndex, totalIncrements);

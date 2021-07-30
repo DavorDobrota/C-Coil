@@ -105,7 +105,7 @@ class Coil
 
         int threadCount;
 
-        PrecisionArguments precisionSettings;
+        PrecisionArguments defaultPrecision;
 
     public:
         Coil();

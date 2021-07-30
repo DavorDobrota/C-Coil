@@ -253,11 +253,11 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisCPU(const Co
     #endif // PRINT_ENABLED
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
-                                                                        }
+}
 
-                                                                        CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
-                                                                                                                                                  PrecisionFactor precisionFactor)
-                                                                                                                                                  {
+CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
+                                                                          PrecisionFactor precisionFactor)
+{
     int primLengthArrayIndex = g_minPrimLengthIncrements - 1;
     int primThicknessArrayIndex = g_minPrimThicknessIncrements - 1;
     int primAngularArrayIndex = g_minPrimAngularIncrements - 1;
@@ -589,5 +589,5 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisCPU(const Co
     #endif // PRINT_ENABLED
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
-                                                                                                                                                  }
+}
 

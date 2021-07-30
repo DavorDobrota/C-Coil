@@ -20,8 +20,8 @@ Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0) {}
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings,
            int threadCount) :
-           innerRadius(innerRadius), thickness(thickness), length(length), numOfTurns(numOfTurns),
-           precisionSettings(precisionSettings)
+        innerRadius(innerRadius), thickness(thickness), length(length), numOfTurns(numOfTurns),
+        defaultPrecision(precisionSettings)
 {
     setCurrent(current);
     calculateAverageWireThickness();
@@ -104,7 +104,7 @@ double Coil::getReactance() const { return reactance; }
 
 double Coil::getImpedance() const { return impedance; }
 
-const PrecisionArguments &Coil::getPrecisionSettings() const { return precisionSettings; }
+const PrecisionArguments &Coil::getPrecisionSettings() const { return defaultPrecision; }
 
 int Coil::getThreadCount() const { return threadCount; }
 
@@ -146,7 +146,7 @@ void Coil::setSineFrequency(double sineFrequency)
 
 void Coil::setPrecisionSettings(const PrecisionArguments &precisionSettings)
 {
-    Coil::precisionSettings = precisionSettings;
+    Coil::defaultPrecision = precisionSettings;
 }
 
 void Coil::calculateMagneticMoment()
@@ -196,6 +196,7 @@ void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncremen
                                           std::vector<double> &ringYTangent,
                                           std::vector<double> &ringZTangent)
 {
+    //clearing all values so that values are not accidentally allocated
     ringXPosition.resize(0);
     ringYPosition.resize(0);
     ringZPosition.resize(0);
@@ -203,6 +204,16 @@ void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncremen
     ringXTangent.resize(0);
     ringYTangent.resize(0);
     ringZTangent.resize(0);
+
+    int numElements = angularBlocks * angularIncrements;
+
+    ringXPosition.reserve(numElements);
+    ringYPosition.reserve(numElements);
+    ringZPosition.reserve(numElements);
+
+    ringXTangent.reserve(numElements);
+    ringYTangent.reserve(numElements);
+    ringZTangent.reserve(numElements);
 
     double angularBlock = ringIntervalSize / angularBlocks;
 

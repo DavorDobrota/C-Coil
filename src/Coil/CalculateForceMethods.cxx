@@ -15,6 +15,8 @@ double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondar
     int thicknessBlocks = forceArguments.secondaryPrecision.thicknessBlockCount;
     int thicknessIncrements = forceArguments.secondaryPrecision.thicknessIncrementCount;
 
+    int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements;
+
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int maxLengthIndex = lengthIncrements - 1;
     int maxThicknessIndex = thicknessIncrements - 1;
@@ -24,8 +26,11 @@ double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondar
 
     std::vector<double> zPositions;
     std::vector<double> rPositions;
-
     std::vector<double> weights;
+
+    zPositions.reserve(numElements);
+    rPositions.reserve(numElements);
+    weights.reserve(numElements);
 
     for (int zBlock = 0; zBlock < lengthBlocks; ++zBlock)
     {
@@ -70,20 +75,19 @@ double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondar
 std::vector<double> Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                                                       double zDisplacement, double rDisplacement,
                                                       double alphaAngle, double betaAngle,
-                                                      CoilPairArguments forceArguments, ComputeMethod method) {
-    std::vector<double> forceAndTorqueComponents;
+                                                      CoilPairArguments forceArguments, ComputeMethod method)
+{
+    std::vector<double> forceAndTorqueComponents(6);
 
     if (rDisplacement == 0.0 && alphaAngle == 0.0) {
         // to enforce standard 6 arguments returned, zeros are passed
-        forceAndTorqueComponents.push_back(0);
-        forceAndTorqueComponents.push_back(0);
+        forceAndTorqueComponents[0] = 0.0;
+        forceAndTorqueComponents[1] = 0.0;
+        forceAndTorqueComponents[2] = calculateAmpereForceZAxis(primary, secondary, zDisplacement, forceArguments, method);
 
-        forceAndTorqueComponents.push_back(
-                calculateAmpereForceZAxis(primary, secondary, zDisplacement, forceArguments, method));
-
-        forceAndTorqueComponents.push_back(0);
-        forceAndTorqueComponents.push_back(0);
-        forceAndTorqueComponents.push_back(0);
+        forceAndTorqueComponents[3] = 0.0;
+        forceAndTorqueComponents[4] = 0.0;
+        forceAndTorqueComponents[5] = 0.0;
 
         return forceAndTorqueComponents;
     }
@@ -101,8 +105,7 @@ std::vector<double> Coil::calculateAmpereForceGeneral(const Coil &primary, const
         int angularBlocks = forceArguments.secondaryPrecision.angularBlockCount;
         int angularIncrements = forceArguments.secondaryPrecision.angularIncrementCount;
 
-        int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements * angularBlocks *
-                          angularIncrements;
+        int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements * angularBlocks * angularIncrements;
 
         double ringIntervalSize = 2 * M_PI;
 
@@ -127,6 +130,13 @@ std::vector<double> Coil::calculateAmpereForceGeneral(const Coil &primary, const
 
         std::vector<double> radii;
         std::vector<double> weights;
+
+        zPositions.reserve(numElements);
+        rPositions.reserve(numElements);
+        phiPositions.reserve(numElements);
+
+        radii.reserve(numElements);
+        weights.reserve(numElements);
 
         for (int zBlock = 0; zBlock < lengthBlocks; ++zBlock)
         {
@@ -170,7 +180,7 @@ std::vector<double> Coil::calculateAmpereForceGeneral(const Coil &primary, const
 
                                 radii.push_back(ringRadius);
                                 weights.push_back(
-                                        0.125 * 2 * M_PI * ringRadius *
+                                        0.125 * 2*M_PI * ringRadius *
                                         Legendre::weightsMatrix[maxLengthIndex][zIndex] *
                                         Legendre::weightsMatrix[maxThicknessIndex][rIndex] *
                                         Legendre::weightsMatrix[maxAngularIncrementIndex][phiIndex]);
@@ -223,13 +233,13 @@ std::vector<double> Coil::calculateAmpereForceGeneral(const Coil &primary, const
         torqueY /= (lengthBlocks * thicknessBlocks * angularBlocks);
         torqueZ /= (lengthBlocks * thicknessBlocks * angularBlocks);
 
-        forceAndTorqueComponents.push_back(forceX * secondary.current * secondary.numOfTurns);
-        forceAndTorqueComponents.push_back(forceY * secondary.current * secondary.numOfTurns);
-        forceAndTorqueComponents.push_back(forceZ * secondary.current * secondary.numOfTurns);
+        forceAndTorqueComponents[0] = forceX * secondary.current * secondary.numOfTurns;
+        forceAndTorqueComponents[1] = forceY * secondary.current * secondary.numOfTurns;
+        forceAndTorqueComponents[2] = forceZ * secondary.current * secondary.numOfTurns;
 
-        forceAndTorqueComponents.push_back(torqueX * secondary.current * secondary.numOfTurns);
-        forceAndTorqueComponents.push_back(torqueY * secondary.current * secondary.numOfTurns);
-        forceAndTorqueComponents.push_back(torqueZ * secondary.current * secondary.numOfTurns);
+        forceAndTorqueComponents[3] = torqueX * secondary.current * secondary.numOfTurns;
+        forceAndTorqueComponents[4] = torqueY * secondary.current * secondary.numOfTurns;
+        forceAndTorqueComponents[5] = torqueZ * secondary.current * secondary.numOfTurns;
 
         return forceAndTorqueComponents;
     }

@@ -130,6 +130,15 @@ void testPerformanceForComputeAll(int nOps, int nRepeats, int nThreads)
     printf("Potential A CPU_MT : %.1f MInc/s\n", 1e-6 * (numOperations * nRepeats) / interval);
 
     begin_time = high_resolution_clock::now();
+    testCoil.computeAllBGradientTensors(cylindricalZArr, cylindricalRArr, singlePotential,
+                                        tensorXX, tensorXY, tensorXZ,
+                                        tensorYX, tensorYY, tensorYZ,
+                                        tensorZX, tensorZY, tensorZZ,
+                                        CPU_MT);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("Gradient  G CPU_MT : %.1f MInc/s\n", 1e-6 * numOperations / interval);
+
+    begin_time = high_resolution_clock::now();
     for (int i = 0; i < nRepeats; i++)
     {
         testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,

@@ -174,8 +174,7 @@ std::vector<double> Coil::calculateAmpereForceGeneral(const Coil &primary, const
                                                        ringRadius * unitRingPointsZ[phiPosition];
 
                                 zPositions.push_back(displacementZ);
-                                rPositions.push_back(
-                                        sqrt(displacementX * displacementX + displacementY * displacementY));
+                                rPositions.push_back(sqrt(displacementX * displacementX + displacementY * displacementY));
                                 phiPositions.push_back(atan2(displacementY, displacementX));
 
                                 radii.push_back(ringRadius);
@@ -220,9 +219,9 @@ std::vector<double> Coil::calculateAmpereForceGeneral(const Coil &primary, const
             forceY += tempForceY;
             forceZ += tempForceZ;
 
-            torqueX += radii[i] * (tempForceY * unitRingPointsZ[p] - tempForceZ * unitRingPointsY[p]);
-            torqueY += radii[i] * (tempForceZ * unitRingPointsX[p] - tempForceX * unitRingPointsZ[p]);
-            torqueZ += radii[i] * (tempForceX * unitRingPointsY[p] - tempForceY * unitRingPointsX[p]);
+            torqueX += radii[i] * (unitRingPointsY[p] * tempForceZ - unitRingPointsZ[p] * tempForceY);
+            torqueY += radii[i] * (unitRingPointsZ[p] * tempForceX - unitRingPointsX[p] * tempForceZ);
+            torqueZ += radii[i] * (unitRingPointsX[p] * tempForceY - unitRingPointsY[p] * tempForceX);
         }
 
         forceX /= (lengthBlocks * thicknessBlocks * angularBlocks);

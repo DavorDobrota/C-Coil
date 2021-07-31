@@ -5,7 +5,7 @@ double Coil::computeAmpereForceZAxis(const Coil &primary, const Coil &secondary,
 {
     auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method,
                                                                    false);
-    return calculateAmpereForceZAxis(primary, secondary, zDisplacement, args, method);
+    return computeAmpereForceZAxis(primary, secondary, zDisplacement, args, method);
 }
 
 double Coil::computeAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,

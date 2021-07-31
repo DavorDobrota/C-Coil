@@ -36,5 +36,9 @@ void testCoilAmpereForceZAxis();
 void testCoilAmpereForceGeneralForZAxis();
 void testCoilGradientTensor();
 
+void testCoilAmpereForceForFilamentsZAxis();
+void testCoilAmpereForceGeneralCase();
+void testCoilAmpereForceThinCoils();
+
 
 #endif //GENERAL_COIL_PROGRAM_TEST_H

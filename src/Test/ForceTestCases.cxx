@@ -16,9 +16,10 @@ void testCoilAmpereForceForFilamentsZAxis()
 
 void testCoilAmpereForceGeneralCase()
 {
-    Coil coil1 = Coil(0.1204, 0.1456, 0.5292, 126, 16500.0);
-    Coil coil2 = Coil(0.336, 0.057, 0.552, 1890, 725.0);
-    Coil coil3 = Coil(0.393, 0.0873, 0.552, 3792, 725.0);
+    Coil coil1 = Coil(0.1204, 0.1456, 0.5292, 126, 16500);
+    Coil coil2 = Coil(0.336, 0.057, 0.552, 1890, 725);
+    Coil coil3 = Coil(0.393, 0.0873, 0.552, 3792, 725);
+
 
     coil1.setThreadCount(16);
     coil2.setThreadCount(16);
@@ -32,10 +33,10 @@ void testCoilAmpereForceGeneralCase()
         for (double dr = 0.0; dr <= 0.004; dr += 0.002)
         {
             tempVector1 = Coil::computeAmpereForceGeneral(coil2, coil1, 0.0 + dz, 0.0 + dr,
-                                                          PrecisionFactor(7.0), CPU_MT);
+                                                          PrecisionFactor(8.0), CPU_MT);
             tempVector2 = Coil::computeAmpereForceGeneral(coil3, coil1, 0.0 + dz, 0.0 + dr,
-                                                          PrecisionFactor(7.0), CPU_MT);
-            printf("%.10f %.10f %.10f %.10f %.10f %.10f\n",
+                                                          PrecisionFactor(8.0), CPU_MT);
+            printf("%16.10g %16.10g %16.10g %16.10g %16.10g %16.10g\n",
                    tempVector1[0] + tempVector2[0], tempVector1[1] + tempVector2[1], tempVector1[2] + tempVector2[2],
                    tempVector1[3] + tempVector2[3], tempVector1[4] + tempVector2[4], tempVector1[5] + tempVector2[5]);
         }
@@ -56,51 +57,53 @@ void testCoilAmpereForceGeneralCase()
 
 void testCoilAmpereForceThinCoils()
 {
+    ComputeMethod method = CPU_MT;
+
     for (int i = 1; i <= 10; ++i)
     {
         Coil coil1 = Coil(0.5, 1e-15, 0.2, 100);
         Coil coil2 = Coil(0.5, 1e-15, 0.3, 200);
-        printf("%.16g mN\n", 1000 * Coil::computeAmpereForceZAxis(coil1, coil2, 0.4, PrecisionFactor(i), CPU_ST));
+        printf("%.16g mN\n", 1000 * Coil::computeAmpereForceZAxis(coil1, coil2, 0.4, PrecisionFactor(i), method));
     }
     printf("\n");
 
     for (int i = 1; i <= 10; ++i)
     {
-        Coil coil1 = Coil(0.1, 1e-15, 0.15, 225);
-        Coil coil2 = Coil(0.09, 1e-15, 0.15, 300);
-        printf("%.16g mN\n", 1000 * Coil::computeAmpereForceZAxis(coil1, coil2, 0.05, PrecisionFactor(i), CPU_ST));
+        Coil coil3 = Coil(0.1, 1e-15, 0.15, 225);
+        Coil coil4 = Coil(0.09, 1e-15, 0.15, 300);
+        printf("%.16g mN\n", 1000 * Coil::computeAmpereForceZAxis(coil3, coil4, 0.05, PrecisionFactor(i), method));
     }
     printf("\n");
 
     for (int i = 1; i <= 10; ++i)
     {
-        Coil coil1 = Coil(0.25, 1e-15, 0.06, 40);
-        Coil coil2 = Coil(0.2, 1e-15, 0.04, 120);
-        printf("%.16g mN\n", 1000 * Coil::computeAmpereForceZAxis(coil1, coil2, 0.3, PrecisionFactor(i), CPU_ST));
+        Coil coil5 = Coil(0.25, 1e-15, 0.06, 40);
+        Coil coil6 = Coil(0.2, 1e-15, 0.04, 120);
+        printf("%.16g mN\n", 1000 * Coil::computeAmpereForceZAxis(coil5, coil6, 0.3, PrecisionFactor(i), method));
     }
     printf("\n");
 
     for (int i = 1; i <= 10; ++i)
     {
-        Coil coil1 = Coil(0.0762, 0.0832, 1e-15, 516, 1.42);
-        Coil coil2 = Coil(0.0762, 0.0832, 1e-15, 516, 1.42);
-        printf("%.16g N\n", Coil::computeAmpereForceZAxis(coil1, coil2, 0.0468, PrecisionFactor(i), CPU_ST));
+        Coil coil7 = Coil(0.0762, 0.0832, 1e-15, 516, 1.42);
+        Coil coil8 = Coil(0.0762, 0.0832, 1e-15, 516, 1.42);
+        printf("%.16g N\n", Coil::computeAmpereForceZAxis(coil7, coil8, 0.0468, PrecisionFactor(i), method));
     }
     printf("\n");
 
     for (int i = 1; i <= 10; ++i)
     {
-        Coil coil1 = Coil(0.16, 0.12, 1e-15, 100, 10);
-        Coil coil2 = Coil(0.11, 0.15, 1e-15, 100, 10);
-        printf("%.16g N\n", Coil::computeAmpereForceZAxis(coil1, coil2, 0.05, PrecisionFactor(i), CPU_ST));
+        Coil coil9 = Coil(0.16, 0.12, 1e-15, 100, 10);
+        Coil coil10 = Coil(0.11, 0.15, 1e-15, 100, 10);
+        printf("%.16g N\n", Coil::computeAmpereForceZAxis(coil9, coil10, 0.05, PrecisionFactor(i), method));
     }
     printf("\n");
 
     for (int i = 1; i <= 10; ++i)
     {
-        Coil coil1 = Coil(0.1, 1e-15, 0.2, 100);
-        Coil coil2 = Coil(0.2, 0.2, 1e-15, 100);
-        printf("%.16g mN\n", 1000 * Coil::computeAmpereForceZAxis(coil1, coil2, 0.6, PrecisionFactor(i), CPU_ST));
+        Coil coil11 = Coil(0.1, 1e-15, 0.2, 100);
+        Coil coil12 = Coil(0.2, 0.2, 1e-15, 100);
+        printf("%.16g mN\n", 1000 * Coil::computeAmpereForceZAxis(coil11, coil12, 0.6, PrecisionFactor(i), method));
     }
     printf("\n");
 }

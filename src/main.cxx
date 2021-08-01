@@ -12,9 +12,11 @@ int main()
 //    testCoilAmpereForceForFilamentsZAxis();
 //    testCoilAmpereForceGeneralCase();
 
-testCoilAmpereForceThinCoils();
+//testCoilAmpereForceThinCoils();
 
 //testCoilMutualInductanceZAxis();
+
+    testCoilMutualInductanceGeneralGraphs();
 
     return 0;
 }

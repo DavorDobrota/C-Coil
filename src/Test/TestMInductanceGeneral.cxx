@@ -2,6 +2,7 @@
 #include "Coil.h"
 
 #include <cstdio>
+#include <cmath>
 
 void testCoilMutualInductanceGeneralForZAxis()
 {
@@ -144,4 +145,75 @@ void testCoilMutualInductanceGeneralDifferentGeometries()
     printf("%.12g\n", Coil::computeMutualInductance(prim16, sec16, 0.2, 0.0, 1e-15));
 
     printf("\n");
+}
+
+void testCoilMutualInductanceGeneralGraphs()
+{
+    FILE *output = fopen("output.txt", "w");
+
+    Coil prim = Coil(0.01022, 0.011, 0.0022, 20, PrecisionFactor(6.0), 16);
+    Coil sec = Coil(0.01022, 0.011, 0.0022, 20, PrecisionFactor(6.0), 16);
+
+    double temp;
+
+//    for (int i = 0; i <= 200; ++i)
+//        printf("%.10g\n",
+//                Coil::computeMutualInductance(prim, sec, 0.04, i * 0.001, M_PI/2, PrecisionFactor(6.0), CPU_MT));
+//    printf("\n");
+//    printf("0. Done\n");
+
+    for (int i = 0; i <= 100; ++i)
+        fprintf(output, "%f\t%.10g\n", i * 0.001,
+                Coil::computeMutualInductance(prim, sec, i * 0.001, PrecisionFactor(6.0), CPU_MT));
+    fprintf(output,"\n");
+    printf("1/6 tests Done\n");
+
+    for (int i = 0; i <= 100; ++i)
+        fprintf(output, "%f\t%.10g\n", i * 0.002,
+               Coil::computeMutualInductance(prim, sec, 0.02, i * 0.002, PrecisionFactor(6.0), CPU_MT));
+    fprintf(output,"\n");
+    printf("2/6 tests done\n");
+
+    for (int i = 0; i <= 100; ++i)
+        fprintf(output, "%f\t%.10g\n", M_PI/50 * i,
+               Coil::computeMutualInductance(prim, sec, 0.04, 0.0, M_PI/50 * i, PrecisionFactor(6.0), CPU_MT));
+    fprintf(output,"\n");
+    printf("3/6 tests done\n");
+
+    for (int i = 0; i <= 50; ++i)
+    {
+        for (int j = 0; j <= 50; ++j)
+            fprintf(output, "%.10g\t",
+                    Coil::computeMutualInductance(prim, sec, i * 0.002, j * 0.002, PrecisionFactor(6.0), CPU_MT));
+        fprintf(output,"\n");
+        printf("test progress: %d / 50\n", i);
+    }
+    fprintf(output,"\n");
+    printf("4/6 tests done\n");
+
+    for (int i = 0; i <= 50; ++i)
+    {
+        for (int j = 0; j <= 50; ++j)
+            fprintf(output, "%.10g\t",
+                    Coil::computeMutualInductance(prim, sec, 0.04, i * 0.004, -M_PI/50 * j,
+                                                  PrecisionFactor(6.0), CPU_MT));
+        fprintf(output,"\n");
+        printf("test progress: %d / 50\n", i);
+    }
+    fprintf(output,"\n");
+    printf("5/6 tests done\n");
+
+    for (int i = 0; i <= 50; ++i)
+    {
+        for (int j = 0; j <= 50; ++j)
+            fprintf(output, "%.10g\t",
+                    Coil::computeMutualInductance(prim, sec, 0.025 + 0.002 * i, 0.0, -M_PI/50 * j,
+                                                  PrecisionFactor(6.0), CPU_MT));
+        fprintf(output,"\n");
+        printf("test progress: %d / 50\n", i);
+    }
+    fprintf(output,"\n");
+    printf("6/6 tests done\n\n");
+
+    fclose(output);
 }

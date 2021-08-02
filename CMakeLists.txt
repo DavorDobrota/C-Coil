@@ -27,6 +27,9 @@ list(APPEND LIBS "$<TARGET_OBJECTS:Polynomial>")
 
 add_subdirectory(src/ConversionUtil)
 list(APPEND LIBS "$<TARGET_OBJECTS:ConversionUtil>")
+
+add_subdirectory(src/Vector3)
+list(APPEND LIBS "$<TARGET_OBJECTS:Vector3>")
 #######################################
 
 if(WIN32)

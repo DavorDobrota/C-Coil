@@ -156,27 +156,24 @@ void testCoilMutualInductanceGeneralGraphs()
 
     double temp;
 
-//    for (int i = 0; i <= 200; ++i)
-//        printf("%.10g\n",
-//                Coil::computeMutualInductance(prim, sec, 0.04, i * 0.001, M_PI/2, PrecisionFactor(6.0), CPU_MT));
-//    printf("\n");
-//    printf("0. Done\n");
-
     for (int i = 0; i <= 100; ++i)
         fprintf(output, "%f\t%.10g\n", i * 0.001,
-                Coil::computeMutualInductance(prim, sec, i * 0.001, PrecisionFactor(6.0), CPU_MT));
+                Coil::computeMutualInductance(prim, sec, i * 0.001,
+                                              PrecisionFactor(6.0), CPU_MT));
     fprintf(output,"\n");
     printf("1/6 tests Done\n");
 
     for (int i = 0; i <= 100; ++i)
         fprintf(output, "%f\t%.10g\n", i * 0.002,
-               Coil::computeMutualInductance(prim, sec, 0.02, i * 0.002, PrecisionFactor(6.0), CPU_MT));
+               Coil::computeMutualInductance(prim, sec, 0.02, i * 0.002,
+                                             PrecisionFactor(6.0), CPU_MT));
     fprintf(output,"\n");
     printf("2/6 tests done\n");
 
     for (int i = 0; i <= 100; ++i)
         fprintf(output, "%f\t%.10g\n", M_PI/50 * i,
-               Coil::computeMutualInductance(prim, sec, 0.04, 0.0, M_PI/50 * i, PrecisionFactor(6.0), CPU_MT));
+               Coil::computeMutualInductance(prim, sec, 0.04, 0.0, M_PI/50 * i,
+                                             PrecisionFactor(6.0), CPU_MT));
     fprintf(output,"\n");
     printf("3/6 tests done\n");
 
@@ -184,7 +181,8 @@ void testCoilMutualInductanceGeneralGraphs()
     {
         for (int j = 0; j <= 50; ++j)
             fprintf(output, "%.10g\t",
-                    Coil::computeMutualInductance(prim, sec, i * 0.002, j * 0.002, PrecisionFactor(6.0), CPU_MT));
+                    Coil::computeMutualInductance(prim, sec, i * 0.002, j * 0.002,
+                                                  PrecisionFactor(6.0), CPU_MT));
         fprintf(output,"\n");
         printf("test progress: %d / 50\n", i);
     }

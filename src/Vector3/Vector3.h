@@ -1,6 +1,8 @@
 #ifndef GENERAL_COIL_PROGRAM_VECTOR3_H
 #define GENERAL_COIL_PROGRAM_VECTOR3_H
 
+#include <vector>
+
 struct Vector3
 {
     double component1;
@@ -23,6 +25,10 @@ struct Vector3
 
     static double scalarProduct(Vector3 vec1, Vector3 vec2);
     static Vector3 crossProduct(Vector3 vec1, Vector3 vec2);
+
+    static void convertAllToCartesian(std::vector<Vector3> &vector3Array);
+    static void convertAllToCylindrical(std::vector<Vector3> &vector3Array);
+    static void convertAllToSpherical(std::vector<Vector3> &vector3Array);
 
     private:
 

@@ -186,4 +186,22 @@ Vector3 Vector3::crossProduct(Vector3 vec1, Vector3 vec2)
     return Vector3(cartesianIndex, xComponent, yComponent, zComponent);
 }
 
+void Vector3::convertAllToCartesian(std::vector<Vector3> &vector3Array)
+{
+    for (auto & i : vector3Array)
+        i.convertToCartesian();
+}
+
+void Vector3::convertAllToCylindrical(std::vector<Vector3> &vector3Array)
+{
+    for (auto & i : vector3Array)
+        i.convertToCylindrical();
+}
+
+void Vector3::convertAllToSpherical(std::vector<Vector3> &vector3Array)
+{
+    for (auto & i : vector3Array)
+        i.convertToSpherical();
+}
+
 

@@ -167,23 +167,23 @@ class Coil
 
         void setSelfInductance(double selfInductance);
 
-        [[nodiscard]] double computeBFieldX(Vector3 positionVector) const;
-        [[nodiscard]] double computeBFieldX(Vector3 positionVector, const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] double computeBFieldX(vec3::Vector3 positionVector) const;
+        [[nodiscard]] double computeBFieldX(vec3::Vector3 positionVector, const PrecisionArguments &usedPrecision) const;
 
-        [[nodiscard]] double computeBFieldY(Vector3 positionVector) const;
-        [[nodiscard]] double computeBFieldY(Vector3 positionVector, const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] double computeBFieldY(vec3::Vector3 positionVector) const;
+        [[nodiscard]] double computeBFieldY(vec3::Vector3 positionVector, const PrecisionArguments &usedPrecision) const;
 
-        [[nodiscard]] double computeBFieldH(Vector3 positionVector) const;
-        [[nodiscard]] double computeBFieldH(Vector3 positionVector, const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] double computeBFieldH(vec3::Vector3 positionVector) const;
+        [[nodiscard]] double computeBFieldH(vec3::Vector3 positionVector, const PrecisionArguments &usedPrecision) const;
 
-        [[nodiscard]] double computeBFieldZ(Vector3 positionVector) const;
-        [[nodiscard]] double computeBFieldZ(Vector3 positionVector, const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] double computeBFieldZ(vec3::Vector3 positionVector) const;
+        [[nodiscard]] double computeBFieldZ(vec3::Vector3 positionVector, const PrecisionArguments &usedPrecision) const;
 
-        [[nodiscard]] double computeBFieldAbs(Vector3 positionVector) const;
-        [[nodiscard]] double computeBFieldAbs(Vector3 positionVector, const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] double computeBFieldAbs(vec3::Vector3 positionVector) const;
+        [[nodiscard]] double computeBFieldAbs(vec3::Vector3 positionVector, const PrecisionArguments &usedPrecision) const;
 
-        [[nodiscard]] Vector3 computeBFieldVector(Vector3 positionVector) const;
-        [[nodiscard]] Vector3 computeBFieldVector(Vector3 positionVector, const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] vec3::Vector3 computeBFieldVector(vec3::Vector3 positionVector) const;
+        [[nodiscard]] vec3::Vector3 computeBFieldVector(Vector3 positionVector, const PrecisionArguments &usedPrecision) const;
 
 
         [[nodiscard]] double computeAPotentialX(Vector3 positionVector) const;

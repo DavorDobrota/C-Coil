@@ -6,6 +6,7 @@
 #include "Coil.h"
 #include "OldCoil.h"
 #include "ComputeMethod.h"
+#include "vec3::Vector3.h"
 
 void testLegendrePolynomials()
 {
@@ -56,9 +57,12 @@ void testNewCoilParameters()
 
     testCoil1.setSineFrequency(0);
     testCoil1.setCurrent(1);
-    std::vector<double> fieldVector = testCoil1.computeBFieldVector(0.0, 0.0, 0.0);
-    printf("%.25f %.25f\n", fieldVector[2], testCoil1.computeBFieldZ(0.0, 0.0));
-    printf("%.25f %.25f\n", fieldVector[0], testCoil1.computeBFieldH(0.0, 0.0));
+
+    vec3::Vector3 positionVector = vec3::Vector3::getVectorCartesian(0.0, 0.0, 0.0);
+
+    vec3::Vector3 vector = testCoil1.computeBFieldVector(positionVector);
+    printf("%.25f %.25f\n", vector.component3, testCoil1.computeBFieldZ(positionVector));
+    printf("%.25f %.25f\n", vector.component1, testCoil1.computeBFieldH(positionVector));
 }
 
 void testMethodPrecisionCompareCPUvsGPU()

@@ -9,6 +9,7 @@ target_include_directories(
         PUBLIC ${CMAKE_SOURCE_DIR}/src/CoilData
         PUBLIC ${CMAKE_SOURCE_DIR}/src/ConversionUtil
         PUBLIC ${CMAKE_SOURCE_DIR}/src/LegendreMatrix
+        PUBLIC ${CMAKE_SOURCE_DIR}/src/Vector3
         PUBLIC ${CMAKE_SOURCE_DIR}/include
         PUBLIC ${CMAKE_SOURCE_DIR}/src
 )

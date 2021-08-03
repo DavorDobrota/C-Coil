@@ -9,7 +9,7 @@ void testPerformanceCPU_ST(int nOps)
     using namespace std::chrono;
 
     double temp1;
-    std::vector<double> temp2;
+    vec3::Vector3 temp2;
     std::vector<double> temp3;
 
     high_resolution_clock::time_point begin_time;
@@ -26,21 +26,21 @@ void testPerformanceCPU_ST(int nOps)
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < nOps; ++i){
-        temp1 = testCoil.computeAPotentialAbs(i*0.000001, 0.0);
+        temp1 = testCoil.computeAPotentialAbs(vec3::Vector3::getVectorCartesian(0.0, 0.0, i*0.000001));
     }
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("potential A : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < nOps; ++i){
-        temp2 = testCoil.computeBFieldVector(i*0.000001, 0.0, 0.0);
+        temp2 = testCoil.computeBFieldVector(vec3::Vector3::getVectorCartesian(0.0, 0.0, i*0.000001));
     }
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("combined B  : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < nOps; ++i){
-        temp3 = testCoil.computeBGradientTensor(i*0.000001, 0.0, 0.0);
+        temp3 = testCoil.computeBGradientTensor(vec3::Vector3::getVectorCartesian(0.0, 0.0, i*0.000001));
     }
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("gradient G  : %.1f MInc/s\n", 1e-6 * numOperations / interval);

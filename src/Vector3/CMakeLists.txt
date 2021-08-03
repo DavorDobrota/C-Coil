@@ -1,4 +1,4 @@
-add_library(Vector3 OBJECT Vector3.cxx CoordVector3.cxx FieldVector3.cxx)
+add_library(Vector3 OBJECT CoordVector3.cxx FieldVector3.cxx)
 
 target_compile_options(Vector3 PRIVATE -fpic)
 

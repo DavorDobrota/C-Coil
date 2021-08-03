@@ -1,6 +1,7 @@
 #include "Test.h"
 #include "Coil.h"
 #include "OldCoil.h"
+#include "Vector3.h"
 
 #include <cstdio>
 #include <cmath>
@@ -45,7 +46,7 @@ void testCoilGradientTensor()
     printf("Z Axis test\n");
     for (int i = 0; i < 1000; ++i)
     {
-        tensor = coil.computeBGradientTensor(i * 0.001, 0.0, 0.0);
+        tensor = coil.computeBGradientTensor(vec3::CoordVector3(vec3::CYLINDRICAL, 0.001 * i, 0.0, 0.0));
         printf("%.15f %.15f %.15f\n", tensor[0] / (1e-7), tensor[4] / (1e-7), tensor[8] / (1e-7));
     }
     printf("\n");
@@ -53,7 +54,7 @@ void testCoilGradientTensor()
     printf("Off axis test\n");
     for (int i = 0; i < 1000; ++i)
     {
-        tensor = coil.computeBGradientTensor(i * 0.001, 0.5, M_PI / 4);
+        tensor = coil.computeBGradientTensor(vec3::CoordVector3(vec3::CYLINDRICAL, i * 0.001, 0.5, M_PI / 4));
         printf("%.8f %.8f %.8f | %.8f %.8f %.8f | %.8f %.8f %.8f\n",
                tensor[0] / (1e-7), tensor[1] / (1e-7), tensor[2] / (1e-7),
                tensor[3] / (1e-7), tensor[4] / (1e-7), tensor[5] / (1e-7),

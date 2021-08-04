@@ -61,8 +61,8 @@ void testNewCoilParameters()
     vec3::CoordVector3 positionVector = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0);
 
     vec3::FieldVector3 vector = testCoil1.computeBFieldVector(positionVector);
-    printf("%.25f %.25f\n", vector.zComponent, testCoil1.computeBFieldZ(positionVector));
-    printf("%.25f %.25f\n", vector.xComponent, testCoil1.computeBFieldH(positionVector));
+    printf("%.25f %.25f\n", vector.xComponent, testCoil1.computeBFieldZ(positionVector));
+    printf("%.25f %.25f\n", vector.zComponent, testCoil1.computeBFieldH(positionVector));
 }
 
 void testMethodPrecisionCompareCPUvsGPU()
@@ -130,4 +130,51 @@ void testCoilMutualInductanceForSpecialCase()
 	printf("%.15f\n", Coil::computeMutualInductance(primary, secondary,
                                                     0.07366, 0.30988,
                                                     PrecisionFactor(4.0)));
+}
+
+void testVector3()
+{
+    for (int i = 0; i < 100; ++i)
+    {
+        vec3::CoordVector3 vector = vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, 1, i * M_PI / 25);
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToCartesian();
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToSpherical();
+        printf("%.6f %.6f %.6f\n", vector.component1, vector.component2, vector.component3);
+    }
+    printf("\n");
+
+    for (int i = 0; i < 100; ++i)
+    {
+        vec3::CoordVector3 vector = vec3::CoordVector3(vec3::CYLINDRICAL, 1, 1, i * M_PI / 25);
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToCartesian();
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToSpherical();
+        printf("%.6f %.6f %.6f\n", vector.component1, vector.component2, vector.component3);
+    }
+    printf("\n");
+
+    for (int i = 0; i < 100; ++i)
+    {
+        vec3::CoordVector3 vector = vec3::CoordVector3(vec3::SPHERICAL, 1, M_PI/2, -M_PI + i * M_PI / 25);
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToCartesian();
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToCylindrical();
+        printf("%.6f %.6f %.6f\n", vector.component1, vector.component2, vector.component3);
+    }
+    printf("\n");
+
+    for (int i = 0; i < 100; ++i)
+    {
+        vec3::CoordVector3 vector = vec3::CoordVector3(vec3::SPHERICAL, 1, i * M_PI / 25, 0.0);
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToCartesian();
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToCylindrical();
+        printf("%.6f %.6f %.6f\n", vector.component1, vector.component2, vector.component3);
+    }
+    printf("\n");
 }

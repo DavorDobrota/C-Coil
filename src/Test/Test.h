@@ -7,6 +7,7 @@ void testLegendrePolynomials();
 void testNewCoilParameters();
 void testMethodPrecisionCompareCPUvsGPU();
 void testCoilMutualInductanceForSpecialCase();
+void testVector3();
 
 void testPerformanceCPU_ST(int nOps = 50'000);
 void testPerformanceForComputeAll(int nOps = 80'000, int nRepeats = 1, int nThreads = 16);

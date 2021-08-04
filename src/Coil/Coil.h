@@ -1,10 +1,11 @@
 #ifndef GENERAL_COIL_PROGRAM_COIL_H
 #define GENERAL_COIL_PROGRAM_COIL_H
 
-#include <vector>
-
 #include "ComputeMethod.h"
 #include "Vector3/Vector3.h"
+
+#include <vector>
+
 
 #define PRINT_ENABLED 0
 

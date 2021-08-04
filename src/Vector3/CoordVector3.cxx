@@ -19,6 +19,8 @@ vec3::CoordVector3::CoordVector3(CoordinateSystem system, double comp1, double c
             if (component3 < 0)
                 component3 += 2*M_PI;
         case SPHERICAL:
+            if (component1 < 0)
+                throw "Radius cannot be negative";
             if (component2 < 0 || component2 > M_PI)
                 throw "Theta must be between 0 and PI";
             component3 = std::fmod(comp3, 2*M_PI);

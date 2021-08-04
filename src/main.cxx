@@ -1,6 +1,6 @@
 #include <iostream>
+
 #include "OldCoil.h"
-#include "Polynomial.h"
 #include "Coil.h"
 #include "Test.h"
 
@@ -16,7 +16,6 @@ int main()
 
 //testCoilMutualInductanceZAxis();
 
-    testCoilMutualInductanceGeneralGraphs();
 
     return 0;
 }

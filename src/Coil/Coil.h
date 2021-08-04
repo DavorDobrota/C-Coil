@@ -227,209 +227,94 @@ class Coil
                                                                  const PrecisionArguments &usedPrecision) const;
 
 
-        void computeAllBFieldX(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedFieldArr,
-                               ComputeMethod method = CPU_ST) const;
-        void computeAllBFieldX(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedFieldArr,
-                               const PrecisionArguments &usedPrecision,
-                               ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllBFieldX(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                              ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllBFieldX(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
 
-        void computeAllBFieldY(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedFieldArr,
-                               ComputeMethod method = CPU_ST) const;
-        void computeAllBFieldY(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedFieldArr,
-                               const PrecisionArguments &usedPrecision,
-                               ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllBFieldY(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllBFieldY(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
 
-        void computeAllBFieldH(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               std::vector<double> &computedFieldArr,
-                               ComputeMethod method = CPU_ST) const;
-        void computeAllBFieldH(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               std::vector<double> &computedFieldArr,
-                               const PrecisionArguments &usedPrecision,
-                               ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllBFieldH(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllBFieldH(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
 
-        void computeAllBFieldZ(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedFieldArr,
-                               ComputeMethod method = CPU_ST) const;
-        void computeAllBFieldZ(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedFieldArr,
-                               const PrecisionArguments &usedPrecision,
-                               ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllBFieldZ(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                              ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllBFieldZ(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
 
-        void computeAllBFieldAbs(const std::vector<double> &cylindricalZArr,
-                                 const std::vector<double> &cylindricalRArr,
-                                 const std::vector<double> &cylindricalPhiArr,
-                                 std::vector<double> &computedFieldArr,
-                                 ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllBFieldAbs(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                              ComputeMethod method = CPU_ST) const;
 
-        void computeAllBFieldAbs(const std::vector<double> &cylindricalZArr,
-                                 const std::vector<double> &cylindricalRArr,
-                                 const std::vector<double> &cylindricalPhiArr,
-                                 std::vector<double> &computedFieldArr,
-                                 const PrecisionArguments &usedPrecision,
-                                 ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllBFieldAbs(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                              const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
 
-        void computeAllBFieldComponents(const std::vector<double> &cylindricalZArr,
-                                        const std::vector<double> &cylindricalRArr,
-                                        const std::vector<double> &cylindricalPhiArr,
-                                        std::vector<double> &computedFieldXArr,
-                                        std::vector<double> &computedFieldYArr,
-                                        std::vector<double> &computedFieldZArr,
-                                        ComputeMethod method = CPU_ST) const;
-        void computeAllBFieldComponents(const std::vector<double> &cylindricalZArr,
-                                        const std::vector<double> &cylindricalRArr,
-                                        const std::vector<double> &cylindricalPhiArr,
-                                        std::vector<double> &computedFieldXArr,
-                                        std::vector<double> &computedFieldYArr,
-                                        std::vector<double> &computedFieldZArr,
-                                        const PrecisionArguments &usedPrecision,
-                                        ComputeMethod method = CPU_ST) const;
-
-        void computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
-                                   const std::vector<double> &cylindricalRArr,
-                                   const std::vector<double> &cylindricalPhiArr,
-                                   std::vector<double> &computedPotentialArr,
-                                   ComputeMethod method = CPU_ST) const;
-        void computeAllAPotentialX(const std::vector<double> &cylindricalZArr,
-                                   const std::vector<double> &cylindricalRArr,
-                                   const std::vector<double> &cylindricalPhiArr,
-                                   std::vector<double> &computedPotentialArr,
-                                   const PrecisionArguments &usedPrecision,
-                                   ComputeMethod method = CPU_ST) const;
-
-        void computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
-                                   const std::vector<double> &cylindricalRArr,
-                                   const std::vector<double> &cylindricalPhiArr,
-                                   std::vector<double> &computedPotentialArr,
-                                   ComputeMethod method = CPU_ST) const;
-        void computeAllAPotentialY(const std::vector<double> &cylindricalZArr,
-                                   const std::vector<double> &cylindricalRArr,
-                                   const std::vector<double> &cylindricalPhiArr,
-                                   std::vector<double> &computedPotentialArr,
-                                   const PrecisionArguments &usedPrecision,
-                                   ComputeMethod method = CPU_ST) const;
-
-        void computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
-                                   const std::vector<double> &cylindricalRArr,
-                                   const std::vector<double> &cylindricalPhiArr,
-                                   std::vector<double> &computedPotentialArr,
-                                   ComputeMethod method = CPU_ST) const;
-        void computeAllAPotentialZ(const std::vector<double> &cylindricalZArr,
-                                   const std::vector<double> &cylindricalRArr,
-                                   const std::vector<double> &cylindricalPhiArr,
-                                   std::vector<double> &computedPotentialArr,
-                                   const PrecisionArguments &usedPrecision,
-                                   ComputeMethod method = CPU_ST) const;
-
-        void computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
-                                     const std::vector<double> &cylindricalRArr,
-                                     std::vector<double> &computedPotentialArr,
-                                     ComputeMethod method = CPU_ST) const;
-        void computeAllAPotentialAbs(const std::vector<double> &cylindricalZArr,
-                                     const std::vector<double> &cylindricalRArr,
-                                     std::vector<double> &computedPotentialArr,
-                                     const PrecisionArguments &usedPrecision,
-                                     ComputeMethod method = CPU_ST) const;
-
-        void computeAllAPotentialComponents(const std::vector<double> &cylindricalZArr,
-                                            const std::vector<double> &cylindricalRArr,
-                                            const std::vector<double> &cylindricalPhiArr,
-                                            std::vector<double> &computedPotentialXArr,
-                                            std::vector<double> &computedPotentialYArr,
-                                            std::vector<double> &computedPotentialZArr,
-                                            ComputeMethod method = CPU_ST) const;
-        void computeAllAPotentialComponents(const std::vector<double> &cylindricalZArr,
-                                            const std::vector<double> &cylindricalRArr,
-                                            const std::vector<double> &cylindricalPhiArr,
-                                            std::vector<double> &computedPotentialXArr,
-                                            std::vector<double> &computedPotentialYArr,
-                                            std::vector<double> &computedPotentialZArr,
-                                            const PrecisionArguments &usedPrecision,
-                                            ComputeMethod method = CPU_ST) const;
-
-        void computeAllEFieldX(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedFieldArr,
-                               ComputeMethod method = CPU_ST) const;
-        void computeAllEFieldX(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedFieldArr,
-                               const PrecisionArguments &usedPrecision,
-                               ComputeMethod method = CPU_ST) const;
-
-        void computeAllEFieldY(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedFieldArr,
-                               ComputeMethod method = CPU_ST) const;
-        void computeAllEFieldY(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedFieldArr,
-                               const PrecisionArguments &usedPrecision,
-                               ComputeMethod method = CPU_ST) const;
-
-        void computeAllEFieldZ(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedFieldArr,
-                               ComputeMethod method = CPU_ST) const;
-        void computeAllEFieldZ(const std::vector<double> &cylindricalZArr,
-                               const std::vector<double> &cylindricalRArr,
-                               const std::vector<double> &cylindricalPhiArr,
-                               std::vector<double> &computedFieldArr,
-                               const PrecisionArguments &usedPrecision,
-                               ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<vec3::FieldVector3> computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                   ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<vec3::FieldVector3> computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                   const PrecisionArguments &usedPrecision,
+                                                                   ComputeMethod method = CPU_ST) const;
 
 
-        void computeAllEFieldAbs(const std::vector<double> &cylindricalZArr,
-                                 const std::vector<double> &cylindricalRArr,
-                                 std::vector<double> &computedFieldArr,
-                                 ComputeMethod method = CPU_ST) const;
-        void computeAllEFieldAbs(const std::vector<double> &cylindricalZArr,
-                                 const std::vector<double> &cylindricalRArr,
-                                 std::vector<double> &computedFieldArr,
-                                 const PrecisionArguments &usedPrecision,
-                                 ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllAPotentialX(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllAPotentialX(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
 
-        void computeAllEFieldComponents(const std::vector<double> &cylindricalZArr,
-                                        const std::vector<double> &cylindricalRArr,
-                                        const std::vector<double> &cylindricalPhiArr,
-                                        std::vector<double> &computedFieldXArr,
-                                        std::vector<double> &computedFieldYArr,
-                                        std::vector<double> &computedFieldZArr,
-                                        ComputeMethod method = CPU_ST) const;
-        void computeAllEFieldComponents(const std::vector<double> &cylindricalZArr,
-                                        const std::vector<double> &cylindricalRArr,
-                                        const std::vector<double> &cylindricalPhiArr,
-                                        std::vector<double> &computedFieldXArr,
-                                        std::vector<double> &computedFieldYArr,
-                                        std::vector<double> &computedFieldZArr,
-                                        const PrecisionArguments &usedPrecision,
-                                        ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllAPotentialY(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllAPotentialY(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
 
-        void computeAllBGradientTensors(const std::vector<double> &cylindricalZArr,
-                                        const std::vector<double> &cylindricalRArr,
-                                        const std::vector<double> &cylindricalPhiArr,
+        [[nodiscard]] std::vector<double> computeAllAPotentialZ(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllAPotentialZ(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
+
+        [[nodiscard]] std::vector<double> computeAllAPotentialAbs(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                  ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllAPotentialAbs(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                  const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
+
+        [[nodiscard]] std::vector<vec3::FieldVector3> computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                                     ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<vec3::FieldVector3> computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                                     const PrecisionArguments &usedPrecision,
+                                                                                     ComputeMethod method = CPU_ST) const;
+
+
+        [[nodiscard]] std::vector<double> computeAllEFieldX(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllEFieldX(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
+
+        [[nodiscard]] std::vector<double> computeAllEFieldY(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllEFieldY(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
+
+        [[nodiscard]] std::vector<double> computeAllEFieldZ(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllEFieldZ(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
+
+        [[nodiscard]] std::vector<double> computeAllEFieldAbs(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                              ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<double> computeAllEFieldAbs(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                              const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
+
+        [[nodiscard]] std::vector<vec3::FieldVector3> computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                                 ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<vec3::FieldVector3> computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                                 const PrecisionArguments &usedPrecision,
+                                                                                 ComputeMethod method = CPU_ST) const;
+
+
+        void computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &positionVectorArr,
                                         std::vector<double> &computedGradientXX,
                                         std::vector<double> &computedGradientXY,
                                         std::vector<double> &computedGradientXZ,
@@ -440,9 +325,7 @@ class Coil
                                         std::vector<double> &computedGradientZY,
                                         std::vector<double> &computedGradientZZ,
                                         ComputeMethod method = CPU_ST) const;
-        void computeAllBGradientTensors(const std::vector<double> &cylindricalZArr,
-                                        const std::vector<double> &cylindricalRArr,
-                                        const std::vector<double> &cylindricalPhiArr,
+        void computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &positionVectorArr,
                                         std::vector<double> &computedGradientXX,
                                         std::vector<double> &computedGradientXY,
                                         std::vector<double> &computedGradientXZ,
@@ -454,6 +337,7 @@ class Coil
                                         std::vector<double> &computedGradientZZ,
                                         const PrecisionArguments &usedPrecision,
                                         ComputeMethod method = CPU_ST) const;
+
 
         static double computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
                                               PrecisionFactor precisionFactor = PrecisionFactor(),
@@ -568,6 +452,11 @@ class Coil
 
         [[nodiscard]] std::vector<double> calculateBGradient(double zAxis, double rPolar,
                                                              const PrecisionArguments &usedPrecision) const;
+
+        static void adaptInputVectorToCalculateMethods(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                       std::vector<double> &cylindricalZArr,
+                                                       std::vector<double> &cylindricalRArr,
+                                                       std::vector<double> &cylindricalPhiArr) ;
 
         void calculateAllBFieldST(const std::vector<double> &cylindricalZArr,
                                   const std::vector<double> &cylindricalRArr,

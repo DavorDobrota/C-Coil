@@ -29,11 +29,11 @@ vec3::CoordVector3::CoordVector3(CoordinateSystem system, double comp1, double c
     }
 }
 
-bool vec3::CoordVector3::isCartesian() { return coordinateSystem == CARTESIAN; }
+bool vec3::CoordVector3::isCartesian() const { return coordinateSystem == CARTESIAN; }
 
-bool vec3::CoordVector3::isCylindrical() { return coordinateSystem == CYLINDRICAL; }
+bool vec3::CoordVector3::isCylindrical() const { return coordinateSystem == CYLINDRICAL; }
 
-bool vec3::CoordVector3::isSpherical() { return coordinateSystem == SPHERICAL; }
+bool vec3::CoordVector3::isSpherical() const { return coordinateSystem == SPHERICAL; }
 
 void vec3::CoordVector3::convertToCartesian()
 {

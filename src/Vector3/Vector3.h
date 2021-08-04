@@ -19,9 +19,9 @@ namespace vec3
             CoordVector3();
             explicit CoordVector3(CoordinateSystem system, double comp1, double comp2, double comp3);
 
-            bool isCartesian();
-            bool isCylindrical();
-            bool isSpherical();
+            [[nodiscard]] bool isCartesian() const;
+            [[nodiscard]] bool isCylindrical() const;
+            [[nodiscard]] bool isSpherical() const;
 
             void convertToCartesian();
             void convertToCylindrical();

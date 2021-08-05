@@ -11,6 +11,7 @@ void Coil::adaptInputVectorToCalculateMethods(const std::vector<vec3::CoordVecto
 {
     cylindricalZArr.resize(positionVectorArr.size());
     cylindricalRArr.resize(positionVectorArr.size());
+    cylindricalPhiArr.resize(positionVectorArr.size());
 
     for (int i = 0; i < positionVectorArr.size(); ++i)
     {

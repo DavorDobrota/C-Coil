@@ -1,7 +1,7 @@
 #include "Test.h"
 #include "Coil.h"
 #include "OldCoil.h"
-#include "Vector3.h"
+#include "Tensor.h"
 
 #include <cstdio>
 #include <cmath>
@@ -25,14 +25,15 @@ void testCoilAmpereForceGeneralForZAxis()
     Coil prim1 = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(6.0), 16);
     Coil sec1 = Coil(0.02, 0.025, 0.04, 1000, PrecisionFactor(6.0), 16);
 
-    std::vector<double> tempVector;
+    std::pair<vec3::FieldVector3, vec3::FieldVector3> forcePair;
 
     for (int i = 0; i < 100; ++i)
     {
-        tempVector = Coil::computeAmpereForceGeneral(prim1, sec1, 0.08 + i*0.001, 1e-18,
+        forcePair = Coil::computeAmpereForceGeneral(prim1, sec1, 0.08 + i*0.001, 1e-18,
                                                      PrecisionFactor(8.0), CPU_MT);
         printf("%.15f %.15f %.15f %.15f %.15f %.15f\n",
-               tempVector[0], tempVector[1], tempVector[2], tempVector[3], tempVector[4], tempVector[5]);
+               forcePair.first.xComponent, forcePair.first.yComponent, forcePair.first.zComponent,
+               forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
     }
     printf("\n");
 }
@@ -41,13 +42,13 @@ void testCoilGradientTensor()
 {
     Coil coil = Coil(1.0, 1e-15, 1e-15, 1);
 
-    std::vector<double> tensor;
+    vec3::Matrix3 tensor;
 
     printf("Z Axis test\n");
     for (int i = 0; i < 1000; ++i)
     {
         tensor = coil.computeBGradientTensor(vec3::CoordVector3(vec3::CYLINDRICAL, 0.001 * i, 0.0, 0.0));
-        printf("%.15f %.15f %.15f\n", tensor[0] / (1e-7), tensor[4] / (1e-7), tensor[8] / (1e-7));
+        printf("%.15f %.15f %.15f\n", tensor.xxElement / (1e-7), tensor.yyElement / (1e-7), tensor.zzElement / (1e-7));
     }
     printf("\n");
 
@@ -56,9 +57,9 @@ void testCoilGradientTensor()
     {
         tensor = coil.computeBGradientTensor(vec3::CoordVector3(vec3::CYLINDRICAL, i * 0.001, 0.5, M_PI / 4));
         printf("%.8f %.8f %.8f | %.8f %.8f %.8f | %.8f %.8f %.8f\n",
-               tensor[0] / (1e-7), tensor[1] / (1e-7), tensor[2] / (1e-7),
-               tensor[3] / (1e-7), tensor[4] / (1e-7), tensor[5] / (1e-7),
-               tensor[6] / (1e-7), tensor[7] / (1e-7), tensor[8] / (1e-7));
+               tensor.xxElement / (1e-7), tensor.xyElement / (1e-7), tensor.xzElement / (1e-7),
+               tensor.yxElement / (1e-7), tensor.yyElement / (1e-7), tensor.yzElement / (1e-7),
+               tensor.zxElement / (1e-7), tensor.zyElement / (1e-7), tensor.zzElement / (1e-7));
     }
     printf("\n");
 }

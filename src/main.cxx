@@ -9,12 +9,12 @@ extern thread_pool tp;
 int main()
 {
 
-//    testCoilAmpereForceForFilamentsZAxis();
+ //   testCoilAmpereForceForFilamentsZAxis();
 //    testCoilAmpereForceGeneralCase();
 
-//testCoilAmpereForceThinCoils();
+    testCoilAmpereForceThinCoils();
 
-//testCoilMutualInductanceZAxis();
+    testCoilMutualInductanceZAxis();
 
 
     return 0;

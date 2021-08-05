@@ -200,7 +200,7 @@ void Coil::calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
 
     for (int i = 0; i < cylindricalZArr.size(); ++i)
     {
-        polarR[i] = std::std::sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]);
+        polarR[i] = std::sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]);
         polarTheta[i] = std::atan2(cylindricalRArr[i], cylindricalZArr[i]);
     }
     std::vector<float> potentialArr(polarR.size());

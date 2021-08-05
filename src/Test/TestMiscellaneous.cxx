@@ -6,7 +6,7 @@
 #include "Coil.h"
 #include "OldCoil.h"
 #include "ComputeMethod.h"
-#include "Vector3.h"
+#include "Tensor.h"
 
 void testLegendrePolynomials()
 {
@@ -72,48 +72,31 @@ void testMethodPrecisionCompareCPUvsGPU()
     int pointCount = 2000;
     double radius = 0.075;
 
-    std::vector<double> cylindricalZArr;
-    std::vector<double> cylindricalRArr;
-    std::vector<double> cylindricalPhiArr;
+    std::vector<vec3::CoordVector3> positionValues(pointCount);
 
-    for (int i = 0; i < pointCount ; i++)
-    {
-        cylindricalZArr.push_back(radius * cos(i * 2 * Pi / pointCount));
-        cylindricalRArr.push_back(radius * sin(i * 2 * Pi / pointCount));
-        cylindricalPhiArr.push_back(0.0);
-    }
+    for (int i = 0; i < pointCount; i++)
+        positionValues[i] = vec3::CoordVector3(vec3::CYLINDRICAL, radius, i * M_PI / pointCount, 0.0);
 
-    std::vector<double> singleResultsX;
-    std::vector<double> singleResultsY;
-    std::vector<double> singleResultsZ;
+    std::vector<double> cpuPotential;
+    std::vector<double> gpuPotential;
 
-    std::vector<double> acceleratedResultsX;
-    std::vector<double> acceleratedResultsY;
-    std::vector<double> acceleratedResultsZ;
+    std::vector<vec3::FieldVector3> cpuFieldVectors;
+    std::vector<vec3::FieldVector3> gpuFieldVectors;
 
-    std::vector<double> singlePotential;
-    std::vector<double> acceleratedPotential;
+    cpuPotential = testCoil.computeAllAPotentialAbs(positionValues, CPU_ST);
+    cpuFieldVectors = testCoil.computeAllBFieldComponents(positionValues, CPU_ST);
 
-    testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                        singleResultsX, singleResultsY, singleResultsZ,
-                                        CPU_ST);
-    testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
-                                     singlePotential, CPU_ST);
-
-    testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                        acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
-                                        GPU);
-    testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
-                                     acceleratedPotential, GPU);
+    gpuPotential = testCoil.computeAllAPotentialAbs(positionValues, GPU);
+    gpuFieldVectors = testCoil.computeAllBFieldComponents(positionValues, GPU);
 
     FILE *output = fopen("output.txt", "w");
 
     for (int i = 0; i < pointCount; ++i)
     {
         fprintf(output, "%.20f\t%.20f\t%.20f\t%.20f\t%.20f\t%.20f\n",
-               singleResultsX[i], acceleratedResultsX[i],
-               singleResultsZ[i], acceleratedResultsZ[i],
-               singlePotential[i], acceleratedPotential[i]);
+               cpuFieldVectors[i].xComponent, gpuFieldVectors[i].xComponent,
+               cpuFieldVectors[i].zComponent, gpuFieldVectors[i].zComponent,
+               cpuPotential[i], gpuPotential[i]);
     }
 }
 

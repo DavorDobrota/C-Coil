@@ -25,39 +25,47 @@ void testCoilAmpereForceGeneralCase()
     coil2.setThreadCount(16);
     coil3.setThreadCount(16);
 
-    std::vector<double> tempVector1, tempVector2;
+    std::pair<vec3::FieldVector3, vec3::FieldVector3> forcePair1, forcePair2;
 
     printf("Force and Torque in displacement\n");
     for (double dz = 0.0; dz <= 0.004; dz += 0.001)
     {
         for (double dr = 0.0; dr <= 0.004; dr += 0.002)
         {
-            tempVector1 = Coil::computeAmpereForceGeneral(coil2, coil1, 0.0 + dz, 0.0 + dr,
+            forcePair1 = Coil::computeAmpereForceGeneral(coil2, coil1, 0.0 + dz, 0.0 + dr,
                                                           PrecisionFactor(8.0), CPU_MT);
-            tempVector2 = Coil::computeAmpereForceGeneral(coil3, coil1, 0.0 + dz, 0.0 + dr,
+            forcePair2 = Coil::computeAmpereForceGeneral(coil3, coil1, 0.0 + dz, 0.0 + dr,
                                                           PrecisionFactor(8.0), CPU_MT);
             printf("%16.10g %16.10g %16.10g %16.10g %16.10g %16.10g\n",
-                   tempVector1[0] + tempVector2[0], tempVector1[1] + tempVector2[1], tempVector1[2] + tempVector2[2],
-                   tempVector1[3] + tempVector2[3], tempVector1[4] + tempVector2[4], tempVector1[5] + tempVector2[5]);
+                   forcePair1.first.xComponent + forcePair2.first.xComponent,
+                   forcePair1.first.yComponent + forcePair2.first.yComponent,
+                   forcePair1.first.zComponent + forcePair2.first.zComponent,
+                   forcePair1.second.xComponent + forcePair2.second.xComponent,
+                   forcePair1.second.yComponent + forcePair2.second.yComponent,
+                   forcePair1.second.zComponent + forcePair2.second.zComponent);
         }
     }
     printf("Force and Torque in rotation\n");
     for (int i = 0; i <= 10; ++i)
     {
-        tempVector1 = Coil::computeAmpereForceGeneral(coil2, coil1, 0.0, 0.0, M_PI/360 * i,
+        forcePair1 = Coil::computeAmpereForceGeneral(coil2, coil1, 0.0, 0.0, M_PI/360 * i,
                                                       PrecisionFactor(7.0), CPU_MT);
-        tempVector2 = Coil::computeAmpereForceGeneral(coil3, coil1, 0.0, 0.0, M_PI/360 * i,
+        forcePair1 = Coil::computeAmpereForceGeneral(coil3, coil1, 0.0, 0.0, M_PI/360 * i,
                                                       PrecisionFactor(7.0), CPU_MT);
         printf("%.10f %.10f %.10f %.10f %.10f %.10f\n",
-               tempVector1[0] + tempVector2[0], tempVector1[1] + tempVector2[1], tempVector1[2] + tempVector2[2],
-               tempVector1[3] + tempVector2[3], tempVector1[4] + tempVector2[4], tempVector1[5] + tempVector2[5]);
+               forcePair1.first.xComponent + forcePair2.first.xComponent,
+               forcePair1.first.yComponent + forcePair2.first.yComponent,
+               forcePair1.first.zComponent + forcePair2.first.zComponent,
+               forcePair1.second.xComponent + forcePair2.second.xComponent,
+               forcePair1.second.yComponent + forcePair2.second.yComponent,
+               forcePair1.second.zComponent + forcePair2.second.zComponent);
     }
     printf("\n");
 }
 
 void testCoilAmpereForceThinCoils()
 {
-    ComputeMethod method = CPU_MT;
+    ComputeMethod method = CPU_ST;
 
     for (int i = 1; i <= 10; ++i)
     {

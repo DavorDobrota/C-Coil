@@ -7,7 +7,7 @@
 #include <vector>
 
 
-#define PRINT_ENABLED 0
+#define PRINT_ENABLED 1
 
 const int precisionArraySize = 423;
 const int defaultThreadCount = 4;

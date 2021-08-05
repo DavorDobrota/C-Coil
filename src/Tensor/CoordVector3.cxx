@@ -1,6 +1,7 @@
 #include "Tensor.h"
 
 #include <cmath>
+#include <cstdio>
 
 
 vec3::CoordVector3::CoordVector3() : CoordVector3(CARTESIAN, 0.0, 0.0, 0.0) {}
@@ -10,22 +11,34 @@ vec3::CoordVector3::CoordVector3(CoordinateSystem system, double comp1, double c
 {
     switch (system)
     {
-        case CARTESIAN:
-            break;
         case CYLINDRICAL:
             if (component2 < 0)
+            {
+                fprintf(stderr, "CYLINDRICAL: Radius cannot be negative: %.15f\n", comp2);
                 throw "Radius cannot be negative";
+            }
             component3 = std::fmod(comp3, 2*M_PI);
             if (component3 < 0)
                 component3 += 2*M_PI;
+            break;
         case SPHERICAL:
             if (component1 < 0)
+            {
+                fprintf(stderr, "SPHERICAL: Radius cannot be negative: %.15f\n", comp1);
                 throw "Radius cannot be negative";
+            }
+
             if (component2 < 0 || component2 > M_PI)
+            {
+                fprintf(stderr, "SPHERICAL: Theta must be between 0 and PI: %.15f\n", comp2);
                 throw "Theta must be between 0 and PI";
+            }
             component3 = std::fmod(comp3, 2*M_PI);
             if (component3 < 0)
                 component3 += 2*M_PI;
+            break;
+        default:
+            break;
     }
 }
 
@@ -39,13 +52,13 @@ void vec3::CoordVector3::convertToCartesian()
 {
     switch (coordinateSystem)
     {
-        case CARTESIAN:
-            break;
         case CYLINDRICAL:
             convertCylindricalToCartesian();
             break;
         case SPHERICAL:
             convertSphericalToCartesian();
+            break;
+        default:
             break;
     }
 }
@@ -57,10 +70,10 @@ void vec3::CoordVector3::convertToCylindrical()
         case CARTESIAN:
             convertCartesianToCylindrical();
             break;
-        case CYLINDRICAL:
-            break;
         case SPHERICAL:
             convertSphericalToCylindrical();
+            break;
+        default:
             break;
     }
 }
@@ -75,7 +88,7 @@ void vec3::CoordVector3::convertToSpherical()
         case CYLINDRICAL:
             convertCylindricalToSpherical();
             break;
-        case SPHERICAL:
+        default:
             break;
     }
 }

@@ -1,4 +1,5 @@
 #include "Coil.h"
+#include "PrecisionGlobalVars.h"
 
 #include <cmath>
 
@@ -347,17 +348,8 @@ std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vect
 }
 
 
-void Coil::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &positionVectorArr,
-                                      std::vector<double> &computedGradientXX,
-                                      std::vector<double> &computedGradientXY,
-                                      std::vector<double> &computedGradientXZ,
-                                      std::vector<double> &computedGradientYX,
-                                      std::vector<double> &computedGradientYY,
-                                      std::vector<double> &computedGradientYZ,
-                                      std::vector<double> &computedGradientZX,
-                                      std::vector<double> &computedGradientZY,
-                                      std::vector<double> &computedGradientZZ,
-                                      const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<vec3::Matrix3> Coil::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            const PrecisionArguments &usedPrecision, ComputeMethod method) const
 {
     std::vector<double> cylindricalZArr, cylindricalRArr, cylindricalPhiArr;
 
@@ -371,69 +363,39 @@ void Coil::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &pos
     calculateAllBGradientSwitch(cylindricalZArr, cylindricalRArr,
                                 gradientRPhi, gradientRR, gradientRZ, gradientZZ, usedPrecision, method);
 
-    computedGradientXX.resize(gradientRPhi.size());
-    computedGradientXY.resize(gradientRPhi.size());
-    computedGradientXZ.resize(gradientRPhi.size());
-
-    computedGradientYX.resize(gradientRPhi.size());
-    computedGradientYY.resize(gradientRPhi.size());
-    computedGradientYZ.resize(gradientRPhi.size());
-
-    computedGradientZX.resize(gradientRPhi.size());
-    computedGradientZY.resize(gradientRPhi.size());
-    computedGradientZZ.resize(gradientRPhi.size());
+    std::vector<vec3::Matrix3> computedGradientMatrix(gradientRPhi.size());
 
     for (int i = 0; i < gradientRPhi.size(); ++i)
     {
-        if (cylindricalRArr[i] / innerRadius < 1e-14)
+        if (cylindricalRArr[i] / innerRadius < g_zAxisApproximationRatio)
         {
-            computedGradientXX[i] = gradientRR[i];
-            computedGradientXY[i] = 0.0;
-            computedGradientXZ[i] = 0.0;
-
-            computedGradientYX[i] = 0.0;
-            computedGradientYY[i] = gradientRR[i];
-            computedGradientYZ[i] = 0.0;
-
-            computedGradientZX[i] = 0.0;
-            computedGradientZY[i] = 0.0;
-            computedGradientZZ[i] = gradientZZ[i];
+            computedGradientMatrix[i] = vec3::Matrix3(gradientRR[i], 0.0, 0.0,
+                                                      0.0, gradientRR[i], 0.0,
+                                                      0.0, 0.0, gradientZZ[i]);
         }
         else
         {
             double cosPhi = cos(cylindricalPhiArr[i]);
             double sinPhi = sin(cylindricalPhiArr[i]);
 
-            computedGradientXX[i] = gradientRZ[i] * cosPhi * cosPhi + gradientRPhi[i] * sinPhi * sinPhi;
-            computedGradientXY[i] = 0.5 * sin(2 * cylindricalPhiArr[i]) * (gradientRR[i] - gradientRPhi[i]);
-            computedGradientXZ[i] = gradientRZ[i] * cosPhi;
+            double xx = gradientRZ[i] * cosPhi * cosPhi + gradientRPhi[i] * sinPhi * sinPhi;
+            double yy = gradientRZ[i] * sinPhi * sinPhi + gradientRPhi[i] * cosPhi * cosPhi;
+            double zz = gradientZZ[i];
 
-            computedGradientYX[i] = 0.5 * sin(2 * cylindricalPhiArr[i]) * (gradientRR[i] - gradientRPhi[i]);
-            computedGradientYY[i] = gradientRZ[i] * sinPhi * sinPhi + gradientRPhi[i] * cosPhi * cosPhi;
-            computedGradientYZ[i] = gradientRZ[i] * sinPhi;
-
-            computedGradientZX[i] = gradientRZ[i] * cosPhi;
-            computedGradientZY[i] = gradientRZ[i] * sinPhi;
-            computedGradientZZ[i] = gradientZZ[i];
+            double xy = 0.5 * sin(2 * cylindricalPhiArr[i]) * (gradientRR[i] - gradientRPhi[i]);
+            double xz = gradientRZ[i] * cosPhi;
+            double yz = gradientRZ[i] * sinPhi;
+            // the matrix is symmetric
+            computedGradientMatrix[i] = vec3::Matrix3(xx, xy, xz,
+                                                      xy, yy, yz,
+                                                      xz, yz, zz);
         }
     }
+    return computedGradientMatrix;
 }
 
-void Coil::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &positionVectorArr,
-                                      std::vector<double> &computedGradientXX,
-                                      std::vector<double> &computedGradientXY,
-                                      std::vector<double> &computedGradientXZ,
-                                      std::vector<double> &computedGradientYX,
-                                      std::vector<double> &computedGradientYY,
-                                      std::vector<double> &computedGradientYZ,
-                                      std::vector<double> &computedGradientZX,
-                                      std::vector<double> &computedGradientZY,
-                                      std::vector<double> &computedGradientZZ,
-                                      ComputeMethod method) const
+std::vector<vec3::Matrix3> Coil::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                            ComputeMethod method) const
 {
-    computeAllBGradientTensors(positionVectorArr,
-                               computedGradientXX, computedGradientXY, computedGradientXZ,
-                               computedGradientYX, computedGradientYY, computedGradientYZ,
-                               computedGradientZX, computedGradientZY, computedGradientZZ,
-                               defaultPrecision, method);
+    return computeAllBGradientTensors(positionVectorArr, defaultPrecision, method);
 }

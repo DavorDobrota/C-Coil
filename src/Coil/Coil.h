@@ -2,7 +2,7 @@
 #define GENERAL_COIL_PROGRAM_COIL_H
 
 #include "ComputeMethod.h"
-#include "Vector3/Vector3.h"
+#include "Tensor/Tensor.h"
 
 #include <vector>
 
@@ -222,9 +222,9 @@ class Coil
                                                              const PrecisionArguments &usedPrecision) const;
 
 
-        [[nodiscard]] std::vector<double> computeBGradientTensor(vec3::CoordVector3 positionVector) const;
-        [[nodiscard]] std::vector<double> computeBGradientTensor(vec3::CoordVector3 positionVector,
-                                                                 const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] vec3::Matrix3 computeBGradientTensor(vec3::CoordVector3 positionVector) const;
+        [[nodiscard]] vec3::Matrix3 computeBGradientTensor(vec3::CoordVector3 positionVector,
+                                                           const PrecisionArguments &usedPrecision) const;
 
 
         [[nodiscard]] std::vector<double> computeAllBFieldX(const std::vector<vec3::CoordVector3> &positionVectorArr,
@@ -314,29 +314,11 @@ class Coil
                                                                                  ComputeMethod method = CPU_ST) const;
 
 
-        void computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &positionVectorArr,
-                                        std::vector<double> &computedGradientXX,
-                                        std::vector<double> &computedGradientXY,
-                                        std::vector<double> &computedGradientXZ,
-                                        std::vector<double> &computedGradientYX,
-                                        std::vector<double> &computedGradientYY,
-                                        std::vector<double> &computedGradientYZ,
-                                        std::vector<double> &computedGradientZX,
-                                        std::vector<double> &computedGradientZY,
-                                        std::vector<double> &computedGradientZZ,
-                                        ComputeMethod method = CPU_ST) const;
-        void computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &positionVectorArr,
-                                        std::vector<double> &computedGradientXX,
-                                        std::vector<double> &computedGradientXY,
-                                        std::vector<double> &computedGradientXZ,
-                                        std::vector<double> &computedGradientYX,
-                                        std::vector<double> &computedGradientYY,
-                                        std::vector<double> &computedGradientYZ,
-                                        std::vector<double> &computedGradientZX,
-                                        std::vector<double> &computedGradientZY,
-                                        std::vector<double> &computedGradientZZ,
-                                        const PrecisionArguments &usedPrecision,
-                                        ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<vec3::Matrix3> computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                            ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] std::vector<vec3::Matrix3> computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                                            const PrecisionArguments &usedPrecision,
+                                                                            ComputeMethod method = CPU_ST) const;
 
 
         static double computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,

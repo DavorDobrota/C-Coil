@@ -58,6 +58,26 @@ namespace vec3
             static double scalarProduct(FieldVector3 vec1, FieldVector3 vec2);
             static FieldVector3 crossProduct(FieldVector3 vec1, FieldVector3 vec2);
     };
+
+    class Matrix3
+    {
+        public:
+
+            double xxElement;
+            double xyElement;
+            double xzElement;
+
+            double yxElement;
+            double yyElement;
+            double yzElement;
+
+            double zxElement;
+            double zyElement;
+            double zzElement;
+
+            Matrix3();
+            explicit Matrix3(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz);
+    };
 }
 
 

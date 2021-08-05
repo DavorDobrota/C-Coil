@@ -1,4 +1,5 @@
 #include "Coil.h"
+#include "PrecisionGlobalVars.h"
 
 #include <cmath>
 
@@ -193,7 +194,8 @@ vec3::FieldVector3 Coil::computeEFieldVector(vec3::CoordVector3 positionVector) 
     return computeEFieldVector(positionVector, defaultPrecision);
 }
 
-std::vector<double> Coil::computeBGradientTensor(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
+
+vec3::Matrix3 Coil::computeBGradientTensor(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
 {
     positionVector.convertToCylindrical();
     double cylindricalZ = positionVector.component1;
@@ -206,43 +208,35 @@ std::vector<double> Coil::computeBGradientTensor(vec3::CoordVector3 positionVect
     double bufferValueRZ = bufferValues[2];
     double bufferValueZZ = bufferValues[3];
 
-    std::vector<double> outputValues;
+    vec3::Matrix3 computedGradientMatrix;
 
-    if (cylindricalR / innerRadius < 1e-14)
+    if (cylindricalR / innerRadius < g_zAxisApproximationRatio)
     {
-        outputValues.push_back(bufferValueRR);
-        outputValues.push_back(0.0);
-        outputValues.push_back(0.0);
-
-        outputValues.push_back(0.0);
-        outputValues.push_back(bufferValueRR);
-        outputValues.push_back(0.0);
-
-        outputValues.push_back(0.0);
-        outputValues.push_back(0.0);
-        outputValues.push_back(bufferValueZZ);
+        computedGradientMatrix = vec3::Matrix3(bufferValueRR, 0.0, 0.0,
+                                               0.0, bufferValueRR, 0.0,
+                                               0.0, 0.0, bufferValueZZ);
     }
     else
     {
         double cosPhi = cos(cylindricalPhi);
         double sinPhi = sin(cylindricalPhi);
 
-        outputValues.push_back(bufferValueRR * cosPhi * cosPhi + bufferValueRPhi * sinPhi* sinPhi);
-        outputValues.push_back(0.5 * sin(2 * cylindricalPhi) * (bufferValueRR - bufferValueRPhi));
-        outputValues.push_back(bufferValueRZ * cos(cylindricalPhi));
+        double xx = bufferValueRR * cosPhi * cosPhi + bufferValueRPhi * sinPhi * sinPhi;
+        double yy = bufferValueRR * sinPhi * sinPhi + bufferValueRPhi * cosPhi * cosPhi;
+        double zz = bufferValueZZ;
 
-        outputValues.push_back(0.5 * sin(2 * cylindricalPhi) * (bufferValueRR - bufferValueRPhi));
-        outputValues.push_back(bufferValueRR * sinPhi * sinPhi + bufferValueRPhi * cosPhi * cosPhi);
-        outputValues.push_back(bufferValueRZ * sin(cylindricalPhi));
-
-        outputValues.push_back(bufferValueRZ * cosPhi);
-        outputValues.push_back(bufferValueRZ * sinPhi);
-        outputValues.push_back(bufferValueZZ);
+        double xy = 0.5 * sin(2 * cylindricalPhi) * (bufferValueRR - bufferValueRPhi);
+        double xz = bufferValueRZ * cos(cylindricalPhi);
+        double yz = bufferValueRZ * sin(cylindricalPhi);
+        // the matrix is symmetric
+        computedGradientMatrix = vec3::Matrix3(xx, xy, xz,
+                                               xy, yy, yz,
+                                               xz, yz, zz);
     }
-    return outputValues;
+    return computedGradientMatrix;
 }
 
-std::vector<double> Coil::computeBGradientTensor(vec3::CoordVector3 positionVector) const
+vec3::Matrix3 Coil::computeBGradientTensor(vec3::CoordVector3 positionVector) const
 
 {
     return computeBGradientTensor(positionVector, defaultPrecision);

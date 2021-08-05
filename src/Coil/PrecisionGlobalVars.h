@@ -11,5 +11,6 @@ const int g_minSecThicknessIncrements = 4;
 const int g_minSecAngularIncrements = 4;
 
 const double g_thinCoilApproximationRatio = 1e-6;
+const double g_zAxisApproximationRatio = 1e-12;
 
 #endif //GENERAL_COIL_PROGRAM_PRECISIONGLOBALVARS_H

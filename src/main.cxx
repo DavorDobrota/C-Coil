@@ -12,9 +12,11 @@ int main()
  //   testCoilAmpereForceForFilamentsZAxis();
 //    testCoilAmpereForceGeneralCase();
 
-    testCoilAmpereForceThinCoils();
+//    testPerformanceForComputeAll(60000, 20, 32);
 
-    testCoilMutualInductanceZAxis();
+//testMethodPrecisionCompareCPUvsGPU();
+
+    testCoilMutualInductanceZAxisPerformance(CPU_MT);
 
 
     return 0;

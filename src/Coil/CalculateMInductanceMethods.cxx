@@ -24,12 +24,10 @@ double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &sec
     double lengthBlockSize = secondary.length / lengthBlocks;
     double thicknessBlockSize = secondary.thickness / thicknessBlocks;
 
-    std::vector<double> zPositions;
-    std::vector<double> rPositions;
+    std::vector<vec3::CoordVector3> positionVectors;
     std::vector<double> weights;
 
-    zPositions.reserve(numElements);
-    rPositions.reserve(numElements);
+    positionVectors.reserve(numElements);
     weights.reserve(numElements);
 
     for (int zBlock = 0; zBlock < lengthBlocks; ++zBlock)
@@ -48,28 +46,25 @@ double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &sec
                     double incrementPositionR = rBlockPosition +
                                                 (thicknessBlockSize * 0.5) * Legendre::positionMatrix[maxThicknessIndex][rIndex];
 
-                    zPositions.push_back(incrementPositionZ);
-                    rPositions.push_back(incrementPositionR);
+                    positionVectors.emplace_back(vec3::CYLINDRICAL, incrementPositionZ, incrementPositionR, 0.0);
 
                     weights.push_back(
-                            0.25 * Legendre::weightsMatrix[maxLengthIndex][zIndex] *
+                            0.25 * incrementPositionR *
+                            Legendre::weightsMatrix[maxLengthIndex][zIndex] *
                             Legendre::weightsMatrix[maxThicknessIndex][rIndex]);
                 }
             }
         }
     }
-
-    std::vector<double> potentialA;
+    std::vector<double> potentialA = primary.computeAllAPotentialAbs(positionVectors, primaryPrecisionArguments, method);
     double mutualInductance = 0.0;
-
-    primary.computeAllAPotentialAbs(zPositions, rPositions, potentialA, primaryPrecisionArguments, method);
 
     for (int i = 0; i < potentialA.size(); ++i)
     {
-        mutualInductance += 2*M_PI * rPositions[i] * potentialA[i] * weights[i];
+        mutualInductance += potentialA[i] * weights[i];
     }
     mutualInductance /= (lengthBlocks * thicknessBlocks);
-    return mutualInductance * secondary.numOfTurns / primary.current;
+    return mutualInductance * 2*M_PI * secondary.numOfTurns / primary.current;
 }
 
 double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
@@ -103,12 +98,8 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
         else
             ringIntervalSize = 2 * M_PI;
 
-        std::vector<double> unitRingPointsX, unitRingPointsY, unitRingPointsZ;
-        std::vector<double> unitRingTangentsX, unitRingTangentsY, unitRingTangentsZ;
-
-        calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle, ringIntervalSize,
-                                       unitRingPointsX, unitRingPointsY, unitRingPointsZ,
-                                       unitRingTangentsX, unitRingTangentsY, unitRingTangentsZ);
+        std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> unitRingValues =
+                calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle, ringIntervalSize);
 
         // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
         int maxLengthIndex = lengthIncrements - 1;
@@ -118,12 +109,10 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
         double lengthBlockSize = secondary.length / lengthBlocks;
         double thicknessBlockSize = secondary.thickness / thicknessBlocks;
 
-        std::vector<double> zPositions;
-        std::vector<double> rPositions;
+        std::vector<vec3::CoordVector3> positionVectors;
         std::vector<double> weights;
 
-        zPositions.reserve(numElements);
-        rPositions.reserve(numElements);
+        positionVectors.reserve(numElements);
         weights.reserve(numElements);
 
         for (int zBlock = 0; zBlock < lengthBlocks; ++zBlock)
@@ -150,25 +139,18 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
                                 int phiPosition = phiBlock * angularIncrements + phiIndex;
 
                                 double displacementX = lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
-                                                       ringRadius * unitRingPointsX[phiPosition];
+                                        ringRadius * unitRingValues[phiPosition].first.xComponent;
 
                                 double displacementY = rDisplacement - lengthDisplacement * sin(alphaAngle) * cos(betaAngle) +
-                                                       ringRadius * unitRingPointsY[phiPosition];
+                                        ringRadius * unitRingValues[phiPosition].first.yComponent;
 
                                 double displacementZ = zDisplacement + lengthDisplacement * cos(alphaAngle) +
-                                                       ringRadius * unitRingPointsZ[phiPosition];
+                                        ringRadius * unitRingValues[phiPosition].first.zComponent;
 
-                                zPositions.push_back(displacementZ);
-                                rPositions.push_back(sqrt(displacementX * displacementX + displacementY * displacementY));
-
-                                double rhoAngle = atan2(displacementY, displacementX);
-
-                                double orientationFactor =
-                                        - sin(rhoAngle) * unitRingTangentsX[phiPosition] +
-                                        cos(rhoAngle) * unitRingTangentsY[phiPosition];
+                                positionVectors.emplace_back(vec3::CARTESIAN, displacementX, displacementY, displacementZ);
 
                                 weights.push_back(
-                                        0.125 * orientationFactor * 2 * M_PI * ringRadius *
+                                        0.125 * ringRadius *
                                         Legendre::weightsMatrix[maxLengthIndex][zIndex] *
                                         Legendre::weightsMatrix[maxThicknessIndex][rIndex] *
                                         Legendre::weightsMatrix[maxAngularIncrementIndex][phiIndex]);
@@ -178,15 +160,15 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
                 }
             }
         }
-        std::vector<double> potentialArray;
+        std::vector<vec3::FieldVector3> potentialVectors =
+                primary.computeAllAPotentialComponents(positionVectors, primaryPrecisionArguments, method);
+
         double mutualInductance = 0.0;
 
-        primary.computeAllAPotentialAbs(zPositions, rPositions, potentialArray, primaryPrecisionArguments, method);
-
         for (int i = 0; i < numElements; ++i)
-            mutualInductance += potentialArray[i] * weights[i];
+            mutualInductance += vec3::FieldVector3::scalarProduct(potentialVectors[i], unitRingValues[i].first) * weights[i];
 
         mutualInductance /= (lengthBlocks * thicknessBlocks * angularBlocks);
-        return mutualInductance * secondary.numOfTurns / primary.current;
+        return mutualInductance * 2*M_PI * secondary.numOfTurns / primary.current;
     }
 }

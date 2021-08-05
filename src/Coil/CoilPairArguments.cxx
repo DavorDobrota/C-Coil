@@ -22,16 +22,16 @@ void CoilPairArguments::getGeometryCaseAndIncrementsSingleCoil(const Coil &coil,
     double length = coil.getLength();
 
     if (thickness / radius < g_thinCoilApproximationRatio && length / radius < g_thinCoilApproximationRatio)
-    { caseIndex = 1; totalIncrements = pow(2, 3 + precisionFactor.relativePrecision); }
+    { caseIndex = 1; totalIncrements = std::pow(2, 3 + precisionFactor.relativePrecision); }
 
     else if (thickness / length < g_thinCoilApproximationRatio)
-    { caseIndex = 2; totalIncrements = pow(2, 6 + precisionFactor.relativePrecision); }
+    { caseIndex = 2; totalIncrements = std::pow(2, 6 + precisionFactor.relativePrecision); }
 
     else if (length / thickness < g_thinCoilApproximationRatio)
-    { caseIndex = 3; totalIncrements = pow(2, 6 + precisionFactor.relativePrecision); }
+    { caseIndex = 3; totalIncrements = std::pow(2, 6 + precisionFactor.relativePrecision); }
 
     else
-    { caseIndex = 4; totalIncrements = pow(2, 9 + precisionFactor.relativePrecision); }
+    { caseIndex = 4; totalIncrements = std::pow(2, 9 + precisionFactor.relativePrecision); }
 }
 
 void CoilPairArguments::getGeometryCaseAndIncrementsCoilPair(const Coil &primary, const Coil &secondary,
@@ -103,19 +103,19 @@ CoilPairArguments CoilPairArguments::getSelfInductanceArguments(const Coil &coil
     if (coil.getThickness() / coil.getInnerRadius() < g_thinCoilApproximationRatio &&
         coil.getLength() / coil.getInnerRadius() < g_thinCoilApproximationRatio)
     {
-        caseIndex = 1; totalIncrements = pow(2, 5 + precisionFactor.relativePrecision);
+        caseIndex = 1; totalIncrements = std::pow(2, 5 + precisionFactor.relativePrecision);
     }
     else if (coil.getThickness() / coil.getLength() < g_thinCoilApproximationRatio)
     {
-        caseIndex = 2; totalIncrements = pow(2, 11 + precisionFactor.relativePrecision);
+        caseIndex = 2; totalIncrements = std::pow(2, 11 + precisionFactor.relativePrecision);
     }
     else if (coil.getLength() / coil.getThickness() < g_thinCoilApproximationRatio)
     {
-        caseIndex = 3; totalIncrements = pow(2, 11 + precisionFactor.relativePrecision);
+        caseIndex = 3; totalIncrements = std::pow(2, 11 + precisionFactor.relativePrecision);
     }
     else
     {
-        caseIndex = 4; totalIncrements = pow(2, 17 + precisionFactor.relativePrecision);
+        caseIndex = 4; totalIncrements = std::pow(2, 17 + precisionFactor.relativePrecision);
     }
 
     do
@@ -123,13 +123,13 @@ CoilPairArguments CoilPairArguments::getSelfInductanceArguments(const Coil &coil
         double angularStep = M_PI * (coil.getInnerRadius() + coil.getThickness() * 0.5) /
                              (blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex]);
 
-        double lengthStep = sqrt(2) * coil.getLength() /
+        double lengthStep = std::sqrt(2) * coil.getLength() /
                             (blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex]);
 
-        double thicknessStep = sqrt(2) * coil.getThickness() /
+        double thicknessStep = std::sqrt(2) * coil.getThickness() /
                                (blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex]);
 
-        double linearStep = sqrt(lengthStep * thicknessStep);
+        double linearStep = std::sqrt(lengthStep * thicknessStep);
 
         switch (caseIndex)
         {

@@ -30,7 +30,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Co
         double primAngularStep = M_PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
                 (primAngularBlocks * primAngularIncrements);
 
-        double primLinearStep = sqrt(primary.getThickness() * primary.getLength()) /
+        double primLinearStep = std::sqrt(primary.getThickness() * primary.getLength()) /
                 (primLinearBlocks * primLinearIncrements);
 
         double secLengthStep = secondary.getLength() /
@@ -39,7 +39,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Co
         double secThicknessStep = secondary.getThickness() /
                 (blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
-        double secLinearStep = sqrt(secLengthStep * secThicknessStep);
+        double secLinearStep = std::sqrt(secLengthStep * secThicknessStep);
 
         switch (caseIndex)
         {
@@ -54,7 +54,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Co
             case (2):
                 secThicknessArrayIndex = 0;
 
-                if (primAngularStep / sqrt(secLengthStep * primLinearStep) <= 1.0)
+                if (primAngularStep / std::sqrt(secLengthStep * primLinearStep) <= 1.0)
                 {
                     if (secLengthStep / primLinearStep >= 1.0)
                         secLengthArrayIndex++;
@@ -69,7 +69,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Co
             case (3):
                 secLengthArrayIndex = 0;
 
-                if (primAngularStep / sqrt(secThicknessStep * primLinearStep) <= 1.0)
+                if (primAngularStep / std::sqrt(secThicknessStep * primLinearStep) <= 1.0)
                 {
                     if (secThicknessStep / primLinearStep >= 1.0)
                         secThicknessArrayIndex++;
@@ -80,7 +80,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Co
                     primAngularBlocks++;
                 break;
             default:
-                if (primAngularStep / sqrt(secLinearStep * primLinearStep) <= 1.0)
+                if (primAngularStep / std::sqrt(secLinearStep * primLinearStep) <= 1.0)
                 {
                     if (secLinearStep / primLinearStep >= 1.0)
                         { secLengthArrayIndex++; secThicknessArrayIndex++; }
@@ -144,7 +144,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGeneralGPU(const 
         double primAngularStep = M_PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
                 (primAngularBlocks * primAngularIncrements);
 
-        double primLinearStep = sqrt(primary.getThickness() * primary.getLength()) /
+        double primLinearStep = std::sqrt(primary.getThickness() * primary.getLength()) /
                 (primLinearBlocks * primLinearIncrements);
 
         double secLengthStep = secondary.getLength() /
@@ -156,7 +156,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGeneralGPU(const 
         double secAngularStep = M_PI * (secondary.getInnerRadius() + secondary.getThickness() * 0.5) /
                 (blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
-        double secLinearStep = sqrt(secLengthStep * secThicknessStep);
+        double secLinearStep = std::sqrt(secLengthStep * secThicknessStep);
 
         switch (caseIndex)
         {

@@ -25,10 +25,10 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisCPU(const Co
         double primAngularStep = M_PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
                 (blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex]);
 
-        double primLengthStep = sqrt(2) * primary.getLength() /
+        double primLengthStep = std::sqrt(2) * primary.getLength() /
                 (blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex]);
 
-        double primThicknessStep = sqrt(2) * primary.getThickness() /
+        double primThicknessStep = std::sqrt(2) * primary.getThickness() /
                 (blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex]);
 
         double secLengthStep = secondary.getLength() /
@@ -37,8 +37,8 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisCPU(const Co
         double secThicknessStep = secondary.getThickness() /
                 (blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
-        double primLinearStep = sqrt(primLengthStep * primThicknessStep);
-        double secLinearStep = sqrt(secLengthStep * secThicknessStep);
+        double primLinearStep = std::sqrt(primLengthStep * primThicknessStep);
+        double secLinearStep = std::sqrt(secLengthStep * secThicknessStep);
 
         switch (caseIndex)
         {
@@ -279,10 +279,10 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGeneralCPU(const 
         double primAngularStep = M_PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /
                 (blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex]);
 
-        double primLengthStep = sqrt(2) * primary.getLength() /
+        double primLengthStep = std::sqrt(2) * primary.getLength() /
                 (blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex]);
 
-        double primThicknessStep = sqrt(2) * primary.getThickness() /
+        double primThicknessStep = std::sqrt(2) * primary.getThickness() /
                 (blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex]);
 
         double secLengthStep = secondary.getLength() /
@@ -294,8 +294,8 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGeneralCPU(const 
         double secAngularStep = M_PI * (secondary.getInnerRadius() + secondary.getThickness() * 0.5) /
                 (blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
-        double primLinearStep = sqrt(primLengthStep * primThicknessStep);
-        double secLinearStep = sqrt(secLengthStep * secThicknessStep);
+        double primLinearStep = std::sqrt(primLengthStep * primThicknessStep);
+        double secLinearStep = std::sqrt(secLengthStep * secThicknessStep);
 
         switch (caseIndex)
         {

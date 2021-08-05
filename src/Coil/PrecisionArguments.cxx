@@ -76,13 +76,13 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
         double angularStep = M_PI * (coil.getInnerRadius() + coil.getThickness() * 0.5) /
                              (blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex]);
 
-        double lengthStep = sqrt(2) * coil.getLength() /
+        double lengthStep = std::sqrt(2) * coil.getLength() /
                             (blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex]);
 
-        double thicknessStep = sqrt(2) * coil.getThickness() /
+        double thicknessStep = std::sqrt(2) * coil.getThickness() /
                                (blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex]);
 
-        double linearStep = sqrt(lengthStep * thicknessStep);
+        double linearStep = std::sqrt(lengthStep * thicknessStep);
 
         switch (caseIndex)
         {
@@ -118,11 +118,12 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
     }
     while (currentIncrements < totalIncrements);
 
-    if (PRINT_ENABLED)
+    #if PRINT_ENABLED
         printf("case %d - %d : %d %d %d\n", caseIndex, currentIncrements,
                blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex],
                blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex],
                blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex]);
+    #endif // PRINT_ENABLED
 
     return PrecisionArguments(blockPrecisionCPUArray[angularArrayIndex],
                               blockPrecisionCPUArray[thicknessArrayIndex],
@@ -145,7 +146,7 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
 
     do
     {
-        double linearStep = sqrt(2 * coil.getLength() * coil.getThickness()) / (linearIncrements * linearBlocks);
+        double linearStep = std::sqrt(2 * coil.getLength() * coil.getThickness()) / (linearIncrements * linearBlocks);
         double angularStep = M_PI * (coil.getInnerRadius() + coil.getThickness() * 0.5) / (angularIncrements * angularBlocks);
 
         if (angularStep / linearStep >= 1.0)

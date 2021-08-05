@@ -175,7 +175,7 @@ void Coil::calculateMagneticMoment()
 
 void Coil::calculateAverageWireThickness()
 {
-    averageWireThickness = sqrt(length * thickness / numOfTurns);
+    averageWireThickness = std::sqrt(length * thickness / numOfTurns);
 }
 
 void Coil::calculateResistance()
@@ -183,7 +183,7 @@ void Coil::calculateResistance()
     double wireRadius = averageWireThickness * 0.5;
     double ohmicResistance = wireResistivity * numOfTurns * 2*M_PI *
             (innerRadius + thickness * 0.5) / (wireRadius * wireRadius * M_PI);
-    double skinDepth = sqrt(wireResistivity / (M_PI * sineFrequency * g_MiReduced));
+    double skinDepth = std::sqrt(wireResistivity / (M_PI * sineFrequency * g_MiReduced));
 
     double ohmicSurface = M_PI * wireRadius * wireRadius;
     double sineSurface = 2*M_PI * (
@@ -202,7 +202,7 @@ void Coil::calculateImpedance()
 {
     calculateResistance();
     calculateReactance();
-    impedance = sqrt(resistance * resistance + reactance * reactance);
+    impedance = std::sqrt(resistance * resistance + reactance * reactance);
 }
 
 std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>

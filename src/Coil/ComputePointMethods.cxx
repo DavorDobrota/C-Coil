@@ -54,7 +54,7 @@ double Coil::computeBFieldAbs(vec3::CoordVector3 positionVector, const Precision
 {
     positionVector.convertToCylindrical();
     std::pair<double, double> fields = calculateBField(positionVector.component1, positionVector.component2, usedPrecision);
-    return sqrt(fields.first * fields.first + fields.second * fields.second);
+    return std::sqrt(fields.first * fields.first + fields.second * fields.second);
 }
 
 double Coil::computeBFieldAbs(vec3::CoordVector3 positionVector) const

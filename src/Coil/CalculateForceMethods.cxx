@@ -100,9 +100,8 @@ std::pair<vec3::FieldVector3, vec3::FieldVector3>
 
         double ringIntervalSize = 2 * M_PI;
 
-        std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> unitRingValues;
-
-        calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle, ringIntervalSize);
+        std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> unitRingValues =
+                calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle, ringIntervalSize);
 
         // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
         int maxLengthIndex = lengthIncrements - 1;

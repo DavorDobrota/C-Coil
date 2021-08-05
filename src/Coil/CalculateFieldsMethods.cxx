@@ -64,9 +64,10 @@ std::pair<double, double> Coil::calculateBField(double zAxis, double rPolar, con
 
                             double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
 
-                            double cosinePhi = cos(incrementPositionFi);
+                            double cosinePhi = std::cos(incrementPositionFi);
+
                             double tempConstF = 2 * tempConstC * cosinePhi;
-                            double tempConstH = (tempConstD - tempConstF) * sqrt(tempConstD - tempConstF);
+                            double tempConstH = (tempConstD - tempConstF) * std::sqrt(tempConstD - tempConstF);
                             double tempConstG = tempConstE * incrementWeightFi / tempConstH;
 
                             magneticFieldZ += tempConstG * (tempConstA - tempConstC * cosinePhi);
@@ -132,10 +133,10 @@ double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArg
 
                             double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
 
-                            double cosinePhi = cos(incrementPositionFi);
+                            double cosinePhi = std::cos(incrementPositionFi);
 
                             magneticPotential += constant * incrementWeightS * incrementWeightFi *
-                                                 (tempConstA * cosinePhi) /sqrt(tempConstC - 2*tempConstB * cosinePhi);
+                                                 (tempConstA * cosinePhi) /std::sqrt(tempConstC - 2*tempConstB * cosinePhi);
                         }
                     }
                 }
@@ -206,12 +207,12 @@ std::vector<double> Coil::calculateBGradient(double zAxis, double rPolar, const 
 
                             double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
 
-                            double cosinePhi = cos(incrementPositionFi);
+                            double cosinePhi = std::cos(incrementPositionFi);
 
                             double tempConstJ = tempConstH - 2 * tempConstD * cosinePhi;
-                            double tempConstK = tempConstJ * tempConstJ * sqrt(tempConstJ);
+                            double tempConstK = tempConstJ * tempConstJ * std::sqrt(tempConstJ);
 
-                            double tempConstX = tempConstI * incrementWeightFi / (tempConstJ * sqrt(tempConstJ));
+                            double tempConstX = tempConstI * incrementWeightFi / (tempConstJ * std::sqrt(tempConstJ));
                             double tempConstY = tempConstI * incrementWeightFi / tempConstK;
 
                             bufferValueRPhi += tempConstX * (tempConstF * tempConstE * cosinePhi);

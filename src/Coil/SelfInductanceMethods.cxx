@@ -91,7 +91,7 @@ void Coil::calculateAndSetSelfInductance(PrecisionFactor precisionFactor)
                                                 double cosinePhi = cos(incrementPositionFi);
 
                                                 potential += constant * incrementWeightS * incrementWeightFi *
-                                                             (tempConstA * cosinePhi) /sqrt(tempConstC - 2*tempConstB * cosinePhi);
+                                                             (tempConstA * cosinePhi) /std::sqrt(tempConstC - 2*tempConstB * cosinePhi);
                                             }
                                         }
                                     }

@@ -55,6 +55,9 @@ namespace vec3
             FieldVector3();
             explicit FieldVector3(double x, double y, double z);
 
+            void multiplyByConstant(double constant);
+
+            static FieldVector3 addVectors(FieldVector3 vec1, FieldVector3 vec2);
             static double scalarProduct(FieldVector3 vec1, FieldVector3 vec2);
             static FieldVector3 crossProduct(FieldVector3 vec1, FieldVector3 vec2);
     };

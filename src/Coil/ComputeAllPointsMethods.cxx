@@ -334,11 +334,9 @@ std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vect
     double frequencyFactor = 2 * M_PI * sineFrequency;
 
     for (auto & i : output)
-    {
-        i.xComponent *= frequencyFactor;
-        i.yComponent *= frequencyFactor;
-        i.zComponent *= frequencyFactor;
-    }
+        i.multiplyByConstant(frequencyFactor);
+
+    return output;
 }
 
 std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &positionVectorArr,

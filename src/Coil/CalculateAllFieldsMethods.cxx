@@ -150,6 +150,8 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
     while(g_threadPool.n_idle() < threadCount);
 }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 void Coil::calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
                                  const std::vector<double> &cylindricalRArr,
                                  std::vector<double> &computedFieldHArr,
@@ -182,7 +184,10 @@ void Coil::calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
         computedFieldZArr[i] = fieldZArr[i];
     }
 }
+#pragma clang diagnostic pop
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 void Coil::calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
                                      const std::vector<double> &cylindricalRArr,
                                      std::vector<double> &computedPotentialArr,
@@ -195,8 +200,8 @@ void Coil::calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
 
     for (int i = 0; i < cylindricalZArr.size(); ++i)
     {
-        polarR[i] = sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]);
-        polarTheta[i] = atan2(cylindricalRArr[i], cylindricalZArr[i]);
+        polarR[i] = std::sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]);
+        polarTheta[i] = std::atan2(cylindricalRArr[i], cylindricalZArr[i]);
     }
     std::vector<float> potentialArr(polarR.size());
 
@@ -209,6 +214,7 @@ void Coil::calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
     for (int i = 0; i < polarR.size(); ++i)
         computedPotentialArr[i] = potentialArr[i] / (2 * M_PI);
 }
+#pragma clang diagnostic pop
 
 void Coil::calculateAllBGradientGPU(const std::vector<double> &cylindricalZArr,
                                     const std::vector<double> &cylindricalRArr,

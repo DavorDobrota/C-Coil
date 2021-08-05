@@ -205,33 +205,17 @@ void Coil::calculateImpedance()
     impedance = sqrt(resistance * resistance + reactance * reactance);
 }
 
-void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
-                                          double alpha, double beta, double ringIntervalSize,
-                                          std::vector<double> &ringXPosition,
-                                          std::vector<double> &ringYPosition,
-                                          std::vector<double> &ringZPosition,
-                                          std::vector<double> &ringXTangent,
-                                          std::vector<double> &ringYTangent,
-                                          std::vector<double> &ringZTangent)
+std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
+Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
+                                     double alpha, double beta, double ringIntervalSize)
 {
-    //clearing all values so that values are not accidentally allocated
-    ringXPosition.resize(0);
-    ringYPosition.resize(0);
-    ringZPosition.resize(0);
-
-    ringXTangent.resize(0);
-    ringYTangent.resize(0);
-    ringZTangent.resize(0);
-
     int numElements = angularBlocks * angularIncrements;
 
-    ringXPosition.reserve(numElements);
-    ringYPosition.reserve(numElements);
-    ringZPosition.reserve(numElements);
+    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> unitRingVector;
+    unitRingVector.reserve(numElements);
 
-    ringXTangent.reserve(numElements);
-    ringYTangent.reserve(numElements);
-    ringZTangent.reserve(numElements);
+    vec3::FieldVector3 ringPosition;
+    vec3::FieldVector3 ringTangent;
 
     double angularBlock = ringIntervalSize / angularBlocks;
 
@@ -249,13 +233,16 @@ void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncremen
             double phi = M_PI/2 + blockPositionPhi +
                          (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][phiIndex];
 
-            ringXPosition.push_back(cos(beta) * cos(phi) - sin(beta) * cos(alpha) * sin(phi));
-            ringYPosition.push_back(sin(beta) * cos(phi) + cos(beta) * cos(alpha) * sin(phi));
-            ringZPosition.push_back(sin(alpha) * sin(phi));
+            ringPosition = vec3::FieldVector3(cos(beta) * cos(phi) - sin(beta) * cos(alpha) * sin(phi),
+                                              sin(beta) * cos(phi) + cos(beta) * cos(alpha) * sin(phi),
+                                              sin(alpha) * sin(phi));
 
-            ringXTangent.push_back((-1) * cos(beta) * sin(phi) - sin(beta) * cos(alpha) * cos(phi));
-            ringYTangent.push_back((-1) * sin(beta) * sin(phi) + cos(beta) * cos(alpha) * cos(phi));
-            ringZTangent.push_back(sin(alpha) * cos(phi));
+            ringTangent = vec3::FieldVector3((-1) * cos(beta) * sin(phi) - sin(beta) * cos(alpha) * cos(phi),
+                                             (-1) * sin(beta) * sin(phi) + cos(beta) * cos(alpha) * cos(phi),
+                                             sin(alpha) * cos(phi));
+
+            unitRingVector.emplace_back(ringPosition, ringTangent);
         }
     }
+    return unitRingVector;
 }

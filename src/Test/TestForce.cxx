@@ -40,7 +40,7 @@ void testCoilAmpereForceGeneralForZAxis()
 
 void testCoilGradientTensor()
 {
-    Coil coil = Coil(1.0, 1e-15, 1e-15, 1);
+    Coil coil = Coil(1.0, 1e-15, 1e-10, 1);
 
     vec3::Matrix3 tensor;
 

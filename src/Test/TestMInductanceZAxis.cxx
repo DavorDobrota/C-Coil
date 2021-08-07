@@ -142,14 +142,14 @@ void testCoilMutualInductanceZAxisDifferentGeometries()
     printf("\n");
 }
 
-void testCoilMutualInductanceZAxisPerformance(ComputeMethod method)
+void testCoilMutualInductanceZAxisPerformance(ComputeMethod method, int nThreads)
 {
     using namespace std::chrono;
 
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
-    primary.setThreadCount(16);
+    primary.setThreadCount(nThreads);
 
     int nOps = 5120;
     int numIncrements[] = {78732, 147000, 263296, 547560, 1057500, 2247264, 4528384, 9168896};

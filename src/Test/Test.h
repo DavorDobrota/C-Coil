@@ -2,6 +2,7 @@
 #define GENERAL_COIL_PROGRAM_TEST_H
 
 #include "ComputeMethod.h"
+#include "Coil.h"
 
 void testLegendrePolynomials();
 void testNewCoilParameters();
@@ -10,12 +11,13 @@ void testCoilMutualInductanceForSpecialCase();
 void testVector3();
 
 void testPerformanceCPU_ST(int nOps = 50'000);
-void testPerformanceForComputeAll(int nOps = 80'000, int nRepeats = 1, int nThreads = 16);
+void testPerformanceForComputeAll(PrecisionFactor precisionFactor = PrecisionFactor(),
+                                  int nOps = 60'000, int nRepeats = 1, int nThreads = 12);
 
 void testCoilMutualInductanceZAxis();
 void testCoilMutualInductanceZAxisArgumentGeneration();
 void testCoilMutualInductanceZAxisDifferentGeometries();
-void testCoilMutualInductanceZAxisPerformance(ComputeMethod method = CPU_ST);
+void testCoilMutualInductanceZAxisPerformance(ComputeMethod method = CPU_ST, int nThreads = 12);
 void testCoilSelfInductance();
 
 void testOldCoilMutualInductanceZAxis();

@@ -46,12 +46,11 @@ void testPerformanceCPU_ST(int nOps)
     printf("gradient G  : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 }
 
-void testPerformanceForComputeAll(int nOps, int nRepeats, int nThreads)
+void testPerformanceForComputeAll(PrecisionFactor precisionFactor, int nOps, int nRepeats, int nThreads)
 {
     using namespace std::chrono;
 
-    Coil testCoil = Coil(0.03, 0.03, 0.12, 3600);
-    testCoil.setThreadCount(nThreads);
+    Coil testCoil = Coil(0.03, 0.03, 0.12, 3600, precisionFactor, nThreads);
 
     const double radius = 0.1;
 

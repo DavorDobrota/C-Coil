@@ -20,6 +20,47 @@ void testCoilAmpereForceZAxis()
     printf("\n");
 }
 
+void testCoilAmpereForceZAxisPerformance(ComputeMethod method, int nThreads)
+{
+    using namespace std::chrono;
+
+    Coil primary = Coil(0.1, 0.1, 0.1, 100);
+    Coil secondary = Coil(0.3, 0.1, 0.1, 100);
+    primary.setThreadCount(nThreads);
+
+    int nOps = 8192;
+    double temp;
+
+    printf("Expected execution time for one Ampere force z-axis calculation of specified precision\n");
+
+    for (int i = 1; i <= 9; ++i)
+    {
+        int currentOperations = nOps / (int) pow(2, i);
+
+        high_resolution_clock::time_point begin_time = high_resolution_clock::now();
+        for (int j = 0; j < currentOperations; ++j)
+            temp = Coil::computeAmpereForceZAxis(primary, secondary, 0.2, PrecisionFactor(i), method);
+        double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("precisionFactor(%.1f) : %6.3f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
+    }
+}
+
+void testCoilAmpereForceZAxisMTScaling(int maxThreads)
+{
+    printf("Performance comparison between different numbers of threads:\n");
+
+    printf(" -> single thread:\n");
+    testCoilAmpereForceZAxisPerformance(CPU_ST);
+    printf("\n");
+
+    for (int i = 2; i <= maxThreads; ++i)
+    {
+        printf(" -> %2d threads:\n", i);
+        testCoilAmpereForceZAxisPerformance(CPU_MT, i);
+        printf("\n");
+    }
+}
+
 void testCoilAmpereForceGeneralForZAxis()
 {
     Coil prim1 = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(6.0), 16);
@@ -36,6 +77,47 @@ void testCoilAmpereForceGeneralForZAxis()
                forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
     }
     printf("\n");
+}
+
+void testCoilAmpereForceGeneralPerformance(ComputeMethod method, int nThreads)
+{
+    using namespace std::chrono;
+
+    Coil primary = Coil(0.1, 0.1, 0.1, 100);
+    Coil secondary = Coil(0.3, 0.1, 0.1, 100);
+    primary.setThreadCount(nThreads);
+
+    int nOps = 1024;
+    std::pair<vec3::FieldVector3, vec3::FieldVector3> temp;
+
+    printf("Expected execution time for one Ampere force general case calculation of specified precision\n");
+
+    for (int i = 1; i <= 9; ++i)
+    {
+        int currentOperations = nOps / (int) pow(2, i);
+
+        high_resolution_clock::time_point begin_time = high_resolution_clock::now();
+        for (int j = 0; j < currentOperations; ++j)
+            temp = Coil::computeAmpereForceGeneral(primary, secondary, 0.2, 1e-10, PrecisionFactor(i), method);
+        double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("precisionFactor(%.1f) : %6.2f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
+    }
+}
+
+void testCoilAmpereForceZGeneralMTScaling(int maxThreads)
+{
+    printf("Performance comparison between different numbers of threads:\n");
+
+    printf(" -> single thread:\n");
+    testCoilAmpereForceGeneralPerformance(CPU_ST);
+    printf("\n");
+
+    for (int i = 2; i <= maxThreads; ++i)
+    {
+        printf(" -> %2d threads:\n", i);
+        testCoilAmpereForceGeneralPerformance(CPU_MT, i);
+        printf("\n");
+    }
 }
 
 void testCoilGradientTensor()
@@ -62,31 +144,4 @@ void testCoilGradientTensor()
                tensor.zxElement / (1e-7), tensor.zyElement / (1e-7), tensor.zzElement / (1e-7));
     }
     printf("\n");
-}
-
-void testCoilAmpereForceZAxisPerformance(ComputeMethod method, int nThreads)
-{
-    using namespace std::chrono;
-
-    Coil primary = Coil(0.1, 0.1, 0.1, 100);
-    Coil secondary = Coil(0.3, 0.1, 0.1, 100);
-
-    primary.setThreadCount(nThreads);
-
-    int nOps = 5120;
-    int numIncrements[] = {78732, 147000, 263296, 547560, 1057500, 2247264, 4528384, 9168896};
-    double temp;
-
-    for (double i = 1.0; i <= 8.0; i += 1.0)
-    {
-        int currentOperations = nOps / pow(2, i);
-        double relativeOperations = currentOperations * numIncrements[int(round(i - 1))] / pow(2, 15 + i);
-
-        high_resolution_clock::time_point begin_time = high_resolution_clock::now();
-        for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeAmpereForceZAxis(primary, secondary, 0.2, PrecisionFactor(i), method);
-        double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        printf("Ampere force calc time for precisionFactor(%.1f)  : %.2f ms/op\n", i, 1'000.0 * interval / currentOperations);
-
-    }
 }

@@ -164,7 +164,7 @@ void testCoilMutualInductanceZAxisPerformance(ComputeMethod method, int nThreads
         for (int j = 0; j < currentOperations; ++j)
             temp = Coil::computeMutualInductance(primary, secondary, 0.2, PrecisionFactor(i), method);
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        printf("inductance calc time for %.0f : %.2f ms/op\n", i, 1'000.0 * interval / currentOperations);
+        printf("inductance calc time for precisionFactor(%.1f) : %.2f ms/op\n", i, 1'000.0 * interval / currentOperations);
 
     }
 }

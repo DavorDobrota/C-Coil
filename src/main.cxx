@@ -12,16 +12,20 @@ int main()
  //   testCoilAmpereForceForFilamentsZAxis();
 //    testCoilAmpereForceGeneralCase();
 
-    testPerformanceForComputeAll(PrecisionFactor(8.0), 60000, 10, 32);
+    testPerformanceForComputeAll(PrecisionFactor(7.0), 80000, 10, 16);
 
 //testMethodPrecisionCompareCPUvsGPU();
 
-//    for (int i = 1; i <= 32; ++i)
+//    for (int i = 1; i <= 16; ++i)
 //    {
 //        printf("%d threads:\n", i);
-//        testCoilMutualInductanceZAxisPerformance(CPU_MT, i);
+//        testCoilMutualInductanceGeneralPerformance(CPU_MT, i);
 //        printf("\n");
 //    }
+
+
+//    testCoilMutualInductanceZAxis();
+//    testCoilMutualInductanceGeneralForZAxis(CPU_MT, 8);
 
 //    testCoilGradientTensor();
 

@@ -1,13 +1,17 @@
 #include "Test.h"
 #include "Coil.h"
+#include "ctpl.h"
 
 #include <cstdio>
 #include <cmath>
 
-void testCoilMutualInductanceGeneralForZAxis()
+void testCoilMutualInductanceGeneralForZAxis(ComputeMethod method, int nThreads)
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
+
+    primary.setThreadCount(nThreads);
+    secondary.setThreadCount(nThreads);
 
     printf("%.20f\n\n", Coil::computeMutualInductance(primary, secondary, 0.2, 1e-15));
 
@@ -28,7 +32,7 @@ void testCoilMutualInductanceGeneralForZAxis()
 
         for (double i = 1.0; i <= 8.0; i += 1.0)
         {
-            temp = Coil::computeMutualInductance(prim, sec, distance, 1e-15, PrecisionFactor(i));
+            temp = Coil::computeMutualInductance(prim, sec, distance, 1e-15, PrecisionFactor(i), method);
             printf("%.18f\n", temp);
             fprintf(output, "%.20f\t", temp);
         }
@@ -42,9 +46,31 @@ void testCoilMutualInductanceGeneralForZAxis()
 }
 
 
-void testCoilMutualInductanceGeneralPerformance()
+void testCoilMutualInductanceGeneralPerformance(ComputeMethod method, int nThreads)
 {
+    using namespace std::chrono;
 
+    Coil primary = Coil(0.1, 0.1, 0.1, 100);
+    Coil secondary = Coil(0.3, 0.1, 0.1, 100);
+
+    primary.setThreadCount(nThreads);
+
+    int nOps = 1280;
+    int numIncrements[] = {78732, 147000, 263296, 547560, 1057500, 2247264, 4528384, 9168896};
+    double temp;
+
+    for (double i = 1.0; i <= 8.0; i += 1.0)
+    {
+        int currentOperations = nOps / pow(2, i);
+        double relativeOperations = currentOperations * numIncrements[int(round(i - 1))] / pow(2, 15 + i);
+
+        high_resolution_clock::time_point begin_time = high_resolution_clock::now();
+        for (int j = 0; j < currentOperations; ++j)
+            temp = Coil::computeMutualInductance(primary, secondary, 0.2, 1e-10, PrecisionFactor(i), method);
+        double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("inductance calc time for precisionFactor(%.1f) : %.2f ms/op\n", i, 1'000.0 * interval / currentOperations);
+
+    }
 }
 
 

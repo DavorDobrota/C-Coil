@@ -25,8 +25,8 @@ void testOldCoilMutualInductanceZAxisPerformance();
 void testOldCoilMutualInductanceGeneralPerformance();
 void testOldCoilSelfInductance();
 
-void testCoilMutualInductanceGeneralForZAxis();
-void testCoilMutualInductanceGeneralPerformance();
+void testCoilMutualInductanceGeneralForZAxis(ComputeMethod method = CPU_ST, int nThreads = 12);
+void testCoilMutualInductanceGeneralPerformance(ComputeMethod method = CPU_ST, int nThreads = 12);
 void testCoilMutualInductanceGeneralArgumentGeneration();
 void testCoilMutualInductanceGeneralDifferentGeometries();
 void testCoilMutualInductanceGeneralGraphs();
@@ -39,6 +39,7 @@ void testCoilMutualInductanceGeneralRectangularAndFilament();
 void testCoilAmpereForceZAxis();
 void testCoilAmpereForceGeneralForZAxis();
 void testCoilGradientTensor();
+void testCoilAmpereForceZAxisPerformance(ComputeMethod method = CPU_ST, int nThreads = 12);
 
 void testCoilAmpereForceForFilamentsZAxis();
 void testCoilAmpereForceGeneralCase();

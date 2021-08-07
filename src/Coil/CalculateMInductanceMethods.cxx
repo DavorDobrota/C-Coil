@@ -166,7 +166,11 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
         double mutualInductance = 0.0;
 
         for (int i = 0; i < numElements; ++i)
-            mutualInductance += vec3::FieldVector3::scalarProduct(potentialVectors[i], unitRingValues[i].first) * weights[i];
+        {
+            int p = i % (angularBlocks * angularIncrements);
+            mutualInductance += vec3::FieldVector3::scalarProduct(potentialVectors[i], unitRingValues[p].second) * weights[i];
+        }
+
 
         mutualInductance /= (lengthBlocks * thicknessBlocks * angularBlocks);
         return mutualInductance * 2*M_PI * secondary.numOfTurns / primary.current;

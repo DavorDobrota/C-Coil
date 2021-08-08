@@ -3,7 +3,7 @@
 
 namespace Legendre
 {
-    const int maxLegendreOrder = 50;
+    const int maxLegendreOrder = 64;
 
     const extern double positionMatrix[maxLegendreOrder][maxLegendreOrder];
     const extern double weightsMatrix[maxLegendreOrder][maxLegendreOrder];

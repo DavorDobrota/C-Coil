@@ -8,8 +8,8 @@ extern thread_pool tp;
 
 int main()
 {
-    testCoilAmpereForceZAxisMTScaling(16);
-    testCoilAmpereForceZGeneralMTScaling(16);
+
+    testCoilMutualInductanceZAxis();
 
     return 0;
 }

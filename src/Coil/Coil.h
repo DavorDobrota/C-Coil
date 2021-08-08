@@ -7,13 +7,15 @@
 #include <vector>
 
 
-#define PRINT_ENABLED 0
+#define PRINT_ENABLED 1
 
-const int precisionArraySize = 423;
+const int precisionArraySize = 500;
 const int defaultThreadCount = 4;
 
 const extern int blockPrecisionCPUArray[precisionArraySize];
 const extern int incrementPrecisionCPUArray[precisionArraySize];
+
+void generatePrecisionArrays();
 
 class Coil;
 

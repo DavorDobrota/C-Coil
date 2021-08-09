@@ -21,17 +21,28 @@ void CoilPairArguments::getGeometryCaseAndIncrementsSingleCoil(const Coil &coil,
     double thickness = coil.getThickness();
     double length = coil.getLength();
 
+    double precisionMultiplier = std::pow(2, precisionFactor.relativePrecision - 1);
+
     if (thickness / radius < g_thinCoilApproximationRatio && length / radius < g_thinCoilApproximationRatio)
-    { caseIndex = 1; totalIncrements = std::pow(2, 3 + precisionFactor.relativePrecision); }
-
+    {
+        caseIndex = 1;
+        totalIncrements = (int) (g_baseLayerIncrements * precisionMultiplier);
+    }
     else if (thickness / length < g_thinCoilApproximationRatio)
-    { caseIndex = 2; totalIncrements = std::pow(2, 6 + precisionFactor.relativePrecision); }
-
+    {
+        caseIndex = 2;
+        totalIncrements = (int) (g_baseLayerIncrements * precisionMultiplier);
+    }
     else if (length / thickness < g_thinCoilApproximationRatio)
-    { caseIndex = 3; totalIncrements = std::pow(2, 6 + precisionFactor.relativePrecision); }
-
+    {
+        caseIndex = 3;
+        totalIncrements = (int) (g_baseLayerIncrements * g_baseLayerIncrements * precisionMultiplier);
+    }
     else
-    { caseIndex = 4; totalIncrements = std::pow(2, 9 + precisionFactor.relativePrecision); }
+    {
+        caseIndex = 4;
+        totalIncrements = (int) (g_baseLayerIncrements * g_baseLayerIncrements * precisionMultiplier);
+    }
 }
 
 void CoilPairArguments::getGeometryCaseAndIncrementsCoilPair(const Coil &primary, const Coil &secondary,
@@ -45,28 +56,26 @@ void CoilPairArguments::getGeometryCaseAndIncrementsCoilPair(const Coil &primary
     if (primThickness / primLength < g_thinCoilApproximationRatio)
     {
         getGeometryCaseAndIncrementsSingleCoil(secondary, precisionFactor, caseIndex, totalIncrements);
-
-        totalIncrements *= 8;
     }
     else if (primLength / primThickness < g_thinCoilApproximationRatio)
     {
         getGeometryCaseAndIncrementsSingleCoil(secondary, precisionFactor, caseIndex, totalIncrements);
 
         caseIndex += 4;
-        totalIncrements *= 8;
+        totalIncrements *= g_baseLayerIncrements;
     }
     else if (primThickness / primRadius < g_thinCoilApproximationRatio && primLength / primRadius < g_thinCoilApproximationRatio)
     {
         getGeometryCaseAndIncrementsSingleCoil(secondary, precisionFactor, caseIndex, totalIncrements);
 
-        caseIndex += 8;
+        caseIndex += g_baseLayerIncrements;
     }
     else
     {
         getGeometryCaseAndIncrementsSingleCoil(secondary, precisionFactor, caseIndex, totalIncrements);
 
         caseIndex += 12;
-        totalIncrements *= 8 * 8;
+        totalIncrements *= g_baseLayerIncrements * g_baseLayerIncrements;
     }
 }
 

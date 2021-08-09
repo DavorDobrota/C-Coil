@@ -119,7 +119,7 @@ void testCoilSelfInductance()
 {
     Coil coil1 = Coil(0.03, 0.03, 0.12, 3600);
 
-    for (int i = 1; i <= 9; ++i)
+    for (int i = 1; i <= 12; ++i)
     {
         printf("%.15g %.15g\n",
                coil1.computeAndSetSelfInductance(PrecisionFactor(i)),

@@ -14,7 +14,7 @@ const int g_baseLayerIncrements = 10;
 const double g_angularWeightModifier = 1;
 const double g_primLinearWeightModifier = 1.41;
 
-const double g_thinCoilApproximationRatio = 1e-6;
+const double g_thinCoilApproximationRatio = 1e-9;
 const double g_zAxisApproximationRatio = 1e-12;
 
 #endif //GENERAL_COIL_PROGRAM_PRECISIONGLOBALVARS_H

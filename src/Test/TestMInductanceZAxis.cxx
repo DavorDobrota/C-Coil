@@ -28,7 +28,7 @@ void testCoilMutualInductanceZAxis()
         Coil prim = Coil(Rt1, at1, bt1, Nt1);
         Coil sec = Coil(Rt2, at2, bt2, Nt2);
 
-        for (double i = 1.0; i <= 8.0; i += 1.0)
+        for (int i = 1; i <= 8; i++)
         {
             temp = Coil::computeMutualInductance(prim, sec, distance, PrecisionFactor(i));
             printf("%.18f\n", temp);
@@ -46,9 +46,9 @@ void testCoilMutualInductanceZAxis()
 void testCoilMutualInductanceZAxisArgumentGeneration()
 {
     Coil coil1 = Coil(0.05, 0.1, 0.1, 100);
-    Coil coil2 = Coil(0.05, 0.1, 1e-15, 10);
-    Coil coil3 = Coil(0.05, 1e-15, 0.1, 10);
-    Coil coil4 = Coil(0.05, 1e-15, 1e-15, 1);
+    Coil coil2 = Coil(0.05, 0.1, 0.0, 10);
+    Coil coil3 = Coil(0.05, 0.0, 0.1, 10);
+    Coil coil4 = Coil(0.05, 0.0, 0.0, 1);
 
     CoilPairArguments args;
 
@@ -125,5 +125,4 @@ void testCoilSelfInductance()
                coil1.computeAndSetSelfInductance(PrecisionFactor(i)),
                coil1.computeAndSetApproximateSelfInductance(PrecisionFactor(i)));
     }
-
 }

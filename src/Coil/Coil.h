@@ -7,7 +7,7 @@
 #include <vector>
 
 
-#define PRINT_ENABLED 0
+#define PRINT_ENABLED 1
 
 const int precisionArraySize = 500;
 const int defaultThreadCount = 4;
@@ -107,6 +107,7 @@ class Coil
         double reactance{};
         double impedance{};
 
+        bool useFastMethod;
         int threadCount{};
 
         PrecisionArguments defaultPrecision;
@@ -159,6 +160,7 @@ class Coil
 
         [[nodiscard]] const PrecisionArguments &getPrecisionSettings() const;
         [[nodiscard]] int getThreadCount() const;
+        bool isUsingFastMethod() const;
 
         void setCurrentDensity(double currentDensity);
         void setCurrent(double current);
@@ -441,10 +443,28 @@ class Coil
         [[nodiscard]] std::vector<double> calculateBGradient(double zAxis, double rPolar,
                                                              const PrecisionArguments &usedPrecision) const;
 
+        [[nodiscard]] std::pair<double, double> calculateBFieldSlow(double zAxis, double rPolar,
+                                                                    const PrecisionArguments &usedPrecision) const;
+
+        [[nodiscard]] double calculateAPotentialSlow(double zAxis, double rPolar,
+                                                     const PrecisionArguments &usedPrecision) const;
+
+        [[nodiscard]] std::vector<double> calculateBGradientSlow(double zAxis, double rPolar,
+                                                                 const PrecisionArguments &usedPrecision) const;
+
+        [[nodiscard]] std::pair<double, double> calculateBFieldFast(double zAxis, double rPolar,
+                                                                    const PrecisionArguments &usedPrecision) const;
+
+        [[nodiscard]] double calculateAPotentialFast(double zAxis, double rPolar,
+                                                     const PrecisionArguments &usedPrecision) const;
+
+        [[nodiscard]] std::vector<double> calculateBGradientFast(double zAxis, double rPolar,
+                                                                 const PrecisionArguments &usedPrecision) const;
+
         static void adaptInputVectorToCalculateMethods(const std::vector<vec3::CoordVector3> &positionVectorArr,
                                                        std::vector<double> &cylindricalZArr,
                                                        std::vector<double> &cylindricalRArr,
-                                                       std::vector<double> &cylindricalPhiArr) ;
+                                                       std::vector<double> &cylindricalPhiArr);
 
         void calculateAllBFieldST(const std::vector<double> &cylindricalZArr,
                                   const std::vector<double> &cylindricalRArr,

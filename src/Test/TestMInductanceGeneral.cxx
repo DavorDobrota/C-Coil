@@ -91,9 +91,9 @@ void testCoilMutualInductanceGeneralMTScaling(int maxThreads)
 void testCoilMutualInductanceGeneralArgumentGeneration()
 {
     Coil coil1 = Coil(0.05, 0.1, 0.1, 100);
-    Coil coil2 = Coil(0.05, 0.1, 1e-15, 10);
-    Coil coil3 = Coil(0.05, 1e-15, 0.1, 10);
-    Coil coil4 = Coil(0.05, 1e-15, 1e-15, 1);
+    Coil coil2 = Coil(0.05, 0.1, 0.0, 10);
+    Coil coil3 = Coil(0.05, 0.0, 0.1, 10);
+    Coil coil4 = Coil(0.05, 0.0, 0.0, 1);
 
     CoilPairArguments args;
 

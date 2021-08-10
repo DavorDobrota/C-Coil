@@ -1,6 +1,7 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
 #include "ctpl.h"
+#include "PrecisionGlobalVars.h"
 
 #include <cmath>
 
@@ -20,8 +21,12 @@ Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0) {}
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings,
            int threadCount) :
-        innerRadius(innerRadius), thickness(thickness), length(length), numOfTurns(numOfTurns),
-        defaultPrecision(precisionSettings)
+        innerRadius(innerRadius),
+        thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : thickness),
+        length(length / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : length),
+        numOfTurns(numOfTurns),
+        defaultPrecision(precisionSettings),
+        useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio)
 {
     setCurrent(current);
     calculateAverageWireThickness();
@@ -33,7 +38,11 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, PrecisionFactor precisionFactor,
            int threadCount) :
-           innerRadius(innerRadius), thickness(thickness), length(length), numOfTurns(numOfTurns)
+           innerRadius(innerRadius),
+           thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : thickness),
+           length(length / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : length),
+           numOfTurns(numOfTurns),
+           useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio)
 {
     setCurrent(current);
     calculateAverageWireThickness();
@@ -124,6 +133,8 @@ const PrecisionArguments &Coil::getPrecisionSettings() const { return defaultPre
 
 int Coil::getThreadCount() const { return threadCount; }
 
+bool Coil::isUsingFastMethod() const { return useFastMethod; }
+
 
 void Coil::setCurrentDensity(double currentDensity)
 {
@@ -204,6 +215,7 @@ void Coil::calculateImpedance()
     calculateReactance();
     impedance = std::sqrt(resistance * resistance + reactance * reactance);
 }
+
 
 std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
 Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,

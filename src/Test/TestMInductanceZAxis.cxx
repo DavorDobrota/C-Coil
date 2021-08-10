@@ -117,12 +117,26 @@ void testCoilMutualInductanceZAxisMTScaling(int maxThreads)
 
 void testCoilSelfInductance()
 {
-    Coil coil1 = Coil(0.03, 0.03, 0.12, 3600);
+    Coil coil1 = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(), 12);
+    Coil coil2 = Coil(0.03, 0.0, 0.12, 120);
+    Coil coil3 = Coil(0.03, 0.03, 0.0, 30);
+    Coil coil4 = Coil(0.03, 0.0, 0.0, 1);
+
+    coil1.setThreadCount(8);
 
     for (int i = 1; i <= 12; ++i)
-    {
-        printf("%.15g %.15g\n",
-               coil1.computeAndSetSelfInductance(PrecisionFactor(i)),
-               coil1.computeAndSetApproximateSelfInductance(PrecisionFactor(i)));
-    }
+        printf("%.15g\n", coil1.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT));
+    printf("\n");
+
+    for (int i = 1; i <= 12; ++i)
+        printf("%.15g\n", coil2.computeAndSetSelfInductance(PrecisionFactor(i)));
+    printf("\n");
+
+    for (int i = 1; i <= 12; ++i)
+        printf("%.15g\n", coil3.computeAndSetSelfInductance(PrecisionFactor(i)));
+    printf("\n");
+
+    for (int i = 1; i <= 12; ++i)
+        printf("%.15g\n", coil4.computeAndSetSelfInductance(PrecisionFactor(i)));
+    printf("\n");
 }

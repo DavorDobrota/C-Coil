@@ -2,6 +2,7 @@
 #define GENERAL_COIL_PROGRAM_COIL_H
 
 #include "ComputeMethod.h"
+#include "CoilType.h"
 #include "Tensor/Tensor.h"
 
 #include <vector>
@@ -56,15 +57,12 @@ struct CoilPairArguments
     PrecisionArguments primaryPrecision;
     PrecisionArguments secondaryPrecision;
 
-    static CoilPairArguments getSelfInductanceArguments(const Coil &coil, PrecisionFactor precisionFactor);
-
     static CoilPairArguments getAppropriateCoilPairArguments(const Coil &primary, const Coil &secondary,
                                                              PrecisionFactor precisionFactor,
                                                              ComputeMethod method = CPU_ST, bool isGeneral = true);
 
     private:
-        static void getGeometryCaseAndIncrementsSingleCoil(const Coil &coil, PrecisionFactor precisionFactor,
-                                                           int &caseIndex, int &totalIncrements);
+        static void getGeometryCaseAndIncrementsSingleCoil(const Coil &coil, int &caseIndex, int &totalIncrements);
 
         static void getGeometryCaseAndIncrementsCoilPair(const Coil &primary, const Coil &secondary,
                                                          PrecisionFactor precisionFactor,
@@ -107,7 +105,8 @@ class Coil
         double reactance{};
         double impedance{};
 
-        bool useFastMethod;
+        CoilType coilType{};
+        bool useFastMethod{};
         int threadCount{};
 
         PrecisionArguments defaultPrecision;
@@ -160,7 +159,8 @@ class Coil
 
         [[nodiscard]] const PrecisionArguments &getPrecisionSettings() const;
         [[nodiscard]] int getThreadCount() const;
-        bool isUsingFastMethod() const;
+        [[nodiscard]] bool isUsingFastMethod() const;
+        [[nodiscard]] CoilType getCoilType() const;
 
         void setCurrentDensity(double currentDensity);
         void setCurrent(double current);
@@ -387,9 +387,7 @@ class Coil
                                                             CoilPairArguments inductanceArguments,
                                                             ComputeMethod method = CPU_ST) const;
 
-        double computeAndSetSelfInductance(PrecisionFactor precisionFactor);
-
-        double computeAndSetApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method = CPU_ST);
+        double computeAndSetSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method = CPU_ST);
 
         static double computeAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
                                               PrecisionFactor precisionFactor = PrecisionFactor(),
@@ -433,6 +431,7 @@ class Coil
         void calculateResistance();
         void calculateReactance();
         void calculateImpedance();
+        void calculateCoilType();
 
         [[nodiscard]] std::pair<double, double> calculateBField(double zAxis, double rPolar,
                                                                 const PrecisionArguments &usedPrecision) const;
@@ -558,10 +557,6 @@ class Coil
                                                        double alphaAngle, double betaAngle,
                                                        CoilPairArguments inductanceArguments,
                                                        ComputeMethod method = CPU_ST);
-
-        void calculateAndSetSelfInductance(PrecisionFactor precisionFactor);
-
-        void calculateAndSetApproximateSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method = CPU_ST);
 
         static double calculateAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                 CoilPairArguments forceArguments,

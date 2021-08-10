@@ -7,7 +7,7 @@
 
 CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Coil &primary, const Coil &secondary,
                                                                         PrecisionFactor precisionFactor)
-                                                                        {
+{
     const int primLinearIncrements = arrSize;
     const int primAngularIncrements = arrSize;
 
@@ -21,9 +21,10 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Co
     int currentIncrements;
     int caseIndex;
 
-    getGeometryCaseAndIncrementsSingleCoil(secondary, precisionFactor, caseIndex, totalIncrements);
-    //multiplying total increments by 2^7 to satisfy this specific workload
-    totalIncrements *= 128;
+    getGeometryCaseAndIncrementsSingleCoil(secondary, caseIndex, totalIncrements);
+
+    totalIncrements *= g_baseLayerIncrements * g_baseLayerIncrements * g_baseLayerIncrements *
+            std::pow(2, precisionFactor.relativePrecision);
 
     do
     {
@@ -135,9 +136,10 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGeneralGPU(const 
     int currentIncrements;
     int caseIndex;
 
-    getGeometryCaseAndIncrementsSingleCoil(secondary, precisionFactor, caseIndex, currentIncrements);
-    //multiplying total increments by 2^10 to satisfy this specific workload
-    totalIncrements *= 1024;
+    getGeometryCaseAndIncrementsSingleCoil(secondary, caseIndex, currentIncrements);
+
+    totalIncrements *= g_baseLayerIncrements * g_baseLayerIncrements * g_baseLayerIncrements * g_baseLayerIncrements
+            * std::pow(2, precisionFactor.relativePrecision);
 
     do
     {

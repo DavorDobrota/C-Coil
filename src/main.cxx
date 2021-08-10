@@ -16,5 +16,7 @@ int main()
     testCoilMutualInductanceGeneralPancakeAndPancake();
     testCoilMutualInductanceGeneralRectangularAndFilament();
 
+//    testCoilSelfInductance();
+
     return 0;
 }

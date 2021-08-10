@@ -2,6 +2,7 @@
 #include "LegendreMatrix.h"
 #include "ctpl.h"
 #include "PrecisionGlobalVars.h"
+#include "CoilType.h"
 
 #include <cmath>
 
@@ -28,6 +29,7 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
         defaultPrecision(precisionSettings),
         useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio)
 {
+    calculateCoilType();
     setCurrent(current);
     calculateAverageWireThickness();
     setWireResistivity(wireResistivity);
@@ -44,6 +46,7 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
            numOfTurns(numOfTurns),
            useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio)
 {
+    calculateCoilType();
     setCurrent(current);
     calculateAverageWireThickness();
     setWireResistivity(wireResistivity);
@@ -135,6 +138,8 @@ int Coil::getThreadCount() const { return threadCount; }
 
 bool Coil::isUsingFastMethod() const { return useFastMethod; }
 
+CoilType Coil::getCoilType() const { return coilType; }
+
 
 void Coil::setCurrentDensity(double currentDensity)
 {
@@ -214,6 +219,35 @@ void Coil::calculateImpedance()
     calculateResistance();
     calculateReactance();
     impedance = std::sqrt(resistance * resistance + reactance * reactance);
+}
+
+void Coil::calculateCoilType()
+{
+    if (thickness / innerRadius < g_thinCoilApproximationRatio && length / innerRadius < g_thinCoilApproximationRatio)
+        coilType = CoilType::FILAMENT;
+
+    else if (thickness / innerRadius < g_thinCoilApproximationRatio)
+        coilType = CoilType::THIN;
+
+    else if (length / innerRadius < g_thinCoilApproximationRatio)
+        coilType = CoilType::FLAT;
+
+    else
+        coilType = CoilType::RECTANGULAR;
+}
+
+double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method)
+{
+    if (coilType == CoilType::FILAMENT)
+    {
+        fprintf(stderr, "ERROR: The integral of a filament is divergent, try a thin rectangular coil\n");
+        throw "Coil loop calculation not supported";
+    }
+
+    double inductance = Coil::computeMutualInductance(*this, *this, 0.0, precisionFactor, method);
+    setSelfInductance(inductance);
+
+    return inductance;
 }
 
 

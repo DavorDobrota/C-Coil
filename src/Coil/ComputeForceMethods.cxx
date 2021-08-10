@@ -67,3 +67,23 @@ std::pair<vec3::FieldVector3, vec3::FieldVector3>
     return calculateAmpereForceGeneral(primary, secondary, zDisplacement, rDisplacement,
                                        alphaAngle, betaAngle, forceArguments, method);
 }
+
+
+std::pair<vec3::FieldVector3, vec3::FieldVector3>
+Coil::computeForceOnDipoleMoment(vec3::CoordVector3 positionVector, vec3::FieldVector3 dipoleMoment,
+                                 const PrecisionArguments &usedPrecision)
+{
+    vec3::FieldVector3 magneticField = computeBFieldVector(positionVector, usedPrecision);
+    vec3::Matrix3 magneticGradient = computeBGradientTensor(positionVector, usedPrecision);
+
+    vec3::FieldVector3 magneticTorque = vec3::FieldVector3::crossProduct(dipoleMoment, magneticField);
+    vec3::FieldVector3 magneticForce = vec3::Matrix3::matrixVectorMultiplication(magneticGradient, dipoleMoment);
+
+    return std::make_pair(magneticForce, magneticTorque);
+}
+
+std::pair<vec3::FieldVector3, vec3::FieldVector3>
+Coil::computeForceOnDipoleMoment(vec3::CoordVector3 positionVector, vec3::FieldVector3 dipoleMoment)
+{
+    return computeForceOnDipoleMoment(positionVector, dipoleMoment, defaultPrecision);
+}

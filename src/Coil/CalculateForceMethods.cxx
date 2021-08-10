@@ -70,9 +70,9 @@ double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondar
 }
 
 std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                          double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
-                                          CoilPairArguments forceArguments, ComputeMethod method)
+Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
+                                  double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
+                                  CoilPairArguments forceArguments, ComputeMethod method)
 {
     std::vector<double> forceAndTorqueComponents(6);
 

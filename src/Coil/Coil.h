@@ -425,6 +425,13 @@ class Coil
                                   double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
                                   CoilPairArguments forceArguments, ComputeMethod method = CPU_ST);
 
+        std::pair<vec3::FieldVector3, vec3::FieldVector3>
+        computeForceOnDipoleMoment(vec3::CoordVector3 positionVector, vec3::FieldVector3 dipoleMoment);
+
+        std::pair<vec3::FieldVector3, vec3::FieldVector3>
+        computeForceOnDipoleMoment(vec3::CoordVector3 positionVector, vec3::FieldVector3 dipoleMoment,
+                                   const PrecisionArguments &usedPrecision);
+
     private:
         void calculateMagneticMoment();
         void calculateAverageWireThickness();

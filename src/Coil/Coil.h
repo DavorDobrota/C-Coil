@@ -8,7 +8,7 @@
 #include <vector>
 
 
-#define PRINT_ENABLED 1
+#define PRINT_ENABLED 0
 
 const int precisionArraySize = 500;
 const int defaultThreadCount = 4;
@@ -111,15 +111,23 @@ class Coil
 
         PrecisionArguments defaultPrecision;
 
+        vec3::CoordVector3 positionVector{};
+        double xAxisAngle{};
+        double zAxisAngle{};
+        vec3::Matrix3 transformationMatrix{};
+        vec3::Matrix3 inverseTransformationMatrix{};
+
     public:
         Coil();
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
              double current, double wireResistivity, double sineFrequency,
-             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount);
+             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount,
+             vec3::CoordVector3 coordinatePosition = vec3::CoordVector3(), double xAxisAngle = 0.0, double zAxisAngle = 0.0);
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
              double current, double wireResistivity, double sineFrequency,
-             const PrecisionArguments &precisionSettings, int threadCount = defaultThreadCount);
+             const PrecisionArguments &precisionSettings, int threadCount = defaultThreadCount,
+             vec3::CoordVector3 coordinatePosition = vec3::CoordVector3(), double xAxisAngle = 0.0, double zAxisAngle = 0.0);
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
              PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount);
@@ -167,10 +175,11 @@ class Coil
         void setWireResistivity(double wireResistivity);
         void setSineFrequency(double sineFrequency);
         void setPrecisionSettings(const PrecisionArguments &precisionSettings);
-
         void setThreadCount(int threadCount);
 
         void setSelfInductance(double selfInductance);
+
+        void setPositionAndOrientation(vec3::CoordVector3 positionVector, double xAxisAngle, double zAxisAngle);
 
         [[nodiscard]] double computeBFieldX(vec3::CoordVector3 positionVector) const;
         [[nodiscard]] double computeBFieldX(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const;
@@ -439,6 +448,7 @@ class Coil
         void calculateReactance();
         void calculateImpedance();
         void calculateCoilType();
+        void calculateTransformationMatrices();
 
         [[nodiscard]] std::pair<double, double> calculateBField(double zAxis, double rPolar,
                                                                 const PrecisionArguments &usedPrecision) const;
@@ -467,10 +477,12 @@ class Coil
         [[nodiscard]] std::vector<double> calculateBGradientFast(double zAxis, double rPolar,
                                                                  const PrecisionArguments &usedPrecision) const;
 
-        static void adaptInputVectorToCalculateMethods(const std::vector<vec3::CoordVector3> &positionVectorArr,
-                                                       std::vector<double> &cylindricalZArr,
-                                                       std::vector<double> &cylindricalRArr,
-                                                       std::vector<double> &cylindricalPhiArr);
+        void adaptInputVectorToCalculateMethods(const std::vector<vec3::CoordVector3> &positionVectorArr,
+                                                std::vector<double> &cylindricalZArr,
+                                                std::vector<double> &cylindricalRArr,
+                                                std::vector<double> &cylindricalPhiArr) const;
+
+        std::vector<vec3::FieldVector3> adaptOutputVectorValues(const std::vector<vec3::FieldVector3> &computedVectorArr) const;
 
         void calculateAllBFieldST(const std::vector<double> &cylindricalZArr,
                                   const std::vector<double> &cylindricalRArr,

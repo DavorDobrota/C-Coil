@@ -21,14 +21,17 @@ Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings,
-           int threadCount) :
+           int threadCount, vec3::CoordVector3 coordinatePosition, double xAxisAngle, double zAxisAngle) :
         innerRadius(innerRadius),
         thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : thickness),
         length(length / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : length),
         numOfTurns(numOfTurns),
         defaultPrecision(precisionSettings),
-        useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio)
+        useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio),
+        positionVector(coordinatePosition),
+        xAxisAngle(xAxisAngle), zAxisAngle(zAxisAngle)
 {
+    calculateTransformationMatrices();
     calculateCoilType();
     setCurrent(current);
     calculateAverageWireThickness();
@@ -39,13 +42,16 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, PrecisionFactor precisionFactor,
-           int threadCount) :
-           innerRadius(innerRadius),
-           thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : thickness),
-           length(length / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : length),
-           numOfTurns(numOfTurns),
-           useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio)
+           int threadCount, vec3::CoordVector3 coordinatePosition, double xAxisAngle, double zAxisAngle) :
+        innerRadius(innerRadius),
+        thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : thickness),
+        length(length / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : length),
+        numOfTurns(numOfTurns),
+        useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio),
+        positionVector(coordinatePosition),
+        xAxisAngle(xAxisAngle), zAxisAngle(zAxisAngle)
 {
+    calculateTransformationMatrices();
     calculateCoilType();
     setCurrent(current);
     calculateAverageWireThickness();
@@ -183,6 +189,16 @@ void Coil::setSelfInductance(double selfInductance)
     this->selfInductance = selfInductance;
 }
 
+
+void Coil::setPositionAndOrientation(vec3::CoordVector3 positionVector, double xAxisAngle, double zAxisAngle)
+{
+    this->positionVector = positionVector;
+    this->xAxisAngle = xAxisAngle;
+    this->zAxisAngle = zAxisAngle;
+
+    calculateTransformationMatrices();
+}
+
 void Coil::calculateMagneticMoment()
 {
     magneticMoment = M_PI * current * numOfTurns *
@@ -234,6 +250,31 @@ void Coil::calculateCoilType()
 
     else
         coilType = CoilType::RECTANGULAR;
+}
+
+void Coil::calculateTransformationMatrices()
+{
+
+    double normalVectorX = std::sin(zAxisAngle) * sin(xAxisAngle);
+    double normalVectorY = (-1) * std::sin(xAxisAngle) * std::cos(zAxisAngle);
+
+    double rotationX = std::acos(normalVectorX) - M_PI_2;
+    double rotationY = std::acos(normalVectorY) - M_PI_2;
+    double rotationZ = std::cos(xAxisAngle);
+
+    double cosX = std::cos(rotationX); double sinX = std::sin(rotationX);
+    double cosY = std::cos(rotationY); double sinY = std::sin(rotationY);
+    double cosZ = std::cos(rotationZ); double sinZ = std::sin(rotationZ);
+
+
+
+    transformationMatrix = vec3::Matrix3(cosZ * cosY, cosZ * sinY * sinX - sinZ * cosX, cosZ * sinY * cosX + sinZ * sinX,
+                                         sinZ * cosY, sinZ * sinY * sinX + cosZ * cosX, sinZ * sinY * cosX - cosZ * sinX,
+                                         (-1) * sinY, cosY * sinX, cosY * cosY);
+
+    inverseTransformationMatrix = vec3::Matrix3(cosZ * cosY, cosZ * sinY * sinX + sinZ * cosX, (-1) * cosZ * sinY * cosX + sinZ * sinX,
+                                                (-1) * sinZ * cosY, (-1) * sinZ * sinY * sinX + cosZ * cosX, sinZ * sinY * cosX + cosZ * sinX,
+                                                sinY,  (-1) * cosY * sinX, cosY * cosY);
 }
 
 double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method)

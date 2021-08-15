@@ -7,6 +7,9 @@ namespace vec3
 {
     enum CoordinateSystem {CARTESIAN, CYLINDRICAL, SPHERICAL};
 
+    class CoordVector3;
+    class FieldVector3;
+    class Matrix3;
 
     class CoordVector3
     {
@@ -30,6 +33,9 @@ namespace vec3
             static void convertAllToCartesian(std::vector<CoordVector3> &Vector3Array);
             static void convertAllToCylindrical(std::vector<CoordVector3> &Vector3Array);
             static void convertAllToSpherical(std::vector<CoordVector3> &Vector3Array);
+
+            static FieldVector3 convertToFieldVector(CoordVector3 inputVector);
+            static CoordVector3 convertToCoordVector(FieldVector3 inputVector);
 
         private:
 
@@ -82,6 +88,7 @@ namespace vec3
             explicit Matrix3(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz);
 
             static FieldVector3 matrixVectorMultiplication(Matrix3 matrix, FieldVector3 vector);
+            static Matrix3 matrixMultiplication(Matrix3 mat1, Matrix3 mat2);
     };
 }
 

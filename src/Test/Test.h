@@ -9,6 +9,7 @@ const int g_default_nThreads = 8;
 void testLegendrePolynomials();
 void testNewCoilParameters();
 void testMethodPrecisionCompareCPUvsGPU();
+void testCoilPositionAndRotation();
 void testCoilMutualInductanceForSpecialCase();
 void testVector3();
 

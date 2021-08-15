@@ -18,5 +18,9 @@ int main()
 //
 //    testCoilSelfInductance();
 
+//    testCoilPositionAndRotation();
+
+    testPerformanceForComputeAll(PrecisionFactor(6.0), 50000, 10, 16);
+
     return 0;
 }

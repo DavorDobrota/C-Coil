@@ -20,7 +20,7 @@ int main()
 
 //    testCoilPositionAndRotation();
 
-    testPerformanceForComputeAll(PrecisionFactor(6.0), 50000, 10, 16);
+//    testPerformanceForComputeAll(PrecisionFactor(6.0), 50000, 10, 16);
 
     return 0;
 }

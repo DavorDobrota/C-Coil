@@ -13,11 +13,6 @@ void Coil::adaptInputVectorToCalculateMethods(const std::vector<vec3::CoordVecto
     cylindricalZArr.resize(positionVectorArr.size());
     cylindricalRArr.resize(positionVectorArr.size());
     cylindricalPhiArr.resize(positionVectorArr.size());
-//    printf("0: %.15g %.15g\n", yAxisAngle, zAxisAngle);
-//    printf("0: %.8g %.8g %.8g | %.8g %.8g %.8g | %.8g %.8g %.8g\n",
-//           transformationMatrix.xxElement, transformationMatrix.xyElement, transformationMatrix.xzElement,
-//           transformationMatrix.yxElement, transformationMatrix.yyElement, transformationMatrix.yzElement,
-//           transformationMatrix.zxElement, transformationMatrix.zyElement, transformationMatrix.zzElement);
 
     vec3::FieldVector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVector);
     positionVec.multiplyByConstant(-1.0);
@@ -25,12 +20,8 @@ void Coil::adaptInputVectorToCalculateMethods(const std::vector<vec3::CoordVecto
     for (int i = 0; i < positionVectorArr.size(); ++i)
     {
         vec3::FieldVector3 pointVec = vec3::CoordVector3::convertToFieldVector(positionVectorArr[i]);
-        printf("1: %.15g %.15g %.15g\n", pointVec.xComponent, pointVec.yComponent, pointVec.zComponent);
         vec3::FieldVector3 originVec = vec3::FieldVector3::addVectors(pointVec, positionVec);
-        printf("2: %.15g %.15g %.15g\n", originVec.xComponent, originVec.yComponent, originVec.zComponent);
-
         vec3::FieldVector3 transformedVec = vec3::Matrix3::matrixVectorMultiplication(inverseTransformationMatrix, originVec);
-        printf("3: %.15g %.15g %.15g\n", transformedVec.xComponent, transformedVec.yComponent, transformedVec.zComponent);
         vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
 
         finalVec.convertToCylindrical();
@@ -47,7 +38,6 @@ std::vector<vec3::FieldVector3> Coil::adaptOutputVectorValues(const std::vector<
 
     for (int i = 0; i < computedVectorArr.size(); ++i)
         outputVectorArr[i] = vec3::Matrix3::matrixVectorMultiplication(transformationMatrix, computedVectorArr[i]);
-        //outputVectorArr[i] = computedVectorArr[i];
 
     return outputVectorArr;
 }

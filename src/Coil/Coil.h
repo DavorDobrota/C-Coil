@@ -334,6 +334,12 @@ class Coil
                                                                             ComputeMethod method = CPU_ST) const;
 
 
+        static double computeMutualInductance(const Coil &primary, const Coil &secondary,
+                                              PrecisionFactor precisionFactor = PrecisionFactor(),
+                                              ComputeMethod method = CPU_ST);
+        static double computeMutualInductance(const Coil &primary, const Coil &secondary,
+                                              CoilPairArguments inductanceArguments, ComputeMethod method = CPU_ST);
+
         static double computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
                                               PrecisionFactor precisionFactor = PrecisionFactor(),
                                               ComputeMethod method = CPU_ST);
@@ -365,6 +371,12 @@ class Coil
                                               double zDisplacement, double rDisplacement,
                                               double alphaAngle, double betaAngle,
                                               CoilPairArguments inductanceArguments, ComputeMethod method = CPU_ST);
+
+        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                            ComputeMethod method = CPU_ST) const;
+        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, CoilPairArguments inductanceArguments,
+                                                            ComputeMethod method = CPU_ST) const;
+
 
         [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement,
                                                             PrecisionFactor precisionFactor = PrecisionFactor(),
@@ -403,6 +415,14 @@ class Coil
                                               ComputeMethod method = CPU_ST);
         static double computeAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
                                               CoilPairArguments inductanceArguments, ComputeMethod method = CPU_ST);
+
+        static std::pair<vec3::FieldVector3, vec3::FieldVector3>
+        computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
+                                  PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod method = CPU_ST);
+
+        static std::pair<vec3::FieldVector3, vec3::FieldVector3>
+        computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
+                                  CoilPairArguments forceArguments, ComputeMethod method = CPU_ST);
 
         static std::pair<vec3::FieldVector3, vec3::FieldVector3>
         computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,

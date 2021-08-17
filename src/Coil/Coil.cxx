@@ -255,26 +255,16 @@ void Coil::calculateCoilType()
 void Coil::calculateTransformationMatrices()
 {
 
-    double normalVectorX = std::sin(zAxisAngle) * sin(xAxisAngle);
-    double normalVectorY = (-1) * std::sin(xAxisAngle) * std::cos(zAxisAngle);
+    double cosY = std::cos(xAxisAngle); double sinY = std::sin(xAxisAngle);
+    double cosZ = std::cos(zAxisAngle); double sinZ = std::sin(zAxisAngle);
 
-    double rotationX = std::acos(normalVectorX) - M_PI_2;
-    double rotationY = std::acos(normalVectorY) - M_PI_2;
-    double rotationZ = std::cos(xAxisAngle);
+    transformationMatrix = vec3::Matrix3(cosZ * cosZ * cosY - sinZ * sinZ, sinZ * cosZ * cosY + sinZ * cosZ, cosZ * sinY,
+                                         -sinZ * cosZ * cosY - sinZ * cosZ, cosZ * cosZ - sinZ * sinZ * cosY, sinZ * sinY,
+                                         -sinY * cosZ, sinY * sinZ, cosY);
 
-    double cosX = std::cos(rotationX); double sinX = std::sin(rotationX);
-    double cosY = std::cos(rotationY); double sinY = std::sin(rotationY);
-    double cosZ = std::cos(rotationZ); double sinZ = std::sin(rotationZ);
-
-
-
-    transformationMatrix = vec3::Matrix3(cosZ * cosY, cosZ * sinY * sinX - sinZ * cosX, cosZ * sinY * cosX + sinZ * sinX,
-                                         sinZ * cosY, sinZ * sinY * sinX + cosZ * cosX, sinZ * sinY * cosX - cosZ * sinX,
-                                         (-1) * sinY, cosY * sinX, cosY * cosY);
-
-    inverseTransformationMatrix = vec3::Matrix3(cosZ * cosY, cosZ * sinY * sinX + sinZ * cosX, (-1) * cosZ * sinY * cosX + sinZ * sinX,
-                                                (-1) * sinZ * cosY, (-1) * sinZ * sinY * sinX + cosZ * cosX, sinZ * sinY * cosX + cosZ * sinX,
-                                                sinY,  (-1) * cosY * sinX, cosY * cosY);
+    inverseTransformationMatrix = vec3::Matrix3(cosZ * cosZ * cosY - sinZ * sinZ, -sinZ * cosZ * cosY - sinZ * cosZ, -cosZ * sinY,
+                                                sinZ * cosZ * cosY + sinZ * cosZ, cosZ * cosZ - sinZ * sinZ * cosY, sinZ * sinY,
+                                                sinY * cosZ, sinY * sinZ, cosY);
 }
 
 double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method)

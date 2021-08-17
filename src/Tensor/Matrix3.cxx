@@ -7,9 +7,10 @@ vec3::Matrix3::Matrix3(double xx, double xy, double xz, double yx, double yy, do
                         yxElement(yx), yyElement(yy), yzElement(yz),
                         zxElement(zx), zyElement(zy), zzElement(zz) {}
 
-vec3::FieldVector3 vec3::Matrix3::matrixVectorMultiplication(vec3::Matrix3 matrix, vec3::FieldVector3 vector)
+
+vec3::FieldVector3 vec3::Matrix3::operator*(const FieldVector3 &vec) const
 {
-    return vec3::FieldVector3(matrix.xxElement * vector.xComponent + matrix.xyElement * vector.yComponent + matrix.xzElement * vector.zComponent,
-                              matrix.yxElement * vector.xComponent + matrix.yyElement * vector.yComponent + matrix.yzElement * vector.zComponent,
-                              matrix.zxElement * vector.xComponent + matrix.zyElement * vector.yComponent + matrix.zzElement * vector.zComponent);
+    return vec3::FieldVector3(this->xxElement * vec.xComponent + this->xyElement * vec.yComponent + this->xzElement * vec.zComponent,
+                              this->yxElement * vec.xComponent + this->yyElement * vec.yComponent + this->yzElement * vec.zComponent,
+                              this->zxElement * vec.xComponent + this->zyElement * vec.yComponent + this->zzElement * vec.zComponent);
 }

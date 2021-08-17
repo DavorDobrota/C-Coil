@@ -77,7 +77,7 @@ Coil::computeForceOnDipoleMoment(vec3::CoordVector3 positionVector, vec3::FieldV
     vec3::Matrix3 magneticGradient = computeBGradientTensor(positionVector, usedPrecision);
 
     vec3::FieldVector3 magneticTorque = vec3::FieldVector3::crossProduct(dipoleMoment, magneticField);
-    vec3::FieldVector3 magneticForce = vec3::Matrix3::matrixVectorMultiplication(magneticGradient, dipoleMoment);
+    vec3::FieldVector3 magneticForce = magneticGradient * dipoleMoment;
 
     return std::make_pair(magneticForce, magneticTorque);
 }

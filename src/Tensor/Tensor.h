@@ -83,7 +83,7 @@ namespace vec3
             Matrix3();
             explicit Matrix3(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz);
 
-            static FieldVector3 matrixVectorMultiplication(Matrix3 matrix, FieldVector3 vector);
+            FieldVector3 operator*(const FieldVector3 &vec) const;
     };
 }
 

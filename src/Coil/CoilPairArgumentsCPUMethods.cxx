@@ -37,7 +37,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisCPU(const Co
         double secThicknessStep = secondary.getThickness() /
                 (blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
-        // primLinearStep has been removed as
+        // primLinearStep has been removed as a layer of integration by length has been reduced to an exact expression
         double secLinearStep = std::sqrt(secLengthStep * secThicknessStep);
 
         switch (caseIndex)
@@ -293,6 +293,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGeneralCPU(const 
         double secAngularStep = M_PI * (secondary.getInnerRadius() + secondary.getThickness() * 0.5) /
                 (blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
+        // primLinearStep has been removed as a layer of integration by length has been reduced to an exact expression
         double secLinearStep = std::sqrt(secLengthStep * secThicknessStep);
 
         switch (caseIndex)

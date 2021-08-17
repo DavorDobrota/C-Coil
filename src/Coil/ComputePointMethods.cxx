@@ -7,7 +7,7 @@
 double Coil::computeBFieldH(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
 {
     positionVector.convertToCylindrical();
-    std::pair<double, double> fields = calculateBField(positionVector.component1, positionVector.component2, usedPrecision);
+    std::pair fields = calculateBField(positionVector.component1, positionVector.component2, usedPrecision);
     return fields.first;
 }
 
@@ -41,7 +41,7 @@ double Coil::computeBFieldY(vec3::CoordVector3 positionVector) const
 double Coil::computeBFieldZ(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
 {
     positionVector.convertToCylindrical();
-    std::pair<double, double> fields = calculateBField(positionVector.component1, positionVector.component2, usedPrecision);
+    std::pair fields = calculateBField(positionVector.component1, positionVector.component2, usedPrecision);
     return fields.second;
 }
 
@@ -53,7 +53,7 @@ double Coil::computeBFieldZ(vec3::CoordVector3 positionVector) const
 double Coil::computeBFieldAbs(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
 {
     positionVector.convertToCylindrical();
-    std::pair<double, double> fields = calculateBField(positionVector.component1, positionVector.component2, usedPrecision);
+    std::pair fields = calculateBField(positionVector.component1, positionVector.component2, usedPrecision);
     return std::sqrt(fields.first * fields.first + fields.second * fields.second);
 }
 
@@ -65,7 +65,7 @@ double Coil::computeBFieldAbs(vec3::CoordVector3 positionVector) const
 vec3::FieldVector3 Coil::computeBFieldVector(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
 {
     positionVector.convertToCylindrical();
-    std::pair<double, double> fields = calculateBField(positionVector.component1, positionVector.component2, usedPrecision);
+    std::pair fields = calculateBField(positionVector.component1, positionVector.component2, usedPrecision);
 
     return vec3::FieldVector3(fields.second * cos(positionVector.component3),
                               fields.second * sin(positionVector.component3),
@@ -180,12 +180,7 @@ double Coil::computeEFieldAbs(vec3::CoordVector3 positionVector) const
 vec3::FieldVector3 Coil::computeEFieldVector(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
 {
     vec3::FieldVector3 output = computeAPotentialVector(positionVector, usedPrecision);
-
-    double multiplier = 2*M_PI * sineFrequency;
-    output.xComponent *= multiplier;
-    output.yComponent *= multiplier;
-    output.zComponent *= multiplier;
-
+    output *= (2*M_PI * sineFrequency);
     return output;
 }
 

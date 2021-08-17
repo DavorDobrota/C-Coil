@@ -112,7 +112,7 @@ class Coil
         PrecisionArguments defaultPrecision;
 
         vec3::CoordVector3 positionVector{};
-        double xAxisAngle{};
+        double yAxisAngle{};
         double zAxisAngle{};
         vec3::Matrix3 transformationMatrix{};
         vec3::Matrix3 inverseTransformationMatrix{};

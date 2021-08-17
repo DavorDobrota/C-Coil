@@ -171,7 +171,7 @@ void testCoilPositionAndRotation()
     coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, -0.02), 0, 0);
 
     Coil coil3 = Coil(0.03, 0.03, 0.12, 3600);
-    coil3.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0), M_PI_4, M_PI_4);
+    coil3.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0), 0, M_PI_2);
 
     int numPoints = 100;
     std::vector<vec3::CoordVector3> pointPositions1(numPoints), pointPositions2(numPoints);
@@ -191,7 +191,7 @@ void testCoilPositionAndRotation()
     for (int i = 0; i < numPoints; ++i)
     {
         pointPositions1[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.001 * i);
-        pointPositions2[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.001 * i, 0.001 * i, 0.001 * i);
+        pointPositions2[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.00 * i, 0.00 * i, 0.001 * i);
     }
 
     fieldVectors1 = coil1.computeAllBFieldComponents(pointPositions1);

@@ -29,7 +29,7 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
         defaultPrecision(precisionSettings),
         useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio),
         positionVector(coordinatePosition),
-        xAxisAngle(xAxisAngle), zAxisAngle(zAxisAngle)
+        yAxisAngle(xAxisAngle), zAxisAngle(zAxisAngle)
 {
     calculateTransformationMatrices();
     calculateCoilType();
@@ -49,7 +49,7 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
         numOfTurns(numOfTurns),
         useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio),
         positionVector(coordinatePosition),
-        xAxisAngle(xAxisAngle), zAxisAngle(zAxisAngle)
+        yAxisAngle(xAxisAngle), zAxisAngle(zAxisAngle)
 {
     calculateTransformationMatrices();
     calculateCoilType();
@@ -193,7 +193,7 @@ void Coil::setSelfInductance(double selfInductance)
 void Coil::setPositionAndOrientation(vec3::CoordVector3 positionVector, double xAxisAngle, double zAxisAngle)
 {
     this->positionVector = positionVector;
-    this->xAxisAngle = xAxisAngle;
+    this->yAxisAngle = xAxisAngle;
     this->zAxisAngle = zAxisAngle;
 
     calculateTransformationMatrices();
@@ -255,15 +255,15 @@ void Coil::calculateCoilType()
 void Coil::calculateTransformationMatrices()
 {
 
-    double cosY = std::cos(xAxisAngle); double sinY = std::sin(xAxisAngle);
+    double cosY = std::cos(yAxisAngle); double sinY = std::sin(yAxisAngle);
     double cosZ = std::cos(zAxisAngle); double sinZ = std::sin(zAxisAngle);
 
-    transformationMatrix = vec3::Matrix3(cosZ * cosZ * cosY - sinZ * sinZ, sinZ * cosZ * cosY + sinZ * cosZ, cosZ * sinY,
-                                         -sinZ * cosZ * cosY - sinZ * cosZ, cosZ * cosZ - sinZ * sinZ * cosY, sinZ * sinY,
+    transformationMatrix = vec3::Matrix3(cosZ * cosZ * cosY - sinZ * sinZ, -sinZ * cosZ * cosY - sinZ * cosZ, cosZ * sinY,
+                                         sinZ * cosZ * cosY + sinZ * cosZ, cosZ * cosZ - sinZ * sinZ * cosY, sinZ * sinY,
                                          -sinY * cosZ, sinY * sinZ, cosY);
 
-    inverseTransformationMatrix = vec3::Matrix3(cosZ * cosZ * cosY - sinZ * sinZ, -sinZ * cosZ * cosY - sinZ * cosZ, -cosZ * sinY,
-                                                sinZ * cosZ * cosY + sinZ * cosZ, cosZ * cosZ - sinZ * sinZ * cosY, sinZ * sinY,
+    inverseTransformationMatrix = vec3::Matrix3(cosZ * cosZ * cosY - sinZ * sinZ, sinZ * cosZ * cosY + sinZ * cosZ, -cosZ * sinY,
+                                                -sinZ * cosZ * cosY - sinZ * cosZ, cosZ * cosZ - sinZ * sinZ * cosY, sinZ * sinY,
                                                 sinY * cosZ, sinY * sinZ, cosY);
 }
 

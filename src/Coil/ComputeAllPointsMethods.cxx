@@ -13,7 +13,7 @@ void Coil::adaptInputVectorToCalculateMethods(const std::vector<vec3::CoordVecto
     cylindricalZArr.resize(positionVectorArr.size());
     cylindricalRArr.resize(positionVectorArr.size());
     cylindricalPhiArr.resize(positionVectorArr.size());
-//    printf("0: %.15g %.15g\n", xAxisAngle, zAxisAngle);
+//    printf("0: %.15g %.15g\n", yAxisAngle, zAxisAngle);
 //    printf("0: %.8g %.8g %.8g | %.8g %.8g %.8g | %.8g %.8g %.8g\n",
 //           transformationMatrix.xxElement, transformationMatrix.xyElement, transformationMatrix.xzElement,
 //           transformationMatrix.yxElement, transformationMatrix.yyElement, transformationMatrix.yzElement,

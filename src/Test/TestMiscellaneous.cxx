@@ -6,6 +6,7 @@
 #include "Coil.h"
 #include "OldCoil.h"
 #include "ComputeMethod.h"
+#include "Tensor.h"
 
 void testLegendrePolynomials()
 {
@@ -56,9 +57,12 @@ void testNewCoilParameters()
 
     testCoil1.setSineFrequency(0);
     testCoil1.setCurrent(1);
-    std::vector<double> fieldVector = testCoil1.computeBFieldVector(0.0, 0.0, 0.0);
-    printf("%.25f %.25f\n", fieldVector[2], testCoil1.computeBFieldZ(0.0, 0.0));
-    printf("%.25f %.25f\n", fieldVector[0], testCoil1.computeBFieldH(0.0, 0.0));
+
+    vec3::CoordVector3 positionVector = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0);
+
+    vec3::FieldVector3 vector = testCoil1.computeBFieldVector(positionVector);
+    printf("%.25f %.25f\n", vector.xComponent, testCoil1.computeBFieldZ(positionVector));
+    printf("%.25f %.25f\n", vector.zComponent, testCoil1.computeBFieldH(positionVector));
 }
 
 void testMethodPrecisionCompareCPUvsGPU()
@@ -68,48 +72,31 @@ void testMethodPrecisionCompareCPUvsGPU()
     int pointCount = 2000;
     double radius = 0.075;
 
-    std::vector<double> cylindricalZArr;
-    std::vector<double> cylindricalRArr;
-    std::vector<double> cylindricalPhiArr;
+    std::vector<vec3::CoordVector3> positionValues(pointCount);
 
-    for (int i = 0; i < pointCount ; i++)
-    {
-        cylindricalZArr.push_back(radius * cos(i * 2 * Pi / pointCount));
-        cylindricalRArr.push_back(radius * sin(i * 2 * Pi / pointCount));
-        cylindricalPhiArr.push_back(0.0);
-    }
+    for (int i = 0; i < pointCount; i++)
+        positionValues[i] = vec3::CoordVector3(vec3::CYLINDRICAL, radius, i * M_PI / pointCount, 0.0);
 
-    std::vector<double> singleResultsX;
-    std::vector<double> singleResultsY;
-    std::vector<double> singleResultsZ;
+    std::vector<double> cpuPotential;
+    std::vector<double> gpuPotential;
 
-    std::vector<double> acceleratedResultsX;
-    std::vector<double> acceleratedResultsY;
-    std::vector<double> acceleratedResultsZ;
+    std::vector<vec3::FieldVector3> cpuFieldVectors;
+    std::vector<vec3::FieldVector3> gpuFieldVectors;
 
-    std::vector<double> singlePotential;
-    std::vector<double> acceleratedPotential;
+    cpuPotential = testCoil.computeAllAPotentialAbs(positionValues, CPU_ST);
+    cpuFieldVectors = testCoil.computeAllBFieldComponents(positionValues, CPU_ST);
 
-    testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                        singleResultsX, singleResultsY, singleResultsZ,
-                                        CPU_ST);
-    testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
-                                     singlePotential, CPU_ST);
-
-    testCoil.computeAllBFieldComponents(cylindricalZArr, cylindricalRArr, cylindricalPhiArr,
-                                        acceleratedResultsX, acceleratedResultsY, acceleratedResultsZ,
-                                        GPU);
-    testCoil.computeAllAPotentialAbs(cylindricalZArr, cylindricalRArr,
-                                     acceleratedPotential, GPU);
+    gpuPotential = testCoil.computeAllAPotentialAbs(positionValues, GPU);
+    gpuFieldVectors = testCoil.computeAllBFieldComponents(positionValues, GPU);
 
     FILE *output = fopen("output.txt", "w");
 
     for (int i = 0; i < pointCount; ++i)
     {
         fprintf(output, "%.20f\t%.20f\t%.20f\t%.20f\t%.20f\t%.20f\n",
-               singleResultsX[i], acceleratedResultsX[i],
-               singleResultsZ[i], acceleratedResultsZ[i],
-               singlePotential[i], acceleratedPotential[i]);
+               cpuFieldVectors[i].xComponent, gpuFieldVectors[i].xComponent,
+               cpuFieldVectors[i].zComponent, gpuFieldVectors[i].zComponent,
+               cpuPotential[i], gpuPotential[i]);
     }
 }
 
@@ -126,4 +113,51 @@ void testCoilMutualInductanceForSpecialCase()
 	printf("%.15f\n", Coil::computeMutualInductance(primary, secondary,
                                                     0.07366, 0.30988,
                                                     PrecisionFactor(4.0)));
+}
+
+void testVector3()
+{
+    for (int i = 0; i < 100; ++i)
+    {
+        vec3::CoordVector3 vector = vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, 1, i * M_PI / 25);
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToCartesian();
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToSpherical();
+        printf("%.6f %.6f %.6f\n", vector.component1, vector.component2, vector.component3);
+    }
+    printf("\n");
+
+    for (int i = 0; i < 100; ++i)
+    {
+        vec3::CoordVector3 vector = vec3::CoordVector3(vec3::CYLINDRICAL, 1, 1, i * M_PI / 25);
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToCartesian();
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToSpherical();
+        printf("%.6f %.6f %.6f\n", vector.component1, vector.component2, vector.component3);
+    }
+    printf("\n");
+
+    for (int i = 0; i < 100; ++i)
+    {
+        vec3::CoordVector3 vector = vec3::CoordVector3(vec3::SPHERICAL, 1, M_PI/2, -M_PI + i * M_PI / 25);
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToCartesian();
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToCylindrical();
+        printf("%.6f %.6f %.6f\n", vector.component1, vector.component2, vector.component3);
+    }
+    printf("\n");
+
+    for (int i = 0; i < 100; ++i)
+    {
+        vec3::CoordVector3 vector = vec3::CoordVector3(vec3::SPHERICAL, 1, i * M_PI / 25, 0.0);
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToCartesian();
+        printf("%.6f %.6f %.6f | ", vector.component1, vector.component2, vector.component3);
+        vector.convertToCylindrical();
+        printf("%.6f %.6f %.6f\n", vector.component1, vector.component2, vector.component3);
+    }
+    printf("\n");
 }

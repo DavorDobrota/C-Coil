@@ -24,12 +24,10 @@ double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondar
     double lengthBlockSize = secondary.length / lengthBlocks;
     double thicknessBlockSize = secondary.thickness / thicknessBlocks;
 
-    std::vector<double> zPositions;
-    std::vector<double> rPositions;
+    std::vector<vec3::CoordVector3> positionVectors;
     std::vector<double> weights;
 
-    zPositions.reserve(numElements);
-    rPositions.reserve(numElements);
+    positionVectors.reserve(numElements);
     weights.reserve(numElements);
 
     for (int zBlock = 0; zBlock < lengthBlocks; ++zBlock)
@@ -48,48 +46,42 @@ double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondar
                     double incrementPositionR = rBlockPosition +
                                                 (thicknessBlockSize * 0.5) * Legendre::positionMatrix[maxThicknessIndex][rIndex];
 
-                    zPositions.push_back(incrementPositionZ);
-                    rPositions.push_back(incrementPositionR);
+                    positionVectors.emplace_back(vec3::CYLINDRICAL, incrementPositionZ, incrementPositionR, 0.0);
 
                     weights.push_back(
-                            0.25 * Legendre::weightsMatrix[maxLengthIndex][zIndex] *
+                            incrementPositionR * 0.25 *
+                            Legendre::weightsMatrix[maxLengthIndex][zIndex] *
                             Legendre::weightsMatrix[maxThicknessIndex][rIndex]);
                 }
             }
         }
     }
 
-    std::vector<double> fieldH;
     double ampereForce = 0.0;
 
-    primary.computeAllBFieldH(zPositions, rPositions, fieldH, primaryPrecisionArguments, method);
+    std::vector<double> fieldH = primary.computeAllBFieldH(positionVectors, primaryPrecisionArguments, method);
 
     for (int i = 0; i < fieldH.size(); ++i)
     {
-        ampereForce += 2 * M_PI * rPositions[i] * fieldH[i] * weights[i];
+        ampereForce += fieldH[i] * weights[i];
     }
     ampereForce /= (lengthBlocks * thicknessBlocks);
-    return (-1) * ampereForce * secondary.numOfTurns * secondary.current;
+    return (-1) * ampereForce * 2*M_PI * secondary.numOfTurns * secondary.current;
 }
 
-std::vector<double> Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                                      double zDisplacement, double rDisplacement,
-                                                      double alphaAngle, double betaAngle,
-                                                      CoilPairArguments forceArguments, ComputeMethod method)
+std::pair<vec3::FieldVector3, vec3::FieldVector3>
+Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
+                                  double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
+                                  CoilPairArguments forceArguments, ComputeMethod method)
 {
     std::vector<double> forceAndTorqueComponents(6);
 
     if (rDisplacement == 0.0 && alphaAngle == 0.0) {
-        // to enforce standard 6 arguments returned, zeros are passed
-        forceAndTorqueComponents[0] = 0.0;
-        forceAndTorqueComponents[1] = 0.0;
-        forceAndTorqueComponents[2] = calculateAmpereForceZAxis(primary, secondary, zDisplacement, forceArguments, method);
 
-        forceAndTorqueComponents[3] = 0.0;
-        forceAndTorqueComponents[4] = 0.0;
-        forceAndTorqueComponents[5] = 0.0;
+        auto forceVector = vec3::FieldVector3(0.0, 0.0,
+                                              calculateAmpereForceZAxis(primary, secondary, zDisplacement, forceArguments, method));
 
-        return forceAndTorqueComponents;
+        return std::make_pair(forceVector, vec3::FieldVector3());
     }
     else
     {
@@ -101,7 +93,6 @@ std::vector<double> Coil::calculateAmpereForceGeneral(const Coil &primary, const
         int thicknessBlocks = forceArguments.secondaryPrecision.thicknessBlockCount;
         int thicknessIncrements = forceArguments.secondaryPrecision.thicknessIncrementCount;
 
-        //multiplying by 2 because integration needs to be from 0 to 2PI
         int angularBlocks = forceArguments.secondaryPrecision.angularBlockCount;
         int angularIncrements = forceArguments.secondaryPrecision.angularIncrementCount;
 
@@ -109,12 +100,8 @@ std::vector<double> Coil::calculateAmpereForceGeneral(const Coil &primary, const
 
         double ringIntervalSize = 2 * M_PI;
 
-        std::vector<double> unitRingPointsX, unitRingPointsY, unitRingPointsZ;
-        std::vector<double> unitRingTangentsX, unitRingTangentsY, unitRingTangentsZ;
-
-        calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle, ringIntervalSize,
-                                       unitRingPointsX, unitRingPointsY, unitRingPointsZ,
-                                       unitRingTangentsX, unitRingTangentsY, unitRingTangentsZ);
+        std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> unitRingValues =
+                calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle, ringIntervalSize);
 
         // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
         int maxLengthIndex = lengthIncrements - 1;
@@ -124,17 +111,12 @@ std::vector<double> Coil::calculateAmpereForceGeneral(const Coil &primary, const
         double lengthBlockSize = secondary.length / lengthBlocks;
         double thicknessBlockSize = secondary.thickness / thicknessBlocks;
 
-        std::vector<double> zPositions;
-        std::vector<double> rPositions;
-        std::vector<double> phiPositions;
+        std::vector<vec3::CoordVector3> positionVectors;
 
         std::vector<double> radii;
         std::vector<double> weights;
 
-        zPositions.reserve(numElements);
-        rPositions.reserve(numElements);
-        phiPositions.reserve(numElements);
-
+        positionVectors.reserve(numElements);
         radii.reserve(numElements);
         weights.reserve(numElements);
 
@@ -164,19 +146,16 @@ std::vector<double> Coil::calculateAmpereForceGeneral(const Coil &primary, const
                                 int phiPosition = phiBlock * angularIncrements + phiIndex;
 
                                 double displacementX = lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
-                                                       ringRadius * unitRingPointsX[phiPosition];
+                                                       ringRadius * unitRingValues[phiPosition].first.xComponent;
 
                                 double displacementY =
                                         rDisplacement - lengthDisplacement * sin(alphaAngle) * cos(betaAngle) +
-                                        ringRadius * unitRingPointsY[phiPosition];
+                                        ringRadius * unitRingValues[phiPosition].first.yComponent;
 
                                 double displacementZ = zDisplacement + lengthDisplacement * cos(alphaAngle) +
-                                                       ringRadius * unitRingPointsZ[phiPosition];
+                                        ringRadius * unitRingValues[phiPosition].first.zComponent;
 
-                                zPositions.push_back(displacementZ);
-                                rPositions.push_back(
-                                        sqrt(displacementX * displacementX + displacementY * displacementY));
-                                phiPositions.push_back(atan2(displacementY, displacementX));
+                                positionVectors.emplace_back(vec3::CARTESIAN, displacementX, displacementY, displacementZ);
 
                                 radii.push_back(ringRadius);
                                 weights.push_back(
@@ -190,57 +169,27 @@ std::vector<double> Coil::calculateAmpereForceGeneral(const Coil &primary, const
                 }
             }
         }
-        std::vector<double> magneticFieldX;
-        std::vector<double> magneticFieldY;
-        std::vector<double> magneticFieldZ;
+        std::vector<vec3::FieldVector3> magneticFields = primary.computeAllBFieldComponents(positionVectors,
+                                                                                            primaryPrecisionArguments, method);
 
-        primary.computeAllBFieldComponents(zPositions, rPositions, phiPositions,
-                                           magneticFieldX, magneticFieldY, magneticFieldZ,
-                                           primaryPrecisionArguments, method);
-
-        double forceX = 0.0, forceY = 0.0, forceZ = 0.0;
-        double torqueX = 0.0, torqueY = 0.0, torqueZ = 0.0;
+        vec3::FieldVector3 forceVector;
+        vec3::FieldVector3 torqueVector;
 
         for (int i = 0; i < numElements; ++i)
         {
             int p = i % (angularBlocks * angularIncrements);
 
-            double tempForceX = weights[i] *
-                                (unitRingTangentsY[p] * magneticFieldZ[i] - unitRingTangentsZ[p] * magneticFieldY[i]);
+            vec3::FieldVector3 tempForce = vec3::FieldVector3::crossProduct(unitRingValues[p].second, magneticFields[i]);
+            forceVector += tempForce * weights[i];
 
-            double tempForceY = weights[i] *
-                                (unitRingTangentsZ[p] * magneticFieldX[i] - unitRingTangentsX[p] * magneticFieldZ[i]);
-
-            double tempForceZ = weights[i] *
-                                (unitRingTangentsX[p] * magneticFieldY[i] - unitRingTangentsY[p] * magneticFieldX[i]);
-
-        //    printf("%.15f %.15f %.15f\n", zPositions[i], rPositions[i], phiPositions[i]);
-
-            forceX += tempForceX;
-            forceY += tempForceY;
-            forceZ += tempForceZ;
-
-            torqueX += radii[i] * (tempForceY * unitRingPointsZ[p] - tempForceZ * unitRingPointsY[p]);
-            torqueY += radii[i] * (tempForceZ * unitRingPointsX[p] - tempForceX * unitRingPointsZ[p]);
-            torqueZ += radii[i] * (tempForceX * unitRingPointsY[p] - tempForceY * unitRingPointsX[p]);
+            vec3::FieldVector3 tempTorque = vec3::FieldVector3::crossProduct(unitRingValues[p].first, tempForce);
+            torqueVector += tempTorque * radii[i];
         }
+        double forceFactor = (secondary.current * secondary.numOfTurns) / (lengthBlocks * thicknessBlocks * angularBlocks);
 
-        forceX /= (lengthBlocks * thicknessBlocks * angularBlocks);
-        forceY /= (lengthBlocks * thicknessBlocks * angularBlocks);
-        forceZ /= (lengthBlocks * thicknessBlocks * angularBlocks);
+        forceVector *= forceFactor;
+        torqueVector *= forceFactor;
 
-        torqueX /= (lengthBlocks * thicknessBlocks * angularBlocks);
-        torqueY /= (lengthBlocks * thicknessBlocks * angularBlocks);
-        torqueZ /= (lengthBlocks * thicknessBlocks * angularBlocks);
-
-        forceAndTorqueComponents[0] = forceX * secondary.current * secondary.numOfTurns;
-        forceAndTorqueComponents[1] = forceY * secondary.current * secondary.numOfTurns;
-        forceAndTorqueComponents[2] = forceZ * secondary.current * secondary.numOfTurns;
-
-        forceAndTorqueComponents[3] = torqueX * secondary.current * secondary.numOfTurns;
-        forceAndTorqueComponents[4] = torqueY * secondary.current * secondary.numOfTurns;
-        forceAndTorqueComponents[5] = torqueZ * secondary.current * secondary.numOfTurns;
-
-        return forceAndTorqueComponents;
+        return std::make_pair(forceVector, torqueVector);
     }
 }

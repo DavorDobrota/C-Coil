@@ -334,7 +334,7 @@ public:
 
                     G = cos(dFi);
                     ki = int(round(dFi/c.IncFi));
-                    FieldE += Temp * c.FiWeights[ki] * C * ((G)/(sqrt(E - F*G)));
+                    FieldE += Temp * c.FiWeights[ki] * C * ((G)/(std::sqrt(E - F*G)));
                 }
             }
         }
@@ -364,7 +364,7 @@ public:
         Type Bh = BhCalc(r, Theta);
         Type Bz = BzCalc(r, Theta);
 
-        return sqrt(Bh*Bh + Bz*Bz);
+        return std::sqrt(Bh*Bh + Bz*Bz);
     }
 
     //Electric field calculation methods

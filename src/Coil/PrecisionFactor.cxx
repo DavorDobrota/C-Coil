@@ -3,7 +3,7 @@
 namespace
 {
     const double g_minRelativePrecision = 1.0;
-    const double g_maxRelativePrecision = 9.0;
+    const double g_maxRelativePrecision = 12.0;
     const double g_defaultRelativePrecision = 5.0;
 }
 

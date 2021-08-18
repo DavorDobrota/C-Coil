@@ -1,6 +1,8 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
 #include "ctpl.h"
+#include "PrecisionGlobalVars.h"
+#include "CoilType.h"
 
 #include <cmath>
 
@@ -20,9 +22,14 @@ Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0) {}
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings,
            int threadCount) :
-        innerRadius(innerRadius), thickness(thickness), length(length), numOfTurns(numOfTurns),
-        defaultPrecision(precisionSettings)
+        innerRadius(innerRadius),
+        thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : thickness),
+        length(length / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : length),
+        numOfTurns(numOfTurns),
+        defaultPrecision(precisionSettings),
+        useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio)
 {
+    calculateCoilType();
     setCurrent(current);
     calculateAverageWireThickness();
     setWireResistivity(wireResistivity);
@@ -33,8 +40,13 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, PrecisionFactor precisionFactor,
            int threadCount) :
-           innerRadius(innerRadius), thickness(thickness), length(length), numOfTurns(numOfTurns)
+           innerRadius(innerRadius),
+           thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : thickness),
+           length(length / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : length),
+           numOfTurns(numOfTurns),
+           useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio)
 {
+    calculateCoilType();
     setCurrent(current);
     calculateAverageWireThickness();
     setWireResistivity(wireResistivity);
@@ -124,6 +136,10 @@ const PrecisionArguments &Coil::getPrecisionSettings() const { return defaultPre
 
 int Coil::getThreadCount() const { return threadCount; }
 
+bool Coil::isUsingFastMethod() const { return useFastMethod; }
+
+CoilType Coil::getCoilType() const { return coilType; }
+
 
 void Coil::setCurrentDensity(double currentDensity)
 {
@@ -175,7 +191,7 @@ void Coil::calculateMagneticMoment()
 
 void Coil::calculateAverageWireThickness()
 {
-    averageWireThickness = sqrt(length * thickness / numOfTurns);
+    averageWireThickness = std::sqrt(length * thickness / numOfTurns);
 }
 
 void Coil::calculateResistance()
@@ -183,7 +199,7 @@ void Coil::calculateResistance()
     double wireRadius = averageWireThickness * 0.5;
     double ohmicResistance = wireResistivity * numOfTurns * 2*M_PI *
             (innerRadius + thickness * 0.5) / (wireRadius * wireRadius * M_PI);
-    double skinDepth = sqrt(wireResistivity / (M_PI * sineFrequency * g_MiReduced));
+    double skinDepth = std::sqrt(wireResistivity / (M_PI * sineFrequency * g_MiReduced));
 
     double ohmicSurface = M_PI * wireRadius * wireRadius;
     double sineSurface = 2*M_PI * (
@@ -202,36 +218,50 @@ void Coil::calculateImpedance()
 {
     calculateResistance();
     calculateReactance();
-    impedance = sqrt(resistance * resistance + reactance * reactance);
+    impedance = std::sqrt(resistance * resistance + reactance * reactance);
 }
 
-void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
-                                          double alpha, double beta, double ringIntervalSize,
-                                          std::vector<double> &ringXPosition,
-                                          std::vector<double> &ringYPosition,
-                                          std::vector<double> &ringZPosition,
-                                          std::vector<double> &ringXTangent,
-                                          std::vector<double> &ringYTangent,
-                                          std::vector<double> &ringZTangent)
+void Coil::calculateCoilType()
 {
-    //clearing all values so that values are not accidentally allocated
-    ringXPosition.resize(0);
-    ringYPosition.resize(0);
-    ringZPosition.resize(0);
+    if (thickness / innerRadius < g_thinCoilApproximationRatio && length / innerRadius < g_thinCoilApproximationRatio)
+        coilType = CoilType::FILAMENT;
 
-    ringXTangent.resize(0);
-    ringYTangent.resize(0);
-    ringZTangent.resize(0);
+    else if (thickness / innerRadius < g_thinCoilApproximationRatio)
+        coilType = CoilType::THIN;
 
+    else if (length / innerRadius < g_thinCoilApproximationRatio)
+        coilType = CoilType::FLAT;
+
+    else
+        coilType = CoilType::RECTANGULAR;
+}
+
+double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method)
+{
+    if (coilType == CoilType::FILAMENT)
+    {
+        fprintf(stderr, "ERROR: The integral of a filament is divergent, try a thin rectangular coil\n");
+        throw "Coil loop calculation not supported";
+    }
+
+    double inductance = Coil::computeMutualInductance(*this, *this, 0.0, precisionFactor, method);
+    setSelfInductance(inductance);
+
+    return inductance;
+}
+
+
+std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
+Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
+                                     double alpha, double beta, double ringIntervalSize)
+{
     int numElements = angularBlocks * angularIncrements;
 
-    ringXPosition.reserve(numElements);
-    ringYPosition.reserve(numElements);
-    ringZPosition.reserve(numElements);
+    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> unitRingVector;
+    unitRingVector.reserve(numElements);
 
-    ringXTangent.reserve(numElements);
-    ringYTangent.reserve(numElements);
-    ringZTangent.reserve(numElements);
+    vec3::FieldVector3 ringPosition;
+    vec3::FieldVector3 ringTangent;
 
     double angularBlock = ringIntervalSize / angularBlocks;
 
@@ -249,13 +279,16 @@ void Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncremen
             double phi = M_PI/2 + blockPositionPhi +
                          (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][phiIndex];
 
-            ringXPosition.push_back(cos(beta) * cos(phi) - sin(beta) * cos(alpha) * sin(phi));
-            ringYPosition.push_back(sin(beta) * cos(phi) + cos(beta) * cos(alpha) * sin(phi));
-            ringZPosition.push_back(sin(alpha) * sin(phi));
+            ringPosition = vec3::FieldVector3(cos(beta) * cos(phi) - sin(beta) * cos(alpha) * sin(phi),
+                                              sin(beta) * cos(phi) + cos(beta) * cos(alpha) * sin(phi),
+                                              sin(alpha) * sin(phi));
 
-            ringXTangent.push_back((-1) * cos(beta) * sin(phi) - sin(beta) * cos(alpha) * cos(phi));
-            ringYTangent.push_back((-1) * sin(beta) * sin(phi) + cos(beta) * cos(alpha) * cos(phi));
-            ringZTangent.push_back(sin(alpha) * cos(phi));
+            ringTangent = vec3::FieldVector3((-1) * cos(beta) * sin(phi) - sin(beta) * cos(alpha) * cos(phi),
+                                             (-1) * sin(beta) * sin(phi) + cos(beta) * cos(alpha) * cos(phi),
+                                             sin(alpha) * cos(phi));
+
+            unitRingVector.emplace_back(ringPosition, ringTangent);
         }
     }
+    return unitRingVector;
 }

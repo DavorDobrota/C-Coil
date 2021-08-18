@@ -36,7 +36,7 @@ void convertAllPolarToCylindrical(const std::vector<double> &polarRArr,
 void convertCylindricalToPolar(double cylindricalZ, double cylindricalR, double cylindricalPhi,
                                      double &polarR, double &polarTheta, double &polarPhi)
 {
-    polarR = sqrt(cylindricalZ * cylindricalZ + cylindricalR * cylindricalR);
+    polarR = std::sqrt(cylindricalZ * cylindricalZ + cylindricalR * cylindricalR);
     polarTheta = atan2(cylindricalR, cylindricalZ);
     polarPhi = cylindricalPhi;
 }
@@ -56,7 +56,7 @@ void convertAllCylindricalToPolar(const std::vector<double> &cylindricalZArr,
 
         for (int i = 0; i < cylindricalZArr.size(); ++i)
         {
-            polarRArr.push_back(sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
+            polarRArr.push_back(std::sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]));
             polarThetaArr.push_back(atan2(cylindricalRArr[i], cylindricalZArr[i]));
             polarPhiArr.push_back(cylindricalPhiArr[i]);
         }

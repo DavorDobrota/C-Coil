@@ -1,12 +1,11 @@
-add_library(CoilData OBJECT CoilData.cxx)
+add_library(Tensor OBJECT CoordVector3.cxx FieldVector3.cxx Matrix3.cxx)
 
-target_compile_options(CoilData PRIVATE -fpic)
+target_compile_options(Tensor PRIVATE -fpic)
 
 target_include_directories(
-        CoilData
+        Tensor
         INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
         PUBLIC ${CMAKE_SOURCE_DIR}/src/Coil
-        PUBLIC ${CMAKE_SOURCE_DIR}/src/Tensor
         PUBLIC ${CMAKE_SOURCE_DIR}/include
         PUBLIC ${CMAKE_SOURCE_DIR}/src
 )

@@ -61,9 +61,11 @@ namespace vec3
             FieldVector3();
             explicit FieldVector3(double x, double y, double z);
 
-            void multiplyByConstant(double constant);
+            FieldVector3 operator+(const FieldVector3 &otherVec) const;
+            void operator+=(const FieldVector3 &otherVec);
+            FieldVector3 operator*(double multiplier) const;
+            void operator*=(double multiplier);
 
-            static FieldVector3 addVectors(FieldVector3 vec1, FieldVector3 vec2);
             static double scalarProduct(FieldVector3 vec1, FieldVector3 vec2);
             static FieldVector3 crossProduct(FieldVector3 vec1, FieldVector3 vec2);
     };
@@ -88,8 +90,7 @@ namespace vec3
             explicit Matrix3(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz);
 
             Matrix3 operator*(const Matrix3 &mat) const;
-
-            static FieldVector3 matrixVectorMultiplication(Matrix3 matrix, FieldVector3 vector);
+            FieldVector3 operator*(const FieldVector3 &vec) const;
     };
 }
 

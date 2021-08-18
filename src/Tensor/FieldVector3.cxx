@@ -6,18 +6,32 @@ vec3::FieldVector3::FieldVector3() : FieldVector3(0.0, 0.0, 0.0) {}
 vec3::FieldVector3::FieldVector3(double x, double y, double z) : xComponent(x), yComponent(y), zComponent(z) {}
 
 
-void vec3::FieldVector3::multiplyByConstant(double constant)
+vec3::FieldVector3 vec3::FieldVector3::operator+(const FieldVector3 &otherVec) const
 {
-    xComponent *= constant;
-    yComponent *= constant;
-    zComponent *= constant;
+    return FieldVector3(this->xComponent + otherVec.xComponent,
+                        this->yComponent + otherVec.yComponent,
+                        this->zComponent + otherVec.zComponent);
 }
 
-vec3::FieldVector3 vec3::FieldVector3::addVectors(FieldVector3 vec1, FieldVector3 vec2)
+void vec3::FieldVector3::operator+=(const FieldVector3 &otherVec)
 {
-    return FieldVector3(vec1.xComponent + vec2.xComponent,
-                        vec1.yComponent + vec2.yComponent,
-                        vec1.zComponent + vec2.zComponent);
+    this->xComponent += otherVec.xComponent;
+    this->yComponent += otherVec.yComponent;
+    this->zComponent += otherVec.zComponent;
+}
+
+vec3::FieldVector3 vec3::FieldVector3::operator*(double multiplier) const
+{
+    return FieldVector3(xComponent * multiplier,
+                        yComponent * multiplier,
+                        zComponent * multiplier);
+}
+
+void vec3::FieldVector3::operator*=(double multiplier)
+{
+    xComponent *= multiplier;
+    yComponent *= multiplier;
+    zComponent *= multiplier;
 }
 
 double vec3::FieldVector3::scalarProduct(FieldVector3 vec1, FieldVector3 vec2)

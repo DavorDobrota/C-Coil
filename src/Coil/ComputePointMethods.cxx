@@ -28,7 +28,7 @@ vec3::FieldVector3 Coil::adaptOutputVectorForPoint(const vec3::FieldVector3 &com
 vec3::FieldVector3 Coil::computeBFieldVector(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
     vec3::CoordVector3 transformedVector = adaptInputVectorForPoint(pointVector);
-    std::pair<double, double> fields = calculateBField(transformedVector.component1, transformedVector.component2, usedPrecision);
+    std::pair fields = calculateBField(transformedVector.component1, transformedVector.component2, usedPrecision);
 
     vec3::FieldVector3 computedVector = vec3::FieldVector3(fields.second * cos(pointVector.component3),
                                                            fields.second * sin(pointVector.component3),

@@ -180,19 +180,15 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
             int p = i % (angularBlocks * angularIncrements);
 
             vec3::FieldVector3 tempForce = vec3::FieldVector3::crossProduct(unitRingValues[p].second, magneticFields[i]);
-            tempForce.multiplyByConstant(weights[i]);
-
-            forceVector = vec3::FieldVector3::addVectors(forceVector, tempForce);
+            forceVector += tempForce * weights[i];
 
             vec3::FieldVector3 tempTorque = vec3::FieldVector3::crossProduct(unitRingValues[p].first, tempForce);
-            tempTorque.multiplyByConstant(radii[i]);
-
-            torqueVector = vec3::FieldVector3::addVectors(torqueVector, tempTorque);
+            torqueVector += tempTorque * radii[i];
         }
         double forceFactor = (secondary.current * secondary.numOfTurns) / (lengthBlocks * thicknessBlocks * angularBlocks);
 
-        forceVector.multiplyByConstant(forceFactor);
-        torqueVector.multiplyByConstant(forceFactor);
+        forceVector *= forceFactor;
+        torqueVector *= forceFactor;
 
         return std::make_pair(forceVector, torqueVector);
     }

@@ -27,7 +27,7 @@ void Coil::calculateAllBFieldST(const std::vector<double> &cylindricalZArr,
 
     for (int i = 0; i < cylindricalZArr.size(); ++i)
     {
-        std::pair<double, double> values = calculateBField(cylindricalZArr[i], cylindricalRArr[i], usedPrecision);
+        std::pair values = calculateBField(cylindricalZArr[i], cylindricalRArr[i], usedPrecision);
         computedFieldHArr[i] = values.first;
         computedFieldZArr[i] = values.second;
     }

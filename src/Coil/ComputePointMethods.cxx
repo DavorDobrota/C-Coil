@@ -4,198 +4,217 @@
 #include <cmath>
 
 
-double Coil::computeBFieldH(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
+vec3::CoordVector3 Coil::adaptInputVectorForPoint(const vec3::CoordVector3 &pointVector) const
 {
-    positionVector.convertToCylindrical();
-    std::pair fields = calculateBField(positionVector.component1, positionVector.component2, usedPrecision);
-    return fields.first;
+    vec3::FieldVector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVector);
+    vec3::FieldVector3 pointVec = vec3::CoordVector3::convertToFieldVector(pointVector);
+
+    positionVec *= -1.0;
+    vec3::FieldVector3 originVec = pointVec + positionVec;
+    vec3::FieldVector3 transformedVec = inverseTransformationMatrix * originVec;
+    vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
+
+    finalVec.convertToCylindrical();
+    return finalVec;
 }
 
-double Coil::computeBFieldH(vec3::CoordVector3 positionVector) const
+vec3::FieldVector3 Coil::adaptOutputVectorForPoint(const vec3::FieldVector3 &computedVector) const
 {
-    return computeBFieldH(positionVector, defaultPrecision);
-}
-
-double Coil::computeBFieldX(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
-{
-    positionVector.convertToCylindrical();
-    return computeBFieldH(positionVector, usedPrecision) * std::cos(positionVector.component3);
-}
-
-double Coil::computeBFieldX(vec3::CoordVector3 positionVector) const
-{
-    return computeBFieldX(positionVector, defaultPrecision);
-}
-
-double Coil::computeBFieldY(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
-{
-    positionVector.convertToCylindrical();
-    return computeBFieldH(positionVector, usedPrecision) * std::sin(positionVector.component3);
-}
-
-double Coil::computeBFieldY(vec3::CoordVector3 positionVector) const
-{
-    return computeBFieldY(positionVector, defaultPrecision);
-}
-
-double Coil::computeBFieldZ(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
-{
-    positionVector.convertToCylindrical();
-    std::pair fields = calculateBField(positionVector.component1, positionVector.component2, usedPrecision);
-    return fields.second;
-}
-
-double Coil::computeBFieldZ(vec3::CoordVector3 positionVector) const
-{
-    return computeBFieldZ(positionVector, defaultPrecision);
-}
-
-double Coil::computeBFieldAbs(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
-{
-    positionVector.convertToCylindrical();
-    std::pair fields = calculateBField(positionVector.component1, positionVector.component2, usedPrecision);
-    return std::sqrt(fields.first * fields.first + fields.second * fields.second);
-}
-
-double Coil::computeBFieldAbs(vec3::CoordVector3 positionVector) const
-{
-    return computeBFieldAbs(positionVector, defaultPrecision);
-}
-
-vec3::FieldVector3 Coil::computeBFieldVector(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
-{
-    positionVector.convertToCylindrical();
-    std::pair fields = calculateBField(positionVector.component1, positionVector.component2, usedPrecision);
-
-    return vec3::FieldVector3(fields.second * cos(positionVector.component3),
-                              fields.second * sin(positionVector.component3),
-                              fields.first);
-}
-vec3::FieldVector3 Coil::computeBFieldVector(vec3::CoordVector3 positionVector) const
-{
-    return computeBFieldVector(positionVector, defaultPrecision);
+    return transformationMatrix * computedVector;
 }
 
 
-double Coil::computeAPotentialX(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
+vec3::FieldVector3 Coil::computeBFieldVector(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
-    positionVector.convertToCylindrical();
-    return (-1) * calculateAPotential(positionVector.component1, positionVector.component2, usedPrecision) * std::sin(positionVector.component3);
+    vec3::CoordVector3 transformedVector = adaptInputVectorForPoint(pointVector);
+    std::pair fields = calculateBField(transformedVector.component1, transformedVector.component2, usedPrecision);
+
+    vec3::FieldVector3 computedVector = vec3::FieldVector3(fields.second * cos(pointVector.component3),
+                                                           fields.second * sin(pointVector.component3),
+                                                           fields.first);
+    return adaptOutputVectorForPoint(computedVector);
 }
 
-double Coil::computeAPotentialX(vec3::CoordVector3 positionVector) const
+vec3::FieldVector3 Coil::computeBFieldVector(vec3::CoordVector3 pointVector) const
 {
-    return computeAPotentialX(positionVector, defaultPrecision);
+    return computeBFieldVector(pointVector, defaultPrecision);
 }
 
-double Coil::computeAPotentialY(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
+double Coil::computeBFieldX(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
-    positionVector.convertToCylindrical();
-    return calculateAPotential(positionVector.component1, positionVector.component2, usedPrecision) * std::cos(positionVector.component3);
+    return computeBFieldVector(pointVector, usedPrecision).xComponent;
 }
 
-double Coil::computeAPotentialY(vec3::CoordVector3 positionVector) const
+double Coil::computeBFieldX(vec3::CoordVector3 pointVector) const
 {
-    return computeAPotentialY(positionVector, defaultPrecision);
+    return computeBFieldX(pointVector, defaultPrecision);
 }
 
-double Coil::computeAPotentialZ(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
+double Coil::computeBFieldY(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
-    positionVector.convertToCylindrical();
-    // TODO - add functionality in the future
-    return 0.0;
+    pointVector.convertToCylindrical();
+    return computeBFieldVector(pointVector, usedPrecision).yComponent;
 }
 
-double Coil::computeAPotentialZ(vec3::CoordVector3 positionVector) const
+double Coil::computeBFieldY(vec3::CoordVector3 pointVector) const
 {
-    return computeAPotentialZ(positionVector, defaultPrecision);
+    return computeBFieldY(pointVector, defaultPrecision);
 }
 
-double Coil::computeAPotentialAbs(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
+double Coil::computeBFieldH(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
-    positionVector.convertToCylindrical();
-    return calculateAPotential(positionVector.component1, positionVector.component2, usedPrecision);
+    vec3::FieldVector3 computedVector = computeBFieldVector(pointVector, usedPrecision);
+    return std::sqrt(computedVector.xComponent * computedVector.xComponent + computedVector.yComponent * computedVector.yComponent);
 }
 
-double Coil::computeAPotentialAbs(vec3::CoordVector3 positionVector) const
+double Coil::computeBFieldH(vec3::CoordVector3 pointVector) const
 {
-    return computeAPotentialAbs(positionVector, defaultPrecision);
+    return computeBFieldH(pointVector, defaultPrecision);
 }
 
-vec3::FieldVector3 Coil::computeAPotentialVector(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
+double Coil::computeBFieldZ(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
-    positionVector.convertToCylindrical();
-    double potential = calculateAPotential(positionVector.component1, positionVector.component2, usedPrecision);
-
-    return vec3::FieldVector3(potential * (-1) * sin(positionVector.component3),
-                              potential * cos(positionVector.component3),
-                              0.0);
+    return computeBFieldVector(pointVector, usedPrecision).zComponent;
 }
 
-vec3::FieldVector3 Coil::computeAPotentialVector(vec3::CoordVector3 positionVector) const
+double Coil::computeBFieldZ(vec3::CoordVector3 pointVector) const
 {
-    return computeAPotentialVector(positionVector, defaultPrecision);
+    return computeBFieldZ(pointVector, defaultPrecision);
 }
 
-double Coil::computeEFieldX(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
+double Coil::computeBFieldAbs(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
-    return 2*M_PI * sineFrequency * computeAPotentialX(positionVector, usedPrecision);
+    vec3::FieldVector3 computedVector = computeBFieldVector(pointVector, usedPrecision);
+    return std::sqrt(computedVector.xComponent * computedVector.xComponent +
+                     computedVector.yComponent * computedVector.yComponent +
+                     computedVector.zComponent * computedVector.zComponent);
 }
 
-double Coil::computeEFieldX(vec3::CoordVector3 positionVector) const
+double Coil::computeBFieldAbs(vec3::CoordVector3 pointVector) const
 {
-    return computeEFieldX(positionVector, defaultPrecision);
-}
-
-double Coil::computeEFieldY(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
-{
-    return 2*M_PI * sineFrequency * computeAPotentialY(positionVector, usedPrecision);
-}
-
-double Coil::computeEFieldY(vec3::CoordVector3 positionVector) const
-{
-    return computeEFieldY(positionVector, defaultPrecision);
-}
-
-double Coil::computeEFieldZ(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
-{
-    return 2*M_PI * sineFrequency * computeAPotentialZ(positionVector, usedPrecision);
-}
-
-double Coil::computeEFieldZ(vec3::CoordVector3 positionVector) const
-{
-    return computeEFieldZ(positionVector, defaultPrecision);
-}
-
-double Coil::computeEFieldAbs(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
-{
-    return 2*M_PI * sineFrequency * computeAPotentialAbs(positionVector, usedPrecision);
-}
-
-double Coil::computeEFieldAbs(vec3::CoordVector3 positionVector) const
-{
-    return computeEFieldAbs(positionVector, defaultPrecision);
-}
-
-vec3::FieldVector3 Coil::computeEFieldVector(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
-{
-    vec3::FieldVector3 output = computeAPotentialVector(positionVector, usedPrecision);
-    output *= (2*M_PI * sineFrequency);
-    return output;
-}
-
-vec3::FieldVector3 Coil::computeEFieldVector(vec3::CoordVector3 positionVector) const
-{
-    return computeEFieldVector(positionVector, defaultPrecision);
+    return computeBFieldAbs(pointVector, defaultPrecision);
 }
 
 
-vec3::Matrix3 Coil::computeBGradientTensor(vec3::CoordVector3 positionVector, const PrecisionArguments &usedPrecision) const
+vec3::FieldVector3 Coil::computeAPotentialVector(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
-    positionVector.convertToCylindrical();
-    double cylindricalZ = positionVector.component1;
-    double cylindricalR = positionVector.component2;
-    double cylindricalPhi = positionVector.component3;
+    vec3::CoordVector3 transformedVector = adaptInputVectorForPoint(pointVector);
+    double potential = calculateAPotential(transformedVector.component1, transformedVector.component2, usedPrecision);
+
+    vec3::FieldVector3 computedVector = vec3::FieldVector3(potential * (-1) * sin(pointVector.component3),
+                                                           potential * cos(pointVector.component3),
+                                                           0.0);
+    return adaptOutputVectorForPoint(computedVector);
+}
+
+vec3::FieldVector3 Coil::computeAPotentialVector(vec3::CoordVector3 pointVector) const
+{
+    return computeAPotentialVector(pointVector, defaultPrecision);
+}
+
+double Coil::computeAPotentialX(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
+{
+    return computeAPotentialVector(pointVector, usedPrecision).xComponent;
+}
+
+double Coil::computeAPotentialX(vec3::CoordVector3 pointVector) const
+{
+    return computeAPotentialX(pointVector, defaultPrecision);
+}
+
+double Coil::computeAPotentialY(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
+{
+    return computeAPotentialVector(pointVector, usedPrecision).yComponent;
+}
+
+double Coil::computeAPotentialY(vec3::CoordVector3 pointVector) const
+{
+    return computeAPotentialY(pointVector, defaultPrecision);
+}
+
+double Coil::computeAPotentialZ(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
+{
+    return computeAPotentialVector(pointVector, usedPrecision).zComponent;
+}
+
+double Coil::computeAPotentialZ(vec3::CoordVector3 pointVector) const
+{
+    return computeAPotentialZ(pointVector, defaultPrecision);
+}
+
+double Coil::computeAPotentialAbs(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
+{
+    vec3::FieldVector3 computedVector = computeAPotentialVector(pointVector, usedPrecision);
+    return std::sqrt(computedVector.xComponent * computedVector.xComponent +
+                     computedVector.yComponent * computedVector.yComponent +
+                     computedVector.zComponent * computedVector.zComponent);
+}
+
+double Coil::computeAPotentialAbs(vec3::CoordVector3 pointVector) const
+{
+    return computeAPotentialAbs(pointVector, defaultPrecision);
+}
+
+
+double Coil::computeEFieldX(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
+{
+    return 2*M_PI * sineFrequency * computeAPotentialX(pointVector, usedPrecision);
+}
+
+double Coil::computeEFieldX(vec3::CoordVector3 pointVector) const
+{
+    return computeEFieldX(pointVector, defaultPrecision);
+}
+
+double Coil::computeEFieldY(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
+{
+    return 2*M_PI * sineFrequency * computeAPotentialY(pointVector, usedPrecision);
+}
+
+double Coil::computeEFieldY(vec3::CoordVector3 pointVector) const
+{
+    return computeEFieldY(pointVector, defaultPrecision);
+}
+
+double Coil::computeEFieldZ(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
+{
+    return 2*M_PI * sineFrequency * computeAPotentialZ(pointVector, usedPrecision);
+}
+
+double Coil::computeEFieldZ(vec3::CoordVector3 pointVector) const
+{
+    return computeEFieldZ(pointVector, defaultPrecision);
+}
+
+double Coil::computeEFieldAbs(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
+{
+    return 2*M_PI * sineFrequency * computeAPotentialAbs(pointVector, usedPrecision);
+}
+
+double Coil::computeEFieldAbs(vec3::CoordVector3 pointVector) const
+{
+    return computeEFieldAbs(pointVector, defaultPrecision);
+}
+
+vec3::FieldVector3 Coil::computeEFieldVector(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
+{
+    vec3::FieldVector3 computedVector = computeAPotentialVector(pointVector, usedPrecision);
+    computedVector *= 2*M_PI * sineFrequency;
+    return computedVector;
+}
+
+vec3::FieldVector3 Coil::computeEFieldVector(vec3::CoordVector3 pointVector) const
+{
+    return computeEFieldVector(pointVector, defaultPrecision);
+}
+
+
+vec3::Matrix3 Coil::computeBGradientTensor(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
+{
+    vec3::CoordVector3 transformedVector = adaptInputVectorForPoint(pointVector);
+    double cylindricalZ = transformedVector.component1;
+    double cylindricalR = transformedVector.component2;
+    double cylindricalPhi = transformedVector.component3;
 
     std::vector<double> bufferValues = calculateBGradient(cylindricalZ, cylindricalR, usedPrecision);
     double bufferValueRPhi = bufferValues[0];
@@ -228,11 +247,10 @@ vec3::Matrix3 Coil::computeBGradientTensor(vec3::CoordVector3 positionVector, co
                                                xy, yy, yz,
                                                xz, yz, zz);
     }
-    return computedGradientMatrix;
+    return transformationMatrix * computedGradientMatrix;
 }
 
-vec3::Matrix3 Coil::computeBGradientTensor(vec3::CoordVector3 positionVector) const
-
+vec3::Matrix3 Coil::computeBGradientTensor(vec3::CoordVector3 pointVector) const
 {
-    return computeBGradientTensor(positionVector, defaultPrecision);
+    return computeBGradientTensor(pointVector, defaultPrecision);
 }

@@ -14,13 +14,13 @@ void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &
     cylindricalPhiArr.resize(pointVectorArr.size());
 
     vec3::FieldVector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVector);
-    positionVec.multiplyByConstant(-1.0);
+    positionVec *= -1.0;
 
     for (int i = 0; i < pointVectorArr.size(); ++i)
     {
         vec3::FieldVector3 pointVec = vec3::CoordVector3::convertToFieldVector(pointVectorArr[i]);
-        vec3::FieldVector3 originVec = vec3::FieldVector3::addVectors(pointVec, positionVec);
-        vec3::FieldVector3 transformedVec = vec3::Matrix3::matrixVectorMultiplication(inverseTransformationMatrix, originVec);
+        vec3::FieldVector3 originVec = pointVec + positionVec;
+        vec3::FieldVector3 transformedVec = inverseTransformationMatrix * originVec;
         vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
 
         finalVec.convertToCylindrical();
@@ -36,7 +36,7 @@ std::vector<vec3::FieldVector3> Coil::adaptOutputVectorsForAllPoints(const std::
     std::vector<vec3::FieldVector3> outputVectorArr(computedVectorArr.size());
 
     for (int i = 0; i < computedVectorArr.size(); ++i)
-        outputVectorArr[i] = vec3::Matrix3::matrixVectorMultiplication(transformationMatrix, computedVectorArr[i]);
+        outputVectorArr[i] = transformationMatrix * computedVectorArr[i];
 
     return outputVectorArr;
 }

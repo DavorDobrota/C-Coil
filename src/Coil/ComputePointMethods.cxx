@@ -7,12 +7,11 @@
 vec3::CoordVector3 Coil::adaptInputVectorForPoint(const vec3::CoordVector3 &pointVector) const
 {
     vec3::FieldVector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVector);
-    positionVec.multiplyByConstant(-1.0);
     vec3::FieldVector3 pointVec = vec3::CoordVector3::convertToFieldVector(pointVector);
 
-
-    vec3::FieldVector3 originVec = vec3::FieldVector3::addVectors(pointVec, positionVec);
-    vec3::FieldVector3 transformedVec = vec3::Matrix3::matrixVectorMultiplication(inverseTransformationMatrix, originVec);
+    positionVec *= -1.0;
+    vec3::FieldVector3 originVec = pointVec + positionVec;
+    vec3::FieldVector3 transformedVec = inverseTransformationMatrix * originVec;
     vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
 
     finalVec.convertToCylindrical();
@@ -21,7 +20,7 @@ vec3::CoordVector3 Coil::adaptInputVectorForPoint(const vec3::CoordVector3 &poin
 
 vec3::FieldVector3 Coil::adaptOutputVectorForPoint(const vec3::FieldVector3 &computedVector) const
 {
-    return vec3::Matrix3::matrixVectorMultiplication(transformationMatrix, computedVector);
+    return transformationMatrix * computedVector;
 }
 
 
@@ -53,7 +52,8 @@ double Coil::computeBFieldX(vec3::CoordVector3 pointVector) const
 
 double Coil::computeBFieldY(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
-    pointVector.convertToCylindrical();return computeBFieldVector(pointVector, usedPrecision).yComponent;
+    pointVector.convertToCylindrical();
+    return computeBFieldVector(pointVector, usedPrecision).yComponent;
 }
 
 double Coil::computeBFieldY(vec3::CoordVector3 pointVector) const
@@ -199,7 +199,7 @@ double Coil::computeEFieldAbs(vec3::CoordVector3 pointVector) const
 vec3::FieldVector3 Coil::computeEFieldVector(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
     vec3::FieldVector3 computedVector = computeAPotentialVector(pointVector, usedPrecision);
-    computedVector.multiplyByConstant(2*M_PI * sineFrequency);
+    computedVector *= 2*M_PI * sineFrequency;
     return computedVector;
 }
 

@@ -123,11 +123,11 @@ class Coil
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
              double current, double wireResistivity, double sineFrequency,
              PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount,
-             vec3::CoordVector3 coordinatePosition = vec3::CoordVector3(), double xAxisAngle = 0.0, double zAxisAngle = 0.0);
+             vec3::CoordVector3 coordinatePosition = vec3::CoordVector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
              double current, double wireResistivity, double sineFrequency,
              const PrecisionArguments &precisionSettings, int threadCount = defaultThreadCount,
-             vec3::CoordVector3 coordinatePosition = vec3::CoordVector3(), double xAxisAngle = 0.0, double zAxisAngle = 0.0);
+             vec3::CoordVector3 coordinatePosition = vec3::CoordVector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
              PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount);
@@ -169,6 +169,9 @@ class Coil
         [[nodiscard]] int getThreadCount() const;
         [[nodiscard]] bool isUsingFastMethod() const;
         [[nodiscard]] CoilType getCoilType() const;
+
+        [[nodiscard]] vec3::CoordVector3 getPositionVector() const;
+        [[nodiscard]] std::pair<double, double> getRotationAngles() const;
 
         void setCurrentDensity(double currentDensity);
         void setCurrent(double current);

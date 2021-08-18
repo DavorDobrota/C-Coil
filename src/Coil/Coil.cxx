@@ -21,7 +21,7 @@ Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings,
-           int threadCount, vec3::CoordVector3 coordinatePosition, double xAxisAngle, double zAxisAngle) :
+           int threadCount, vec3::CoordVector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
         innerRadius(innerRadius),
         thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : thickness),
         length(length / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : length),
@@ -29,7 +29,7 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
         defaultPrecision(precisionSettings),
         useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio),
         positionVector(coordinatePosition),
-        yAxisAngle(xAxisAngle), zAxisAngle(zAxisAngle)
+        yAxisAngle(yAxisAngle), zAxisAngle(zAxisAngle)
 {
     calculateTransformationMatrices();
     calculateCoilType();
@@ -42,14 +42,14 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, PrecisionFactor precisionFactor,
-           int threadCount, vec3::CoordVector3 coordinatePosition, double xAxisAngle, double zAxisAngle) :
+           int threadCount, vec3::CoordVector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
         innerRadius(innerRadius),
         thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : thickness),
         length(length / innerRadius < g_thinCoilApproximationRatio ? 0.1 * innerRadius * g_thinCoilApproximationRatio : length),
         numOfTurns(numOfTurns),
         useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio),
         positionVector(coordinatePosition),
-        yAxisAngle(xAxisAngle), zAxisAngle(zAxisAngle)
+        yAxisAngle(yAxisAngle), zAxisAngle(zAxisAngle)
 {
     calculateTransformationMatrices();
     calculateCoilType();
@@ -145,6 +145,10 @@ int Coil::getThreadCount() const { return threadCount; }
 bool Coil::isUsingFastMethod() const { return useFastMethod; }
 
 CoilType Coil::getCoilType() const { return coilType; }
+
+vec3::CoordVector3 Coil::getPositionVector() const { return positionVector; }
+
+std::pair<double, double> Coil::getRotationAngles() const { return std::make_pair(yAxisAngle, zAxisAngle); }
 
 
 void Coil::setCurrentDensity(double currentDensity)

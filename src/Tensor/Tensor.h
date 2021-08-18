@@ -35,7 +35,7 @@ namespace vec3
             static void convertAllToSpherical(std::vector<CoordVector3> &Vector3Array);
 
             static FieldVector3 convertToFieldVector(CoordVector3 inputVector);
-            static CoordVector3 convertToCoordVector(FieldVector3 inputVector);
+            static CoordVector3 convertToCoordVector(const FieldVector3 &inputVector);
 
         private:
 
@@ -87,8 +87,9 @@ namespace vec3
             Matrix3();
             explicit Matrix3(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz);
 
+            Matrix3 operator*(const Matrix3 &mat) const;
+
             static FieldVector3 matrixVectorMultiplication(Matrix3 matrix, FieldVector3 vector);
-            static Matrix3 matrixMultiplication(Matrix3 mat1, Matrix3 mat2);
     };
 }
 

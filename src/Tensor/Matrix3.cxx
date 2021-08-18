@@ -7,6 +7,7 @@ vec3::Matrix3::Matrix3(double xx, double xy, double xz, double yx, double yy, do
                         yxElement(yx), yyElement(yy), yzElement(yz),
                         zxElement(zx), zyElement(zy), zzElement(zz) {}
 
+
 vec3::FieldVector3 vec3::Matrix3::matrixVectorMultiplication(vec3::Matrix3 matrix, vec3::FieldVector3 vector)
 {
     return vec3::FieldVector3(matrix.xxElement * vector.xComponent + matrix.xyElement * vector.yComponent + matrix.xzElement * vector.zComponent,
@@ -14,15 +15,15 @@ vec3::FieldVector3 vec3::Matrix3::matrixVectorMultiplication(vec3::Matrix3 matri
                               matrix.zxElement * vector.xComponent + matrix.zyElement * vector.yComponent + matrix.zzElement * vector.zComponent);
 }
 
-vec3::Matrix3 vec3::Matrix3::matrixMultiplication(vec3::Matrix3 mat1, vec3::Matrix3 mat2)
+vec3::Matrix3 vec3::Matrix3::operator*(const Matrix3 &mat) const
 {
-    return vec3::Matrix3(mat1.xxElement * mat2.xxElement + mat1.xyElement * mat2.yxElement + mat1.xzElement * mat2.zxElement,
-                         mat1.xxElement * mat2.xyElement + mat1.xyElement * mat2.yyElement + mat1.xzElement * mat2.zyElement,
-                         mat1.xxElement * mat2.xzElement + mat1.xyElement * mat2.yzElement + mat1.xzElement * mat2.zzElement,
-                         mat1.yxElement * mat2.xxElement + mat1.yyElement * mat2.yxElement + mat1.yzElement * mat2.zxElement,
-                         mat1.yxElement * mat2.xyElement + mat1.yyElement * mat2.yyElement + mat1.yzElement * mat2.zyElement,
-                         mat1.yxElement * mat2.xzElement + mat1.yyElement * mat2.yzElement + mat1.yzElement * mat2.zzElement,
-                         mat1.zxElement * mat2.xxElement + mat1.zyElement * mat2.yxElement + mat1.zzElement * mat2.zxElement,
-                         mat1.zxElement * mat2.xyElement + mat1.zyElement * mat2.yyElement + mat1.zzElement * mat2.zyElement,
-                         mat1.zxElement * mat2.xzElement + mat1.zyElement * mat2.yzElement + mat1.zzElement * mat2.zzElement);
+    return vec3::Matrix3(this->xxElement * mat.xxElement + this->xyElement * mat.yxElement + this->xzElement * mat.zxElement,
+                         this->xxElement * mat.xyElement + this->xyElement * mat.yyElement + this->xzElement * mat.zyElement,
+                         this->xxElement * mat.xzElement + this->xyElement * mat.yzElement + this->xzElement * mat.zzElement,
+                         this->yxElement * mat.xxElement + this->yyElement * mat.yxElement + this->yzElement * mat.zxElement,
+                         this->yxElement * mat.xyElement + this->yyElement * mat.yyElement + this->yzElement * mat.zyElement,
+                         this->yxElement * mat.xzElement + this->yyElement * mat.yzElement + this->yzElement * mat.zzElement,
+                         this->zxElement * mat.xxElement + this->zyElement * mat.yxElement + this->zzElement * mat.zxElement,
+                         this->zxElement * mat.xyElement + this->zyElement * mat.yyElement + this->zzElement * mat.zyElement,
+                         this->zxElement * mat.xzElement + this->zyElement * mat.yzElement + this->zzElement * mat.zzElement);
 }

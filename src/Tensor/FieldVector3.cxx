@@ -1,5 +1,7 @@
 #include "Tensor.h"
 
+#include <cmath>
+
 
 vec3::FieldVector3::FieldVector3() : FieldVector3(0.0, 0.0, 0.0) {}
 
@@ -20,6 +22,20 @@ void vec3::FieldVector3::operator+=(const FieldVector3 &otherVec)
     this->zComponent += otherVec.zComponent;
 }
 
+vec3::FieldVector3 vec3::FieldVector3::operator-(const FieldVector3 &otherVec) const
+{
+    return FieldVector3(this->xComponent - otherVec.xComponent,
+                        this->yComponent - otherVec.yComponent,
+                        this->zComponent - otherVec.zComponent);
+}
+
+void vec3::FieldVector3::operator-=(const FieldVector3 &otherVec)
+{
+    this->xComponent -= otherVec.xComponent;
+    this->yComponent -= otherVec.yComponent;
+    this->zComponent -= otherVec.zComponent;
+}
+
 vec3::FieldVector3 vec3::FieldVector3::operator*(double multiplier) const
 {
     return FieldVector3(xComponent * multiplier,
@@ -33,6 +49,12 @@ void vec3::FieldVector3::operator*=(double multiplier)
     yComponent *= multiplier;
     zComponent *= multiplier;
 }
+
+double vec3::FieldVector3::magnitude() const
+{
+    return std::sqrt(xComponent * xComponent + yComponent * yComponent + zComponent * zComponent);
+}
+
 
 double vec3::FieldVector3::scalarProduct(FieldVector3 vec1, FieldVector3 vec2)
 {

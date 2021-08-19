@@ -194,10 +194,10 @@ void Coil::setSelfInductance(double selfInductance)
 }
 
 
-void Coil::setPositionAndOrientation(vec3::CoordVector3 positionVector, double xAxisAngle, double zAxisAngle)
+void Coil::setPositionAndOrientation(vec3::CoordVector3 positionVector, double yAxisAngle, double zAxisAngle)
 {
     this->positionVector = positionVector;
-    this->yAxisAngle = xAxisAngle;
+    this->yAxisAngle = yAxisAngle;
     this->zAxisAngle = zAxisAngle;
 
     calculateTransformationMatrices();
@@ -279,7 +279,7 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, Comput
         throw "Coil loop calculation not supported";
     }
 
-    double inductance = Coil::computeMutualInductance(*this, *this, 0.0, precisionFactor, method);
+    double inductance = Coil::computeMutualInductance(*this, *this, precisionFactor, method);
     setSelfInductance(inductance);
 
     return inductance;
@@ -326,4 +326,21 @@ Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
         }
     }
     return unitRingVector;
+}
+
+bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
+{
+    vec3::FieldVector3 primPositionVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
+    vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
+
+    if (primPositionVec.xComponent / primary.innerRadius < g_zAxisApproximationRatio &&
+    primPositionVec.yComponent / primary.innerRadius < g_zAxisApproximationRatio &&
+    secPositionVec.xComponent / primary.innerRadius < g_zAxisApproximationRatio &&
+    secPositionVec.yComponent / primary.innerRadius < g_zAxisApproximationRatio &&
+    primary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio &&
+    secondary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio)
+    {
+        return true;
+    }
+    return false;
 }

@@ -14,12 +14,11 @@ void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &
     cylindricalPhiArr.resize(pointVectorArr.size());
 
     vec3::FieldVector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVector);
-    positionVec *= -1.0;
 
     for (int i = 0; i < pointVectorArr.size(); ++i)
     {
         vec3::FieldVector3 pointVec = vec3::CoordVector3::convertToFieldVector(pointVectorArr[i]);
-        vec3::FieldVector3 originVec = pointVec + positionVec;
+        vec3::FieldVector3 originVec = pointVec - positionVec;
         vec3::FieldVector3 transformedVec = inverseTransformationMatrix * originVec;
         vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
 

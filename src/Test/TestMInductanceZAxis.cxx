@@ -11,7 +11,10 @@ void testCoilMutualInductanceZAxis()
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
-    printf("%.20f\n\n", Coil::computeMutualInductance(primary, secondary, 0.2));
+    primary.setPositionAndOrientation();
+    secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.2));
+
+    printf("%.20f\n\n", Coil::computeMutualInductance(primary, secondary));
 
     FILE *input = fopen("values.txt", "r");
     FILE *output = fopen("output.txt", "w");
@@ -28,9 +31,12 @@ void testCoilMutualInductanceZAxis()
         Coil prim = Coil(Rt1, at1, bt1, Nt1);
         Coil sec = Coil(Rt2, at2, bt2, Nt2);
 
+        prim.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0));
+        sec.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, distance));
+
         for (int i = 1; i <= 8; i++)
         {
-            temp = Coil::computeMutualInductance(prim, sec, distance, PrecisionFactor(i));
+            temp = Coil::computeMutualInductance(prim, sec, PrecisionFactor(i));
             printf("%.18f\n", temp);
             fprintf(output, "%.15g\t", temp);
         }
@@ -81,6 +87,8 @@ void testCoilMutualInductanceZAxisPerformance(ComputeMethod method, int nThreads
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
     primary.setThreadCount(nThreads);
+    primary.setPositionAndOrientation();
+    secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.2));
 
     int nOps = 8192;
     double temp;
@@ -93,7 +101,7 @@ void testCoilMutualInductanceZAxisPerformance(ComputeMethod method, int nThreads
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeMutualInductance(primary, secondary, 0.2, PrecisionFactor(i), method);
+            temp = Coil::computeMutualInductance(primary, secondary, PrecisionFactor(i), method);
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("precisionFactor(%.1f) : %6.3f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }

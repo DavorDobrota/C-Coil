@@ -2,124 +2,39 @@
 
 #include <cmath>
 
-double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
+
+double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
                                      CoilPairArguments inductanceArguments, ComputeMethod method)
 {
-    return calculateMutualInductanceGeneral(primary, secondary, zDisplacement,
-                                            0.0, 0.0, 0.0, inductanceArguments, method);
+    if (isZAxisCase(primary, secondary))
+    {
+        vec3::FieldVector3 primPositionVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
+        vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
+        double zDisplacement = secPositionVec.zComponent - primPositionVec.zComponent;
+
+        return calculateMutualInductanceZAxis(primary, secondary, zDisplacement, inductanceArguments, method);
+    }
+    else
+        return calculateMutualInductanceGeneral(primary, secondary, inductanceArguments, method);
 }
 
-double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary, double zDisplacement,
+double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
                                      PrecisionFactor precisionFactor, ComputeMethod method)
 {
-    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method,
-                                                                   false);
-    return computeMutualInductance(primary, secondary, zDisplacement, args, method);
+    bool zAxisCase = isZAxisCase(primary, secondary);
+    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method, !zAxisCase);
+
+    return computeMutualInductance(primary, secondary, args, method);
 }
 
-double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                     double zDisplacement, double rDisplacement,
-                                     CoilPairArguments inductanceArguments, ComputeMethod method)
-{
-    return calculateMutualInductanceGeneral(primary, secondary, zDisplacement, rDisplacement,
-                                            0.0, 0.0, inductanceArguments, method);
-}
-
-double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                     double zDisplacement, double rDisplacement,
-                                     PrecisionFactor precisionFactor, ComputeMethod method)
-{
-    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method);
-    return computeMutualInductance(primary, secondary, zDisplacement, rDisplacement, args, method);
-}
-
-double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                     double zDisplacement, double rDisplacement, double alphaAngle,
-                                     CoilPairArguments inductanceArguments, ComputeMethod method)
-{
-    return calculateMutualInductanceGeneral(primary, secondary, zDisplacement, rDisplacement, alphaAngle,
-                                            0.0, inductanceArguments, method);
-}
-
-double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                     double zDisplacement, double rDisplacement, double alphaAngle,
-                                     PrecisionFactor precisionFactor, ComputeMethod method)
-{
-    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method);
-    return computeMutualInductance(primary, secondary, zDisplacement, rDisplacement, alphaAngle, args, method);
-}
-
-double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                     double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
-                                     CoilPairArguments inductanceArguments, ComputeMethod method)
-{
-    return calculateMutualInductanceGeneral(primary, secondary, zDisplacement, rDisplacement, alphaAngle, betaAngle,
-                                            inductanceArguments, method);
-}
-
-double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                     double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
-                                     PrecisionFactor precisionFactor, ComputeMethod method)
-{
-    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method);
-    return computeMutualInductance(primary, secondary, zDisplacement, rDisplacement, alphaAngle, betaAngle, args, method);
-}
-
-double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement,
-                                            PrecisionFactor precisionFactor, ComputeMethod method) const
-{
-    return computeMutualInductance(*this, secondary, zDisplacement, precisionFactor, method) *
-           2 * M_PI * sineFrequency;
-}
-
-double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement,
-                                            CoilPairArguments inductanceArguments, ComputeMethod method) const
-{
-    return computeMutualInductance(*this, secondary, zDisplacement, inductanceArguments, method) *
-           2 * M_PI * sineFrequency;;
-}
-
-double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                            PrecisionFactor precisionFactor, ComputeMethod method) const
-{
-    return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, precisionFactor, method) *
-           2 * M_PI * sineFrequency;
-}
-
-double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                            CoilPairArguments inductanceArguments, ComputeMethod method) const
-{
-    return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, inductanceArguments, method) *
-           2 * M_PI * sineFrequency;
-}
-
-double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                            double alphaAngle, PrecisionFactor precisionFactor, ComputeMethod method) const
-{
-    return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, alphaAngle,
-                                   precisionFactor, method) * 2 * M_PI * sineFrequency;
-}
-
-double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                            double alphaAngle, CoilPairArguments inductanceArguments,
+double Coil::computeSecondaryInducedVoltage(const Coil &secondary, CoilPairArguments inductanceArguments,
                                             ComputeMethod method) const
 {
-    return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, alphaAngle,
-                                   inductanceArguments, method) * 2 * M_PI * sineFrequency;
+    return computeMutualInductance(*this, secondary, inductanceArguments, method) * 2*M_PI * sineFrequency;
 }
 
-double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                            double alphaAngle, double betaAngle, PrecisionFactor precisionFactor,
+double Coil::computeSecondaryInducedVoltage(const Coil &secondary, PrecisionFactor precisionFactor,
                                             ComputeMethod method) const
 {
-    return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, alphaAngle, betaAngle,
-                                   precisionFactor, method) * 2 * M_PI * sineFrequency;
-}
-
-double Coil::computeSecondaryInducedVoltage(const Coil &secondary, double zDisplacement, double rDisplacement,
-                                            double alphaAngle, double betaAngle, CoilPairArguments inductanceArguments,
-                                            ComputeMethod method) const
-{
-    return computeMutualInductance(*this, secondary, zDisplacement, rDisplacement, alphaAngle, betaAngle,
-                                   inductanceArguments, method) * 2 * M_PI * sineFrequency;
+    return computeMutualInductance(*this, secondary, precisionFactor, method) * 2*M_PI * sineFrequency;
 }

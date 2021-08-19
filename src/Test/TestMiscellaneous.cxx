@@ -110,9 +110,9 @@ void testCoilMutualInductanceForSpecialCase()
 	Coil primary = Coil(0.071335, 0.01397, 0.142748, 1142);
 	Coil secondary = Coil(0.096945, 0.041529, 0.02413, 516);
 
-	printf("%.15f\n", Coil::computeMutualInductance(primary, secondary,
-                                                    0.07366, 0.30988,
-                                                    PrecisionFactor(4.0)));
+	secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.30988, 0.0, 0.07366));
+
+	printf("%.15f\n", Coil::computeMutualInductance(primary, secondary));
 }
 
 void testVector3()

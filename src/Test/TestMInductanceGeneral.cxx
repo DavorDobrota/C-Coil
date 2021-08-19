@@ -12,8 +12,11 @@ void testCoilMutualInductanceGeneralForZAxis(ComputeMethod method, int nThreads)
 
     primary.setThreadCount(nThreads);
     secondary.setThreadCount(nThreads);
+    primary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0), 0.0, 0.0);
+    secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 1e-10, 0.0, 0.2), 0.0, 0.0);
 
-    printf("%.20f\n\n", Coil::computeMutualInductance(primary, secondary, 0.2, 1e-15));
+
+    printf("%.20f\n\n", Coil::computeMutualInductance(primary, secondary));
 
     FILE *input = fopen("values.txt", "r");
     FILE *output = fopen("output.txt", "w");
@@ -29,10 +32,13 @@ void testCoilMutualInductanceGeneralForZAxis(ComputeMethod method, int nThreads)
 
         Coil prim = Coil(Rt1, at1, bt1, Nt1);
         Coil sec = Coil(Rt2, at2, bt2, Nt2);
+        prim.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.0), 0.0, 0.0);
+        sec.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, distance), 0.0, 0.0);
 
-        for (double i = 1.0; i <= 8.0; i += 1.0)
+
+        for (int i = 1.0; i <= 8; ++i)
         {
-            temp = Coil::computeMutualInductance(prim, sec, distance, 1e-15, PrecisionFactor(i), method);
+            temp = Coil::computeMutualInductance(prim, sec, PrecisionFactor(i), method);
             printf("%.18f\n", temp);
             fprintf(output, "%.20f\t", temp);
         }
@@ -52,6 +58,8 @@ void testCoilMutualInductanceGeneralPerformance(ComputeMethod method, int nThrea
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
     primary.setThreadCount(nThreads);
+    primary.setPositionAndOrientation();
+    secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.2));
 
     int nOps = 1024;
     double temp;
@@ -64,7 +72,7 @@ void testCoilMutualInductanceGeneralPerformance(ComputeMethod method, int nThrea
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeMutualInductance(primary, secondary, 0.2, 1e-10, PrecisionFactor(i), method);
+            temp = Coil::computeMutualInductance(primary, secondary, PrecisionFactor(i), method);
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("precisionFactor(%.1f) : %6.2f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
 
@@ -125,35 +133,43 @@ void testCoilMutualInductanceGeneralGraphs()
     Coil prim = Coil(0.01022, 0.011, 0.0022, 20, PrecisionFactor(6.0), 16);
     Coil sec = Coil(0.01022, 0.011, 0.0022, 20, PrecisionFactor(6.0), 16);
 
-    double temp;
+    auto precision = PrecisionFactor(6.0);
 
     for (int i = 0; i <= 200; ++i)
-        fprintf(output, "%f\t%.10g\n", i * 0.0005,
-                Coil::computeMutualInductance(prim, sec, i * 0.0005,
-                                              PrecisionFactor(6.0), CPU_MT));
+    {
+        sec.setPositionAndOrientation(
+                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, i * 0.0005));
+        fprintf(output, "%f\t%.10g\n", i * 0.0005, Coil::computeMutualInductance(prim, sec, precision, CPU_MT));
+    }
     fprintf(output,"\n");
     printf("1/6 tests Done\n");
 
     for (int i = 0; i <= 200; ++i)
-        fprintf(output, "%f\t%.10g\n", i * 0.001,
-               Coil::computeMutualInductance(prim, sec, 0.02, i * 0.001,
-                                             PrecisionFactor(6.0), CPU_MT));
+    {
+        sec.setPositionAndOrientation(
+                vec3::CoordVector3(vec3::CARTESIAN, i * 0.001, 0.0, 0.02));
+        fprintf(output, "%f\t%.10g\n", i * 0.001, Coil::computeMutualInductance(prim, sec,precision, CPU_MT));
+    }
     fprintf(output,"\n");
     printf("2/6 tests done\n");
 
     for (int i = 0; i <= 200; ++i)
-        fprintf(output, "%f\t%.10g\n", M_PI/100 * i,
-               Coil::computeMutualInductance(prim, sec, 0.04, 0.0, M_PI/50 * i,
-                                             PrecisionFactor(6.0), CPU_MT));
+    {
+        sec.setPositionAndOrientation(
+                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.04), M_PI/100 * i);
+        fprintf(output, "%f\t%.10g\n", M_PI/100 * i, Coil::computeMutualInductance(prim, sec, precision, CPU_MT));
+    }
     fprintf(output,"\n");
     printf("3/6 tests done\n");
 
     for (int i = 0; i <= 100; ++i)
     {
         for (int j = 0; j <= 100; ++j)
-            fprintf(output, "%.10g\t",
-                    Coil::computeMutualInductance(prim, sec, i * 0.001, j * 0.001,
-                                                  PrecisionFactor(6.0), CPU_MT));
+        {
+            sec.setPositionAndOrientation(
+                    vec3::CoordVector3(vec3::CARTESIAN, j * 0.001, 0.0, i * 0.001));
+            fprintf(output, "%.10g\t", Coil::computeMutualInductance(prim, sec, precision, CPU_MT));
+        }
         fprintf(output,"\n");
         printf("test progress: %d / 100\n", i);
     }
@@ -163,9 +179,12 @@ void testCoilMutualInductanceGeneralGraphs()
     for (int i = 0; i <= 100; ++i)
     {
         for (int j = 0; j <= 100; ++j)
-            fprintf(output, "%.10g\t",
-                    Coil::computeMutualInductance(prim, sec, 0.04, i * 0.002, -M_PI/50 * j,
-                                                  PrecisionFactor(6.0), CPU_MT));
+        {
+            sec.setPositionAndOrientation(
+                    vec3::CoordVector3(vec3::CARTESIAN, i * 0.002, 0.0, 0.04), -M_PI/50 * j);
+            fprintf(output, "%.10g\t", Coil::computeMutualInductance(prim, sec, precision, CPU_MT));
+        }
+
         fprintf(output,"\n");
         printf("test progress: %d / 100\n", i);
     }
@@ -175,9 +194,11 @@ void testCoilMutualInductanceGeneralGraphs()
     for (int i = 0; i <= 100; ++i)
     {
         for (int j = 0; j <= 100; ++j)
-            fprintf(output, "%.10g\t",
-                    Coil::computeMutualInductance(prim, sec, 0.025 + 0.001 * i, 0.0, -M_PI/50 * j,
-                                                  PrecisionFactor(6.0), CPU_MT));
+        {
+            sec.setPositionAndOrientation(
+                    vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.025 + 0.001 * i), -M_PI/50 * j, 0.0);
+            fprintf(output, "%.10g\t", Coil::computeMutualInductance(prim, sec, precision, CPU_MT));
+        }
         fprintf(output,"\n");
         printf("test progress: %d / 100\n", i);
     }

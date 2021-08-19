@@ -9,8 +9,7 @@ vec3::CoordVector3 Coil::adaptInputVectorForPoint(const vec3::CoordVector3 &poin
     vec3::FieldVector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVector);
     vec3::FieldVector3 pointVec = vec3::CoordVector3::convertToFieldVector(pointVector);
 
-    positionVec *= -1.0;
-    vec3::FieldVector3 originVec = pointVec + positionVec;
+    vec3::FieldVector3 originVec = pointVec - positionVec;
     vec3::FieldVector3 transformedVec = inverseTransformationMatrix * originVec;
     vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
 

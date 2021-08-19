@@ -63,8 +63,12 @@ namespace vec3
 
             FieldVector3 operator+(const FieldVector3 &otherVec) const;
             void operator+=(const FieldVector3 &otherVec);
+            FieldVector3 operator-(const FieldVector3 &otherVec) const;
+            void operator-=(const FieldVector3 &otherVec);
             FieldVector3 operator*(double multiplier) const;
             void operator*=(double multiplier);
+
+            double magnitude() const;
 
             static double scalarProduct(FieldVector3 vec1, FieldVector3 vec2);
             static FieldVector3 crossProduct(FieldVector3 vec1, FieldVector3 vec2);

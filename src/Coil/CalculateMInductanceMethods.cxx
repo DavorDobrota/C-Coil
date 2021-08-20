@@ -152,14 +152,14 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
                         {
                             int phiPosition = phiBlock * angularIncrements + phiIndex;
 
-                            double displacementX = xDisplacement + lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
-                                    ringRadius * unitRingValues[phiPosition].first.xComponent;
+                            double displacementX = xDisplacement + lengthDisplacement * sin(alphaAngle) * cos(betaAngle) +
+                                                   ringRadius * unitRingValues[phiPosition].first.xComponent;
 
-                            double displacementY = yDisplacement - lengthDisplacement * sin(alphaAngle) * cos(betaAngle) +
-                                    ringRadius * unitRingValues[phiPosition].first.yComponent;
+                            double displacementY = yDisplacement - lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
+                                                   ringRadius * unitRingValues[phiPosition].first.yComponent;
 
                             double displacementZ = zDisplacement + lengthDisplacement * cos(alphaAngle) +
-                                    ringRadius * unitRingValues[phiPosition].first.zComponent;
+                                                   ringRadius * unitRingValues[phiPosition].first.zComponent;
 
                             positionVectors.emplace_back(vec3::CARTESIAN, displacementX, displacementY, displacementZ);
 
@@ -185,8 +185,6 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
         mutualInductance += vec3::FieldVector3::scalarProduct(potentialVectors[i], unitRingValues[p].second) * weights[i];
     }
 
-
     mutualInductance /= (lengthBlocks * thicknessBlocks * angularBlocks);
     return mutualInductance * 2*M_PI * secondary.numOfTurns / primary.current;
-
 }

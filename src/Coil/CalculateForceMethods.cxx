@@ -145,11 +145,11 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                             {
                                 int phiPosition = phiBlock * angularIncrements + phiIndex;
 
-                                double displacementX = lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
+                                double displacementX = lengthDisplacement * sin(alphaAngle) * cos(betaAngle) +
                                                        ringRadius * unitRingValues[phiPosition].first.xComponent;
 
                                 double displacementY =
-                                        rDisplacement - lengthDisplacement * sin(alphaAngle) * cos(betaAngle) +
+                                        rDisplacement - lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
                                         ringRadius * unitRingValues[phiPosition].first.yComponent;
 
                                 double displacementZ = zDisplacement + lengthDisplacement * cos(alphaAngle) +

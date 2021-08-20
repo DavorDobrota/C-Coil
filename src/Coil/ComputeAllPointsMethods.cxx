@@ -2,6 +2,7 @@
 #include "PrecisionGlobalVars.h"
 
 #include <cmath>
+#include <cstdio>
 
 
 void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &pointVectorArr,
@@ -20,6 +21,7 @@ void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &
         vec3::FieldVector3 pointVec = vec3::CoordVector3::convertToFieldVector(pointVectorArr[i]);
         vec3::FieldVector3 originVec = pointVec - positionVec;
         vec3::FieldVector3 transformedVec = inverseTransformationMatrix * originVec;
+        //printf("%.15g %.15g %.15g\n", transformedVec.xComponent, transformedVec.yComponent, transformedVec.zComponent);
         vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
 
         finalVec.convertToCylindrical();

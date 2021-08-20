@@ -278,9 +278,14 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, Comput
         fprintf(stderr, "ERROR: The integral of a filament is divergent, try a thin rectangular coil\n");
         throw "Coil loop calculation not supported";
     }
+    // centering the coil at (0, 0, 0) and setting angles to 0 improves the accuracy by leveraging the z-axis formula
+    vec3::CoordVector3 tempPosition = getPositionVector();
+    std::pair tempAngles = getRotationAngles();
+    setPositionAndOrientation();
 
     double inductance = Coil::computeMutualInductance(*this, *this, precisionFactor, method);
     setSelfInductance(inductance);
+    setPositionAndOrientation(tempPosition, tempAngles.first, tempAngles.second);
 
     return inductance;
 }
@@ -304,23 +309,27 @@ Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
     angularBlocks--;
     angularIncrements--;
 
+    double sinA = std::sin(alpha); double cosA = std::cos(alpha);
+    double sinB = std::sin(beta); double cosB = std::cos(beta);
+
     for (int phiBlock = 0; phiBlock <= angularBlocks; ++phiBlock)
     {
         double blockPositionPhi = angularBlock * (phiBlock + 0.5);
 
         for (int phiIndex = 0; phiIndex <= angularIncrements; ++phiIndex)
         {
-            // M_PI/2 added to readjust to an even interval so a shortcut can be used
-            double phi = M_PI/2 + blockPositionPhi +
+            double phi = blockPositionPhi +
                          (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][phiIndex];
 
-            ringPosition = vec3::FieldVector3(cos(beta) * cos(phi) - sin(beta) * cos(alpha) * sin(phi),
-                                              sin(beta) * cos(phi) + cos(beta) * cos(alpha) * sin(phi),
-                                              sin(alpha) * sin(phi));
+            double sinPhi = std::sin(phi); double cosPhi = std::cos(phi);
 
-            ringTangent = vec3::FieldVector3((-1) * cos(beta) * sin(phi) - sin(beta) * cos(alpha) * cos(phi),
-                                             (-1) * sin(beta) * sin(phi) + cos(beta) * cos(alpha) * cos(phi),
-                                             sin(alpha) * cos(phi));
+            ringPosition = vec3::FieldVector3(cosB * cosA * cosPhi - sinB * sinPhi,
+                                              sinB * cosA * cosPhi + cosB * sinPhi,
+                                              (-1) * sinA * cosPhi);
+
+            ringTangent = vec3::FieldVector3((-1) * cosB * cosA * sinPhi - sinB * cosPhi,
+                                             (-1) * sinB * cosA * sinPhi + cosB * cosPhi,
+                                             sinA * sinPhi);
 
             unitRingVector.emplace_back(ringPosition, ringTangent);
         }

@@ -8,10 +8,10 @@
 #include <vector>
 
 
-#define PRINT_ENABLED 1
+#define PRINT_ENABLED 0
 
 const int precisionArraySize = 500;
-const int defaultThreadCount = 4;
+const int defaultThreadCount = 8;
 
 const extern int blockPrecisionCPUArray[precisionArraySize];
 const extern int incrementPrecisionCPUArray[precisionArraySize];
@@ -352,56 +352,20 @@ class Coil
         double computeAndSetSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method = CPU_ST);
 
 
-        static double computeAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                              PrecisionFactor precisionFactor = PrecisionFactor(),
-                                              ComputeMethod method = CPU_ST);
-        static double computeAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                              CoilPairArguments inductanceArguments, ComputeMethod method = CPU_ST);
+        static std::pair<vec3::FieldVector3, vec3::FieldVector3>
+        computeAmpereForce(const Coil &primary, const Coil &secondary,
+                           PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod method = CPU_ST);
 
         static std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                  PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod method = CPU_ST);
-
-        static std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                  CoilPairArguments forceArguments, ComputeMethod method = CPU_ST);
-
-        static std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                  double zDisplacement, double rDisplacement,
-                                  PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod method = CPU_ST);
-
-        static std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                  double zDisplacement, double rDisplacement,
-                                  CoilPairArguments forceArguments, ComputeMethod method = CPU_ST);
-
-        static std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                  double zDisplacement, double rDisplacement, double alphaAngle,
-                                  PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod method = CPU_ST);
-
-        static std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                  double zDisplacement, double rDisplacement, double alphaAngle,
-                                  CoilPairArguments forceArguments, ComputeMethod method = CPU_ST);
-
-        static std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                  double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
-                                  PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod method = CPU_ST);
-
-        static std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                  double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
-                                  CoilPairArguments forceArguments, ComputeMethod method = CPU_ST);
+        computeAmpereForce(const Coil &primary, const Coil &secondary,
+                           CoilPairArguments forceArguments, ComputeMethod method = CPU_ST);
 
         std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        computeForceOnDipoleMoment(vec3::CoordVector3 positionVector, vec3::FieldVector3 dipoleMoment);
+        computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment) const;
 
         std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        computeForceOnDipoleMoment(vec3::CoordVector3 positionVector, vec3::FieldVector3 dipoleMoment,
-                                   const PrecisionArguments &usedPrecision);
+        computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment,
+                                   const PrecisionArguments &usedPrecision) const;
 
     private:
         void calculateMagneticMoment();
@@ -548,7 +512,6 @@ class Coil
 
         static std::pair<vec3::FieldVector3, vec3::FieldVector3>
         calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                    double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
                                     CoilPairArguments forceArguments, ComputeMethod method);
 };
 

@@ -14,8 +14,9 @@ void testCoilAmpereForceZAxis()
 
     for (int i = 0; i < 500; ++i)
     {
+        sec1.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.08 + i*0.001));
         printf("%.15f\n",
-               Coil::computeAmpereForceZAxis(prim1, sec1, 0.08 + i*0.001, PrecisionFactor(8.0), CPU_MT));
+               Coil::computeAmpereForce(prim1, sec1, PrecisionFactor(8.0), CPU_MT).first.zComponent);
     }
     printf("\n");
 }
@@ -27,6 +28,7 @@ void testCoilAmpereForceZAxisPerformance(ComputeMethod method, int nThreads)
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
     primary.setThreadCount(nThreads);
+    secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.2));
 
     int nOps = 8192;
     double temp;
@@ -39,7 +41,7 @@ void testCoilAmpereForceZAxisPerformance(ComputeMethod method, int nThreads)
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeAmpereForceZAxis(primary, secondary, 0.2, PrecisionFactor(i), method);
+            temp = Coil::computeAmpereForce(primary, secondary, PrecisionFactor(i), method).first.zComponent;
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("precisionFactor(%.1f) : %6.3f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }
@@ -63,15 +65,17 @@ void testCoilAmpereForceZAxisMTScaling(int maxThreads)
 
 void testCoilAmpereForceGeneralForZAxis()
 {
-    Coil prim1 = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(6.0), 16);
-    Coil sec1 = Coil(0.02, 0.025, 0.04, 1000, PrecisionFactor(6.0), 16);
+    Coil prim = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(6.0), 16);
+    Coil sec = Coil(0.02, 0.025, 0.04, 1000, PrecisionFactor(6.0), 16);
+    prim.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.0));
+
 
     std::pair<vec3::FieldVector3, vec3::FieldVector3> forcePair;
 
     for (int i = 0; i < 100; ++i)
     {
-        forcePair = Coil::computeAmpereForceGeneral(prim1, sec1, 0.08 + i*0.001, 1e-18,
-                                                     PrecisionFactor(8.0), CPU_MT);
+        sec.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.08 + i * 0.001));
+        forcePair = Coil::computeAmpereForce(prim, sec, PrecisionFactor(8.0), CPU_MT);
         printf("%.15f %.15f %.15f %.15f %.15f %.15f\n",
                forcePair.first.xComponent, forcePair.first.yComponent, forcePair.first.zComponent,
                forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
@@ -87,6 +91,9 @@ void testCoilAmpereForceGeneralPerformance(ComputeMethod method, int nThreads)
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
     primary.setThreadCount(nThreads);
 
+    primary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.0));
+    secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.2));
+
     int nOps = 1024;
     std::pair<vec3::FieldVector3, vec3::FieldVector3> temp;
 
@@ -98,7 +105,7 @@ void testCoilAmpereForceGeneralPerformance(ComputeMethod method, int nThreads)
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeAmpereForceGeneral(primary, secondary, 0.2, 1e-10, PrecisionFactor(i), method);
+            temp = Coil::computeAmpereForce(primary, secondary, PrecisionFactor(i), method);
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("precisionFactor(%.1f) : %6.2f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }

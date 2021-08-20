@@ -3,7 +3,6 @@
 #include "PrecisionGlobalVars.h"
 
 #include <cmath>
-#include <cstdio>
 
 
 double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
@@ -103,14 +102,12 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
 
     if (relativeVec.xComponent / primary.innerRadius < g_zAxisApproximationRatio &&
         relativeVec.yComponent / primary.innerRadius < g_zAxisApproximationRatio ||
-        relativeAlpha < g_zAxisApproximationRatio && relativeBeta < g_zAxisApproximationRatio)
+        relativeAlpha < g_zAxisApproximationRatio || relativeBeta < g_zAxisApproximationRatio)
     {
         ringIntervalSize = M_PI;
     }
     else
         ringIntervalSize = 2 * M_PI;
-
-    printf("Interval size: %.15f\n", ringIntervalSize);
 
     std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> unitRingValues =
             calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle, ringIntervalSize);

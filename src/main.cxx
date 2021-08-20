@@ -9,5 +9,8 @@ extern thread_pool tp;
 int main()
 {
 
+    testCoilMutualInductanceGeneralThinCoilAndThinCoil();
+    testCoilMutualInductanceGeneralRectangularAndFilament();
+
     return 0;
 }

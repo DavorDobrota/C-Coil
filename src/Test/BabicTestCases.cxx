@@ -48,7 +48,7 @@ void testCoilMutualInductanceGeneralThinCoilAndThinCoil()
     Coil primary = Coil(0.06, 0.0, 0.12, 120);
     Coil secondary = Coil(0.05, 0.0, 0.04, 60);
 
-    auto precision = PrecisionFactor(7.0);
+    auto precision = PrecisionFactor(8.0);
 
     for (int i = 10; i >= 0; --i){
         //    printf("cos(alpha) = %.1f: ", i * 0.1);
@@ -103,7 +103,7 @@ void testCoilMutualInductanceGeneralRectangularAndFilament()
     Coil primary = Coil(0.04, 0.02, 0.01, 100);
     Coil secondary = Coil(0.02, 0.0, 0.0, 1);
 
-    auto precision = PrecisionFactor(6.0);
+    auto precision = PrecisionFactor(7.0);
 
     for (int i = 10; i >= 0; --i){
         //    printf("cos(alpha) = %.1f: ", i * 0.1);

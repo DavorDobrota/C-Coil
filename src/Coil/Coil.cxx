@@ -343,11 +343,11 @@ bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
     vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
 
     if (primPositionVec.xComponent / primary.innerRadius < g_zAxisApproximationRatio &&
-    primPositionVec.yComponent / primary.innerRadius < g_zAxisApproximationRatio &&
-    secPositionVec.xComponent / primary.innerRadius < g_zAxisApproximationRatio &&
-    secPositionVec.yComponent / primary.innerRadius < g_zAxisApproximationRatio &&
-    primary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio &&
-    secondary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio)
+        primPositionVec.yComponent / primary.innerRadius < g_zAxisApproximationRatio &&
+        secPositionVec.xComponent / primary.innerRadius < g_zAxisApproximationRatio &&
+        secPositionVec.yComponent / primary.innerRadius < g_zAxisApproximationRatio &&
+        primary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio &&
+        secondary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio)
     {
         return true;
     }

@@ -6,11 +6,8 @@ Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, CoilPairArg
 {
     if (isZAxisCase(primary, secondary))
     {
-        vec3::FieldVector3 primPositionVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
         vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
-        double zDisplacement = secPositionVec.zComponent - primPositionVec.zComponent;
-
-        double zForce = calculateAmpereForceZAxis(primary, secondary, zDisplacement, forceArguments, method);
+        double zForce = calculateAmpereForceZAxis(primary, secondary, secPositionVec.zComponent, forceArguments, method);
 
         return std::make_pair(vec3::FieldVector3(0.0, 0.0, zForce), vec3::FieldVector3());
     }

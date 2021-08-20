@@ -58,7 +58,7 @@ double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondar
 
     double ampereForce = 0.0;
 
-    std::vector<double> fieldH = primary.computeAllBFieldH(positionVectors, primaryPrecisionArguments, method);
+    std::vector<double> fieldH = primary.computeAllBFieldX(positionVectors, primaryPrecisionArguments, method);
 
     for (int i = 0; i < fieldH.size(); ++i)
     {

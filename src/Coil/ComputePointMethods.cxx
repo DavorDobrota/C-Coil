@@ -60,17 +60,6 @@ double Coil::computeBFieldY(vec3::CoordVector3 pointVector) const
     return computeBFieldY(pointVector, defaultPrecision);
 }
 
-double Coil::computeBFieldH(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
-{
-    vec3::FieldVector3 computedVector = computeBFieldVector(pointVector, usedPrecision);
-    return std::sqrt(computedVector.xComponent * computedVector.xComponent + computedVector.yComponent * computedVector.yComponent);
-}
-
-double Coil::computeBFieldH(vec3::CoordVector3 pointVector) const
-{
-    return computeBFieldH(pointVector, defaultPrecision);
-}
-
 double Coil::computeBFieldZ(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
     return computeBFieldVector(pointVector, usedPrecision).zComponent;

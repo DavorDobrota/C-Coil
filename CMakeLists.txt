@@ -16,17 +16,8 @@ list(APPEND LIBS "$<TARGET_OBJECTS:Coil>")
 add_subdirectory(src/CoilData)
 list(APPEND LIBS "$<TARGET_OBJECTS:CoilData>")
 
-add_subdirectory(src/OldCoil)
-list(APPEND LIBS "$<TARGET_OBJECTS:OldCoil>")
-
 add_subdirectory(src/LegendreMatrix)
 list(APPEND LIBS "$<TARGET_OBJECTS:LegendreMatrix>")
-
-add_subdirectory(src/Polynomial)
-list(APPEND LIBS "$<TARGET_OBJECTS:Polynomial>")
-
-add_subdirectory(src/ConversionUtil)
-list(APPEND LIBS "$<TARGET_OBJECTS:ConversionUtil>")
 
 add_subdirectory(src/Tensor)
 list(APPEND LIBS "$<TARGET_OBJECTS:Tensor>")

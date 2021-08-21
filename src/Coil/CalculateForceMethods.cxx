@@ -180,7 +180,7 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
         forceVector += tempForce;
 
         vec3::FieldVector3 tempTorque = vec3::FieldVector3::crossProduct(unitRingValues[p].first, tempForce);
-        torqueVector += tempTorque * radii[i];
+        torqueVector += (tempTorque * radii[i]);
     }
     double forceFactor = (secondary.current * secondary.numOfTurns) / (lengthBlocks * thicknessBlocks * angularBlocks);
 

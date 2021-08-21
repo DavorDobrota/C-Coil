@@ -191,9 +191,6 @@ class Coil
         [[nodiscard]] double computeBFieldY(vec3::CoordVector3 pointVector) const;
         [[nodiscard]] double computeBFieldY(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const;
 
-        [[nodiscard]] double computeBFieldH(vec3::CoordVector3 pointVector) const;
-        [[nodiscard]] double computeBFieldH(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const;
-
         [[nodiscard]] double computeBFieldZ(vec3::CoordVector3 pointVector) const;
         [[nodiscard]] double computeBFieldZ(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const;
 
@@ -252,11 +249,6 @@ class Coil
         [[nodiscard]] std::vector<double> computeAllBFieldY(const std::vector<vec3::CoordVector3> &pointVectorArr,
                                                             ComputeMethod method = CPU_ST) const;
         [[nodiscard]] std::vector<double> computeAllBFieldY(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                            const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
-
-        [[nodiscard]] std::vector<double> computeAllBFieldH(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                            ComputeMethod method = CPU_ST) const;
-        [[nodiscard]] std::vector<double> computeAllBFieldH(const std::vector<vec3::CoordVector3> &pointVectorArr,
                                                             const PrecisionArguments &usedPrecision, ComputeMethod method = CPU_ST) const;
 
         [[nodiscard]] std::vector<double> computeAllBFieldZ(const std::vector<vec3::CoordVector3> &pointVectorArr,

@@ -1,10 +1,10 @@
 #include "Test.h"
 #include "Coil.h"
-#include "OldCoil.h"
 #include "Tensor.h"
 
 #include <cstdio>
 #include <cmath>
+#include <chrono>
 
 
 void testCoilAmpereForceZAxis()

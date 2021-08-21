@@ -24,11 +24,6 @@ void testCoilMutualInductanceZAxisPerformance(ComputeMethod method = CPU_ST, int
 void testCoilMutualInductanceZAxisMTScaling(int maxThreads = g_default_nThreads);
 void testCoilSelfInductance();
 
-void testOldCoilMutualInductanceZAxis();
-void testOldCoilMutualInductanceZAxisPerformance();
-void testOldCoilMutualInductanceGeneralPerformance();
-void testOldCoilSelfInductance();
-
 void testCoilMutualInductanceGeneralForZAxis(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
 void testCoilMutualInductanceGeneralPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
 void testCoilMutualInductanceGeneralMTScaling(int maxThreads = g_default_nThreads);

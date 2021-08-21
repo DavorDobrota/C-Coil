@@ -1,4 +1,4 @@
-add_library(Test OBJECT TestMiscellaneous.cxx BabicTestCases.cxx TestForce.cxx TestFieldsPerformance.cxx TestMInductanceZAxis.cxx OldCoilTests.cxx TestMInductanceGeneral.cxx ForceTestCases.cxx TestArgumentGeneration.cxx)
+add_library(Test OBJECT TestMiscellaneous.cxx BabicTestCases.cxx TestForce.cxx TestFieldsPerformance.cxx TestMInductanceZAxis.cxx TestMInductanceGeneral.cxx ForceTestCases.cxx TestArgumentGeneration.cxx)
 
 target_compile_options(Test PRIVATE -fpic)
 

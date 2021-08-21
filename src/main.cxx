@@ -1,16 +1,13 @@
-#include <iostream>
+#include <cstdio>
 
-#include "OldCoil.h"
 #include "Coil.h"
 #include "Test.h"
 
-extern thread_pool tp;
 
 int main()
 {
 
-    testCoilMutualInductanceGeneralThinCoilAndThinCoil();
-    testCoilMutualInductanceGeneralRectangularAndFilament();
+    testCoilAmpereForceGeneralCase();
 
     return 0;
 }

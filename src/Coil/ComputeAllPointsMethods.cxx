@@ -2,7 +2,6 @@
 #include "PrecisionGlobalVars.h"
 
 #include <cmath>
-#include <cstdio>
 
 
 void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &pointVectorArr,
@@ -102,25 +101,6 @@ std::vector<double> Coil::computeAllBFieldY(const std::vector<vec3::CoordVector3
                                            ComputeMethod method) const
 {
     return computeAllBFieldY(pointVectorArr, defaultPrecision, method);
-}
-
-std::vector<double>Coil::computeAllBFieldH(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                           const PrecisionArguments &usedPrecision, ComputeMethod method) const
-{
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectorArr, usedPrecision, method);
-    std::vector<double> outputArr(computedFieldArr.size());
-
-    for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = std::sqrt(computedFieldArr[i].xComponent * computedFieldArr[i].xComponent +
-                                 computedFieldArr[i].yComponent * computedFieldArr[i].yComponent);
-
-    return outputArr;
-}
-
-std::vector<double> Coil::computeAllBFieldH(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                            ComputeMethod method) const
-{
-    return computeAllBFieldH(pointVectorArr, defaultPrecision, method);
 }
 
 std::vector<double>Coil::computeAllBFieldZ(const std::vector<vec3::CoordVector3> &pointVectorArr,

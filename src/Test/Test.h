@@ -4,9 +4,9 @@
 #include "ComputeMethod.h"
 #include "Coil.h"
 
+
 const int g_default_nThreads = 8;
 
-void testLegendrePolynomials();
 void testNewCoilParameters();
 void testMethodPrecisionCompareCPUvsGPU();
 void testCoilPositionAndRotation();
@@ -44,10 +44,10 @@ void testCoilAmpereForceGeneralPerformance(ComputeMethod method = CPU_ST, int nT
 void testCoilAmpereForceZGeneralMTScaling(int maxThreads = g_default_nThreads);
 void testCoilGradientTensor();
 
-
 void testCoilAmpereForceForFilamentsZAxis();
 void testCoilAmpereForceGeneralCase();
 void testCoilAmpereForceThinCoils();
+void testCoilAmpereForceFilamentsGeneral();
 
 
 #endif //GENERAL_COIL_PROGRAM_TEST_H

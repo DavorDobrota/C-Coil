@@ -9,9 +9,8 @@ vec3::CoordVector3 Coil::adaptInputVectorForPoint(const vec3::CoordVector3 &poin
     vec3::FieldVector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVector);
     vec3::FieldVector3 pointVec = vec3::CoordVector3::convertToFieldVector(pointVector);
 
-    vec3::FieldVector3 transformedVec = inverseTransformationMatrix * pointVec;
-    vec3::FieldVector3 originVec = transformedVec - positionVec;
-    vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(originVec);
+    vec3::FieldVector3 transformedVec = inverseTransformationMatrix * (pointVec - positionVec);
+    vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
 
     finalVec.convertToCylindrical();
     return finalVec;

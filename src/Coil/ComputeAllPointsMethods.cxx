@@ -18,11 +18,9 @@ void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &
     for (int i = 0; i < pointVectorArr.size(); ++i)
     {
         vec3::FieldVector3 pointVec = vec3::CoordVector3::convertToFieldVector(pointVectorArr[i]);
-        vec3::FieldVector3 transformedVec = inverseTransformationMatrix * pointVec;
-        vec3::FieldVector3 originVec = transformedVec - positionVec;
-        //printf("%.15g %.15g %.15g\n", transformedVec.xComponent, transformedVec.yComponent, transformedVec.zComponent);
-        vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(originVec);
+        vec3::FieldVector3 transformedVec = inverseTransformationMatrix * (pointVec - positionVec);
 
+        vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
         finalVec.convertToCylindrical();
 
         cylindricalZArr[i] = finalVec.component1;

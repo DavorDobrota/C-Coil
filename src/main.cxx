@@ -7,7 +7,8 @@
 int main()
 {
 
-    testCoilAmpereForceThinCoils();
+    testCoilMutualInductanceGeneralThinCoilAndThinCoil();
+//    testCoilAmpereForceThinCoils();
     testCoilAmpereForceFilamentsGeneral();
 
     return 0;

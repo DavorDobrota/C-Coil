@@ -69,7 +69,7 @@ void testCoilMutualInductanceGeneralThinCoilAndThinCoil()
         //    printf("cos(alpha) = %.1f: ", i * 0.1);
         secondary.setPositionAndOrientation(
                 vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.06), std::acos(i * 0.1));
-        printf("%.15f\n", 1e6 * Coil::computeMutualInductance(primary, secondary, precision));
+        printf("%.15f\n", 1e6 * Coil::computeMutualInductance(secondary, primary, precision));
     }
     printf("\n");
 
@@ -77,7 +77,7 @@ void testCoilMutualInductanceGeneralThinCoilAndThinCoil()
         //    printf("cos(alpha) = %.1f: ", i * 0.1);
         secondary.setPositionAndOrientation(
                 vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.12), std::acos(i * 0.1));
-        printf("%.15f\n", 1e6 * Coil::computeMutualInductance(primary, secondary, precision));
+        printf("%.15f\n", 1e6 * Coil::computeMutualInductance(secondary, primary, precision));
     }
     printf("\n");
 }

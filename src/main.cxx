@@ -7,9 +7,13 @@
 int main()
 {
 
-    testCoilMutualInductanceGeneralThinCoilAndThinCoil();
+//    testCoilMutualInductanceGeneralThinCoilAndThinCoil();
 //    testCoilAmpereForceThinCoils();
-    testCoilAmpereForceFilamentsGeneral();
+//    testCoilAmpereForceFilamentsGeneral();
 
+//    testCoilAmpereForceZAxisMTScaling(4);
+
+//    testFunctionPerformance();
+//    testPerformanceForComputeAll(PrecisionFactor(9.0), 10000, 5, 16);
     return 0;
 }

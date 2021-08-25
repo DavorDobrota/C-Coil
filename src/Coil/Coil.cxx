@@ -291,6 +291,24 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, Comput
 }
 
 
+void Coil::precomputeCosPhi(int numAngularBlocks, int numAngularIncrements, double *outputArray)
+{
+    double angularBlock = M_PI / numAngularBlocks;
+
+    for (int indBlockFi = 0; indBlockFi < numAngularBlocks; ++indBlockFi)
+    {
+        double blockPositionFi = angularBlock * (indBlockFi + 0.5);
+
+        for (int incFi = 0; incFi < numAngularIncrements; ++incFi)
+        {
+            double incrementPositionFi = blockPositionFi +
+                    (angularBlock * 0.5) * Legendre::positionMatrix[numAngularIncrements - 1][incFi];
+            int arrPos = indBlockFi * numAngularIncrements + incFi;
+            outputArray[arrPos] = std::cos(incrementPositionFi);
+        }
+    }
+}
+
 std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
 Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
                                      double alpha, double beta, double ringIntervalSize)

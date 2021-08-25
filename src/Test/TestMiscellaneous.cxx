@@ -6,7 +6,25 @@
 #include <cmath>
 #include <cstdio>
 #include <vector>
+#include <chrono>
 
+
+void testFunctionPerformance()
+{
+    using namespace std::chrono;
+
+    int nOps = 20'000'000;
+    double temp = 0.0;
+
+    high_resolution_clock::time_point begin_time = high_resolution_clock::now();
+    for (int i = 1; i < nOps; ++i)
+    {
+        temp += std::sin(i);
+    }
+    printf("%.15f\n", temp);
+    double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("sqrt  : %.1f MOps/s\n", 1e-6 * nOps / interval);
+}
 
 void testNewCoilParameters()
 {

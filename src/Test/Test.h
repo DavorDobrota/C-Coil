@@ -7,6 +7,7 @@
 
 const int g_default_nThreads = 8;
 
+void testFunctionPerformance();
 void testNewCoilParameters();
 void testMethodPrecisionCompareCPUvsGPU();
 void testCoilPositionAndRotation();

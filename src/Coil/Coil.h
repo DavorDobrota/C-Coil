@@ -368,6 +368,8 @@ class Coil
         void calculateCoilType();
         void calculateTransformationMatrices();
 
+        static void precomputeCosPhi(int numAngularBlocks, int numAngularIncrements, double *outputArray);
+
         [[nodiscard]] std::pair<double, double> calculateBField(double zAxis, double rPolar,
                                                                 const PrecisionArguments &usedPrecision) const;
 

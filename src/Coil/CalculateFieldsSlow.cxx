@@ -2,6 +2,7 @@
 #include "LegendreMatrix.h"
 
 #include <cmath>
+#include <cstdio>
 
 
 namespace
@@ -16,6 +17,11 @@ double Coil::calculateAPotentialSlow(double zAxis, double rPolar, const Precisio
     double lengthBlock = length / usedPrecision.lengthBlockCount;
     double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
     double angularBlock = M_PI / usedPrecision.angularBlockCount;
+
+    // initialising precompute array
+    const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
+    double cosPhiPrecomputeArr[numPhiIncrements];
+    precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int lengthIncrements = usedPrecision.lengthIncrementCount - 1;
@@ -52,16 +58,12 @@ double Coil::calculateAPotentialSlow(double zAxis, double rPolar, const Precisio
 
                     for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlockCount; ++indBlockFi)
                     {
-                        double blockPositionFi = angularBlock * (indBlockFi + 0.5);
-
                         for (int incFi = 0; incFi <= angularIncrements; ++incFi)
                         {
-                            double incrementPositionFi = blockPositionFi +
-                                    (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incFi];
-
                             double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
 
-                            double cosinePhi = cos(incrementPositionFi);
+                            int arrPos = indBlockFi * (angularIncrements + 1) + incFi;
+                            double cosinePhi = cosPhiPrecomputeArr[arrPos];
 
                             magneticPotential += constant * incrementWeightS * incrementWeightFi *
                                     (tempConstA * cosinePhi) /sqrt(tempConstC - 2*tempConstB * cosinePhi);
@@ -82,6 +84,11 @@ std::pair<double, double> Coil::calculateBFieldSlow(double zAxis, double rPolar,
     double lengthBlock = length / usedPrecision.lengthBlockCount;
     double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
     double angularBlock = M_PI / usedPrecision.angularBlockCount;
+
+    // initialising precompute array
+    const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
+    double cosPhiPrecomputeArr[numPhiIncrements];
+    precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int lengthIncrements = usedPrecision.lengthIncrementCount - 1;
@@ -120,16 +127,13 @@ std::pair<double, double> Coil::calculateBFieldSlow(double zAxis, double rPolar,
 
                     for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlockCount; ++indBlockFi)
                     {
-                        double blockPositionFi = angularBlock * (indBlockFi + 0.5);
-
                         for (int incFi = 0; incFi <= angularIncrements; ++incFi)
                         {
-                            double incrementPositionFi = blockPositionFi +
-                                    (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incFi];
-
                             double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
 
-                            double cosinePhi = cos(incrementPositionFi);
+                            int arrPos = indBlockFi * (angularIncrements + 1) + incFi;
+                            double cosinePhi = cosPhiPrecomputeArr[arrPos];
+
                             double tempConstF = 2 * tempConstC * cosinePhi;
                             double tempConstH = (tempConstD - tempConstF) * sqrt(tempConstD - tempConstF);
                             double tempConstG = tempConstE * incrementWeightFi / tempConstH;
@@ -155,6 +159,11 @@ std::vector<double> Coil::calculateBGradientSlow(double zAxis, double rPolar, co
     double lengthBlock = length / usedPrecision.lengthBlockCount;
     double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
     double angularBlock = M_PI / usedPrecision.angularBlockCount;
+
+    // initialising precompute array
+    const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
+    double cosPhiPrecomputeArr[numPhiIncrements];
+    precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int lengthIncrements = usedPrecision.lengthIncrementCount - 1;
@@ -197,16 +206,12 @@ std::vector<double> Coil::calculateBGradientSlow(double zAxis, double rPolar, co
 
                     for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlockCount; ++indBlockFi)
                     {
-                        double blockPositionFi = angularBlock * (indBlockFi + 0.5);
-
                         for (int incFi = 0; incFi <= angularIncrements; ++incFi)
                         {
-                            double incrementPositionFi = blockPositionFi +
-                                    (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incFi];
-
                             double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
 
-                            double cosinePhi = cos(incrementPositionFi);
+                            int arrPos = indBlockFi * (angularIncrements + 1) + incFi;
+                            double cosinePhi = cosPhiPrecomputeArr[arrPos];
 
                             double tempConstJ = tempConstH - 2 * tempConstD * cosinePhi;
                             double tempConstK = tempConstJ * tempConstJ * sqrt(tempConstJ);

@@ -207,3 +207,63 @@ void testCoilMutualInductanceGeneralGraphs()
 
     fclose(output);
 }
+
+void testCoilMutualInductanceGeneralParallelAxes()
+{
+    double tempInductance;
+    auto precision = PrecisionFactor(6.0);
+
+    Coil coil1 = Coil(0.071247, 0.01397, 0.142748, 1142);
+    Coil coil2 = Coil(0.0969645, 0.041529, 0.02413, 516);
+
+    double rArr1[] = {0.0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 0.01, 0.011, 0.0117475,
+                     0.2237105, 0.224, 0.225, 0.23, 0.24, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 5.0, 10.0};
+
+    for (double i : rArr1)
+    {
+        coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, i, 0.0, 0.0));
+        tempInductance = Coil::computeMutualInductance(coil1, coil2, precision, CPU_MT);
+        printf("%9g : %.14g mH\n", i, 1e3 * tempInductance);
+    }
+    printf("\n");
+
+    double rArr2[] = {0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.02, 0.02,
+                      0.02, 0.02, 0.02, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25};
+    double zArr2[] = {0.01, 0.02, 0.03, 0.04, 0.05, 0.059309, 0.07, 0.083439, 0.09, 0.1, 0.6, 1.0, 0.083439, 0.09, 0.1,
+                      0.6, 1.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.059309, 0.07, 0.083439, 0.09, 0.1, 0.6, 1.0};
+    for (int i = 0; i < 29; ++i)
+    {
+        coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, rArr2[i], 0.0, zArr2[i]));
+        tempInductance = Coil::computeMutualInductance(coil1, coil2, precision, CPU_MT);
+        printf("%8g %5g : %.14g mH\n", zArr2[i], rArr2[i], 1e3 * tempInductance);
+    }
+    printf("\n");
+
+    FILE *input = fopen("values_MInductance_general.txt", "r");
+    FILE *output = fopen("output.txt", "w");
+
+    double Rt1, at1, bt1; int Nt1;
+    double Rt2, at2, bt2; int Nt2;
+    double distanceZ, distanceR;
+    double temp;
+
+    while (fscanf(input, "%lf %lf %lf %d %lf %lf %lf %d %lf %lf", &Rt1, &at1, &bt1, &Nt1, &Rt2, &at2, &bt2, &Nt2, &distanceZ, &distanceR) == 10)
+    {
+        printf("%g %g %g %d : %g %g %g %d | %g %g\n", Rt1, at1, bt1, Nt1, Rt2, at2, bt2, Nt2, distanceZ, distanceR);
+
+        Coil prim = Coil(Rt1, at1, bt1, Nt1);
+        Coil sec = Coil(Rt2, at2, bt2, Nt2);
+        sec.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, distanceR, 0.0, distanceZ));
+
+        for (int i = 1; i <= 10; i++)
+        {
+            temp = Coil::computeMutualInductance(prim, sec, PrecisionFactor(i), CPU_MT);
+            printf("%.16g\n", 1e9 *  temp);
+            fprintf(output, "%.16g\t", 1e9 * temp);
+        }
+        printf("===========================================================================\n");
+        fprintf(output, "\n");
+    }
+    fclose(input);
+    fclose(output);
+}

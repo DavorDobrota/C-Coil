@@ -14,6 +14,9 @@ int main()
 //    testCoilAmpereForceZAxisMTScaling(4);
 
 //    testFunctionPerformance();
-//    testPerformanceForComputeAll(PrecisionFactor(9.0), 10000, 5, 16);
+//    testPerformanceForComputeAll(PrecisionFactor(6.0), 50000, 5, 4);
+
+//    testFunctionPerformance();
+    testCoilMutualInductanceGeneralParallelAxes();
     return 0;
 }

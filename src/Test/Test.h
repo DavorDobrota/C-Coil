@@ -31,6 +31,7 @@ void testCoilMutualInductanceGeneralMTScaling(int maxThreads = g_default_nThread
 void testCoilMutualInductanceGeneralArgumentGeneration();
 void testCoilMutualInductanceGeneralDifferentGeometries();
 void testCoilMutualInductanceGeneralGraphs();
+void testCoilMutualInductanceGeneralParallelAxes();
 
 void testCoilMutualInductanceGeneralThinCoilAndFilament();
 void testCoilMutualInductanceGeneralThinCoilAndThinCoil();

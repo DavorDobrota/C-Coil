@@ -22,7 +22,6 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
     precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int lengthIncrements = usedPrecision.lengthIncrementCount - 1;
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
     int angularIncrements = usedPrecision.angularIncrementCount - 1;
 
@@ -56,7 +55,7 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
                     double cosinePhi = cosPhiPrecomputeArr[arrPos];
                     double tempConstC = 1 / std::sqrt(tempConstB - tempConstA * cosinePhi);
 
-                    magneticPotential += constant * incrementWeightT * incrementWeightFi *incrementPositionT *
+                    magneticPotential += constant * incrementWeightT * incrementWeightFi * incrementPositionT *
                             cosinePhi * (std::asinh(topEdge * tempConstC) - std::asinh(bottomEdge * tempConstC));
                 }
             }

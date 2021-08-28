@@ -30,6 +30,7 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
 
     double topEdge = zAxis + length * 0.5;
     double bottomEdge = zAxis - length * 0.5;
+    double correctionLogFactor = std::log(10.0);
 
     for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlockCount; ++indBlockT)
     {
@@ -55,8 +56,17 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
                     double cosinePhi = cosPhiPrecomputeArr[arrPos];
                     double tempConstC = 1 / std::sqrt(tempConstB - tempConstA * cosinePhi);
 
+                    double tempConstD1 = topEdge * tempConstC;
+                    double tempConstD2 = bottomEdge * tempConstC;
+
+                    double tempConstE1 = std::sqrt(tempConstD1 * tempConstD1 + 1.0);
+                    double tempConstE2 = std::sqrt(tempConstD2 * tempConstD2 + 1.0);
+
+                    double tempConstF1 = std::log10(tempConstE1 + tempConstD1);
+                    double tempConstF2 = std::log10(tempConstE2 + tempConstD2);
+
                     magneticPotential += constant * incrementWeightT * incrementWeightFi * incrementPositionT *
-                            cosinePhi * (std::asinh(topEdge * tempConstC) - std::asinh(bottomEdge * tempConstC));
+                            cosinePhi * correctionLogFactor * (tempConstF1 - tempConstF2);
                 }
             }
         }

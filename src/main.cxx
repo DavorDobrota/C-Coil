@@ -11,12 +11,17 @@ int main()
 //    testCoilAmpereForceThinCoils();
 //    testCoilAmpereForceFilamentsGeneral();
 
-//    testCoilAmpereForceZAxisMTScaling(4);
+//    testCoilAmpereForceZAxisMTScaling(16);
 
 //    testFunctionPerformance();
-//    testPerformanceForComputeAll(PrecisionFactor(6.0), 50000, 5, 4);
-
-//    testFunctionPerformance();
-    testCoilMutualInductanceGeneralParallelAxes();
+    testPerformanceForComputeAll(PrecisionFactor(8.0), 50000, 5, 2);
+    testPerformanceForComputeAll(PrecisionFactor(8.0), 50000, 5, 3);
+    testPerformanceForComputeAll(PrecisionFactor(8.0), 50000, 5, 4);
+    testPerformanceForComputeAll(PrecisionFactor(8.0), 50000, 5, 5);
+    testPerformanceForComputeAll(PrecisionFactor(8.0), 50000, 5, 6);
+    testPerformanceForComputeAll(PrecisionFactor(8.0), 50000, 5, 7);
+    testPerformanceForComputeAll(PrecisionFactor(8.0), 50000, 5, 8);
+//    testCoilMutualInductanceZAxis();
+//    testCoilMutualInductanceGeneralMTScaling(14);
     return 0;
 }

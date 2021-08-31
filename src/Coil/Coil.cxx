@@ -3,6 +3,7 @@
 #include "ctpl.h"
 #include "PrecisionGlobalVars.h"
 #include "CoilType.h"
+#include "Math/CustomMath.h"
 
 #include <cmath>
 
@@ -304,7 +305,7 @@ void Coil::precomputeCosPhi(int numAngularBlocks, int numAngularIncrements, doub
             double incrementPositionFi = blockPositionFi +
                     (angularBlock * 0.5) * Legendre::positionMatrix[numAngularIncrements - 1][incFi];
             int arrPos = indBlockFi * numAngularIncrements + incFi;
-            outputArray[arrPos] = std::cos(incrementPositionFi);
+            outputArray[arrPos] = customMath::cos(incrementPositionFi);
         }
     }
 }

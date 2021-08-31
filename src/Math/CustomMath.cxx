@@ -26,15 +26,18 @@ double customMath::ln(double x)
     uint64_t xBits;
     double x1;
     int exponent;
-
+    // basic principle, ln(a) = ln(b * 2^n) = ln(b) + n * ln(2), b element [2.0, 4.0], a is positive
+    // converting double to an int so bitwise operations can be performed
     std::memcpy(&xBits, &x, sizeof(x));
+    // extracting the exponent bits and manipulating them to their final form
     unsigned long long exp = xBits & 0x7ff0000000000000;
     exp >>= 52;
     exp -= 1024;
     exponent = (int) exp;
-
+    // changing the exponent so all numbers land in [2.0, 4.0]
     xBits &= 0x400fffffffffffff;
     xBits |= 0x4000000000000000;
+    // converting the altered number back to double
     std::memcpy(&x1, &xBits, sizeof(xBits));
 
     double output = exponent * 0.69314718055994528623;

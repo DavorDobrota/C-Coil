@@ -16,6 +16,9 @@ list(APPEND LIBS "$<TARGET_OBJECTS:Coil>")
 add_subdirectory(src/CoilData)
 list(APPEND LIBS "$<TARGET_OBJECTS:CoilData>")
 
+add_subdirectory(src/Math)
+list(APPEND LIBS "$<TARGET_OBJECTS:LegendreMatrix>")
+
 add_subdirectory(src/LegendreMatrix)
 list(APPEND LIBS "$<TARGET_OBJECTS:LegendreMatrix>")
 
@@ -32,7 +35,7 @@ else()
     set_property(TARGET hardware_acceleration PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/lib/libhardware_acceleration_shared.so")
 endif()
 
-add_executable(General_Coil_Program src/main.cxx ${LIBS})
+add_executable(General_Coil_Program src/main.cxx ${LIBS} src/Math/CustomMath.h src/Math/CustomMath.cxx)
 target_include_directories(
         General_Coil_Program
         BEFORE

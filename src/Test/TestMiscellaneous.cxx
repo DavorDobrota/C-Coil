@@ -2,6 +2,7 @@
 #include "Coil.h"
 #include "ComputeMethod.h"
 #include "Tensor.h"
+#include "Math/CustomMath.h"
 
 #include <cmath>
 #include <cstdio>
@@ -17,11 +18,12 @@ void testFunctionPerformance()
     double temp, interval;
     high_resolution_clock::time_point begin_time;
 
+
     temp = 0.0;
     begin_time = high_resolution_clock::now();
     for (int i = 1; i <= nOps; ++i)
     {
-        temp += std::log((double) i + 0.001);
+        temp += customMath::ln(i + 0.001);
     }
     printf("%.15f\n", temp);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
@@ -41,11 +43,31 @@ void testFunctionPerformance()
     begin_time = high_resolution_clock::now();
     for (int i = 1; i <= nOps; ++i)
     {
-        temp += std::log2((double) i + 0.001);
+        temp += std::log((double) i + 0.001);
     }
     printf("%.15f\n", temp);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("log2   : %.1f MOps/s\n", 1e-6 * nOps / interval);
+    printf("log    : %.1f MOps/s\n", 1e-6 * nOps / interval);
+
+    temp = 0.0;
+    begin_time = high_resolution_clock::now();
+    for (int i = 1; i <= nOps; ++i)
+    {
+        temp += customMath::cos( 1.0 / i);
+    }
+    printf("%.15f\n", temp);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("custom cos: %.1f MOps/s\n", 1e-6 * nOps / interval);
+
+    temp = 0.0;
+    begin_time = high_resolution_clock::now();
+    for (int i = 1; i <= nOps; ++i)
+    {
+        temp += std::cos( 1.0 / i);
+    }
+    printf("%.15f\n", temp);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("std cos   : %.1f MOps/s\n", 1e-6 * nOps / interval);
 }
 
 void testNewCoilParameters()

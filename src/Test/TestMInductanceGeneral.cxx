@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <cmath>
 
-void testCoilMutualInductanceGeneralForZAxis(ComputeMethod method, int nThreads)
+void testMutualInductanceGeneralForZAxis(ComputeMethod method, int nThreads)
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
@@ -50,7 +50,7 @@ void testCoilMutualInductanceGeneralForZAxis(ComputeMethod method, int nThreads)
     fclose(output);
 }
 
-void testCoilMutualInductanceGeneralPerformance(ComputeMethod method, int nThreads)
+void testMutualInductanceGeneralPerformance(ComputeMethod method, int nThreads)
 {
     using namespace std::chrono;
 
@@ -79,24 +79,24 @@ void testCoilMutualInductanceGeneralPerformance(ComputeMethod method, int nThrea
     }
 }
 
-void testCoilMutualInductanceGeneralMTScaling(int maxThreads)
+void testMutualInductanceGeneralMTScaling(int maxThreads)
 {
     printf("Performance comparison between different numbers of threads:\n");
 
     printf(" -> single thread:\n");
-    testCoilMutualInductanceGeneralPerformance(CPU_ST);
+    testMutualInductanceGeneralPerformance(CPU_ST);
     printf("\n");
 
     for (int i = 2; i <= maxThreads; ++i)
     {
         printf(" -> %2d threads:\n", i);
-        testCoilMutualInductanceGeneralPerformance(CPU_MT, i);
+        testMutualInductanceGeneralPerformance(CPU_MT, i);
         printf("\n");
     }
 }
 
 
-void testCoilMutualInductanceGeneralArgumentGeneration()
+void testMutualInductanceGeneralArgumentGeneration()
 {
     Coil coil1 = Coil(0.05, 0.1, 0.1, 100);
     Coil coil2 = Coil(0.05, 0.1, 0.0, 10);
@@ -126,12 +126,12 @@ void testCoilMutualInductanceGeneralArgumentGeneration()
     }
 }
 
-void testCoilMutualInductanceGeneralGraphs()
+void testMutualInductanceGeneralGraphs()
 {
     FILE *output = fopen("output.txt", "w");
 
-    Coil prim = Coil(0.01022, 0.011, 0.0022, 20, PrecisionFactor(6.0), 16);
-    Coil sec = Coil(0.01022, 0.011, 0.0022, 20, PrecisionFactor(6.0), 16);
+    Coil prim = Coil(0.01022, 0.011, 0.0022, 20, PrecisionFactor(6.0), 12);
+    Coil sec = Coil(0.01022, 0.011, 0.0022, 20, PrecisionFactor(6.0), 12);
 
     auto precision = PrecisionFactor(6.0);
 
@@ -208,7 +208,7 @@ void testCoilMutualInductanceGeneralGraphs()
     fclose(output);
 }
 
-void testCoilMutualInductanceGeneralParallelAxes()
+void testMutualInductanceGeneralParallelAxes()
 {
     double tempInductance;
     auto precision = PrecisionFactor(6.0);
@@ -266,4 +266,40 @@ void testCoilMutualInductanceGeneralParallelAxes()
     }
     fclose(input);
     fclose(output);
+}
+
+void testMutualInductanceGeneralEdgeCases()
+{
+    Coil coil1 = Coil(0.03, 0.12, 0.12, 3600);
+    Coil coil2 = Coil(0.03, 0.12, 0.12, 3600);
+    coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.12));
+    for (int i = 1; i <= 12; ++i)
+        printf("%.15g\n", Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(i)), CPU_MT);
+    printf("\n");
+
+    Coil coil3 = Coil(0.15, 0.12, 0.12, 3600);
+    Coil coil4 = Coil(0.03, 0.12, 0.12, 3600);
+    for (int i = 1; i <= 12; ++i)
+        printf("%.15g\n", Coil::computeMutualInductance(coil3, coil4, PrecisionFactor(i)), CPU_MT);
+    printf("\n");
+
+    Coil coil5 = Coil(0.03, 0.12, 0.12, 3600);
+    Coil coil6 = Coil(0.03, 0.12, 0.12, 3600);
+    coil6.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.00001, 0.0, 0.12));
+    for (int i = 1; i <= 12; ++i)
+        printf("%.15g\n", Coil::computeMutualInductance(coil5, coil6, PrecisionFactor(i)), CPU_MT);
+    printf("\n");
+
+    Coil coil7 = Coil(3.0, 0.2, 0.1, 1250);
+    Coil coil8 = Coil(2.8, 0.2, 0.1, 1250);
+    for (int i = 1; i <= 12; ++i)
+        printf("%.15g\n", Coil::computeMutualInductance(coil7, coil8, PrecisionFactor(i)), CPU_MT);
+    printf("\n");
+
+    Coil coil9 = Coil(3.0, 0.2, 0.1, 1250);
+    Coil coil10 = Coil(2.7, 0.2, 0.1, 1250);
+    coil10.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.0));
+    for (int i = 1; i <= 12; ++i)
+        printf("%.15g\n", Coil::computeMutualInductance(coil9, coil10, PrecisionFactor(i)), CPU_MT);
+    printf("\n");
 }

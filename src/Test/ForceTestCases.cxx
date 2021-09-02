@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <cmath>
 
-void testCoilAmpereForceForFilamentsZAxis()
+void testAmpereForceForFilamentsZAxis()
 {
     Coil coil1 = Coil(0.5, 0.0, 0.0, 1, 100);
     Coil coil2 = Coil(0.3, 0.0, 0.0, 1, 200);
@@ -18,7 +18,7 @@ void testCoilAmpereForceForFilamentsZAxis()
     printf("\n");
 }
 
-void testCoilAmpereForceGeneralCase()
+void testAmpereForceGeneralCase()
 {
     Coil coil1 = Coil(0.1204, 0.1456, 0.5292, 126, 16500);
     Coil coil2 = Coil(0.336, 0.057, 0.552, 1890, 725);
@@ -66,7 +66,7 @@ void testCoilAmpereForceGeneralCase()
     printf("\n");
 }
 
-void testCoilAmpereForceThinCoils()
+void testAmpereForceThinCoils()
 {
     ComputeMethod method = CPU_ST;
     std::pair<vec3::FieldVector3, vec3::FieldVector3> tempForce;
@@ -132,7 +132,7 @@ void testCoilAmpereForceThinCoils()
     printf("\n");
 }
 
-void testCoilAmpereForceFilamentsGeneral()
+void testAmpereForceFilamentsGeneral()
 {
     std::pair<vec3::FieldVector3, vec3::FieldVector3> tempForce;
     double a, b, c;

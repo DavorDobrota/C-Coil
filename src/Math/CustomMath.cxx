@@ -98,3 +98,44 @@ double customMath::cos(double x)
 
     return output;
 }
+
+float customMath::lnf(float x)
+{
+    auto xd = (double) x;
+    uint64_t xBits;
+    double x1;
+    int exponent;
+    // basic principle, ln(a) = ln(b * 2^n) = ln(b) + n * ln(2), b element [2.0, 4.0], a is positive
+    // converting double to an int so bitwise operations can be performed
+    std::memcpy(&xBits, &xd, sizeof(xd));
+    // extracting the exponent bits and manipulating them to their final form
+    unsigned long long exp = xBits & 0x7ff0000000000000;
+    exp >>= 52;
+    exp -= 1024;
+    exponent = (int) exp;
+    // changing the exponent so all numbers land in [2.0, 4.0]
+    xBits &= 0x400fffffffffffff;
+    xBits |= 0x4000000000000000;
+    // converting the altered number back to double
+    std::memcpy(&x1, &xBits, sizeof(xBits));
+
+    double output = exponent * 0.69314718055994528623;
+    x1 -= 3;
+
+    double x2 = x1 * x1;
+    double x4 = x2 * x2;
+    double x6 = x2 * x4;
+    double x8 = x4 * x4;
+    double x10 = x6 * x4;
+    double x12 = x6 * x6;
+
+    output += taylorWeightsLn[0] + taylorWeightsLn[1] * x1;
+    output += taylorWeightsLn[2] * x2 + taylorWeightsLn[3] * x2 * x1;
+    output += taylorWeightsLn[4] * x4 + taylorWeightsLn[5] * x4 * x1;
+    output += taylorWeightsLn[6] * x6 + taylorWeightsLn[7] * x6 * x1;
+    output += taylorWeightsLn[8] * x8 + taylorWeightsLn[9] * x1 * x8;
+    output += taylorWeightsLn[10] * x10 + taylorWeightsLn[11] * x1 * x10;
+    output += taylorWeightsLn[12] * x12 + taylorWeightsLn[13] * x1 * x12;
+
+    return (float) output;
+}

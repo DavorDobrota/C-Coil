@@ -6,7 +6,7 @@
 #include <cmath>
 
 
-void testCoilMutualInductanceZAxis()
+void testMutualInductanceZAxis()
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
@@ -37,8 +37,8 @@ void testCoilMutualInductanceZAxis()
         for (int i = 1; i <= 8; i++)
         {
             temp = Coil::computeMutualInductance(prim, sec, PrecisionFactor(i));
-            printf("%.18f\n", temp);
-            fprintf(output, "%.15g\t", temp);
+            printf("%.16g\n", temp);
+            fprintf(output, "%.16g\t", temp);
         }
 
         printf("====================================================================================\n");
@@ -49,7 +49,7 @@ void testCoilMutualInductanceZAxis()
     fclose(output);
 }
 
-void testCoilMutualInductanceZAxisArgumentGeneration()
+void testMutualInductanceZAxisArgumentGeneration()
 {
     Coil coil1 = Coil(0.05, 0.1, 0.1, 100);
     Coil coil2 = Coil(0.05, 0.1, 0.0, 10);
@@ -107,7 +107,7 @@ void testCoilMutualInductanceZAxisPerformance(ComputeMethod method, int nThreads
     }
 }
 
-void testCoilMutualInductanceZAxisMTScaling(int maxThreads)
+void testMutualInductanceZAxisMTScaling(int maxThreads)
 {
     printf("Performance comparison between different numbers of threads:\n");
 
@@ -123,7 +123,7 @@ void testCoilMutualInductanceZAxisMTScaling(int maxThreads)
     }
 }
 
-void testCoilSelfInductance()
+void testSelfInductance()
 {
     Coil coil1 = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(), 12);
     Coil coil2 = Coil(0.03, 0.0, 0.12, 120);

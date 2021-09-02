@@ -33,11 +33,31 @@ void testFunctionPerformance()
     begin_time = high_resolution_clock::now();
     for (int i = 1; i <= nOps; ++i)
     {
+        temp += customMath::lnf(i + 0.001f);
+    }
+    printf("%.15f\n", temp);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("lnf   : %.1f MOps/s\n", 1e-6 * nOps / interval);
+
+    temp = 0.0;
+    begin_time = high_resolution_clock::now();
+    for (int i = 1; i <= nOps; ++i)
+    {
         temp += std::log10((double) i + 0.001);
     }
     printf("%.15f\n", temp);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("log10 : %.1f MOps/s\n", 1e-6 * nOps / interval);
+
+    temp = 0.0;
+    begin_time = high_resolution_clock::now();
+    for (int i = 1; i <= nOps; ++i)
+    {
+        temp += std::log10(i + 0.001f);
+    }
+    printf("%.15f\n", temp);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("log10f: %.1f MOps/s\n", 1e-6 * nOps / interval);
 
     temp = 0.0;
     begin_time = high_resolution_clock::now();

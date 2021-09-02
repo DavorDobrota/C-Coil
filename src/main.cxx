@@ -10,11 +10,11 @@
 int main()
 {
 
-//    testCoilMutualInductanceGeneralThinCoilAndThinCoil();
-//    testCoilAmpereForceThinCoils();
-//    testCoilAmpereForceFilamentsGeneral();
+//    testMutualInductanceGeneralThinCoilAndThinCoil();
+//    testAmpereForceThinCoils();
+//    testAmpereForceFilamentsGeneral();
 
-//    testCoilAmpereForceZAxisMTScaling(16);
+//    testAmpereForceZAxisMTScaling(16);
 
 //    testFunctionPerformance();
 
@@ -25,9 +25,16 @@ int main()
 //    testPerformanceForComputeAll(PrecisionFactor(5.0), 50000, 5, 6);
 //    testPerformanceForComputeAll(PrecisionFactor(5.0), 50000, 5, 7);
 //    testPerformanceForComputeAll(PrecisionFactor(5.0), 50000, 5, 8);
-    testCoilMutualInductanceZAxis();
-//    testCoilMutualInductanceGeneralMTScaling(14);
+//    testMutualInductanceZAxisMTScaling(16);
+//    testMutualInductanceGeneralMTScaling(14);
 
+//    testMutualInductanceGeneralEdgeCases();
+
+
+    testMutualInductanceGeneralThinCoilAndFilament();
+    testMutualInductanceGeneralThinCoilAndThinCoil();
+    testMutualInductanceGeneralPancakeAndPancake();
+    testMutualInductanceGeneralRectangularAndFilament();
 
     return 0;
 }

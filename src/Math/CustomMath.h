@@ -8,6 +8,9 @@ namespace customMath
 
     double ln(double x);
     double cos(double x);
+
+    float lnf(float x);
+    float cosf(float x);
 }
 
 #endif //GENERAL_COIL_PROGRAM_CUSTOMMATH_H

@@ -7,7 +7,7 @@
 #include <chrono>
 
 
-void testCoilAmpereForceZAxis()
+void testAmpereForceZAxis()
 {
     Coil prim1 = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(6.0), 16);
     Coil sec1 = Coil(0.02, 0.025, 0.04, 1000, PrecisionFactor(6.0), 16);
@@ -21,7 +21,7 @@ void testCoilAmpereForceZAxis()
     printf("\n");
 }
 
-void testCoilAmpereForceZAxisPerformance(ComputeMethod method, int nThreads)
+void testAmpereForceZAxisPerformance(ComputeMethod method, int nThreads)
 {
     using namespace std::chrono;
 
@@ -47,23 +47,23 @@ void testCoilAmpereForceZAxisPerformance(ComputeMethod method, int nThreads)
     }
 }
 
-void testCoilAmpereForceZAxisMTScaling(int maxThreads)
+void testAmpereForceZAxisMTScaling(int maxThreads)
 {
     printf("Performance comparison between different numbers of threads:\n");
 
     printf(" -> single thread:\n");
-    testCoilAmpereForceZAxisPerformance(CPU_ST);
+    testAmpereForceZAxisPerformance(CPU_ST);
     printf("\n");
 
     for (int i = 2; i <= maxThreads; ++i)
     {
         printf(" -> %2d threads:\n", i);
-        testCoilAmpereForceZAxisPerformance(CPU_MT, i);
+        testAmpereForceZAxisPerformance(CPU_MT, i);
         printf("\n");
     }
 }
 
-void testCoilAmpereForceGeneralForZAxis()
+void testAmpereForceGeneralForZAxis()
 {
     Coil prim = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(6.0), 16);
     Coil sec = Coil(0.02, 0.025, 0.04, 1000, PrecisionFactor(6.0), 16);
@@ -83,7 +83,7 @@ void testCoilAmpereForceGeneralForZAxis()
     printf("\n");
 }
 
-void testCoilAmpereForceGeneralPerformance(ComputeMethod method, int nThreads)
+void testAmpereForceGeneralPerformance(ComputeMethod method, int nThreads)
 {
     using namespace std::chrono;
 
@@ -111,23 +111,23 @@ void testCoilAmpereForceGeneralPerformance(ComputeMethod method, int nThreads)
     }
 }
 
-void testCoilAmpereForceZGeneralMTScaling(int maxThreads)
+void testAmpereForceZGeneralMTScaling(int maxThreads)
 {
     printf("Performance comparison between different numbers of threads:\n");
 
     printf(" -> single thread:\n");
-    testCoilAmpereForceGeneralPerformance(CPU_ST);
+    testAmpereForceGeneralPerformance(CPU_ST);
     printf("\n");
 
     for (int i = 2; i <= maxThreads; ++i)
     {
         printf(" -> %2d threads:\n", i);
-        testCoilAmpereForceGeneralPerformance(CPU_MT, i);
+        testAmpereForceGeneralPerformance(CPU_MT, i);
         printf("\n");
     }
 }
 
-void testCoilGradientTensor()
+void testGradientTensor()
 {
     Coil coil = Coil(1.0, 0.0, 1e-10, 1);
 

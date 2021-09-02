@@ -4,6 +4,8 @@
 
 #include <cmath>
 
+#include <algorithm>
+
 namespace
 {
     ctpl::thread_pool g_threadPool;
@@ -72,22 +74,37 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
                                 std::vector<double> &computedFieldHArr,
                                 std::vector<double> &computedFieldZArr,
                                 const PrecisionArguments &usedPrecision,
+                                int chunkSize,
                                 bool async) const
 {
     computedFieldHArr.resize(cylindricalZArr.size());
     computedFieldZArr.resize(cylindricalZArr.size());
 
-    auto calcThread = [this, &usedPrecision](int idx, double cylindricalZ, double cylindricalR, double &computedFieldH, double &computedFieldZ) -> void
+    auto calcThread = [this, &usedPrecision](
+            int idx,
+            const std::vector<double> &cylindricalZ,
+            const std::vector<double> &cylindricalR,
+            std::vector<double> &computedFieldH,
+            std::vector<double> &computedFieldZ,
+            int startIdx, int stopIdx
+    ) -> void
     {
-        auto result = calculateBField(cylindricalZ, cylindricalR, usedPrecision);
-        computedFieldH = result.first;
-        computedFieldZ = result.second;
+        for(size_t i = startIdx; i < stopIdx; i++)
+        {
+            auto result = calculateBField(cylindricalZ[i], cylindricalR[i], usedPrecision);
+            computedFieldH[i] = result.first;
+            computedFieldZ[i] = result.second;
+        }
     };
 
-    for(int i = 0; i < cylindricalZArr.size(); i++)
+    for(size_t i = 0; i < (size_t)std::ceil((double)cylindricalZArr.size() / (double)chunkSize); i++)
     {
-        g_threadPool.push(calcThread, cylindricalZArr[i], cylindricalRArr[i], std::ref(computedFieldHArr[i]),
-                          std::ref(computedFieldZArr[i]));
+        g_threadPool.push(
+            calcThread,
+            std::ref(cylindricalZArr), std::ref(cylindricalRArr),
+            std::ref(computedFieldHArr), std::ref(computedFieldZArr),
+            i * chunkSize, std::min((i + 1) * chunkSize, cylindricalZArr.size())
+        );
     }
 
     if(!async)
@@ -98,19 +115,33 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
                                     const std::vector<double> &cylindricalRArr,
                                     std::vector<double> &computedPotentialArr,
                                     const PrecisionArguments &usedPrecision,
-                                    bool async) const
+                                    int chunkSize, bool async) const
 {
     computedPotentialArr.resize(cylindricalZArr.size());
 
-    auto calcThread = [this, &usedPrecision](int idx, double cylindricalZ, double cylindricalR, double &computedPotential) -> void
+    auto calcThread = [this, &usedPrecision](
+            int idx,
+            const std::vector<double> &cylindricalZ,
+            const std::vector<double> &cylindricalR,
+            std::vector<double> &computedPotential,
+            int startIdx, int stopIdx
+    ) -> void
     {
-        auto result = calculateAPotential(cylindricalZ, cylindricalR, usedPrecision);
-        computedPotential = result;
+        for(size_t i = startIdx; i < stopIdx; i++)
+        {
+            auto result = calculateAPotential(cylindricalZ[i], cylindricalR[i], usedPrecision);
+            computedPotential[i] = result;
+        }
     };
 
-    for(int i = 0; i < cylindricalZArr.size(); i++)
+    for(size_t i = 0; i < (size_t)std::ceil((double)cylindricalZArr.size() / (double)chunkSize); i++)
     {
-        g_threadPool.push(calcThread, cylindricalZArr[i], cylindricalRArr[i], std::ref(computedPotentialArr[i]));
+        g_threadPool.push(
+            calcThread,
+            std::ref(cylindricalZArr), std::ref(cylindricalRArr),
+            std::ref(computedPotentialArr),
+            i * chunkSize, std::min((i + 1) * chunkSize, cylindricalZArr.size())
+        );
     }
 
     if(!async)
@@ -124,7 +155,7 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
                                    std::vector<double> &computedGradientRZArr,
                                    std::vector<double> &computedGradientZZArr,
                                    const PrecisionArguments &usedPrecision,
-                                   bool async) const
+                                   int chunkSize, bool async) const
 {
     computedGradientRPhiArr.resize(cylindricalZArr.size());
     computedGradientRRArr.resize(cylindricalZArr.size());
@@ -132,23 +163,34 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
     computedGradientZZArr.resize(cylindricalZArr.size());
 
     auto calcThread = [this, &usedPrecision] (
-        int idx, double cylindricalZ, double cylindricalR, double computedGradientRPhi, double computedGradientRR,
-        double computedGradientRZ, double computedGradientZZ
+        int idx,
+        const std::vector<double> &cylindricalZ,
+        const std::vector<double> &cylindricalR,
+        std::vector<double> &computedGradientRPhi,
+        std::vector<double> &computedGradientRR,
+        std::vector<double> &computedGradientRZ,
+        std::vector<double> &computedGradientZZ,
+        int startIdx, int stopIdx
     )
     {
-        auto result = calculateBGradient(cylindricalZ, cylindricalR, usedPrecision);
-        computedGradientRPhi = result[0];
-        computedGradientRR = result[1];
-        computedGradientRZ = result[2];
-        computedGradientZZ = result[3];
+        for(size_t i = startIdx; i < stopIdx; i++)
+        {
+            auto result = calculateBGradient(cylindricalZ[i], cylindricalR[i], usedPrecision);
+            computedGradientRPhi[i] = result[0];
+            computedGradientRR[i] = result[1];
+            computedGradientRZ[i] = result[2];
+            computedGradientZZ[i] = result[3];
+        }
     };
 
-    for(int i = 0; i < cylindricalZArr.size(); i++)
+    for(size_t i = 0; i < (size_t)std::ceil((double)cylindricalZArr.size() / (double)chunkSize); i++)
     {
         g_threadPool.push (
-            calcThread, cylindricalZArr[i], cylindricalRArr[i],
-            std::ref(computedGradientRPhiArr[i]), std::ref(computedGradientRRArr[i]),
-            std::ref(computedGradientRZArr[i]), std::ref(computedGradientZZArr[i])
+            calcThread,
+            std::ref(cylindricalZArr), std::ref(cylindricalRArr),
+            std::ref(computedGradientRPhiArr), std::ref(computedGradientRRArr),
+            std::ref(computedGradientRZArr), std::ref(computedGradientZZArr),
+            i * chunkSize, std::min((i + 1) * chunkSize, cylindricalZArr.size())
         );
     }
 

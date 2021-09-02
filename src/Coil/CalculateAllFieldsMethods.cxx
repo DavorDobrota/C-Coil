@@ -71,7 +71,8 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
                                 const std::vector<double> &cylindricalRArr,
                                 std::vector<double> &computedFieldHArr,
                                 std::vector<double> &computedFieldZArr,
-                                const PrecisionArguments &usedPrecision) const
+                                const PrecisionArguments &usedPrecision,
+                                bool async) const
 {
     computedFieldHArr.resize(cylindricalZArr.size());
     computedFieldZArr.resize(cylindricalZArr.size());
@@ -89,13 +90,15 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
                           std::ref(computedFieldZArr[i]));
     }
 
-    while(g_threadPool.n_idle() < threadCount);
+    if(!async)
+        synchronizeThreads();
 }
 
 void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
                                     const std::vector<double> &cylindricalRArr,
                                     std::vector<double> &computedPotentialArr,
-                                    const PrecisionArguments &usedPrecision) const
+                                    const PrecisionArguments &usedPrecision,
+                                    bool async) const
 {
     computedPotentialArr.resize(cylindricalZArr.size());
 
@@ -110,7 +113,8 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
         g_threadPool.push(calcThread, cylindricalZArr[i], cylindricalRArr[i], std::ref(computedPotentialArr[i]));
     }
 
-    while(g_threadPool.n_idle() < threadCount);
+    if(!async)
+        synchronizeThreads();
 }
 
 void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
@@ -119,7 +123,8 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
                                    std::vector<double> &computedGradientRRArr,
                                    std::vector<double> &computedGradientRZArr,
                                    std::vector<double> &computedGradientZZArr,
-                                   const PrecisionArguments &usedPrecision) const
+                                   const PrecisionArguments &usedPrecision,
+                                   bool async) const
 {
     computedGradientRPhiArr.resize(cylindricalZArr.size());
     computedGradientRRArr.resize(cylindricalZArr.size());
@@ -147,7 +152,8 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
         );
     }
 
-    while(g_threadPool.n_idle() < threadCount);
+    if(!async)
+        synchronizeThreads();
 }
 
 #pragma clang diagnostic push
@@ -296,3 +302,5 @@ void Coil::calculateAllBGradientSwitch(const std::vector<double> &cylindricalZAr
                                     usedPrecision);
     }
 }
+
+void Coil::synchronizeThreads() const { while(g_threadPool.n_idle() < threadCount){} }

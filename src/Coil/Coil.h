@@ -431,12 +431,14 @@ class Coil
                                   const std::vector<double> &cylindricalRArr,
                                   std::vector<double> &computedFieldHArr,
                                   std::vector<double> &computedFieldZArr,
-                                  const PrecisionArguments &usedPrecision) const;
+                                  const PrecisionArguments &usedPrecision,
+                                  bool async = false) const;
 
         void calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
                                       const std::vector<double> &cylindricalRArr,
                                       std::vector<double> &computedPotentialArr,
-                                      const PrecisionArguments &usedPrecision) const;
+                                      const PrecisionArguments &usedPrecision,
+                                      bool async = false) const;
 
         void calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
                                      const std::vector<double> &cylindricalRArr,
@@ -444,7 +446,8 @@ class Coil
                                      std::vector<double> &computedGradientRR,
                                      std::vector<double> &computedGradientRZ,
                                      std::vector<double> &computedGradientZZ,
-                                     const PrecisionArguments &usedPrecision) const;
+                                     const PrecisionArguments &usedPrecision,
+                                     bool async = false) const;
 
         void calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
                                    const std::vector<double> &cylindricalRArr,
@@ -507,6 +510,8 @@ class Coil
         static std::pair<vec3::FieldVector3, vec3::FieldVector3>
         calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                                     CoilPairArguments forceArguments, ComputeMethod method);
+
+        void synchronizeThreads() const;
 };
 
 #endif //GENERAL_COIL_PROGRAM_COIL_H

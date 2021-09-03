@@ -306,22 +306,41 @@ void testMutualInductanceGeneralEdgeCases()
 
 void testMutualInductanceGeneralConway()
 {
+    FILE *output = fopen("output.txt", "w");
+
     Coil coil1 = Coil(0.1, 0.02, 0.24, 1200);
     Coil coil2 = Coil(0.04, 0.01, 0.06, 1200);
+    double temp;
 
     for (int i = 10; i > 0; --i)
     {
         coil2.setPositionAndOrientation(vec3::CoordVector3(), std::acos(0.1 * i));
-        printf("%.16g\n", 1e3 * Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(6.0)), CPU_MT);
+        for (int j = 1; j <= 9; ++j)
+        {
+            temp = Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(j), CPU_MT);
+            printf("%.16g\n", 1e3 * temp);
+            fprintf(output, "%.16g\t", 1e3 * temp);
+        }
+        printf("\n");
+        fprintf(output, "\n");
     }
+    fprintf(output, "\n");
     printf("\n");
 
     for (int i = 10; i > 0; --i)
     {
         coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.18),
                                         std::acos(0.1 * i), 0.0);
-        printf("%.16g\n", 1e3 * Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(6.0)), CPU_MT);
+        for (int j = 1; j <= 9; ++j)
+        {
+            temp = Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(j), CPU_MT);
+            printf("%.16g\n", 1e3 * temp);
+            fprintf(output, "%.16g\t", 1e3 * temp);
+        }
+        printf("\n");
+        fprintf(output, "\n");
     }
     printf("\n");
 
+    fclose(output);
 }

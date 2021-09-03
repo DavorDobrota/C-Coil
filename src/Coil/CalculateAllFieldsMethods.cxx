@@ -3,8 +3,8 @@
 #include "hardware_acceleration.h"
 
 #include <cmath>
-
 #include <algorithm>
+#include <cstdio>
 
 namespace
 {
@@ -282,6 +282,8 @@ void Coil::calculateAllBFieldSwitch(const std::vector<double> &cylindricalZArr,
                                     const PrecisionArguments &usedPrecision,
                                     ComputeMethod method) const
 {
+    int chunkSize = calculateChunkSize((long long) cylindricalZArr.size());
+
     switch (method)
     {
         case GPU:
@@ -290,7 +292,7 @@ void Coil::calculateAllBFieldSwitch(const std::vector<double> &cylindricalZArr,
             break;
         case CPU_MT:
             calculateAllBFieldMT(cylindricalZArr, cylindricalRArr,
-                                 computedFieldHArr, computedFieldZArr, usedPrecision);
+                                 computedFieldHArr, computedFieldZArr, usedPrecision, chunkSize);
             break;
         default:
             calculateAllBFieldST(cylindricalZArr, cylindricalRArr,
@@ -304,13 +306,16 @@ void Coil::calculateAllAPotentialSwitch(const std::vector<double> &cylindricalZA
                                         const PrecisionArguments &usedPrecision,
                                         ComputeMethod method) const
 {
+    int chunkSize = calculateChunkSize((long long) cylindricalZArr.size());
+//    printf("%d\n", chunkSize);
     switch (method)
     {
         case GPU:
+
             calculateAllAPotentialGPU(cylindricalZArr, cylindricalRArr, computedPotentialArr, usedPrecision);
             break;
         case CPU_MT:
-            calculateAllAPotentialMT(cylindricalZArr, cylindricalRArr, computedPotentialArr, usedPrecision);
+            calculateAllAPotentialMT(cylindricalZArr, cylindricalRArr, computedPotentialArr, usedPrecision, chunkSize);
             break;
         default:
             calculateAllAPotentialST(cylindricalZArr, cylindricalRArr, computedPotentialArr, usedPrecision);
@@ -326,6 +331,8 @@ void Coil::calculateAllBGradientSwitch(const std::vector<double> &cylindricalZAr
                                        const PrecisionArguments &usedPrecision,
                                        ComputeMethod method) const
 {
+    int chunkSize = calculateChunkSize((long long) cylindricalZArr.size());
+
     switch (method)
     {
         case GPU:
@@ -336,13 +343,36 @@ void Coil::calculateAllBGradientSwitch(const std::vector<double> &cylindricalZAr
         case CPU_MT:
             calculateAllBGradientMT(cylindricalZArr, cylindricalRArr,
                                      computedGradientRPhi, computedGradientRR, computedGradientRZ, computedGradientZZ,
-                                     usedPrecision);
+                                     usedPrecision, chunkSize);
             break;
         default:
             calculateAllBGradientST(cylindricalZArr, cylindricalRArr,
                                     computedGradientRPhi, computedGradientRR, computedGradientRZ, computedGradientZZ,
                                     usedPrecision);
     }
+}
+
+int Coil::calculateChunkSize(long long int numOps) const
+{
+//    printf("%d %d\n", numOps, threadCount);
+    std::vector<int> divisors;
+
+    for (int i = 2; i <= numOps / 2; ++i)
+        if (numOps % i == 0)
+            divisors.push_back(i);
+
+    for (int i : divisors)
+        if (threadCount < i)
+            return i;
+
+    return 1;
+
+//    if (numOps < threadCount * threadCount)
+//        return 1;
+//    else
+//    {
+//        return (int) std::floor((double) numOps / (double) (threadCount * threadCount));
+//    }
 }
 
 void Coil::synchronizeThreads() const { while(g_threadPool.n_idle() < threadCount){} }

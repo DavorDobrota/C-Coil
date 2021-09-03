@@ -512,6 +512,8 @@ class Coil
         calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                                     CoilPairArguments forceArguments, ComputeMethod method);
 
+        [[nodiscard]] int calculateChunkSize(long long int numOps) const;
+
         void synchronizeThreads() const;
 };
 

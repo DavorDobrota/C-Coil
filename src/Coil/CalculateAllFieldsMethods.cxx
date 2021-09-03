@@ -86,7 +86,7 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
             const std::vector<double> &cylindricalR,
             std::vector<double> &computedFieldH,
             std::vector<double> &computedFieldZ,
-            int startIdx, int stopIdx
+            size_t startIdx, size_t stopIdx
     ) -> void
     {
         for(size_t i = startIdx; i < stopIdx; i++)
@@ -124,7 +124,7 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
             const std::vector<double> &cylindricalZ,
             const std::vector<double> &cylindricalR,
             std::vector<double> &computedPotential,
-            int startIdx, int stopIdx
+            size_t startIdx, size_t stopIdx
     ) -> void
     {
         for(size_t i = startIdx; i < stopIdx; i++)
@@ -170,7 +170,7 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
         std::vector<double> &computedGradientRR,
         std::vector<double> &computedGradientRZ,
         std::vector<double> &computedGradientZZ,
-        int startIdx, int stopIdx
+        size_t startIdx, size_t stopIdx
     )
     {
         for(size_t i = startIdx; i < stopIdx; i++)

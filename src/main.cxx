@@ -26,15 +26,12 @@ int main()
 //    testPerformanceForComputeAll(PrecisionFactor(5.0), 50000, 5, 7);
 //    testPerformanceForComputeAll(PrecisionFactor(5.0), 50000, 5, 8);
 //    testMutualInductanceZAxisMTScaling(16);
-//    testMutualInductanceGeneralMTScaling(14);
+//   testMutualInductanceGeneralMTScaling(16);
 
 //    testMutualInductanceGeneralEdgeCases();
+    testMutualInductanceZAxis();
 
-
-    testMutualInductanceGeneralThinCoilAndFilament();
-    testMutualInductanceGeneralThinCoilAndThinCoil();
-    testMutualInductanceGeneralPancakeAndPancake();
-    testMutualInductanceGeneralRectangularAndFilament();
+//testMutualInductanceGeneralConway();
 
     return 0;
 }

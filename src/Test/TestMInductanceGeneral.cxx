@@ -303,3 +303,25 @@ void testMutualInductanceGeneralEdgeCases()
         printf("%.15g\n", Coil::computeMutualInductance(coil9, coil10, PrecisionFactor(i)), CPU_MT);
     printf("\n");
 }
+
+void testMutualInductanceGeneralConway()
+{
+    Coil coil1 = Coil(0.1, 0.02, 0.24, 1200);
+    Coil coil2 = Coil(0.04, 0.01, 0.06, 1200);
+
+    for (int i = 10; i > 0; --i)
+    {
+        coil2.setPositionAndOrientation(vec3::CoordVector3(), std::acos(0.1 * i));
+        printf("%.16g\n", 1e3 * Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(6.0)), CPU_MT);
+    }
+    printf("\n");
+
+    for (int i = 10; i > 0; --i)
+    {
+        coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.18),
+                                        std::acos(0.1 * i), 0.0);
+        printf("%.16g\n", 1e3 * Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(6.0)), CPU_MT);
+    }
+    printf("\n");
+
+}

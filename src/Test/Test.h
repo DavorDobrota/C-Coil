@@ -33,6 +33,7 @@ void testMutualInductanceGeneralDifferentGeometries();
 void testMutualInductanceGeneralGraphs();
 void testMutualInductanceGeneralParallelAxes();
 void testMutualInductanceGeneralEdgeCases();
+void testMutualInductanceGeneralConway();
 
 void testMutualInductanceGeneralThinCoilAndFilament();
 void testMutualInductanceGeneralThinCoilAndThinCoil();

@@ -4,6 +4,7 @@
 #include "ComputeMethod.h"
 #include "CoilType.h"
 #include "Tensor/Tensor.h"
+#include "PrecisionGlobalVars.h"
 
 #include <vector>
 
@@ -432,13 +433,13 @@ class Coil
                                   std::vector<double> &computedFieldHArr,
                                   std::vector<double> &computedFieldZArr,
                                   const PrecisionArguments &usedPrecision,
-                                  bool async = false) const;
+                                  int chunkSize = g_defaultChunkSize, bool async = false) const;
 
         void calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
                                       const std::vector<double> &cylindricalRArr,
                                       std::vector<double> &computedPotentialArr,
                                       const PrecisionArguments &usedPrecision,
-                                      bool async = false) const;
+                                      int chunkSize = g_defaultChunkSize, bool async = false) const;
 
         void calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
                                      const std::vector<double> &cylindricalRArr,
@@ -447,7 +448,7 @@ class Coil
                                      std::vector<double> &computedGradientRZ,
                                      std::vector<double> &computedGradientZZ,
                                      const PrecisionArguments &usedPrecision,
-                                     bool async = false) const;
+                                     int chunkSize = g_defaultChunkSize, bool async = false) const;
 
         void calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
                                    const std::vector<double> &cylindricalRArr,

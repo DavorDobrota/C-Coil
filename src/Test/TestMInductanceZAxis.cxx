@@ -19,6 +19,12 @@ void testMutualInductanceZAxis()
     FILE *input = fopen("values.txt", "r");
     FILE *output = fopen("output.txt", "w");
 
+    if(!input || !output)
+    {
+        printf("Couldn't load file!\n");
+        return;
+    }
+
     double Rt1, at1, bt1; int Nt1;
     double Rt2, at2, bt2; int Nt2;
     double distance;

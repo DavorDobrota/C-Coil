@@ -367,6 +367,8 @@ void Coil::calculateAllBGradientSwitch(const std::vector<double> &cylindricalZAr
 int Coil::calculateChunkSize(long long int numOps) const
 {
 //    printf("%d %d\n", numOps, threadCount);
+    int ratio = (double) numOps / ((double) threadCount);
+
     std::vector<int> divisors;
 
     for (int i = 2; i <= numOps / 2; ++i)
@@ -374,7 +376,7 @@ int Coil::calculateChunkSize(long long int numOps) const
             divisors.push_back(i);
 
     for (int i : divisors)
-        if (threadCount < i)
+        if (4 * threadCount < i)
             return i;
 
     return 1;

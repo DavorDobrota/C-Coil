@@ -20,17 +20,18 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
     const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
     double cosPhiPrecomputeArr[numPhiIncrements];
     precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
+    double correctionLogFactor = std::log(10.0);
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
     int angularIncrements = usedPrecision.angularIncrementCount - 1;
 
     // multiplication by 2 because cosine is an even function and by 0.125 for a double change of interval (2 times 1/2)
-    double constant = g_MiReduced * currentDensity * thicknessBlock * angularBlock * 2 * 0.25;
+    double constant = g_MiReduced * currentDensity * correctionLogFactor * thicknessBlock * angularBlock * 2 * 0.25;
 
     double topEdge = zAxis + length * 0.5;
     double bottomEdge = zAxis - length * 0.5;
-    double correctionLogFactor = std::log(10.0);
+
 
     for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlockCount; ++indBlockT)
     {
@@ -66,7 +67,7 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
                     double tempConstF2 = std::log10(tempConstE2 + tempConstD2);
 
                     magneticPotential += constant * incrementWeightT * incrementWeightFi * incrementPositionT *
-                            cosinePhi * correctionLogFactor * (tempConstF1 - tempConstF2);
+                                         cosinePhi * (tempConstF1 - tempConstF2);
                 }
             }
         }
@@ -126,8 +127,8 @@ std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar,
                     double cosinePhi = cosPhiPrecomputeArr[arrPos];
 
                     double tempConstF = 2 * tempConstB * cosinePhi;
-                    double tempConstG1 = 1 / std::sqrt(tempConstD1 - tempConstF);
-                    double tempConstG2 = 1 / std::sqrt(tempConstD2 - tempConstF);
+                    double tempConstG1 = 1.0 / std::sqrt(tempConstD1 - tempConstF);
+                    double tempConstG2 = 1.0 / std::sqrt(tempConstD2 - tempConstF);
 
                     double tempConstH = tempConstE * incrementWeightFi;
 

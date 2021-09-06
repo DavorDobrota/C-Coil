@@ -128,7 +128,6 @@ void testSelfInductance()
     Coil coil1 = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(), 12);
     Coil coil2 = Coil(0.03, 0.0, 0.12, 120);
     Coil coil3 = Coil(0.03, 0.03, 0.0, 30);
-    Coil coil4 = Coil(0.03, 0.0, 0.0, 1);
 
     coil1.setThreadCount(8);
 
@@ -144,7 +143,66 @@ void testSelfInductance()
         printf("%.15g\n", coil3.computeAndSetSelfInductance(PrecisionFactor(i)));
     printf("\n");
 
-    for (int i = 1; i <= 12; ++i)
-        printf("%.15g\n", coil4.computeAndSetSelfInductance(PrecisionFactor(i)));
+    FILE *output = fopen("output.txt", "w");
+
+    double r1 = 0.1;
+    double alpha, beta;
+    double temp;
+
+    alpha = 1.5; beta = 0.25;
+    Coil coil4 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
+    for (int i = 1; i <= 15; ++i)
+    {
+        temp = coil4.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        printf("%.11g\n", 1e6 * temp);
+        fprintf(output, "%.11g\t", 1e6 * temp);
+    }
     printf("\n");
+    fprintf(output, "\n");
+
+    alpha = 3.0; beta = 1.0;
+    Coil coil5 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
+    for (int i = 1; i <= 15; ++i)
+    {
+        temp = coil5.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        printf("%.11g\n", 1e6 * temp);
+        fprintf(output, "%.11g\t", 1e6 * temp);
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    alpha = 4.0; beta = 3.0;
+    Coil coil6 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
+    for (int i = 1; i <= 15; ++i)
+    {
+        temp = coil6.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        printf("%.11g\n", 1e6 * temp);
+        fprintf(output, "%.11g\t", 1e6 * temp);
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    alpha = 7.0; beta = 6.0;
+    Coil coil7 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
+    for (int i = 1; i <= 15; ++i)
+    {
+        temp = coil7.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        printf("%.11g\n", 1e6 * temp);
+        fprintf(output, "%.11g\t", 1e6 * temp);
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    alpha = 9.0; beta = 4.0;
+    Coil coil8 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
+    for (int i = 1; i <= 15; ++i)
+    {
+        temp = coil8.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        printf("%.11g\n", 1e6 * temp);
+        fprintf(output, "%.11g\t", 1e6 * temp);
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    fclose(output);
 }

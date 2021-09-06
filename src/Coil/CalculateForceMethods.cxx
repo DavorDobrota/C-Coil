@@ -57,7 +57,6 @@ double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondar
     }
 
     double ampereForce = 0.0;
-
     std::vector<double> fieldH = primary.computeAllBFieldX(positionVectors, primaryPrecisionArguments, method);
 
     for (int i = 0; i < fieldH.size(); ++i)
@@ -180,7 +179,8 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
         forceVector += tempForce;
 
         vec3::FieldVector3 tempTorque = vec3::FieldVector3::crossProduct(unitRingValues[p].first, tempForce);
-        torqueVector += (tempTorque * radii[i]);
+        tempTorque *= radii[i];
+        torqueVector += tempTorque;
     }
     double forceFactor = (secondary.current * secondary.numOfTurns) / (lengthBlocks * thicknessBlocks * angularBlocks);
 

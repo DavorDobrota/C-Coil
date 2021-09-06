@@ -342,7 +342,7 @@ class Coil
         [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, CoilPairArguments inductanceArguments,
                                                             ComputeMethod method = CPU_ST) const;
 
-        double computeAndSetSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method = CPU_ST);
+        double computeAndSetSelfInductance(PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod method = CPU_ST);
 
 
         static std::pair<vec3::FieldVector3, vec3::FieldVector3>

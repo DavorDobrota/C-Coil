@@ -122,7 +122,7 @@ void testMethodPrecisionCompareCPUvsGPU()
     std::vector<vec3::CoordVector3> positionValues(pointCount);
 
     for (int i = 0; i < pointCount; i++)
-        positionValues[i] = vec3::CoordVector3(vec3::CYLINDRICAL, radius, i * M_PI / pointCount, 0.0);
+        positionValues[i] = vec3::CoordVector3(vec3::SPHERICAL, radius, i * M_PI / pointCount, 0.0);
 
     std::vector<double> cpuPotential;
     std::vector<double> gpuPotential;

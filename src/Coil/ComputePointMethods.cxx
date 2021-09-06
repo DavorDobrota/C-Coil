@@ -1,5 +1,4 @@
 #include "Coil.h"
-#include "PrecisionGlobalVars.h"
 
 #include <cmath>
 
@@ -27,9 +26,9 @@ vec3::FieldVector3 Coil::computeBFieldVector(vec3::CoordVector3 pointVector, con
     vec3::CoordVector3 transformedVector = adaptInputVectorForPoint(pointVector);
     std::pair fields = calculateBField(transformedVector.component1, transformedVector.component2, usedPrecision);
 
-    vec3::FieldVector3 computedVector = vec3::FieldVector3(fields.second * cos(pointVector.component3),
-                                                           fields.second * sin(pointVector.component3),
-                                                           fields.first);
+    vec3::FieldVector3 computedVector = vec3::FieldVector3(fields.first * cos(pointVector.component3),
+                                                           fields.first * sin(pointVector.component3),
+                                                           fields.second);
     return adaptOutputVectorForPoint(computedVector);
 }
 

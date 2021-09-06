@@ -43,7 +43,7 @@ void testAmpereForceZAxisPerformance(ComputeMethod method, int nThreads)
         for (int j = 0; j < currentOperations; ++j)
             temp = Coil::computeAmpereForce(primary, secondary, PrecisionFactor(i), method).first.zComponent;
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        printf("precisionFactor(%.1f) : %6.3f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
+        printf("precisionFactor(%.1f) : %6.4f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }
 }
 

@@ -17,6 +17,7 @@ void testVector3();
 void testPerformanceCPU_ST(int nOps = 50'000);
 void testPerformanceForComputeAll(PrecisionFactor precisionFactor = PrecisionFactor(),
                                   int nOps = 20'000, int nRepeats = 1, int nThreads = g_default_nThreads);
+void testPerformanceForVariousCoilTypes(int nOps = 100'000, int nThreads = g_default_nThreads);
 
 void testMutualInductanceZAxis();
 void testMutualInductanceZAxisArgumentGeneration();
@@ -45,7 +46,7 @@ void testAmpereForceZAxisPerformance(ComputeMethod method = CPU_ST, int nThreads
 void testAmpereForceZAxisMTScaling(int maxThreads = g_default_nThreads);
 void testAmpereForceGeneralForZAxis();
 void testAmpereForceGeneralPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
-void testAmpereForceZGeneralMTScaling(int maxThreads = g_default_nThreads);
+void testAmpereForceGeneralMTScaling(int maxThreads = g_default_nThreads);
 void testGradientTensor();
 
 void testAmpereForceForFilamentsZAxis();

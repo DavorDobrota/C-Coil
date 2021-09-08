@@ -107,11 +107,11 @@ void testAmpereForceGeneralPerformance(ComputeMethod method, int nThreads)
         for (int j = 0; j < currentOperations; ++j)
             temp = Coil::computeAmpereForce(primary, secondary, PrecisionFactor(i), method);
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        printf("precisionFactor(%.1f) : %6.2f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
+        printf("precisionFactor(%.1f) : %6.3f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }
 }
 
-void testAmpereForceZGeneralMTScaling(int maxThreads)
+void testAmpereForceGeneralMTScaling(int maxThreads)
 {
     printf("Performance comparison between different numbers of threads:\n");
 

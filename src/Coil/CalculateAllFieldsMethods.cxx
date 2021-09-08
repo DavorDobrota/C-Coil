@@ -294,7 +294,7 @@ void Coil::calculateAllBFieldSwitch(const std::vector<double> &cylindricalZArr,
                                     const PrecisionArguments &usedPrecision,
                                     ComputeMethod method) const
 {
-    int chunkSize = calculateChunkSize((long long) cylindricalZArr.size());
+    int chunkSize = calculateChunkSize(cylindricalZArr.size());
 
     switch (method)
     {
@@ -318,7 +318,7 @@ void Coil::calculateAllAPotentialSwitch(const std::vector<double> &cylindricalZA
                                         const PrecisionArguments &usedPrecision,
                                         ComputeMethod method) const
 {
-    int chunkSize = calculateChunkSize((long long) cylindricalZArr.size());
+    int chunkSize = calculateChunkSize(cylindricalZArr.size());
 //    printf("%d\n", chunkSize);
     switch (method)
     {
@@ -343,7 +343,7 @@ void Coil::calculateAllBGradientSwitch(const std::vector<double> &cylindricalZAr
                                        const PrecisionArguments &usedPrecision,
                                        ComputeMethod method) const
 {
-    int chunkSize = calculateChunkSize((long long) cylindricalZArr.size());
+    int chunkSize = calculateChunkSize(cylindricalZArr.size());
 
     switch (method)
     {
@@ -364,29 +364,42 @@ void Coil::calculateAllBGradientSwitch(const std::vector<double> &cylindricalZAr
     }
 }
 
-int Coil::calculateChunkSize(long long int numOps) const
+int Coil::calculateChunkSize(int numOps) const
 {
-//    printf("%d %d\n", numOps, threadCount);
-    int ratio = (double) numOps / ((double) threadCount);
+    if (numOps < threadCount)
+        return 1;
+    else if (numOps % threadCount == 0)
+        return numOps / threadCount;
+    else
+    {
+        std::vector<double> fitnessArray;
+        std::vector<int> chunkArray;
+        int chunkCandidate, leftover;
+        int modifier = std::floor(std::log10(numOps));
 
-    std::vector<int> divisors;
+        for (int i = 1; i <= std::ceil(std::log2(numOps)); ++i)
+        {
+            chunkCandidate = numOps / (i * modifier * threadCount);
+            leftover = numOps % (i * modifier * threadCount);
 
-    for (int i = 2; i <= numOps / 2; ++i)
-        if (numOps % i == 0)
-            divisors.push_back(i);
+            fitnessArray.push_back((double) leftover / (chunkCandidate * i));
+            chunkArray.push_back(chunkCandidate);
+            //printf("%d : %d %d | %g\n", i, chunkCandidate, leftover, (double) leftover / (chunkCandidate * i));
+        }
+        int chunkSize = chunkArray[0];
+        double chunkFitness = fitnessArray[0];
 
-    for (int i : divisors)
-        if (4 * threadCount < i)
-            return i;
-
-    return 1;
-
-//    if (numOps < threadCount * threadCount)
-//        return 1;
-//    else
-//    {
-//        return (int) std::floor((double) numOps / (double) (threadCount * threadCount));
-//    }
+        for (int i = 1; i < chunkArray.size(); ++i)
+        {
+            if (fitnessArray[i] < chunkFitness)
+            {
+                chunkSize = chunkArray[i];
+                chunkFitness = fitnessArray[i];
+            }
+        }
+        printf("%d\n", chunkSize);
+        return chunkSize;
+    }
 }
 
 void Coil::synchronizeThreads() const { while(g_threadPool.n_idle() < threadCount){} }

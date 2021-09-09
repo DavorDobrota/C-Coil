@@ -49,15 +49,24 @@ double customMath::ln(double x)
     double x3 = x1 * x2;
     double x4 = x2 * x2;
     double x5 = x2 * x3;
-    double x6 = x2 * x4;
-    double x7 = x1 * x6;
-    double x8 = x4 * x4;
-    double x10 = x5 * x5;
 
-    __m256d inputVector = _mm256_set_pd(x4, x5, x6, x10);
-    __m256d outputVector = _mm256_mul_pd(inputVector, inputVector);
-    
+    __m256d inputVector1, inputVector2;
+    __m256d outputVector;
     double outAr[4];
+
+    inputVector1 = _mm256_set_pd(x2, x4, x5, 0.0);
+    inputVector2 = _mm256_set_pd(x4, x4, x5, 0.0);
+    _mm256_storeu_pd(outAr, outputVector);
+
+    double x6 = outAr[0];
+    double x8 = outAr[1];
+    double x10 = outAr[2];
+    
+    double x7 = x1 * x6;
+
+    inputVector1 = _mm256_set_pd(x4, x5, x6, x10);
+    inputVector2 = inputVector1;
+    outputVector = _mm256_mul_pd(inputVector1, inputVector2);
     _mm256_storeu_pd(outAr, outputVector);
 
     double x12 = outAr[0];

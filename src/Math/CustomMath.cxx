@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <cstring>
 
+#include <immintrin.h>
+
 const double
 customMath::taylorWeightsLn[] = {1.09861228866810978211, 0.33333333333333331483, -0.055555555555555552472,
                                  0.012345679012345678327, -0.0030864197530864195818, 0.00082304526748971191738,
@@ -51,10 +53,17 @@ double customMath::ln(double x)
     double x7 = x1 * x6;
     double x8 = x4 * x4;
     double x10 = x5 * x5;
-    double x12 = x6 * x6;
-    double x16 = x8 * x8;
-    double x20 = x10 * x10;
-    double x24 = x12 * x12;
+
+    __m256d inputVector = _mm256_set_pd(x4, x5, x6, x10);
+    __m256d outputVector = _mm256_mul_pd(inputVector, inputVector);
+    
+    double outAr[4];
+    _mm256_storeu_pd(outAr, outputVector);
+
+    double x12 = outAr[0];
+    double x16 = outAr[1];
+    double x20 = outAr[2];
+    double x24 = outAr[3];
 
     output += taylorWeightsLn[0] + taylorWeightsLn[1] * x1;
     output += taylorWeightsLn[2] * x2 + taylorWeightsLn[3] * x3;

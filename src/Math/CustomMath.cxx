@@ -23,6 +23,26 @@ customMath::taylorWeightsCos[] = {0.16666666666666665741, -0.0083333333333333332
                                   -2.7557319223985892511e-06, 2.5052108385441720224e-08, -1.6059043836821613341e-10,
                                   7.6471637318198164055e-13, -2.8114572543455205981e-15, 8.2206352466243294955e-18};
 
+//    printf("{");
+//    for (int i = 0; i < 160; ++i)
+//    {
+//        double centerValue = 2 + (i + 0.5) * 0.0125;
+//        printf("{");
+//        printf("%.20g", std::log(centerValue));
+//
+//        double potValue = centerValue;
+//        for (int j = 1; j <= 5; ++j)
+//        {
+//            printf(", ");
+//            if (j % 2 == 0)
+//                printf("-");
+//            printf("%.20g", (1.0 / potValue) * (1.0 / j));
+//            potValue *= centerValue;
+//        }
+//        printf("},\n");
+//    }
+//    printf("}");
+
 const double
 customMath::taylorTableLn[160][6] =  {{0.69626730789618895834, 0.49844236760124610575, -0.12422239690996786377, 0.04127847041660406141, -0.015431203894057592824, 0.0061532526431133088146},
                                       {0.70247850798882949253, 0.49535603715170284378, -0.12268880177131960552, 0.040516425765554468785, -0.015052542080082158271, 0.0059650940750789992195},
@@ -215,8 +235,9 @@ double customMath::ln(double x)
     double x2 = x1 * x1;
     double x4 = x2 * x2;
 
-    output += taylorTableLn[row][0] + taylorTableLn[row][1] * x1 + taylorTableLn[row][2] * x2 +
-              taylorTableLn[row][3] * x2 * x1 + taylorTableLn[row][4] * x4 + taylorTableLn[row][5] * x4 * x1;
+    output += taylorTableLn[row][0] + taylorTableLn[row][1] * x1;
+    output += taylorTableLn[row][2] * x2 + taylorTableLn[row][3] * x2 * x1;
+    output += taylorTableLn[row][4] * x4 + taylorTableLn[row][5] * x4 * x1;
 
 //    double x2 = x1 * x1;
 //    double x3 = x1 * x2;

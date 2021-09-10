@@ -14,7 +14,7 @@ void testFunctionPerformance()
 {
     using namespace std::chrono;
 
-    int nOps = 100'000'000;
+    int nOps = 200'000'000;
     double temp, interval;
     high_resolution_clock::time_point begin_time;
 

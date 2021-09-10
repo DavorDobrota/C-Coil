@@ -397,7 +397,7 @@ int Coil::calculateChunkSize(int numOps) const
                 chunkFitness = fitnessArray[i];
             }
         }
-        printf("%d\n", chunkSize);
+//        printf("%d\n", chunkSize);
         return chunkSize;
     }
 }

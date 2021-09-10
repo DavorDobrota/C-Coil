@@ -16,7 +16,7 @@ int main()
 
 //    testAmpereForceZAxisMTScaling(16);
 
-//    testFunctionPerformance();
+    testFunctionPerformance();
 
 //    testPerformanceForComputeAll(PrecisionFactor(5.0), 50000, 5, 2);
 //    testPerformanceForComputeAll(PrecisionFactor(5.0), 50000, 5, 3);
@@ -26,7 +26,7 @@ int main()
 //    testPerformanceForComputeAll(PrecisionFactor(5.0), 50000, 5, 7);
 //    testPerformanceForComputeAll(PrecisionFactor(5.0), 50000, 5, 8);
 
-    testMutualInductanceZAxisMTScaling(16);
+//    testMutualInductanceZAxisMTScaling(16);
 //    testMutualInductanceGeneralMTScaling(16);
 //   testAmpereForceGeneralMTScaling(16);
 
@@ -37,6 +37,8 @@ int main()
 //    testMutualInductanceGeneralConway();
 
     testMutualInductanceGeneralParallelAxes();
+
+//
 
     return 0;
 }

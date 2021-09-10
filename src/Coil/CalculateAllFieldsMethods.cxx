@@ -105,8 +105,8 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
             calcThread,
             *this,
             usedPrecision,
-            cylindricalZArr, cylindricalRArr,
-            computedFieldHArr, computedFieldZArr,
+            std::ref(cylindricalZArr), std::ref(cylindricalRArr),
+            std::ref(computedFieldHArr), std::ref(computedFieldZArr),
             i * chunkSize, std::min((i + 1) * chunkSize, cylindricalZArr.size())
         );
     }
@@ -146,8 +146,8 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
             calcThread,
             *this,
             usedPrecision,
-            cylindricalZArr, cylindricalRArr,
-            computedPotentialArr,
+            std::ref(cylindricalZArr), std::ref(cylindricalRArr),
+            std::ref(computedPotentialArr),
             size_t(i * chunkSize), size_t(std::min((i + 1) * chunkSize, cylindricalZArr.size()))
         );
     }
@@ -199,9 +199,9 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
             calcThread,
             *this,
             usedPrecision,
-            cylindricalZArr, cylindricalRArr,
-            computedGradientRPhiArr, computedGradientRRArr,
-            computedGradientRZArr, computedGradientZZArr,
+            std::ref(cylindricalZArr), std::ref(cylindricalRArr),
+            std::ref(computedGradientRPhiArr), std::ref(computedGradientRRArr),
+            std::ref(computedGradientRZArr), std::ref(computedGradientZZArr),
             i * chunkSize, std::min((i + 1) * chunkSize, cylindricalZArr.size())
         );
     }

@@ -2,6 +2,8 @@
 #include "LegendreMatrix.h"
 
 #include <cmath>
+#include <cstdio>
+
 
 double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
                                        CoilPairArguments forceArguments, ComputeMethod method)
@@ -113,7 +115,6 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
     std::vector<double> weights;
 
     positionVectors.reserve(numElements);
-    radii.reserve(numElements);
     weights.reserve(numElements);
 
     for (int zBlock = 0; zBlock < lengthBlocks; ++zBlock)
@@ -152,7 +153,6 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
 
                             positionVectors.emplace_back(vec3::CARTESIAN, displacementX, displacementY, displacementZ);
 
-                            radii.push_back(ringRadius);
                             weights.push_back(
                                     0.125 * 2*M_PI * ringRadius *
                                     Legendre::weightsMatrix[maxLengthIndex][zIndex] *
@@ -169,6 +169,7 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
 
     vec3::FieldVector3 forceVector;
     vec3::FieldVector3 torqueVector;
+    vec3::FieldVector3 secondaryPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.positionVector);
 
     for (int i = 0; i < numElements; ++i)
     {
@@ -178,8 +179,8 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
         tempForce *= weights[i];
         forceVector += tempForce;
 
-        vec3::FieldVector3 tempTorque = vec3::FieldVector3::crossProduct(unitRingValues[p].first, tempForce);
-        tempTorque *= radii[i];
+        vec3::FieldVector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVectors[i]);
+        vec3::FieldVector3 tempTorque = vec3::FieldVector3::crossProduct(positionVec - secondaryPositionVec, tempForce);
         torqueVector += tempTorque;
     }
     double forceFactor = (secondary.current * secondary.numOfTurns) / (lengthBlocks * thicknessBlocks * angularBlocks);

@@ -35,7 +35,7 @@ void testAmpereForceGeneralCase()
            0.5 * coil3.computeAndSetSelfInductance(PrecisionFactor(12)) * coil3.getCurrent() * coil3.getCurrent()));
 
     std::pair<vec3::FieldVector3, vec3::FieldVector3> forcePair1, forcePair2;
-    auto precision = PrecisionFactor(8.0);
+    auto precision = PrecisionFactor(9.0);
 
     printf("Force and Torque in displacement\n");
     for (double dz = 0.0; dz <= 0.004; dz += 0.001)
@@ -43,8 +43,8 @@ void testAmpereForceGeneralCase()
         for (double dr = 0.0; dr <= 0.004; dr += 0.002)
         {
             coil1.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, dr, 0.0, dz));
-            forcePair1 = Coil::computeAmpereForce(coil3, coil1, precision, CPU_MT);
-            forcePair2 = Coil::computeAmpereForce(coil2, coil1, precision, CPU_MT);
+            forcePair1 = Coil::computeAmpereForce(coil3, coil1, precision, CPU_ST);
+            forcePair2 = Coil::computeAmpereForce(coil2, coil1, precision, CPU_ST);
             printf("%16.10g %16.10g %16.10g %16.10g %16.10g %16.10g\n",
                    forcePair1.first.xComponent + forcePair2.first.xComponent,
                    forcePair1.first.yComponent + forcePair2.first.yComponent,
@@ -58,9 +58,9 @@ void testAmpereForceGeneralCase()
     for (int i = 0; i <= 10; ++i)
     {
         coil1.setPositionAndOrientation(vec3::CoordVector3(), M_PI/360 * i);
-        forcePair1 = Coil::computeAmpereForce(coil2, coil1, precision, CPU_MT);
-        forcePair2 = Coil::computeAmpereForce(coil3, coil1, precision, CPU_MT);
-        printf("%.10f %.10f %.10f %.10f %.10f %.10f\n",
+        forcePair1 = Coil::computeAmpereForce(coil3, coil1, precision, CPU_ST);
+        forcePair2 = Coil::computeAmpereForce(coil2, coil1, precision, CPU_ST);
+        printf("%16.10g %16.10g %16.10g %16.10g %16.10g %16.10g\n",
                forcePair1.first.xComponent + forcePair2.first.xComponent,
                forcePair1.first.yComponent + forcePair2.first.yComponent,
                forcePair1.first.zComponent + forcePair2.first.zComponent,
@@ -69,6 +69,14 @@ void testAmpereForceGeneralCase()
                forcePair1.second.zComponent + forcePair2.second.zComponent);
     }
     printf("\n");
+
+    coil1.setPositionAndOrientation(vec3::CoordVector3(), M_PI/36 + 1e-7);
+    double M1 = coil1.getCurrent() * coil2.getCurrent() * Coil::computeMutualInductance(coil1, coil2, precision) +
+                coil1.getCurrent() * coil3.getCurrent() * Coil::computeMutualInductance(coil1, coil3, precision);
+    coil1.setPositionAndOrientation(vec3::CoordVector3(), M_PI/36 - 1e-7);
+    double M2 = coil1.getCurrent() * coil2.getCurrent() * Coil::computeMutualInductance(coil1, coil2, precision) +
+            coil1.getCurrent() * coil3.getCurrent() * Coil::computeMutualInductance(coil1, coil3, precision);
+    printf("By mutual inductance gradient : %.10g", (M1 - M2) / 2e-7);
 }
 
 void testAmpereForceThinCoils()

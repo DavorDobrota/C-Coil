@@ -16,7 +16,7 @@ int main()
 
 //    testAmpereForceZAxisMTScaling(16);
 
-    testFunctionPerformance();
+//    testFunctionPerformance();
 
 //    testPerformanceForComputeAll(PrecisionFactor(5.0), 50000, 5, 2);
 //    testPerformanceForComputeAll(PrecisionFactor(5.0), 50000, 5, 3);
@@ -36,8 +36,8 @@ int main()
 //    testPerformanceForVariousCoilTypes(56243);
 //    testMutualInductanceGeneralConway();
 
-    testMutualInductanceGeneralParallelAxes();
-
+//    testMutualInductanceGeneralParallelAxes();
+testAmpereForceGeneralCase();
 //
 
     return 0;

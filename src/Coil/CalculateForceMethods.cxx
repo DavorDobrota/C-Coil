@@ -145,7 +145,7 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                             double displacementX = xDisplacement + lengthDisplacement * sin(alphaAngle) * cos(betaAngle) +
                                                    ringRadius * unitRingValues[phiPosition].first.xComponent;
 
-                            double displacementY = yDisplacement - lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
+                            double displacementY = yDisplacement + lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
                                                    ringRadius * unitRingValues[phiPosition].first.yComponent;
 
                             double displacementZ = zDisplacement + lengthDisplacement * cos(alphaAngle) +
@@ -169,7 +169,6 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
 
     vec3::FieldVector3 forceVector;
     vec3::FieldVector3 torqueVector;
-    vec3::FieldVector3 secondaryPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.positionVector);
 
     for (int i = 0; i < numElements; ++i)
     {
@@ -180,7 +179,7 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
         forceVector += tempForce;
 
         vec3::FieldVector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVectors[i]);
-        vec3::FieldVector3 tempTorque = vec3::FieldVector3::crossProduct(positionVec - secondaryPositionVec, tempForce);
+        vec3::FieldVector3 tempTorque = vec3::FieldVector3::crossProduct(positionVec - displacementVec, tempForce);
         torqueVector += tempTorque;
     }
     double forceFactor = (secondary.current * secondary.numOfTurns) / (lengthBlocks * thicknessBlocks * angularBlocks);

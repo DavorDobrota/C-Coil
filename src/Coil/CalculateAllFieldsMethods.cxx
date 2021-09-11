@@ -4,11 +4,16 @@
 
 #include <cmath>
 #include <algorithm>
+#include <numeric>
 #include <cstdio>
+#include <chrono>
 
 namespace
 {
     ctpl::thread_pool g_threadPool;
+
+    std::atomic_int_fast64_t g_completedTasks;
+    size_t g_taskCount;
 }
 
 // TODO - fix variable so it is external and setter returned to Coil.cxx
@@ -79,11 +84,13 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
 {
     computedFieldHArr.resize(cylindricalZArr.size());
     computedFieldZArr.resize(cylindricalZArr.size());
+    g_taskCount = cylindricalZArr.size();
+    g_completedTasks.store(0ull);
 
     auto calcThread = [](
             int idx,
-            const Coil &coil,
-            const PrecisionArguments &usedPrecision,
+            Coil coil,
+            PrecisionArguments usedPrecision,
             const std::vector<double> &cylindricalZ,
             const std::vector<double> &cylindricalR,
             std::vector<double> &computedFieldH,
@@ -94,8 +101,11 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
         for(size_t i = startIdx; i < stopIdx; i++)
         {
             auto result = coil.calculateBField(cylindricalZ[i], cylindricalR[i], usedPrecision);
+
             computedFieldH[i] = result.first;
             computedFieldZ[i] = result.second;
+
+            g_completedTasks.fetch_add(1ull);
         }
     };
 
@@ -103,8 +113,8 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
     {
         g_threadPool.push(
             calcThread,
-            *this,
-            usedPrecision,
+            std::ref(*this),
+            std::ref(usedPrecision),
             std::ref(cylindricalZArr), std::ref(cylindricalRArr),
             std::ref(computedFieldHArr), std::ref(computedFieldZArr),
             i * chunkSize, std::min((i + 1) * chunkSize, cylindricalZArr.size())
@@ -122,6 +132,8 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
                                     int chunkSize, bool async) const
 {
     computedPotentialArr.resize(cylindricalZArr.size());
+    g_taskCount = cylindricalZArr.size();
+    g_completedTasks.store(0ull);
 
     auto calcThread = [](
             int idx,
@@ -136,7 +148,10 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
         for(size_t i = startIdx; i < stopIdx; i++)
         {
             auto result = coil.calculateAPotential(cylindricalZ[i], cylindricalR[i], usedPrecision);
+
             computedPotential[i] = result;
+
+            g_completedTasks.fetch_add(1ull);
         }
     };
 
@@ -144,8 +159,8 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
     {
         g_threadPool.push(
             calcThread,
-            *this,
-            usedPrecision,
+            std::ref(*this),
+            std::ref(usedPrecision),
             std::ref(cylindricalZArr), std::ref(cylindricalRArr),
             std::ref(computedPotentialArr),
             size_t(i * chunkSize), size_t(std::min((i + 1) * chunkSize, cylindricalZArr.size()))
@@ -169,11 +184,13 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
     computedGradientRRArr.resize(cylindricalZArr.size());
     computedGradientRZArr.resize(cylindricalZArr.size());
     computedGradientZZArr.resize(cylindricalZArr.size());
+    g_taskCount = cylindricalZArr.size();
+    g_completedTasks.store(0ull);
 
     auto calcThread = [] (
         int idx,
-        const Coil &coil,
-        const PrecisionArguments &usedPrecision,
+        Coil coil,
+        PrecisionArguments usedPrecision,
         const std::vector<double> &cylindricalZ,
         const std::vector<double> &cylindricalR,
         std::vector<double> &computedGradientRPhi,
@@ -186,10 +203,13 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
         for(size_t i = startIdx; i < stopIdx; i++)
         {
             auto result = coil.calculateBGradient(cylindricalZ[i], cylindricalR[i], usedPrecision);
+
             computedGradientRPhi[i] = result[0];
             computedGradientRR[i] = result[1];
             computedGradientRZ[i] = result[2];
             computedGradientZZ[i] = result[3];
+
+            g_completedTasks.fetch_add(1ull);
         }
     };
 
@@ -197,8 +217,8 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
     {
         g_threadPool.push (
             calcThread,
-            *this,
-            usedPrecision,
+            std::ref(*this),
+            std::ref(usedPrecision),
             std::ref(cylindricalZArr), std::ref(cylindricalRArr),
             std::ref(computedGradientRPhiArr), std::ref(computedGradientRRArr),
             std::ref(computedGradientRZArr), std::ref(computedGradientZZArr),
@@ -402,4 +422,4 @@ int Coil::calculateChunkSize(int numOps) const
     }
 }
 
-void Coil::synchronizeThreads() const { while(g_threadPool.n_idle() < threadCount){} }
+void Coil::synchronizeThreads() const { while(g_completedTasks.load() < g_taskCount){}; }

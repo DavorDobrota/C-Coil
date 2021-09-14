@@ -12,7 +12,7 @@ namespace customMath
     double cos(double x);
 
     float lnf(float x);
-    float cosf(float x);
+    float cosf(float x);  // TODO: implement
 }
 
 #endif //GENERAL_COIL_PROGRAM_CUSTOMMATH_H

@@ -115,134 +115,146 @@ customMath::taylorTableLn[64][8] =  {{0.70092932100200022738, 0.4961240310077519
 
 double customMath::ln(double x)
 {
-    uint64_t xBits;
-    double x1;
-    int exponent;
-    // basic principle, ln(a) = ln(b * 2^n) = ln(b) + n * ln(2), b element [2.0, 4.0], a is positive
-    // converting double to an int so bitwise operations can be performed
-    std::memcpy(&xBits, &x, sizeof(x));
-    // extracting the exponent bits and manipulating them to their final form
-    unsigned long long exp = xBits & 0x7ff0000000000000;
-    exp >>= 52;
-    exp -= 1024;
-    exponent = (int) exp;
-    // changing the exponent so all numbers land in [2.0, 4.0]
-    xBits &= 0x400fffffffffffff;
-    xBits |= 0x4000000000000000;
-    // converting the altered number back to double
-    std::memcpy(&x1, &xBits, sizeof(xBits));
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(WIN64) || defined(_WIN64) || defined(__WIN64)
+        uint64_t xBits;
+        double x1;
+        int exponent;
+        // basic principle, ln(a) = ln(b * 2^n) = ln(b) + n * ln(2), b element [2.0, 4.0], a is positive
+        // converting double to an int so bitwise operations can be performed
+        std::memcpy(&xBits, &x, sizeof(x));
+        // extracting the exponent bits and manipulating them to their final form
+        unsigned long long exp = xBits & 0x7ff0000000000000;
+        exp >>= 52;
+        exp -= 1024;
+        exponent = (int) exp;
+        // changing the exponent so all numbers land in [2.0, 4.0]
+        xBits &= 0x400fffffffffffff;
+        xBits |= 0x4000000000000000;
+        // converting the altered number back to double
+        std::memcpy(&x1, &xBits, sizeof(xBits));
 
-    double output = exponent * 0.69314718055994528623;
+        double output = exponent * 0.69314718055994528623;
 
-    // faster version
-    int row = (int) ((x1 - 2.0) * 32.0);
-    x1 -= (2 + (row + 0.5) * 0.03125);
+        // faster version
+        int row = (int) ((x1 - 2.0) * 32.0);
+        x1 -= (2 + (row + 0.5) * 0.03125);
 
-    double x2 = x1 * x1;
-    double x4 = x2 * x2;
-    double x6 = x4 * x2;
+        double x2 = x1 * x1;
+        double x4 = x2 * x2;
+        double x6 = x4 * x2;
 
-    output += taylorTableLn[row][0] + taylorTableLn[row][1] * x1;
-    output += taylorTableLn[row][2] * x2 + taylorTableLn[row][3] * x2 * x1;
-    output += taylorTableLn[row][4] * x4 + taylorTableLn[row][5] * x4 * x1;
-    output += taylorTableLn[row][4] * x6 + taylorTableLn[row][5] * x6 * x1;
+        output += taylorTableLn[row][0] + taylorTableLn[row][1] * x1;
+        output += taylorTableLn[row][2] * x2 + taylorTableLn[row][3] * x2 * x1;
+        output += taylorTableLn[row][4] * x4 + taylorTableLn[row][5] * x4 * x1;
+        output += taylorTableLn[row][4] * x6 + taylorTableLn[row][5] * x6 * x1;
 
-    // more accurate version
-//    x1 -= 3;
-//
-//    double x2 = x1 * x1;
-//    double x3 = x1 * x2;
-//    double x4 = x2 * x2;
-//    double x5 = x2 * x3;
-//    double x6 = x3 * x3;
-//    double x7 = x3 * x4;
-//    double x8 = x4 * x4;
-//    double x10 = x5 * x5;
-//    double x12 = x6 * x6;
-//    double x16 = x8 * x8;
-//    double x20 = x10 * x10;
-//    double x24 = x12 * x12;
-//
-//    output += taylorWeightsLn[0] + taylorWeightsLn[1] * x1;
-//    output += taylorWeightsLn[2] * x2 + taylorWeightsLn[3] * x3;
-//    output += taylorWeightsLn[4] * x4 + taylorWeightsLn[5] * x5;
-//    output += taylorWeightsLn[6] * x6 + taylorWeightsLn[7] * x7;
-//    output += taylorWeightsLn[8] * x8 + taylorWeightsLn[9] * x1 * x8;
-//    output += taylorWeightsLn[10] * x10 + taylorWeightsLn[11] * x1 * x10;
-//    output += taylorWeightsLn[12] * x12 + + taylorWeightsLn[13] * x1 * x12;
-//    output += taylorWeightsLn[14] * x2 * x12 + taylorWeightsLn[15] * x3 * x12;
-//    output += taylorWeightsLn[16] * x16 + taylorWeightsLn[17] * x1 * x16;
-//    output += taylorWeightsLn[18] * x2 * x16 + taylorWeightsLn[19] * x3 * x16;
-//    output += taylorWeightsLn[20] * x20 + taylorWeightsLn[21] * x1 * x20;
-//    output += taylorWeightsLn[22] * x2 * x20 + taylorWeightsLn[23] * x3 * x20;
-//    output += taylorWeightsLn[24] * x24 + taylorWeightsLn[25] * x1 * x24;
-//    output += taylorWeightsLn[26] * x2 * x24 + taylorWeightsLn[27] * x3 * x24;
-//    output += taylorWeightsLn[28] * x4 * x24 + taylorWeightsLn[29] * x5 * x24;
+        // more accurate version
+    //    x1 -= 3;
+    //
+    //    double x2 = x1 * x1;
+    //    double x3 = x1 * x2;
+    //    double x4 = x2 * x2;
+    //    double x5 = x2 * x3;
+    //    double x6 = x3 * x3;
+    //    double x7 = x3 * x4;
+    //    double x8 = x4 * x4;
+    //    double x10 = x5 * x5;
+    //    double x12 = x6 * x6;
+    //    double x16 = x8 * x8;
+    //    double x20 = x10 * x10;
+    //    double x24 = x12 * x12;
+    //
+    //    output += taylorWeightsLn[0] + taylorWeightsLn[1] * x1;
+    //    output += taylorWeightsLn[2] * x2 + taylorWeightsLn[3] * x3;
+    //    output += taylorWeightsLn[4] * x4 + taylorWeightsLn[5] * x5;
+    //    output += taylorWeightsLn[6] * x6 + taylorWeightsLn[7] * x7;
+    //    output += taylorWeightsLn[8] * x8 + taylorWeightsLn[9] * x1 * x8;
+    //    output += taylorWeightsLn[10] * x10 + taylorWeightsLn[11] * x1 * x10;
+    //    output += taylorWeightsLn[12] * x12 + + taylorWeightsLn[13] * x1 * x12;
+    //    output += taylorWeightsLn[14] * x2 * x12 + taylorWeightsLn[15] * x3 * x12;
+    //    output += taylorWeightsLn[16] * x16 + taylorWeightsLn[17] * x1 * x16;
+    //    output += taylorWeightsLn[18] * x2 * x16 + taylorWeightsLn[19] * x3 * x16;
+    //    output += taylorWeightsLn[20] * x20 + taylorWeightsLn[21] * x1 * x20;
+    //    output += taylorWeightsLn[22] * x2 * x20 + taylorWeightsLn[23] * x3 * x20;
+    //    output += taylorWeightsLn[24] * x24 + taylorWeightsLn[25] * x1 * x24;
+    //    output += taylorWeightsLn[26] * x2 * x24 + taylorWeightsLn[27] * x3 * x24;
+    //    output += taylorWeightsLn[28] * x4 * x24 + taylorWeightsLn[29] * x5 * x24;
 
-    return output;
+        return output;
+    #else
+        return std::log(x);
+    #endif
 }
 
 double customMath::cos(double x)
 {
-    double x1 = x - M_PI_2;
-    double output = 0.0;
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(WIN64) || defined(_WIN64) || defined(__WIN64)
+        double x1 = x - M_PI_2;
+        double output = 0.0;
 
-    double x2 = x1 * x1;
-    double x3 = x1 * x2;
-    double x5 = x3 * x2;
-    double x7 = x5 * x2;
-    double x9 = x7 * x2;
-    double x11 = x9 * x2;
-    double x13 = x11 * x2;
-    double x15 = x13 * x2;
-    double x17 = x15 * x2;
+        double x2 = x1 * x1;
+        double x3 = x1 * x2;
+        double x5 = x3 * x2;
+        double x7 = x5 * x2;
+        double x9 = x7 * x2;
+        double x11 = x9 * x2;
+        double x13 = x11 * x2;
+        double x15 = x13 * x2;
+        double x17 = x15 * x2;
 
-    output += -x1 + taylorWeightsCos[0] * x3;
-    output += taylorWeightsCos[1] * x5 + taylorWeightsCos[2] * x7;
-    output += taylorWeightsCos[3] * x9 + taylorWeightsCos[4] * x11;
-    output += taylorWeightsCos[5] * x13 + taylorWeightsCos[6] * x15;
-    output += taylorWeightsCos[7] * x17 + taylorWeightsCos[8] * x17 * x2;
+        output += -x1 + taylorWeightsCos[0] * x3;
+        output += taylorWeightsCos[1] * x5 + taylorWeightsCos[2] * x7;
+        output += taylorWeightsCos[3] * x9 + taylorWeightsCos[4] * x11;
+        output += taylorWeightsCos[5] * x13 + taylorWeightsCos[6] * x15;
+        output += taylorWeightsCos[7] * x17 + taylorWeightsCos[8] * x17 * x2;
 
-    return output;
+        return output;
+    #else
+        return std::cos(x);
+    #endif
 }
 
 float customMath::lnf(float x)
 {
-    auto xd = (double) x;
-    uint64_t xBits;
-    double x1;
-    int exponent;
-    // basic principle, ln(a) = ln(b * 2^n) = ln(b) + n * ln(2), b element [2.0, 4.0], a is positive
-    // converting double to an int so bitwise operations can be performed
-    std::memcpy(&xBits, &xd, sizeof(xd));
-    // extracting the exponent bits and manipulating them to their final form
-    unsigned long long exp = xBits & 0x7ff0000000000000;
-    exp >>= 52;
-    exp -= 1024;
-    exponent = (int) exp;
-    // changing the exponent so all numbers land in [2.0, 4.0]
-    xBits &= 0x400fffffffffffff;
-    xBits |= 0x4000000000000000;
-    // converting the altered number back to double
-    std::memcpy(&x1, &xBits, sizeof(xBits));
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(WIN64) || defined(_WIN64) || defined(__WIN64)
+        auto xd = (double) x;
+        uint64_t xBits;
+        double x1;
+        int exponent;
+        // basic principle, ln(a) = ln(b * 2^n) = ln(b) + n * ln(2), b element [2.0, 4.0], a is positive
+        // converting double to an int so bitwise operations can be performed
+        std::memcpy(&xBits, &xd, sizeof(xd));
+        // extracting the exponent bits and manipulating them to their final form
+        unsigned long long exp = xBits & 0x7ff0000000000000;
+        exp >>= 52;
+        exp -= 1024;
+        exponent = (int) exp;
+        // changing the exponent so all numbers land in [2.0, 4.0]
+        xBits &= 0x400fffffffffffff;
+        xBits |= 0x4000000000000000;
+        // converting the altered number back to double
+        std::memcpy(&x1, &xBits, sizeof(xBits));
 
-    double output = exponent * 0.69314718055994528623;
-    x1 -= 3;
+        double output = exponent * 0.69314718055994528623;
+        x1 -= 3;
 
-    double x2 = x1 * x1;
-    double x4 = x2 * x2;
-    double x6 = x2 * x4;
-    double x8 = x4 * x4;
-    double x10 = x6 * x4;
-    double x12 = x6 * x6;
+        double x2 = x1 * x1;
+        double x4 = x2 * x2;
+        double x6 = x2 * x4;
+        double x8 = x4 * x4;
+        double x10 = x6 * x4;
+        double x12 = x6 * x6;
 
-    output += taylorWeightsLn[0] + taylorWeightsLn[1] * x1;
-    output += taylorWeightsLn[2] * x2 + taylorWeightsLn[3] * x2 * x1;
-    output += taylorWeightsLn[4] * x4 + taylorWeightsLn[5] * x4 * x1;
-    output += taylorWeightsLn[6] * x6 + taylorWeightsLn[7] * x6 * x1;
-    output += taylorWeightsLn[8] * x8 + taylorWeightsLn[9] * x1 * x8;
-    output += taylorWeightsLn[10] * x10 + taylorWeightsLn[11] * x1 * x10;
-    output += taylorWeightsLn[12] * x12 + taylorWeightsLn[13] * x1 * x12;
+        output += taylorWeightsLn[0] + taylorWeightsLn[1] * x1;
+        output += taylorWeightsLn[2] * x2 + taylorWeightsLn[3] * x2 * x1;
+        output += taylorWeightsLn[4] * x4 + taylorWeightsLn[5] * x4 * x1;
+        output += taylorWeightsLn[6] * x6 + taylorWeightsLn[7] * x6 * x1;
+        output += taylorWeightsLn[8] * x8 + taylorWeightsLn[9] * x1 * x8;
+        output += taylorWeightsLn[10] * x10 + taylorWeightsLn[11] * x1 * x10;
+        output += taylorWeightsLn[12] * x12 + taylorWeightsLn[13] * x1 * x12;
 
-    return (float) output;
+        return (float) output;
+    #else
+        return std::log(x);
+    #endif
 }

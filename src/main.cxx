@@ -29,9 +29,9 @@ int main()
 //    testAmpereForceZAxisMTScaling(12);
 //    testAmpereForceGeneralMTScaling(12);
 
-    testMutualInductanceZAxis();
+//    testMutualInductanceZAxis();
 //    testMutualInductanceGeneralParallelAxes();
-//    testMutualInductanceGeneralConway();
+    testMutualInductanceGeneralConway();
 //    testAmpereForceGeneralCase();
 
 //    testPerformanceForVariousCoilTypes(700'001);

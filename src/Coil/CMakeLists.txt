@@ -12,8 +12,6 @@ add_library(Coil OBJECT
         ComputeMInductanceMethods.cxx
         CalculateForceMethods.cxx
         ComputeForceMethods.cxx
-        CoilPairArgumentsCPUMethods.cxx
-        CoilPairArgumentsGPUMethods.cxx
         CalculateFieldsSlow.cxx
         CalculateFieldsFast.cxx)
 

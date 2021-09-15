@@ -19,7 +19,7 @@ std::pair<vec3::FieldVector3, vec3::FieldVector3>
 Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod method)
 {
     bool zAxisCase = isZAxisCase(primary, secondary);
-    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method, !zAxisCase);
+    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method, zAxisCase);
 
     return computeAmpereForce(primary, secondary, args, method);
 }

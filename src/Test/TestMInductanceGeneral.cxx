@@ -274,26 +274,26 @@ void testMutualInductanceGeneralEdgeCases()
     Coil coil2 = Coil(0.03, 0.12, 0.12, 3600);
     coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.12));
     for (int i = 1; i <= 12; ++i)
-        printf("%.15g\n", Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(i)), CPU_MT);
+        printf("%.15g\n", Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(i), CPU_MT));
     printf("\n");
 
     Coil coil3 = Coil(0.15, 0.12, 0.12, 3600);
     Coil coil4 = Coil(0.03, 0.12, 0.12, 3600);
     for (int i = 1; i <= 12; ++i)
-        printf("%.15g\n", Coil::computeMutualInductance(coil3, coil4, PrecisionFactor(i)), CPU_MT);
+        printf("%.15g\n", Coil::computeMutualInductance(coil3, coil4, PrecisionFactor(i), CPU_MT));
     printf("\n");
 
     Coil coil5 = Coil(0.03, 0.12, 0.12, 3600);
     Coil coil6 = Coil(0.03, 0.12, 0.12, 3600);
     coil6.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.00001, 0.0, 0.12));
     for (int i = 1; i <= 12; ++i)
-        printf("%.15g\n", Coil::computeMutualInductance(coil5, coil6, PrecisionFactor(i)), CPU_MT);
+        printf("%.15g\n", Coil::computeMutualInductance(coil5, coil6, PrecisionFactor(i), CPU_MT));
     printf("\n");
 
     Coil coil7 = Coil(3.0, 0.2, 0.1, 1250);
     Coil coil8 = Coil(2.8, 0.2, 0.1, 1250);
     for (int i = 1; i <= 12; ++i)
-        printf("%.15g\n", Coil::computeMutualInductance(coil7, coil8, PrecisionFactor(i)), CPU_MT);
+        printf("%.15g\n", Coil::computeMutualInductance(coil7, coil8, PrecisionFactor(i), CPU_MT));
     printf("\n");
 
     Coil coil9 = Coil(3.0, 0.2, 0.1, 1250);

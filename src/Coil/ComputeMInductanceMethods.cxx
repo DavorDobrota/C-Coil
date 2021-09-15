@@ -19,7 +19,7 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
                                      PrecisionFactor precisionFactor, ComputeMethod method)
 {
     bool zAxisCase = isZAxisCase(primary, secondary);
-    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method, !zAxisCase);
+    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method, zAxisCase);
 
     return computeMutualInductance(primary, secondary, args, method);
 }

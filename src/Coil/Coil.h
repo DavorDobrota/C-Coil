@@ -60,19 +60,15 @@ struct CoilPairArguments
 
     static CoilPairArguments getAppropriateCoilPairArguments(const Coil &primary, const Coil &secondary,
                                                              PrecisionFactor precisionFactor,
-                                                             ComputeMethod method = CPU_ST, bool isGeneral = true);
+                                                             ComputeMethod method = CPU_ST, bool zAxisCase = true);
 
     private:
-        static void getGeometryCaseAndIncrementsSingleCoil(const Coil &coil, int &caseIndex, int &totalIncrements);
 
         static CoilPairArguments calculateCoilPairArgumentsCPU(const Coil &primary, const Coil &secondary,
                                                                PrecisionFactor precisionFactor, bool zAxisCase = false);
 
-        static CoilPairArguments calculateCoilPairArgumentsZAxisGPU(const Coil &primary, const Coil &secondary,
-                                                                    PrecisionFactor precisionFactor);
-
-        static CoilPairArguments calculateCoilPairArgumentsGeneralGPU(const Coil &primary, const Coil &secondary,
-                                                                      PrecisionFactor precisionFactor);
+        static CoilPairArguments calculateCoilPairArgumentsGPU(const Coil &primary, const Coil &secondary,
+                                                               PrecisionFactor precisionFactor, bool zAxisCase = false);
 };
 
 class Coil

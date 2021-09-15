@@ -26,6 +26,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(const Co
     totalIncrements *= g_baseLayerIncrements * g_baseLayerIncrements * g_baseLayerIncrements *
             std::pow(2, precisionFactor.relativePrecision);
 
+
     do
     {
         double primAngularStep = M_PI * (primary.getInnerRadius() + primary.getThickness() * 0.5) /

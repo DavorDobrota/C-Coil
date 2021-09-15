@@ -10,23 +10,21 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
     int primLengthArrayIndex, primThicknessArrayIndex, primAngularArrayIndex;
     int secLengthArrayIndex, secThicknessArrayIndex, secAngularArrayIndex;
 
-    int totalIncrements = (int) std::round(std::pow(2, precisionFactor.relativePrecision - 1));
+    int totalIncrements = 1;
     int currentIncrements;
 
-    double primRadius = primary.getInnerRadius();
-    double primThickness = primary.getThickness();
+    double primAngularRoot = std::sqrt(M_PI * (primary.getInnerRadius() + 0.5 * primary.getThickness()));
+    double primThicknessRoot = std::sqrt(primary.getThickness());
+    double primLengthRoot = std::sqrt(primary.getLength());
 
-    double secRadius = secondary.getInnerRadius();
-    double secThickness = secondary.getThickness();
-    double secLength = secondary.getLength();
+    double secAngularRoot = std::sqrt(2 * M_PI * (secondary.getInnerRadius() + 0.5 * secondary.getThickness()));
+    double secThicknessRoot = std::sqrt(secondary.getThickness());
+    double secLengthRoot = std::sqrt(secondary.getLength());
 
-    // multiplying for primary angular increments
-    totalIncrements *= g_baseLayerIncrements;
+
     // multiplying for secondary angular increments, if present
     if (!zAxisCase)
-    {
         totalIncrements *= g_baseLayerIncrements;
-    }
 
     switch (primary.getCoilType())
     {
@@ -55,33 +53,14 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
     }
     primAngularArrayIndex = g_minPrimAngularIncrements - 1;
 
-    double secDimensionRatio = std::sqrt(secLength / secThickness);
+    double secDimensionRatio = secLengthRoot / secThicknessRoot;
     switch (secondary.getCoilType())
     {
         case CoilType::RECTANGULAR:
         {
             totalIncrements *= g_baseLayerIncrements * g_baseLayerIncrements;
-            // ensuring the minimum distributions are 2 * nB or nA * 2, otherwise it is just a thin coil
-            if (secDimensionRatio >= (double) g_minSecAreaIncrements / 2.0)
-            {
-                secLengthArrayIndex = g_minSecAreaIncrements / 2 - 1;
-                secThicknessArrayIndex = 1;
-            }
-            else if (1.0 / secDimensionRatio >= (double) g_minSecAreaIncrements / 2.0)
-            {
-                secLengthArrayIndex = 1;
-                secThicknessArrayIndex = g_minSecAreaIncrements / 2 - 1;
-            }
-            else if (secDimensionRatio >= 1.0)
-            {
-                secThicknessArrayIndex = (int) std::ceil(std::sqrt(g_minSecAreaIncrements / secDimensionRatio)) - 1;
-                secLengthArrayIndex = g_minSecAreaIncrements / (secThicknessArrayIndex + 1) - 1;
-            }
-            else
-            {
-                secLengthArrayIndex = (int) std::ceil(std::sqrt(g_minSecAreaIncrements * secDimensionRatio)) - 1;
-                secThicknessArrayIndex = g_minSecAreaIncrements / (secLengthArrayIndex + 1) - 1;
-            }
+            secLengthArrayIndex = g_minSecLengthIncrements - 1;
+            secThicknessArrayIndex = g_minSecThicknessIncrements - 1;
             break;
         }
         case CoilType::THIN:
@@ -107,34 +86,29 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
     }
     secAngularArrayIndex = g_minSecAngularIncrements - 1;
 
+    totalIncrements = (int) (totalIncrements * std::pow(2, precisionFactor.relativePrecision - 1));
+
     double primAngularStep, primThicknessStep;
     double secAngularStep, secLengthStep, secThicknessStep, secLinearStep;
-    double secLengthRootStep, secThicknessRootStep;
 
     do
     {
-        primAngularStep = M_PI * g_primAngularWeightModifier * (primRadius + 0.5 * primThickness) /
+        primAngularStep = g_primAngularWeightModifier * primAngularRoot /
                 (blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex]);
 
-        primThicknessStep = g_primLinearWeightModifier * primThickness /
+        primThicknessStep = g_primLinearWeightModifier * primThicknessRoot /
                 (blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex]);
 
-        secAngularStep = 2 * M_PI * g_secAngularWeightModifier * (secRadius + 0.5 * secThickness) /
+        secAngularStep = g_secAngularWeightModifier * secAngularRoot /
                 (blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
-        secLengthStep = g_secLinearWeightModifier * secLength /
+        secLengthStep = g_secLinearWeightModifier * secLengthRoot /
                 (blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex]);
 
-        secThicknessStep = g_secAngularWeightModifier * secThickness /
+        secThicknessStep = g_secLinearWeightModifier * secThicknessRoot /
                 (blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
         secLinearStep = 0.5 * (secLengthStep + secThicknessStep);
-
-        secLengthRootStep = std::sqrt(g_secLinearWeightModifier * secLength) /
-                (blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex]);
-
-        secThicknessRootStep = std::sqrt(g_secLinearWeightModifier * secThickness) /
-                (blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
         if (primAngularStep + primThicknessStep >= secAngularStep + secLinearStep)
         {
@@ -149,7 +123,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
                 secAngularArrayIndex++;
             else
             {
-                if (secLengthRootStep >= secThicknessRootStep)
+                if (secLengthStep >= secThicknessStep)
                     secLengthArrayIndex++;
                 else
                     secThicknessArrayIndex++;

@@ -45,75 +45,56 @@ PrecisionArguments::PrecisionArguments(
 
 PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &coil, PrecisionFactor precisionFactor)
 {
-    int lengthArrayIndex = g_minPrimLengthIncrements - 1;
-    int thicknessArrayIndex = g_minPrimThicknessIncrements - 1;
-    int angularArrayIndex = g_minPrimAngularIncrements - 1;
+    int lengthArrayIndex, thicknessArrayIndex, angularArrayIndex;
 
-    double precisionMultiplier = std::pow(2, precisionFactor.relativePrecision - 1.0);
+    double angularRoot = std::sqrt(M_PI * (coil.getInnerRadius() + 0.5 * coil.getThickness()));
+    double thicknessRoot = std::sqrt(coil.getThickness());
 
-    int totalIncrements = 0;
+    int totalIncrements = 1;
     int currentIncrements;
-    int caseIndex;
 
-    if (coil.getThickness() / coil.getInnerRadius() < g_thinCoilApproximationRatio &&
-        coil.getLength() / coil.getInnerRadius() < g_thinCoilApproximationRatio)
+    totalIncrements *= g_baseLayerIncrements;
+
+    switch (coil.getCoilType())
     {
-        caseIndex = 1;
-        totalIncrements = (int) (g_baseLayerIncrements * precisionMultiplier);
+        case CoilType::RECTANGULAR:
+        {
+            totalIncrements *= g_baseLayerIncrements;
+            thicknessArrayIndex = g_minPrimThicknessIncrements - 1;
+            break;
+        }
+        case CoilType::THIN:
+        {
+            thicknessArrayIndex = 0;
+            break;
+        }
+        case CoilType::FLAT:
+        {
+            thicknessArrayIndex = g_minPrimThicknessIncrements - 1;
+            totalIncrements *= g_baseLayerIncrements;
+            break;
+        }
+        case CoilType::FILAMENT:
+        {
+            thicknessArrayIndex = 0;
+            break;
+        }
     }
-    else if (coil.getThickness() / coil.getLength() < g_thinCoilApproximationRatio)
-    {
-        caseIndex = 2;
-        totalIncrements = (int) (g_baseLayerIncrements * precisionMultiplier);
-    }
-    else if (coil.getLength() / coil.getThickness() < g_thinCoilApproximationRatio)
-    {
-        caseIndex = 3;
-        totalIncrements = (int) (g_baseLayerIncrements * g_baseLayerIncrements * precisionMultiplier);
-    }
-    else
-    {
-        caseIndex = 4;
-        totalIncrements = (int) (g_baseLayerIncrements * g_baseLayerIncrements * precisionMultiplier);
-    }
+    angularArrayIndex = g_minPrimAngularIncrements - 1;
+    lengthArrayIndex = 0;
 
     do
     {
-        double angularStep = M_PI * g_primAngularWeightModifier * (coil.getInnerRadius() + coil.getThickness() * 0.5) /
+        double angularStep = angularRoot /
                              (blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex]);
 
-        double lengthStep = coil.getLength() /
-                            (blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex]);
+        double thicknessStep = thicknessRoot /
+                (blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex]);
 
-        double thicknessStep = coil.getThickness() /
-                               (blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex]);
-
-        switch (caseIndex)
-        {
-            case (1):
-                thicknessArrayIndex = 0; lengthArrayIndex = 0;
-                angularArrayIndex++;
-                break;
-            case (2):
-                thicknessArrayIndex = 0;
-                if (angularStep / lengthStep >= 1.0)
-                    angularArrayIndex++;
-                else
-                    lengthArrayIndex++;
-                break;
-            case (3):
-                lengthArrayIndex = 0;
-                if (angularStep / thicknessStep >= 1.0)
-                    angularArrayIndex++;
-                else
-                    thicknessArrayIndex++;
-                break;
-            default:
-                if (angularStep / thicknessStep >= 1.0)
-                    angularArrayIndex++;
-                else
-                { lengthArrayIndex++; thicknessArrayIndex++;}
-        }
+        if (angularStep >= thicknessStep)
+            angularArrayIndex++;
+        else
+            thicknessArrayIndex++;
 
         currentIncrements =
                 blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex] *
@@ -122,7 +103,7 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
     while (currentIncrements <= totalIncrements);
 
     #if PRINT_ENABLED
-        printf("case %d - %d : %d %d %d\n", caseIndex, currentIncrements,
+        printf("%d : %d %d %d\n", currentIncrements,
                blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex],
                blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex],
                blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex]);

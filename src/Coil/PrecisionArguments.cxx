@@ -79,7 +79,7 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
 
     do
     {
-        double angularStep = M_PI * g_angularWeightModifier * (coil.getInnerRadius() + coil.getThickness() * 0.5) /
+        double angularStep = M_PI * g_primAngularWeightModifier * (coil.getInnerRadius() + coil.getThickness() * 0.5) /
                              (blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex]);
 
         double lengthStep = coil.getLength() /

@@ -33,33 +33,6 @@ void CoilPairArguments::getGeometryCaseAndIncrementsSingleCoil(const Coil &coil,
     }
 }
 
-void CoilPairArguments::getGeometryCaseAndIncrementsCoilPair(const Coil &primary, const Coil &secondary,
-                                                             PrecisionFactor precisionFactor,
-                                                             int &caseIndex, int &totalIncrements)
-{
-    double precisionMultiplier = std::pow(2, precisionFactor.relativePrecision - 1.0);
-
-    getGeometryCaseAndIncrementsSingleCoil(secondary, caseIndex, totalIncrements);
-
-    switch (primary.getCoilType())
-    {
-        case CoilType::THIN:
-            totalIncrements *= g_baseLayerIncrements * precisionMultiplier;
-            break;
-        case CoilType::FLAT:
-            caseIndex += 4;
-            totalIncrements *= g_baseLayerIncrements * g_baseLayerIncrements * precisionMultiplier;
-            break;
-        case CoilType::FILAMENT:
-            caseIndex += 8;
-            totalIncrements *= g_baseLayerIncrements * precisionMultiplier;
-            break;
-        default:
-            caseIndex += 12;
-            totalIncrements *= g_baseLayerIncrements * g_baseLayerIncrements * precisionMultiplier;
-    }
-}
-
 CoilPairArguments CoilPairArguments::getAppropriateCoilPairArguments(const Coil &primary, const Coil &secondary,
                                                                      PrecisionFactor precisionFactor,
                                                                      ComputeMethod method, bool isGeneral)
@@ -69,13 +42,13 @@ CoilPairArguments CoilPairArguments::getAppropriateCoilPairArguments(const Coil 
         if (method == GPU)
             return CoilPairArguments::calculateCoilPairArgumentsZAxisGPU(primary, secondary, precisionFactor);
         else
-            return CoilPairArguments::calculateCoilPairArgumentsZAxisCPU(primary, secondary, precisionFactor);
+            return CoilPairArguments::calculateCoilPairArgumentsCPU(primary, secondary, precisionFactor, !isGeneral);
     }
     else
     {
         if (method == GPU)
             return CoilPairArguments::calculateCoilPairArgumentsGeneralGPU(primary, secondary, precisionFactor);
         else
-            return CoilPairArguments::calculateCoilPairArgumentsGeneralCPU(primary, secondary, precisionFactor);
+            return CoilPairArguments::calculateCoilPairArgumentsCPU(primary, secondary, precisionFactor, !isGeneral);
     }
 }

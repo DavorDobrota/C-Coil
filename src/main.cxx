@@ -28,13 +28,25 @@ int main()
 //
 //    testAmpereForceZAxisMTScaling(12);
 //    testAmpereForceGeneralMTScaling(12);
-//
-//    testMutualInductanceZAxis();
-//    testMutualInductanceGeneralParallelAxes();
-//    testMutualInductanceGeneralConway();
-    testAmpereForceGeneralCase();
 
-//    testPerformanceForVariousCoilTypes(56243);
+//    testMutualInductanceZAxis();
+//   testMutualInductanceGeneralParallelAxes();
+//    testMutualInductanceGeneralConway();
+//    testAmpereForceGeneralCase();
+
+//    testPerformanceForVariousCoilTypes(700'001);
+
+//Coil coil1 = Coil(0.1, 0.000001, 0.17, 100);
+//Coil coil2 = Coil(0.1, 0.12, 0.000001, 100);
+//coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN,0.0, 0.0, 0.11));
+//
+//for (int i = 1; i <= 15; ++i)
+//    printf("%.15g\n", Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(i), CPU_MT));
+//printf("\n");
+//
+//for (int i = 1; i <= 15; ++i)
+//    printf("%.15g\n", Coil::computeMutualInductance(coil2, coil1, PrecisionFactor(i), CPU_MT));
+//printf("\n");
 
     return 0;
 }

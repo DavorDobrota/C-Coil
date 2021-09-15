@@ -395,7 +395,10 @@ int Coil::calculateChunkSize(int numOps) const
         std::vector<double> fitnessArray;
         std::vector<int> chunkArray;
         int chunkCandidate, leftover;
-        int modifier = std::floor(std::log10(numOps));
+
+        int modifier = 1;
+        if (numOps > 10)
+            modifier = std::floor(std::log10(numOps));
 
         for (int i = 1; i <= std::ceil(std::log2(numOps)); ++i)
         {
@@ -404,7 +407,6 @@ int Coil::calculateChunkSize(int numOps) const
 
             fitnessArray.push_back((double) leftover / (chunkCandidate * i));
             chunkArray.push_back(chunkCandidate);
-            //printf("%d : %d %d | %g\n", i, chunkCandidate, leftover, (double) leftover / (chunkCandidate * i));
         }
         int chunkSize = chunkArray[0];
         double chunkFitness = fitnessArray[0];
@@ -417,7 +419,6 @@ int Coil::calculateChunkSize(int numOps) const
                 chunkFitness = fitnessArray[i];
             }
         }
-//        printf("%d\n", chunkSize);
         return chunkSize;
     }
 }

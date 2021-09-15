@@ -8,12 +8,17 @@ const int g_minPrimAngularIncrements = 6;
 const int g_minSecLengthIncrements = 4;
 const int g_minSecThicknessIncrements = 4;
 const int g_minSecAngularIncrements = 4;
+const int g_minSecAreaIncrements = 25;
 
 const int g_baseLayerIncrements = 10;
-const double g_angularWeightModifier = 1;
-const double g_primLinearWeightModifier = 1.41;
 
-const double g_thinCoilApproximationRatio = 1e-9;
+const double g_primAngularWeightModifier = 0.7;
+const double g_primLinearWeightModifier = 1;
+
+const double g_secAngularWeightModifier = 0.5 * 0.5;
+const double g_secLinearWeightModifier = 1;
+
+const double g_thinCoilApproximationRatio = 1e-7;
 const double g_zAxisApproximationRatio = 1e-12;
 
 const int g_defaultChunkSize = 2;

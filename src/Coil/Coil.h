@@ -65,15 +65,8 @@ struct CoilPairArguments
     private:
         static void getGeometryCaseAndIncrementsSingleCoil(const Coil &coil, int &caseIndex, int &totalIncrements);
 
-        static void getGeometryCaseAndIncrementsCoilPair(const Coil &primary, const Coil &secondary,
-                                                         PrecisionFactor precisionFactor,
-                                                         int &caseIndex, int &totalIncrements);
-
-        static CoilPairArguments calculateCoilPairArgumentsZAxisCPU(const Coil &primary, const Coil &secondary,
-                                                                    PrecisionFactor precisionFactor);
-
-        static CoilPairArguments calculateCoilPairArgumentsGeneralCPU(const Coil &primary, const Coil &secondary,
-                                                                      PrecisionFactor precisionFactor);
+        static CoilPairArguments calculateCoilPairArgumentsCPU(const Coil &primary, const Coil &secondary,
+                                                               PrecisionFactor precisionFactor, bool zAxisCase = false);
 
         static CoilPairArguments calculateCoilPairArgumentsZAxisGPU(const Coil &primary, const Coil &secondary,
                                                                     PrecisionFactor precisionFactor);
@@ -86,10 +79,10 @@ class Coil
 {
     private:
 
-        const double innerRadius;
-        const double thickness;
-        const double length;
-        const int numOfTurns;
+        double innerRadius;
+        double thickness;
+        double length;
+        int numOfTurns;
 
         double currentDensity{};
         double current{};

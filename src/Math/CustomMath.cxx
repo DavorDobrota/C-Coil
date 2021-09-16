@@ -148,6 +148,61 @@ double customMath::ln(double x)
         output += taylorTableLn[row][4] * x4 + taylorTableLn[row][5] * x4 * x1;
         output += taylorTableLn[row][4] * x6 + taylorTableLn[row][5] * x6 * x1;
 
+        
+        // AVX version (slower)
+//        __m256d vec1, vec2;
+//        double res[4];
+//
+//        vec1 = _mm256_mul_pd(
+//            _mm256_set_pd(
+//                taylorTableLn[row][0],
+//                taylorTableLn[row][2],
+//                taylorTableLn[row][4],
+//                taylorTableLn[row][4]
+//            ),
+//            _mm256_set_pd(
+//                1.0,
+//                x2,
+//                x4,
+//                x6
+//            )
+//        );
+//
+//        vec2 = _mm256_mul_pd(
+//            _mm256_set_pd(
+//                taylorTableLn[row][1],
+//                taylorTableLn[row][3],
+//                taylorTableLn[row][5],
+//                taylorTableLn[row][5]
+//            ),
+//            _mm256_set_pd(
+//                x1,
+//                x2,
+//                x4,
+//                x6
+//            )
+//        );
+//
+//        vec2 = _mm256_mul_pd(
+//            vec2,
+//            _mm256_set_pd(
+//                1.0,
+//                x1,
+//                x1,
+//                x1
+//            )
+//        );
+//
+//        vec2 = _mm256_add_pd(vec1, vec2);
+//
+//        _mm256_store_pd(res, vec2);
+//
+//        for(auto elem : res)
+//        {
+//            output += elem;
+//        }
+
+
         // more accurate version
     //    x1 -= 3;
     //

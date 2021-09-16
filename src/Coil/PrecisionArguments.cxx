@@ -49,6 +49,7 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
 
     double angularRoot = std::sqrt(M_PI * (coil.getInnerRadius() + 0.5 * coil.getThickness()));
     double thicknessRoot = std::sqrt(coil.getThickness());
+    double lengthRoot = std::sqrt(coil.getLength());
 
     int totalIncrements = g_baseLayerIncrements;
     int currentIncrements;
@@ -59,42 +60,56 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
         {
             totalIncrements *= g_baseLayerIncrements;
             thicknessArrayIndex = g_minPrimThicknessIncrements - 1;
+            lengthArrayIndex = g_minPrimLengthIncrements - 1;
             break;
         }
         case CoilType::THIN:
         {
             thicknessArrayIndex = 0;
+            thicknessArrayIndex = g_minPrimLengthIncrements - 1;
             break;
         }
         case CoilType::FLAT:
         {
-            thicknessArrayIndex = g_minPrimThicknessIncrements - 1;
             totalIncrements *= g_baseLayerIncrements;
+            thicknessArrayIndex = g_minPrimThicknessIncrements - 1;
+            lengthArrayIndex = 0;
             break;
         }
         case CoilType::FILAMENT:
         {
             thicknessArrayIndex = 0;
+            lengthArrayIndex = 0;
             break;
         }
     }
     angularArrayIndex = g_minPrimAngularIncrements - 1;
-    lengthArrayIndex = 0;
 
     totalIncrements *= std::pow(2, precisionFactor.relativePrecision - 1.0);
 
+    double angularStep, lengthStep, thicknessStep;
+
     do
     {
-        double angularStep = angularRoot /
+        angularStep = angularRoot /
                 (blockPrecisionCPUArray[angularArrayIndex] * incrementPrecisionCPUArray[angularArrayIndex]);
 
-        double thicknessStep = thicknessRoot /
+        lengthStep = lengthRoot /
+                (blockPrecisionCPUArray[lengthArrayIndex] * incrementPrecisionCPUArray[lengthArrayIndex]);
+
+        thicknessStep = thicknessRoot /
                 (blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex]);
 
-        if (angularStep >= thicknessStep)
+
+        if (angularStep >= 0.5 * (thicknessStep + lengthStep))
             angularArrayIndex++;
         else
-            thicknessArrayIndex++;
+        {
+            if (thicknessStep >= lengthStep)
+                thicknessArrayIndex++;
+            else
+                lengthArrayIndex++;
+        }
 
         currentIncrements =
                 blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex] *
@@ -131,7 +146,7 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
     double thicknessRoot = std::sqrt(coil.getThickness());
     double lengthRoot = std::sqrt(coil.getLength());
 
-    int totalIncrements = arrSize * arrSize * arrSize * pow(2, precisionFactor.relativePrecision);
+    int totalIncrements = (int) (arrSize * arrSize * arrSize * pow(2, precisionFactor.relativePrecision));
     int currentIncrements;
 
     double angularStep, thicknessStep, lengthStep;

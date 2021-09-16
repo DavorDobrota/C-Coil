@@ -9,7 +9,7 @@
 #include <vector>
 
 
-#define PRINT_ENABLED 1
+#define PRINT_ENABLED 0
 
 const int precisionArraySize = 500;
 const int defaultThreadCount = 8;
@@ -342,10 +342,10 @@ class Coil
         computeAmpereForce(const Coil &primary, const Coil &secondary,
                            CoilPairArguments forceArguments, ComputeMethod method = CPU_ST);
 
-        std::pair<vec3::FieldVector3, vec3::FieldVector3>
+        [[nodiscard]] std::pair<vec3::FieldVector3, vec3::FieldVector3>
         computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment) const;
 
-        std::pair<vec3::FieldVector3, vec3::FieldVector3>
+        [[nodiscard]] std::pair<vec3::FieldVector3, vec3::FieldVector3>
         computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment,
                                    const PrecisionArguments &usedPrecision) const;
 

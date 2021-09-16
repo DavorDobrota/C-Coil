@@ -1,7 +1,5 @@
 #include <cstdio>
 #include <cmath>
-#include <cstdint>
-#include <cstring>
 
 #include "Coil.h"
 #include "Test.h"
@@ -31,14 +29,22 @@ int main()
 
 //    testMutualInductanceZAxis();
 //    testMutualInductanceGeneralParallelAxes();
-    testMutualInductanceGeneralConway();
+//    testMutualInductanceGeneralConway();
 //    testAmpereForceGeneralCase();
 
 //    testPerformanceForVariousCoilTypes(700'001);
 
-//Coil coil1 = Coil(0.1, 0.000001, 0.17, 100);
-//Coil coil2 = Coil(0.1, 0.12, 0.000001, 100);
-//coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN,0.0, 0.0, 0.11));
+//double R1 = 0.1;
+//double a1 = 0.06;
+//double b1 = 0.1;
+//
+//double R2 = 0.1;
+//double a2 = 0.1;
+//double b2 = 0.1;
+//
+//Coil coil1 = Coil(R1, a1, b1, 100);
+//Coil coil2 = Coil(R2, a2, b2, 100);
+//coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN,0.0, 0.0, (b1 + b2) * 0.5 + (b1 + b2) / 40.0));
 //
 //for (int i = 1; i <= 15; ++i)
 //    printf("%.15g\n", Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(i), CPU_MT));

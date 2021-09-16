@@ -52,22 +52,26 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
         {
             totalIncrements *= g_baseLayerIncrements;
             primThicknessArrayIndex = g_minPrimThicknessIncrements - 1;
+            primLengthArrayIndex = g_minPrimLengthIncrements - 1;
             break;
         }
         case CoilType::THIN:
         {
             primThicknessArrayIndex = 0;
+            primLengthArrayIndex = g_minPrimThicknessIncrements - 1;
             break;
         }
         case CoilType::FLAT:
         {
             primThicknessArrayIndex = g_minPrimThicknessIncrements - 1;
+            primLengthArrayIndex = 0;
             totalIncrements *= g_baseLayerIncrements;
             break;
         }
         case CoilType::FILAMENT:
         {
             primThicknessArrayIndex = 0;
+            primLengthArrayIndex = 0;
             break;
         }
     }
@@ -107,13 +111,16 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
 
     totalIncrements *= std::pow(2, precisionFactor.relativePrecision - 1.0);
 
-    double primAngularStep, primThicknessStep;
+    double primAngularStep, primLengthStep, primThicknessStep, primLinearStep;
     double secAngularStep, secLengthStep, secThicknessStep, secLinearStep;
 
     do
     {
         primAngularStep = g_primAngularWeightModifier * primAngularRoot /
                 (blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex]);
+
+        primLengthStep = g_primLinearWeightModifier * primLengthRoot /
+                (blockPrecisionCPUArray[primLengthArrayIndex] * incrementPrecisionCPUArray[primLengthArrayIndex]);
 
         primThicknessStep = g_primLinearWeightModifier * primThicknessRoot /
                 (blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex]);
@@ -127,14 +134,20 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
         secThicknessStep = g_secLinearWeightModifier * secThicknessRoot /
                 (blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
+        primLinearStep = 0.5 * (primLengthStep + primThicknessStep);
         secLinearStep = 0.5 * (secLengthStep + secThicknessStep);
 
-        if (primAngularStep + primThicknessStep >= secAngularStep + secLinearStep)
+        if (primAngularStep + primLinearStep >= secAngularStep + secLinearStep)
         {
-            if (primAngularStep >= primThicknessStep)
+            if (primAngularStep >= primLinearStep)
                 primAngularArrayIndex++;
             else
-                primThicknessArrayIndex++;
+            {
+                if (primLengthStep >= primThicknessStep)
+                    primLengthArrayIndex++;
+                else
+                    primThicknessArrayIndex++;
+            }
         }
         else
         {
@@ -159,9 +172,6 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
             currentIncrements *= blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex];
     }
     while (currentIncrements < totalIncrements);
-
-    // length index chosen only for purpose of data representation
-    primLengthArrayIndex = 0;
 
     auto primaryPrecision = PrecisionArguments(blockPrecisionCPUArray[primAngularArrayIndex],
                                                blockPrecisionCPUArray[primThicknessArrayIndex],

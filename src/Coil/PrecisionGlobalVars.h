@@ -1,9 +1,9 @@
 #ifndef GENERAL_COIL_PROGRAM_PRECISIONGLOBALVARS_H
 #define GENERAL_COIL_PROGRAM_PRECISIONGLOBALVARS_H
 
-const int g_minPrimLengthIncrements = 2;
-const int g_minPrimThicknessIncrements = 2;
-const int g_minPrimAngularIncrements = 2;
+const int g_minPrimLengthIncrements = 3;
+const int g_minPrimThicknessIncrements = 3;
+const int g_minPrimAngularIncrements = 3;
 
 const int g_minSecLengthIncrements = 2;
 const int g_minSecThicknessIncrements = 2;

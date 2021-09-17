@@ -9,9 +9,9 @@
 #include <vector>
 
 
-#define PRINT_ENABLED 0
+#define PRINT_ENABLED 1
 
-const int precisionArraySize = 500;
+const int precisionArraySize = 864;
 const int defaultThreadCount = 8;
 
 const extern int blockPrecisionCPUArray[precisionArraySize];

@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cmath>
+#include <string>
 
 #include "Coil.h"
 #include "Test.h"
@@ -28,31 +29,32 @@ int main()
 //    testAmpereForceGeneralMTScaling(12);
 
 //    testMutualInductanceZAxis();
-//    testMutualInductanceGeneralParallelAxes();
+    testMutualInductanceGeneralParallelAxes();
 //    testMutualInductanceGeneralConway();
 //    testAmpereForceGeneralCase();
 
 //    testPerformanceForVariousCoilTypes(700'001);
 
-//double R1 = 0.1;
-//double a1 = 0.06;
-//double b1 = 0.1;
-//
-//double R2 = 0.1;
-//double a2 = 0.1;
-//double b2 = 0.1;
-//
-//Coil coil1 = Coil(R1, a1, b1, 100);
-//Coil coil2 = Coil(R2, a2, b2, 100);
-//coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN,0.0, 0.0, (b1 + b2) * 0.5 + (b1 + b2) / 40.0));
-//
-//for (int i = 1; i <= 15; ++i)
-//    printf("%.15g\n", Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(i), CPU_MT));
-//printf("\n");
-//
-//for (int i = 1; i <= 15; ++i)
-//    printf("%.15g\n", Coil::computeMutualInductance(coil2, coil1, PrecisionFactor(i), CPU_MT));
-//printf("\n");
+double R1 = 0.1;
+double a1 = 0.06;
+double b1 = 0.1;
+
+double R2 = 0.1;
+double a2 = 0.1;
+double b2 = 0.1;
+
+Coil coil1 = Coil(R1, a1, b1, 100);
+Coil coil2 = Coil(R2, a2, b2, 100);
+coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN,0.0, 0.0, (b1 + b2) * 0.5 + (b1 + b2) / 40.0));
+
+for (int i = 1; i <= 15; ++i)
+    printf("%.15g\n", Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(i), CPU_MT));
+printf("\n");
+
+for (int i = 1; i <= 15; ++i)
+    printf("%.15g\n", Coil::computeMutualInductance(coil2, coil1, PrecisionFactor(i), CPU_MT));
+printf("\n");
+
 
     return 0;
 }

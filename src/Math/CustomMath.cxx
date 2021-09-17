@@ -291,22 +291,13 @@ float customMath::lnf(float x)
         std::memcpy(&x1, &xBits, sizeof(xBits));
 
         double output = exponent * 0.69314718055994528623;
-        x1 -= 3;
+        int row = (int) ((x1 - 2.0) * 32.0);
+        x1 -= (2 + (row + 0.5) * 0.03125);
 
         double x2 = x1 * x1;
-        double x4 = x2 * x2;
-        double x6 = x2 * x4;
-        double x8 = x4 * x4;
-        double x10 = x6 * x4;
-        double x12 = x6 * x6;
 
-        output += taylorWeightsLn[0] + taylorWeightsLn[1] * x1;
-        output += taylorWeightsLn[2] * x2 + taylorWeightsLn[3] * x2 * x1;
-        output += taylorWeightsLn[4] * x4 + taylorWeightsLn[5] * x4 * x1;
-        output += taylorWeightsLn[6] * x6 + taylorWeightsLn[7] * x6 * x1;
-        output += taylorWeightsLn[8] * x8 + taylorWeightsLn[9] * x1 * x8;
-        output += taylorWeightsLn[10] * x10 + taylorWeightsLn[11] * x1 * x10;
-        output += taylorWeightsLn[12] * x12 + taylorWeightsLn[13] * x1 * x12;
+        output += taylorTableLn[row][0] + taylorTableLn[row][1] * x1;
+        output += taylorTableLn[row][2] * x2 + taylorTableLn[row][3] * x2 * x1;
 
         return (float) output;
     #else

@@ -29,7 +29,7 @@ int main()
 //    testAmpereForceGeneralMTScaling(12);
 
 //    testMutualInductanceZAxis();
-    testMutualInductanceGeneralParallelAxes();
+//    testMutualInductanceGeneralParallelAxes();
 //    testMutualInductanceGeneralConway();
 //    testAmpereForceGeneralCase();
 

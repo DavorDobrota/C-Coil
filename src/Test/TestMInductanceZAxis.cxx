@@ -44,7 +44,7 @@ void testMutualInductanceZAxis()
         {
             temp = Coil::computeMutualInductance(prim, sec, PrecisionFactor(i));
             printf("%.16g\n", temp);
-            fprintf(output, "%.7g\t", temp);
+            fprintf(output, "%.15g\t", temp);
         }
 
         printf("====================================================================================\n");

@@ -152,3 +152,53 @@ void testGradientTensor()
     }
     printf("\n");
 }
+
+void testForceOnDipole()
+{
+    Coil coil1 = Coil(0.5, 0.1, 0.1, 100, 1000);
+    Coil coil2 = Coil(0.005, 0.001, 0.006, 60, 100);
+    coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.01, 0.01, 0.02), 0.5, 1.0);
+
+    std::pair amperePair = Coil::computeAmpereForce(coil1, coil2);
+    std::pair momentPair = coil1.computeForceOnDipoleMoment(coil2.getPositionVector(), coil2.getMagneticMoment());
+
+    printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
+           amperePair.first.xComponent + amperePair.first.xComponent,
+           amperePair.first.yComponent + amperePair.first.yComponent,
+           amperePair.first.zComponent + amperePair.first.zComponent,
+           amperePair.second.xComponent + amperePair.second.xComponent,
+           amperePair.second.yComponent + amperePair.second.yComponent,
+           amperePair.second.zComponent + amperePair.second.zComponent);
+
+    printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
+           momentPair.first.xComponent + momentPair.first.xComponent,
+           momentPair.first.yComponent + momentPair.first.yComponent,
+           momentPair.first.zComponent + momentPair.first.zComponent,
+           momentPair.second.xComponent + momentPair.second.xComponent,
+           momentPair.second.yComponent + momentPair.second.yComponent,
+           momentPair.second.zComponent + momentPair.second.zComponent);
+
+    Coil coil3 = Coil(0.2, 0.1, 0.1, 100, 100);
+    Coil coil4 = Coil(0.2, 0.1, 0.1, 100, 100);
+    coil4.setPositionAndOrientation(
+            vec3::CoordVector3(vec3::CARTESIAN, 1.2, 1.6, 3.0), 2.0, 2.5);
+
+    amperePair = Coil::computeAmpereForce(coil3, coil4);
+    momentPair = coil3.computeForceOnDipoleMoment(coil4.getPositionVector(), coil4.getMagneticMoment());
+
+    printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
+           amperePair.first.xComponent + amperePair.first.xComponent,
+           amperePair.first.yComponent + amperePair.first.yComponent,
+           amperePair.first.zComponent + amperePair.first.zComponent,
+           amperePair.second.xComponent + amperePair.second.xComponent,
+           amperePair.second.yComponent + amperePair.second.yComponent,
+           amperePair.second.zComponent + amperePair.second.zComponent);
+
+    printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
+           momentPair.first.xComponent + momentPair.first.xComponent,
+           momentPair.first.yComponent + momentPair.first.yComponent,
+           momentPair.first.zComponent + momentPair.first.zComponent,
+           momentPair.second.xComponent + momentPair.second.xComponent,
+           momentPair.second.yComponent + momentPair.second.yComponent,
+           momentPair.second.zComponent + momentPair.second.zComponent);
+}

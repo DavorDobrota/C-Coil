@@ -48,6 +48,7 @@ void testAmpereForceGeneralForZAxis();
 void testAmpereForceGeneralPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
 void testAmpereForceGeneralMTScaling(int maxThreads = g_default_nThreads);
 void testGradientTensor();
+void testForceOnDipole();
 
 void testAmpereForceForFilamentsZAxis();
 void testAmpereForceGeneralCase();

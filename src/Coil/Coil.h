@@ -147,7 +147,7 @@ class Coil
         [[nodiscard]] bool isSineDriven1() const;
         [[nodiscard]] double getSineFrequency() const;
 
-        [[nodiscard]] double getMagneticMoment();
+        [[nodiscard]] vec3::FieldVector3 getMagneticMoment();
         [[nodiscard]] double getAverageWireThickness() const;
 
         [[nodiscard]] double getSelfInductance() const;

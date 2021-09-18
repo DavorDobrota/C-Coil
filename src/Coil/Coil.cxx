@@ -111,10 +111,16 @@ bool Coil::isSineDriven1() const { return isSineDriven; }
 
 double Coil::getSineFrequency() const { return sineFrequency; }
 
-double Coil::getMagneticMoment()
+vec3::FieldVector3 Coil::getMagneticMoment()
 {
     calculateMagneticMoment();
-    return magneticMoment;
+
+    double sinA = std::sin(yAxisAngle); double cosA = std::cos(yAxisAngle);
+    double sinB = std::sin(zAxisAngle); double cosB = std::cos(zAxisAngle);
+
+    return vec3::FieldVector3(magneticMoment * sinA * cosB,
+                              magneticMoment * sinA * sinB,
+                              magneticMoment * cosA);
 }
 
 double Coil::getWireResistivity() const { return wireResistivity; }
@@ -207,7 +213,7 @@ void Coil::setPositionAndOrientation(vec3::CoordVector3 positionVector, double y
 void Coil::calculateMagneticMoment()
 {
     magneticMoment = M_PI * current * numOfTurns *
-            (pow(innerRadius, 2) + pow(thickness, 2) + innerRadius * thickness / 3);
+            (innerRadius * innerRadius + innerRadius * thickness + thickness * thickness / 3);
 }
 
 void Coil::calculateAverageWireThickness()

@@ -9,7 +9,7 @@
 #include <vector>
 
 
-#define PRINT_ENABLED 1
+#define PRINT_ENABLED 0
 
 const int precisionArraySize = 864;
 const int defaultThreadCount = 8;
@@ -75,6 +75,8 @@ class Coil
 {
     private:
 
+        unsigned long long idNum;
+
         double innerRadius;
         double thickness;
         double length;
@@ -134,7 +136,7 @@ class Coil
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
              const PrecisionArguments &precisionSettings, int threadCount = 1);
 
-
+        [[nodiscard]] unsigned long long getIdNum() const;
         [[nodiscard]] double getInnerRadius() const;
         [[nodiscard]] double getThickness() const;
         [[nodiscard]] double getLength() const;

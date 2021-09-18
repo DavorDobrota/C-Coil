@@ -15,6 +15,8 @@ namespace
     const double g_defaultCurrent = 1.0;
     const double g_defaultResistivity = 1.63e-8;
     const double g_defaultSineFrequency = 50;
+
+    unsigned long long g_currentIdNum = 0;
 }
 
 
@@ -27,6 +29,7 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
         thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 1e-18 * innerRadius * g_thinCoilApproximationRatio : thickness),
         length(length / innerRadius < g_thinCoilApproximationRatio ? 1e-18 * innerRadius * g_thinCoilApproximationRatio : length),
         numOfTurns(numOfTurns),
+        idNum(++g_currentIdNum),
         defaultPrecision(precisionSettings),
         useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio),
         positionVector(coordinatePosition),
@@ -48,6 +51,7 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
         thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 1e-18 * innerRadius * g_thinCoilApproximationRatio : thickness),
         length(length / innerRadius < g_thinCoilApproximationRatio ? 1e-18 * innerRadius * g_thinCoilApproximationRatio : length),
         numOfTurns(numOfTurns),
+        idNum(++g_currentIdNum),
         useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio),
         positionVector(coordinatePosition),
         yAxisAngle(yAxisAngle), zAxisAngle(zAxisAngle)
@@ -98,6 +102,8 @@ double Coil::getCurrentDensity() const { return currentDensity; }
 double Coil::getCurrent() const { return current; }
 
 int Coil::getNumOfTurns() const { return numOfTurns; }
+
+unsigned long long Coil::getIdNum() const { return idNum; }
 
 double Coil::getInnerRadius() const { return innerRadius; }
 

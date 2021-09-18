@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Coil.h"
+#include "CoilGroup/CoilGroup.h"
 #include "Test.h"
 
 
@@ -12,7 +13,7 @@ int main()
 //    testAmpereForceThinCoils();
 //    testAmpereForceFilamentsGeneral();
 
-//    testFunctionPerformance();
+    testFunctionPerformance();
 //
 //    testPerformanceForComputeAll(PrecisionFactor(1.0), 50000, 5, 2);
 //    testPerformanceForComputeAll(PrecisionFactor(2.0), 50000, 5, 3);
@@ -22,8 +23,8 @@ int main()
 //    testPerformanceForComputeAll(PrecisionFactor(6.0), 50000, 5, 7);
 //    testPerformanceForComputeAll(PrecisionFactor(7.0), 50000, 5, 8);
 //
-//    testMutualInductanceZAxisMTScaling(12);
-//    testMutualInductanceGeneralMTScaling(12);
+//    testMutualInductanceZAxisMTScaling(24);
+//    testMutualInductanceGeneralMTScaling(24);
 //
 //    testAmpereForceZAxisMTScaling(12);
 //    testAmpereForceGeneralMTScaling(12);
@@ -54,6 +55,8 @@ int main()
 //for (int i = 1; i <= 15; ++i)
 //    printf("%.15g\n", Coil::computeMutualInductance(coil2, coil1, PrecisionFactor(i), CPU_MT));
 //printf("\n");
+Coil coil = Coil(0.1, 0.1, 0.1, 100);
+printf("%u\n", coil.getIdNum());
 
     testForceOnDipole();
 

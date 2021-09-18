@@ -1,0 +1,11 @@
+#ifndef GENERAL_COIL_PROGRAM_COILGROUP_H
+#define GENERAL_COIL_PROGRAM_COILGROUP_H
+
+#include "Coil.h"
+
+class CoilGroup
+{
+
+};
+
+#endif //GENERAL_COIL_PROGRAM_COILGROUP_H

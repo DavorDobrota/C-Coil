@@ -62,7 +62,7 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
     calculateAverageWireThickness();
     setWireResistivity(wireResistivity);
     setSineFrequency(sineFrequency);
-    setPrecisionSettings(PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor));
+    setDefaultPrecision(PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor));
     setThreadCount(threadCount);
 }
 
@@ -196,9 +196,17 @@ void Coil::setSineFrequency(double sineFrequency)
     calculateImpedance();
 }
 
-void Coil::setPrecisionSettings(const PrecisionArguments &precisionSettings)
+void Coil::setDefaultPrecision(const PrecisionArguments &precisionSettings)
 {
     this->defaultPrecision = precisionSettings;
+}
+
+void Coil::setDefaultPrecision(PrecisionFactor precisionFactor, ComputeMethod method)
+{
+    if (method == GPU)
+        this->defaultPrecision = PrecisionArguments::getCoilPrecisionArgumentsGPU(*this, precisionFactor);
+    else
+        this->defaultPrecision = PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor);
 }
 
 void Coil::setSelfInductance(double selfInductance)

@@ -169,7 +169,8 @@ class Coil
         void setCurrent(double current);
         void setWireResistivity(double wireResistivity);
         void setSineFrequency(double sineFrequency);
-        void setPrecisionSettings(const PrecisionArguments &precisionSettings);
+        void setDefaultPrecision(const PrecisionArguments &precisionSettings);
+        void setDefaultPrecision(PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod method = CPU_ST);
         void setThreadCount(int threadCount);
 
         void setSelfInductance(double selfInductance);
@@ -339,14 +340,12 @@ class Coil
         static std::pair<vec3::FieldVector3, vec3::FieldVector3>
         computeAmpereForce(const Coil &primary, const Coil &secondary,
                            PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod method = CPU_ST);
-
         static std::pair<vec3::FieldVector3, vec3::FieldVector3>
         computeAmpereForce(const Coil &primary, const Coil &secondary,
                            CoilPairArguments forceArguments, ComputeMethod method = CPU_ST);
 
         [[nodiscard]] std::pair<vec3::FieldVector3, vec3::FieldVector3>
         computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment) const;
-
         [[nodiscard]] std::pair<vec3::FieldVector3, vec3::FieldVector3>
         computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment,
                                    const PrecisionArguments &usedPrecision) const;

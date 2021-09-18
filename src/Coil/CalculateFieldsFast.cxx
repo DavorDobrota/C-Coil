@@ -1,8 +1,9 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
+#include "Math/CustomMath.h"
 
 #include <cmath>
-#include "Math/CustomMath.h"
+#include "immintrin.h"
 
 
 namespace

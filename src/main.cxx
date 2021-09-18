@@ -17,14 +17,14 @@ int main()
 //
 //    testPerformanceForComputeAll(PrecisionFactor(1.0), 50000, 5, 2);
 //    testPerformanceForComputeAll(PrecisionFactor(2.0), 50000, 5, 3);
-//    testPerformanceForComputeAll(PrecisionFactor(3.0), 50000, 5, 4);
+//    testPerformanceForComputeAll(PrecisionFactor(4.0), 50000, 5, 4);
 //    testPerformanceForComputeAll(PrecisionFactor(4.0), 50000, 5, 5);
 //    testPerformanceForComputeAll(PrecisionFactor(5.0), 50000, 5, 6);
 //    testPerformanceForComputeAll(PrecisionFactor(6.0), 50000, 5, 7);
 //    testPerformanceForComputeAll(PrecisionFactor(7.0), 50000, 5, 8);
 //
-//    testMutualInductanceZAxisMTScaling(24);
-//    testMutualInductanceGeneralMTScaling(24);
+    testMutualInductanceZAxisMTScaling(16);
+//    testMutualInductanceGeneralMTScaling(16);
 //
 //    testAmpereForceZAxisMTScaling(12);
 //    testAmpereForceGeneralMTScaling(12);

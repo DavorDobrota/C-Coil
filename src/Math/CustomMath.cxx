@@ -137,71 +137,57 @@ double customMath::ln(double x)
 
         // faster version
         int row = (int) ((x1 - 2.0) * 32.0);
+        auto usedRow = taylorTableLn[row];
         x1 -= (2 + (row + 0.5) * 0.03125);
 
         double x2 = x1 * x1;
         double x4 = x2 * x2;
         double x6 = x4 * x2;
 
-        output += taylorTableLn[row][0] + taylorTableLn[row][1] * x1;
-        output += taylorTableLn[row][2] * x2 + taylorTableLn[row][3] * x2 * x1;
-        output += taylorTableLn[row][4] * x4 + taylorTableLn[row][5] * x4 * x1;
-        output += taylorTableLn[row][4] * x6 + taylorTableLn[row][5] * x6 * x1;
+        output += usedRow[0] + usedRow[1] * x1;
+        output += usedRow[2] * x2 + usedRow[3] * x2 * x1;
+        output += usedRow[4] * x4 + usedRow[5] * x4 * x1;
+        output += usedRow[6] * x6 + usedRow[7] * x6 * x1;
 
-        
         // AVX version (slower)
-//        __m256d vec1, vec2;
-//        double res[4];
-//
-//        vec1 = _mm256_mul_pd(
-//            _mm256_set_pd(
-//                taylorTableLn[row][0],
-//                taylorTableLn[row][2],
-//                taylorTableLn[row][4],
-//                taylorTableLn[row][4]
-//            ),
-//            _mm256_set_pd(
+//        __m256d tempVec = _mm256_set_pd(
 //                1.0,
 //                x2,
 //                x4,
 //                x6
-//            )
-//        );
-//
-//        vec2 = _mm256_mul_pd(
-//            _mm256_set_pd(
-//                taylorTableLn[row][1],
-//                taylorTableLn[row][3],
-//                taylorTableLn[row][5],
-//                taylorTableLn[row][5]
-//            ),
-//            _mm256_set_pd(
+//                );
+//        __m256d unitVector = _mm256_set_pd(
 //                x1,
-//                x2,
-//                x4,
-//                x6
-//            )
-//        );
-//
-//        vec2 = _mm256_mul_pd(
-//            vec2,
-//            _mm256_set_pd(
-//                1.0,
 //                x1,
 //                x1,
 //                x1
-//            )
-//        );
+//                );
+//        __m256d elements1 = _mm256_set_pd(
+//                taylorTableLn[row][0],
+//                taylorTableLn[row][2],
+//                taylorTableLn[row][4],
+//                taylorTableLn[row][6]
+//                );
+//        __m256d elements2 = _mm256_set_pd(
+//                taylorTableLn[row][1],
+//                taylorTableLn[row][3],
+//                taylorTableLn[row][5],
+//                taylorTableLn[row][7]
+//                );
 //
-//        vec2 = _mm256_add_pd(vec1, vec2);
+//        __m256d vec1, vec2, vec3;
+//        double res[4];
 //
-//        _mm256_store_pd(res, vec2);
+//        vec1 = _mm256_mul_pd(elements1, tempVec);
+//        vec2 = _mm256_mul_pd(elements2, tempVec);
+//        vec3 = _mm256_mul_pd(vec2, unitVector);
+//
+//        _mm256_store_pd(res, _mm256_add_pd(vec1, vec3));
 //
 //        for(auto elem : res)
 //        {
 //            output += elem;
 //        }
-
 
         // more accurate version
     //    x1 -= 3;
@@ -256,12 +242,43 @@ double customMath::cos(double x)
         double x13 = x11 * x2;
         double x15 = x13 * x2;
         double x17 = x15 * x2;
+        double x19 = x17 * x2;
+
+        // AVX attempt fail
+//        output += -x1 + taylorWeightsCos[0] * x3;
+//
+//        __m256d xVec1 = _mm256_set_pd(x5, x7, x9, x11);
+//        __m256d xVec2 = _mm256_set_pd(x13, x15, x17, x19);
+//        __m256d elements1 = _mm256_set_pd(
+//                taylorWeightsCos[1],
+//                taylorWeightsCos[2],
+//                taylorWeightsCos[3],
+//                taylorWeightsCos[4]
+//                );
+//        __m256d elements2 = _mm256_set_pd(
+//                taylorWeightsCos[5],
+//                taylorWeightsCos[6],
+//                taylorWeightsCos[7],
+//                taylorWeightsCos[8]
+//                );
+//
+//        __m256d vec1, vec2;
+//        double res[4];
+//
+//        vec1 = _mm256_mul_pd(elements1, xVec1);
+//        vec2 = _mm256_mul_pd(elements2, xVec2);
+//
+//        _mm256_store_pd(res, _mm256_add_pd(vec1, vec2));
+//
+//        for(auto elem : res)
+//            output += elem;
+
 
         output += -x1 + taylorWeightsCos[0] * x3;
         output += taylorWeightsCos[1] * x5 + taylorWeightsCos[2] * x7;
         output += taylorWeightsCos[3] * x9 + taylorWeightsCos[4] * x11;
         output += taylorWeightsCos[5] * x13 + taylorWeightsCos[6] * x15;
-        output += taylorWeightsCos[7] * x17 + taylorWeightsCos[8] * x17 * x2;
+        output += taylorWeightsCos[7] * x17 + taylorWeightsCos[8] * x19;
 
         return output;
     #else

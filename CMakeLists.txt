@@ -27,6 +27,9 @@ list(APPEND LIBS "$<TARGET_OBJECTS:LegendreMatrix>")
 
 add_subdirectory(src/Tensor)
 list(APPEND LIBS "$<TARGET_OBJECTS:Tensor>")
+
+add_subdirectory(src/ThreadPool)
+list(APPEND LIBS "$<TARGET_OBJECTS:ThreadPool>")
 #######################################
 
 if(WIN32)
@@ -48,6 +51,7 @@ target_include_directories(
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/OldCoil"
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Polynomial"
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Test"
+        PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor"
 )
 
 if(WIN32)

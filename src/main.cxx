@@ -21,7 +21,7 @@ int main()
 //    testPerformanceForComputeAll(PrecisionFactor(4.0), 50000, 5, 5);
 //    testPerformanceForComputeAll(PrecisionFactor(5.0), 50000, 5, 6);
 //    testPerformanceForComputeAll(PrecisionFactor(6.0), 50000, 5, 7);
-//    testPerformanceForComputeAll(PrecisionFactor(7.0), 50000, 5, 8);
+    testPerformanceForComputeAll(PrecisionFactor(7.0), 25000, 5, 8);
 //
 //    testMutualInductanceZAxisMTScaling(16);
 //    testMutualInductanceGeneralMTScaling(16);

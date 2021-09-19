@@ -3,7 +3,7 @@
 
 #include "ComputeMethod.h"
 #include "CoilType.h"
-#include "Tensor/Tensor.h"
+#include "Tensor.h"
 #include "PrecisionGlobalVars.h"
 
 #include <vector>
@@ -503,8 +503,6 @@ class Coil
                                     CoilPairArguments forceArguments, ComputeMethod method);
 
         [[nodiscard]] int calculateChunkSize(int numOps) const;
-
-        void synchronizeThreads() const;
 };
 
 #endif //GENERAL_COIL_PROGRAM_COIL_H

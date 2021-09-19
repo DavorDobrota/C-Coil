@@ -1,6 +1,7 @@
 #include "Coil.h"
-#include "ctpl.h"
+
 #include "hardware_acceleration.h"
+#include "ThreadPool.h"
 
 #include <cmath>
 #include <algorithm>
@@ -8,19 +9,17 @@
 #include <cstdio>
 #include <chrono>
 
+
 namespace
 {
-    ctpl::thread_pool g_threadPool;
-
-    std::atomic_int_fast64_t g_completedTasks;
-    size_t g_taskCount;
+    threadPool::ThreadPoolControl g_threadPool;
 }
 
 // TODO - fix variable so it is external and setter returned to Coil.cxx
 void Coil::setThreadCount(int threadCount)
 {
     Coil::threadCount = threadCount;
-    g_threadPool.resize(threadCount);
+    g_threadPool.setSize(threadCount);
 }
 
 void Coil::calculateAllBFieldST(const std::vector<double> &cylindricalZArr,
@@ -84,8 +83,8 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
 {
     computedFieldHArr.resize(cylindricalZArr.size());
     computedFieldZArr.resize(cylindricalZArr.size());
-    g_taskCount = cylindricalZArr.size();
-    g_completedTasks.store(0ull);
+    g_threadPool.setTaskCount(cylindricalZArr.size());
+    g_threadPool.getCompletedTasks().store(0ull);
 
     auto calcThread = [](
             int idx,
@@ -105,7 +104,7 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
             computedFieldH[i] = result.first;
             computedFieldZ[i] = result.second;
 
-            g_completedTasks.fetch_add(1ull);
+            g_threadPool.getCompletedTasks().fetch_add(1ull);
         }
     };
 
@@ -122,7 +121,7 @@ void Coil::calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
     }
 
     if(!async)
-        synchronizeThreads();
+        g_threadPool.synchronizeThreads();
 }
 
 void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
@@ -132,8 +131,8 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
                                     int chunkSize, bool async) const
 {
     computedPotentialArr.resize(cylindricalZArr.size());
-    g_taskCount = cylindricalZArr.size();
-    g_completedTasks.store(0ull);
+    g_threadPool.setTaskCount(cylindricalZArr.size());
+    g_threadPool.getCompletedTasks().store(0ull);
 
     auto calcThread = [](
             int idx,
@@ -151,7 +150,7 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
 
             computedPotential[i] = result;
 
-            g_completedTasks.fetch_add(1ull);
+            g_threadPool.getCompletedTasks().fetch_add(1ull);
         }
     };
 
@@ -168,7 +167,7 @@ void Coil::calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
     }
 
     if(!async)
-        synchronizeThreads();
+        g_threadPool.synchronizeThreads();
 }
 
 void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
@@ -184,8 +183,8 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
     computedGradientRRArr.resize(cylindricalZArr.size());
     computedGradientRZArr.resize(cylindricalZArr.size());
     computedGradientZZArr.resize(cylindricalZArr.size());
-    g_taskCount = cylindricalZArr.size();
-    g_completedTasks.store(0ull);
+    g_threadPool.setTaskCount(cylindricalZArr.size());
+    g_threadPool.getCompletedTasks().store(0ull);
 
     auto calcThread = [] (
         int idx,
@@ -209,7 +208,7 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
             computedGradientRZ[i] = result[2];
             computedGradientZZ[i] = result[3];
 
-            g_completedTasks.fetch_add(1ull);
+            g_threadPool.getCompletedTasks().fetch_add(1ull);
         }
     };
 
@@ -227,7 +226,7 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
     }
 
     if(!async)
-        synchronizeThreads();
+        g_threadPool.synchronizeThreads();
 }
 
 #pragma clang diagnostic push
@@ -422,5 +421,3 @@ int Coil::calculateChunkSize(int numOps) const
         return chunkSize;
     }
 }
-
-void Coil::synchronizeThreads() const { while(g_completedTasks.load() < g_taskCount){}; }

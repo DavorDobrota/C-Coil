@@ -22,7 +22,7 @@ void testFunctionPerformance()
     begin_time = high_resolution_clock::now();
     for (int i = 1; i <= nOps; ++i)
     {
-        temp += sqrt(i);
+        temp += std::sqrt(i);
     }
     printf("%.15f\n", temp);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();

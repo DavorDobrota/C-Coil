@@ -66,7 +66,7 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
         case CoilType::THIN:
         {
             thicknessArrayIndex = 0;
-            thicknessArrayIndex = g_minPrimLengthIncrements - 1;
+            lengthArrayIndex = g_minPrimLengthIncrements - 1;
             break;
         }
         case CoilType::FLAT:

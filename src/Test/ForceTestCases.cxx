@@ -1,5 +1,6 @@
 #include "Test.h"
 #include "Coil.h"
+#include "CoilGroup/CoilGroup.h"
 
 #include <cstdio>
 #include <cmath>
@@ -24,17 +25,19 @@ void testAmpereForceGeneralCase()
     Coil coil2 = Coil(0.168, 0.0285, 0.552, 1890, 725);
     Coil coil3 = Coil(0.1965, 0.04365, 0.552, 3792, 725);
 
-    printf("%.15g T\n",
-           coil1.computeBFieldZ(vec3::CoordVector3()) +
-           coil2.computeBFieldZ(vec3::CoordVector3()) +
-           coil3.computeBFieldZ(vec3::CoordVector3()));
+    CoilGroup group = CoilGroup();
+    group.addCoil(coil1);
+    group.addCoil(coil2);
+    group.addCoil(coil3);
+
+    printf("%.15g T\n", group.computeBFieldVector(vec3::CoordVector3()).zComponent);
 
 //    printf("%.15g MJ\n", 1e-6 *
 //           (0.5 * coil1.computeAndSetSelfInductance(PrecisionFactor(12)) * coil1.getCurrent() * coil1.getCurrent() +
 //           0.5 * coil2.computeAndSetSelfInductance(PrecisionFactor(12)) * coil2.getCurrent() * coil2.getCurrent() +
 //           0.5 * coil3.computeAndSetSelfInductance(PrecisionFactor(12)) * coil3.getCurrent() * coil3.getCurrent()));
 
-    std::pair<vec3::FieldVector3, vec3::FieldVector3> forcePair1, forcePair2;
+    std::pair<vec3::FieldVector3, vec3::FieldVector3> forcePair, forcePair2;
     auto precision = PrecisionFactor(8.0);
 
     printf("Force and Torque in displacement\n");
@@ -43,30 +46,20 @@ void testAmpereForceGeneralCase()
         for (int j = 0; j <= 2; ++j)
         {
             coil1.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.002 * j, 0.001 * i));
-            forcePair1 = Coil::computeAmpereForce(coil3, coil1, precision, CPU_MT);
-            forcePair2 = Coil::computeAmpereForce(coil2, coil1, precision, CPU_MT);
+            forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
             printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-                   forcePair1.first.xComponent + forcePair2.first.xComponent,
-                   forcePair1.first.yComponent + forcePair2.first.yComponent,
-                   forcePair1.first.zComponent + forcePair2.first.zComponent,
-                   forcePair1.second.xComponent + forcePair2.second.xComponent,
-                   forcePair1.second.yComponent + forcePair2.second.yComponent,
-                   forcePair1.second.zComponent + forcePair2.second.zComponent);
+                   forcePair.first.xComponent, forcePair.first.yComponent, forcePair.first.zComponent,
+                   forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
         }
     }
     printf("Force and Torque in rotation\n");
     for (int i = 0; i <= 10; ++i)
     {
         coil1.setPositionAndOrientation(vec3::CoordVector3(), M_PI/360 * i, M_PI_2);
-        forcePair1 = Coil::computeAmpereForce(coil2, coil1, precision, CPU_MT);
-        forcePair2 = Coil::computeAmpereForce(coil3, coil1, precision, CPU_MT);
+        forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
         printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-               forcePair1.first.xComponent + forcePair2.first.xComponent,
-               forcePair1.first.yComponent + forcePair2.first.yComponent,
-               forcePair1.first.zComponent + forcePair2.first.zComponent,
-               forcePair1.second.xComponent + forcePair2.second.xComponent,
-               forcePair1.second.yComponent + forcePair2.second.yComponent,
-               forcePair1.second.zComponent + forcePair2.second.zComponent);
+               forcePair.first.xComponent, forcePair.first.yComponent, forcePair.first.zComponent,
+               forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
     }
     printf("\n");
 
@@ -80,39 +73,24 @@ void testAmpereForceGeneralCase()
 
     coil1.setPositionAndOrientation(
             vec3::CoordVector3(vec3::CARTESIAN, 0.001, 0.0, 0.0), M_PI/180, 3 * M_PI_2);
-    forcePair1 = Coil::computeAmpereForce(coil3, coil1, precision, CPU_MT);
-    forcePair2 = Coil::computeAmpereForce(coil2, coil1, precision, CPU_MT);
+    forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
     printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-           forcePair1.first.xComponent + forcePair2.first.xComponent,
-           forcePair1.first.yComponent + forcePair2.first.yComponent,
-           forcePair1.first.zComponent + forcePair2.first.zComponent,
-           forcePair1.second.xComponent + forcePair2.second.xComponent,
-           forcePair1.second.yComponent + forcePair2.second.yComponent,
-           forcePair1.second.zComponent + forcePair2.second.zComponent);
+           forcePair.first.xComponent, forcePair.first.yComponent, forcePair.first.zComponent,
+           forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
 
     coil1.setPositionAndOrientation(
             vec3::CoordVector3(vec3::CARTESIAN, 0.001, 0.0, 0.001), M_PI/180, 3 * M_PI_2);
-    forcePair1 = Coil::computeAmpereForce(coil3, coil1, precision, CPU_ST);
-    forcePair2 = Coil::computeAmpereForce(coil2, coil1, precision, CPU_ST);
+    forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
     printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-           forcePair1.first.xComponent + forcePair2.first.xComponent,
-           forcePair1.first.yComponent + forcePair2.first.yComponent,
-           forcePair1.first.zComponent + forcePair2.first.zComponent,
-           forcePair1.second.xComponent + forcePair2.second.xComponent,
-           forcePair1.second.yComponent + forcePair2.second.yComponent,
-           forcePair1.second.zComponent + forcePair2.second.zComponent);
+           forcePair.first.xComponent, forcePair.first.yComponent, forcePair.first.zComponent,
+           forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
 
     coil1.setPositionAndOrientation(
             vec3::CoordVector3(vec3::CARTESIAN, 0.001, 0.001, 0.001), M_PI/180, 3 * M_PI_2);
-    forcePair1 = Coil::computeAmpereForce(coil2, coil1, precision, CPU_ST);
-    forcePair2 = Coil::computeAmpereForce(coil3, coil1, precision, CPU_ST);
+    forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
     printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-           forcePair1.first.xComponent + forcePair2.first.xComponent,
-           forcePair1.first.yComponent + forcePair2.first.yComponent,
-           forcePair1.first.zComponent + forcePair2.first.zComponent,
-           forcePair1.second.xComponent + forcePair2.second.xComponent,
-           forcePair1.second.yComponent + forcePair2.second.yComponent,
-           forcePair1.second.zComponent + forcePair2.second.zComponent);
+           forcePair.first.xComponent, forcePair.first.yComponent, forcePair.first.zComponent,
+           forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
 }
 
 void testAmpereForceThinCoils()

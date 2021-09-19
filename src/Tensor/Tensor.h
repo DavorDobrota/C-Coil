@@ -93,6 +93,8 @@ namespace vec3
             Matrix3();
             explicit Matrix3(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz);
 
+            Matrix3 operator+(const Matrix3 &mat) const;
+            void operator+=(const Matrix3 &mat);
             Matrix3 operator*(const Matrix3 &mat) const;
             FieldVector3 operator*(const FieldVector3 &vec) const;
     };

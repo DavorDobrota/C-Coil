@@ -4,7 +4,7 @@ project(General_Coil_Program)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-Ofast -mavx -msse2 -mavx2 -msse4 -ffast-math")
+set(CMAKE_CXX_FLAGS "-Ofast -msse -msse2 -msse3 -msse4 -msse4a -msse4.1 -msse4.2 -mavx -mavx2 -ffast-math")
 
 #######################################
 add_subdirectory(src/Test)

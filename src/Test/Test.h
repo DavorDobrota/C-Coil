@@ -32,14 +32,11 @@ void testMutualInductanceGeneralMTScaling(int maxThreads = g_default_nThreads);
 void testMutualInductanceGeneralArgumentGeneration();
 void testMutualInductanceGeneralDifferentGeometries();
 void testMutualInductanceGeneralGraphs();
-void testMutualInductanceGeneralParallelAxes();
 void testMutualInductanceGeneralEdgeCases();
-void testMutualInductanceGeneralConway();
 
-void testMutualInductanceGeneralThinCoilAndFilament();
-void testMutualInductanceGeneralThinCoilAndThinCoil();
-void testMutualInductanceGeneralPancakeAndPancake();
-void testMutualInductanceGeneralRectangularAndFilament();
+void testMutualInductanceGeneralMisalignedCoils();
+void testMutualInductanceGeneralParallelAxes();
+void testMutualInductanceGeneralConway();
 
 void testAmpereForceZAxis();
 void testAmpereForceZAxisPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);

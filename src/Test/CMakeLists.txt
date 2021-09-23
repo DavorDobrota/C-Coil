@@ -1,7 +1,7 @@
 add_library(
         Test OBJECT
 
-        TestMiscellaneous.cxx BabicTestCases.cxx TestForce.cxx
+        TestMiscellaneous.cxx MInductanceGeneralTestCases.cxx TestForce.cxx
         TestFieldsPerformance.cxx TestMInductanceZAxis.cxx
         TestMInductanceGeneral.cxx ForceTestCases.cxx
         TestArgumentGeneration.cxx)

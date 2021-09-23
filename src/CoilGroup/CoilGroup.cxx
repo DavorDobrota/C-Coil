@@ -200,7 +200,7 @@ double CoilGroup::computeMutualInductance(const Coil &secondary, PrecisionFactor
 
     for (const auto & memberCoil : memberCoils)
     {
-        if (memberCoil.getIdNum() != secondary.getIdNum())
+        if (memberCoil.getId() != secondary.getId())
             totalMutualInductance += Coil::computeMutualInductance(memberCoil, secondary, precisionFactor, method);
     }
     return totalMutualInductance;
@@ -215,7 +215,7 @@ CoilGroup::computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFa
 
     for (const auto & memberCoil : memberCoils)
     {
-        if (memberCoil.getIdNum() != secondary.getIdNum())
+        if (memberCoil.getId() != secondary.getId())
         {
             tempPair = Coil::computeAmpereForce(memberCoil, secondary, precisionFactor, method);
             totalForce += tempPair.first;

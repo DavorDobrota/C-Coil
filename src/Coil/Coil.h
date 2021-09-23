@@ -75,7 +75,7 @@ class Coil
 {
     private:
 
-        unsigned long long idNum;
+        unsigned long long id;
 
         double innerRadius;
         double thickness;
@@ -136,7 +136,7 @@ class Coil
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
              const PrecisionArguments &precisionSettings, int threadCount = 1);
 
-        [[nodiscard]] unsigned long long getIdNum() const;
+        [[nodiscard]] unsigned long long getId() const;
         [[nodiscard]] double getInnerRadius() const;
         [[nodiscard]] double getThickness() const;
         [[nodiscard]] double getLength() const;

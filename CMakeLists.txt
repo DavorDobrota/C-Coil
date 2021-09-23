@@ -4,7 +4,7 @@ project(General_Coil_Program)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-Ofast")
+set(CMAKE_CXX_FLAGS "-Ofast -msse -msse2 -msse3 -msse4 -msse4a -msse4.1 -msse4.2 -mavx -mavx2 -ffast-math")
 
 #######################################
 add_subdirectory(src/Test)
@@ -16,20 +16,20 @@ list(APPEND LIBS "$<TARGET_OBJECTS:Coil>")
 add_subdirectory(src/CoilData)
 list(APPEND LIBS "$<TARGET_OBJECTS:CoilData>")
 
-add_subdirectory(src/OldCoil)
-list(APPEND LIBS "$<TARGET_OBJECTS:OldCoil>")
+add_subdirectory(src/CoilGroup)
+list(APPEND LIBS "$<TARGET_OBJECTS:CoilGroup>")
+
+add_subdirectory(src/Math)
+list(APPEND LIBS "$<TARGET_OBJECTS:CustomMath>")
 
 add_subdirectory(src/LegendreMatrix)
 list(APPEND LIBS "$<TARGET_OBJECTS:LegendreMatrix>")
 
-add_subdirectory(src/Polynomial)
-list(APPEND LIBS "$<TARGET_OBJECTS:Polynomial>")
-
-add_subdirectory(src/ConversionUtil)
-list(APPEND LIBS "$<TARGET_OBJECTS:ConversionUtil>")
-
 add_subdirectory(src/Tensor)
 list(APPEND LIBS "$<TARGET_OBJECTS:Tensor>")
+
+add_subdirectory(src/ThreadPool)
+list(APPEND LIBS "$<TARGET_OBJECTS:ThreadPool>")
 #######################################
 
 if(WIN32)
@@ -48,9 +48,9 @@ target_include_directories(
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src"
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil"
-        PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/OldCoil"
-        PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Polynomial"
+        PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup"
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Test"
+        PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor"
 )
 
 if(WIN32)

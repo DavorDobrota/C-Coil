@@ -1,7 +1,9 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
+#include "Math/CustomMath.h"
 
 #include <cmath>
+#include "immintrin.h"
 
 
 namespace
@@ -16,8 +18,12 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
     double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
     double angularBlock = M_PI / usedPrecision.angularBlockCount;
 
+    // initialising precompute array
+    const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
+    double cosPhiPrecomputeArr[numPhiIncrements];
+    precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
+
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int lengthIncrements = usedPrecision.lengthIncrementCount - 1;
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
     int angularIncrements = usedPrecision.angularIncrementCount - 1;
 
@@ -26,6 +32,7 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
 
     double topEdge = zAxis + length * 0.5;
     double bottomEdge = zAxis - length * 0.5;
+
 
     for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlockCount; ++indBlockT)
     {
@@ -43,20 +50,24 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
 
             for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlockCount; ++indBlockFi)
             {
-                double blockPositionFi = angularBlock * (indBlockFi + 0.5);
-
                 for (int incFi = 0; incFi <= angularIncrements; ++incFi)
                 {
-                    double incrementPositionFi = blockPositionFi +
-                            (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incFi];
-
                     double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
 
-                    double cosinePhi = std::cos(incrementPositionFi);
+                    int arrPos = indBlockFi * (angularIncrements + 1) + incFi;
+                    double cosinePhi = cosPhiPrecomputeArr[arrPos];
                     double tempConstC = 1 / std::sqrt(tempConstB - tempConstA * cosinePhi);
 
-                    magneticPotential += constant * incrementWeightT * incrementWeightFi *incrementPositionT *
-                            cosinePhi * (std::asinh(topEdge * tempConstC) - std::asinh(bottomEdge * tempConstC));
+                    double tempConstD1 = topEdge * tempConstC;
+                    double tempConstD2 = bottomEdge * tempConstC;
+
+                    double tempConstE1 = std::sqrt(tempConstD1 * tempConstD1 + 1.0);
+                    double tempConstE2 = std::sqrt(tempConstD2 * tempConstD2 + 1.0);
+
+                    double tempConstF = LN((tempConstE1 + tempConstD1) / (tempConstE2 + tempConstD2));
+
+                    magneticPotential += constant * incrementWeightT * incrementWeightFi * incrementPositionT *
+                                         cosinePhi * tempConstF;
                 }
             }
         }
@@ -71,6 +82,11 @@ std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar,
 
     double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
     double angularBlock = M_PI / usedPrecision.angularBlockCount;
+
+    // initialising precompute array
+    const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
+    double cosPhiPrecomputeArr[numPhiIncrements];
+    precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
@@ -104,20 +120,15 @@ std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar,
 
             for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlockCount; ++indBlockFi)
             {
-                double blockPositionFi = angularBlock * (indBlockFi + 0.5);
-
                 for (int incFi = 0; incFi <= angularIncrements; ++incFi)
                 {
-                    double incrementPositionFi = blockPositionFi +
-                            (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incFi];
-
                     double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
-
-                    double cosinePhi = std::cos(incrementPositionFi);
+                    int arrPos = indBlockFi * (angularIncrements + 1) + incFi;
+                    double cosinePhi = cosPhiPrecomputeArr[arrPos];
 
                     double tempConstF = 2 * tempConstB * cosinePhi;
-                    double tempConstG1 = 1 / std::sqrt(tempConstD1 - tempConstF);
-                    double tempConstG2 = 1 / std::sqrt(tempConstD2 - tempConstF);
+                    double tempConstG1 = 1.0 / std::sqrt(tempConstD1 - tempConstF);
+                    double tempConstG2 = 1.0 / std::sqrt(tempConstD2 - tempConstF);
 
                     double tempConstH = tempConstE * incrementWeightFi;
 
@@ -141,6 +152,11 @@ std::vector<double> Coil::calculateBGradientFast(double zAxis, double rPolar, co
 
     double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
     double angularBlock = M_PI / usedPrecision.angularBlockCount;
+
+    // initialising precompute array
+    const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
+    double cosPhiPrecomputeArr[numPhiIncrements];
+    precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
@@ -178,16 +194,13 @@ std::vector<double> Coil::calculateBGradientFast(double zAxis, double rPolar, co
 
             for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlockCount; ++indBlockFi)
             {
-                double blockPositionFi = angularBlock * (indBlockFi + 0.5);
-
                 for (int incFi = 0; incFi <= angularIncrements; ++incFi)
                 {
-                    double incrementPositionFi = blockPositionFi +
-                            (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incFi];
-
                     double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
 
-                    double cosinePhi = std::cos(incrementPositionFi);
+                    int arrPos = indBlockFi * (angularIncrements + 1) + incFi;
+                    double cosinePhi = cosPhiPrecomputeArr[arrPos];
+
                     double cosinePhi2 = cosinePhi * cosinePhi;
                     double phiExpression = 2 * tempConstC * cosinePhi;
 

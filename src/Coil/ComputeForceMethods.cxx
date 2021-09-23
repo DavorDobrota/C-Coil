@@ -1,80 +1,36 @@
 #include "Coil.h"
 
-double Coil::computeAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                     PrecisionFactor precisionFactor, ComputeMethod method)
-{
-    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method,
-                                                                   false);
-    return computeAmpereForceZAxis(primary, secondary, zDisplacement, args, method);
-}
 
-double Coil::computeAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                     CoilPairArguments forceArguments, ComputeMethod method)
+std::pair<vec3::FieldVector3, vec3::FieldVector3>
+Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, CoilPairArguments forceArguments, ComputeMethod method)
 {
-    return calculateAmpereForceZAxis(primary, secondary, zDisplacement, forceArguments, method);
+    if (isZAxisCase(primary, secondary))
+    {
+        vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
+        double zForce = calculateAmpereForceZAxis(primary, secondary, secPositionVec.zComponent, forceArguments, method);
+
+        return std::make_pair(vec3::FieldVector3(0.0, 0.0, zForce), vec3::FieldVector3());
+    }
+    else
+        return calculateAmpereForceGeneral(primary, secondary, forceArguments, method);
 }
 
 std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        Coil::computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                        double zDisplacement, double rDisplacement,
-                                        PrecisionFactor precisionFactor, ComputeMethod method)
+Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod method)
 {
-    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method);
-    return computeAmpereForceGeneral(primary, secondary, zDisplacement, rDisplacement, args, method);
-}
+    bool zAxisCase = isZAxisCase(primary, secondary);
+    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method, zAxisCase);
 
-std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        Coil::computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                        double zDisplacement, double rDisplacement,
-                                        CoilPairArguments forceArguments, ComputeMethod method)
-{
-    return calculateAmpereForceGeneral(primary, secondary, zDisplacement, rDisplacement,
-                                       0.0, 0.0, forceArguments, method);
-}
-
-std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        Coil::computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                        double zDisplacement, double rDisplacement, double alphaAngle,
-                                        PrecisionFactor precisionFactor, ComputeMethod method)
-{
-    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method);
-    return computeAmpereForceGeneral(primary, secondary, zDisplacement, rDisplacement, alphaAngle, args, method);
-}
-
-std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        Coil::computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                        double zDisplacement, double rDisplacement, double alphaAngle,
-                                        CoilPairArguments forceArguments, ComputeMethod method)
-{
-    return calculateAmpereForceGeneral(primary, secondary, zDisplacement, rDisplacement,
-                                       alphaAngle, 0.0, forceArguments, method);
-}
-
-std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        Coil::computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                        double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
-                                        PrecisionFactor precisionFactor, ComputeMethod method)
-{
-    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method);
-    return computeAmpereForceGeneral(primary, secondary, zDisplacement, rDisplacement, alphaAngle, betaAngle, args, method);
-}
-
-std::pair<vec3::FieldVector3, vec3::FieldVector3>
-        Coil::computeAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                        double zDisplacement, double rDisplacement, double alphaAngle, double betaAngle,
-                                        CoilPairArguments forceArguments, ComputeMethod method)
-{
-    return calculateAmpereForceGeneral(primary, secondary, zDisplacement, rDisplacement,
-                                       alphaAngle, betaAngle, forceArguments, method);
+    return computeAmpereForce(primary, secondary, args, method);
 }
 
 
 std::pair<vec3::FieldVector3, vec3::FieldVector3>
-Coil::computeForceOnDipoleMoment(vec3::CoordVector3 positionVector, vec3::FieldVector3 dipoleMoment,
-                                 const PrecisionArguments &usedPrecision)
+Coil::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment,
+                                 const PrecisionArguments &usedPrecision) const
 {
-    vec3::FieldVector3 magneticField = computeBFieldVector(positionVector, usedPrecision);
-    vec3::Matrix3 magneticGradient = computeBGradientTensor(positionVector, usedPrecision);
+    vec3::FieldVector3 magneticField = computeBFieldVector(pointVector, usedPrecision);
+    vec3::Matrix3 magneticGradient = computeBGradientTensor(pointVector, usedPrecision);
 
     vec3::FieldVector3 magneticTorque = vec3::FieldVector3::crossProduct(dipoleMoment, magneticField);
     vec3::FieldVector3 magneticForce = magneticGradient * dipoleMoment;
@@ -83,7 +39,7 @@ Coil::computeForceOnDipoleMoment(vec3::CoordVector3 positionVector, vec3::FieldV
 }
 
 std::pair<vec3::FieldVector3, vec3::FieldVector3>
-Coil::computeForceOnDipoleMoment(vec3::CoordVector3 positionVector, vec3::FieldVector3 dipoleMoment)
+Coil::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment) const
 {
-    return computeForceOnDipoleMoment(positionVector, dipoleMoment, defaultPrecision);
+    return computeForceOnDipoleMoment(pointVector, dipoleMoment, defaultPrecision);
 }

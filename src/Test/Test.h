@@ -4,9 +4,10 @@
 #include "ComputeMethod.h"
 #include "Coil.h"
 
+
 const int g_default_nThreads = 8;
 
-void testLegendrePolynomials();
+void testFunctionPerformance();
 void testNewCoilParameters();
 void testMethodPrecisionCompareCPUvsGPU();
 void testCoilPositionAndRotation();
@@ -15,44 +16,41 @@ void testVector3();
 
 void testPerformanceCPU_ST(int nOps = 50'000);
 void testPerformanceForComputeAll(PrecisionFactor precisionFactor = PrecisionFactor(),
-                                  int nOps = 60'000, int nRepeats = 1, int nThreads = g_default_nThreads);
+                                  int nOps = 20'000, int nRepeats = 1, int nThreads = g_default_nThreads);
+void testPerformanceForVariousCoilTypes(int nOps = 100'000, int nThreads = g_default_nThreads);
 
-void testCoilMutualInductanceZAxis();
-void testCoilMutualInductanceZAxisArgumentGeneration();
-void testCoilMutualInductanceZAxisDifferentGeometries();
+void testMutualInductanceZAxis();
+void testMutualInductanceZAxisArgumentGeneration();
+void testMutualInductanceZAxisDifferentGeometries();
 void testCoilMutualInductanceZAxisPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
-void testCoilMutualInductanceZAxisMTScaling(int maxThreads = g_default_nThreads);
-void testCoilSelfInductance();
+void testMutualInductanceZAxisMTScaling(int maxThreads = g_default_nThreads);
+void testSelfInductance();
 
-void testOldCoilMutualInductanceZAxis();
-void testOldCoilMutualInductanceZAxisPerformance();
-void testOldCoilMutualInductanceGeneralPerformance();
-void testOldCoilSelfInductance();
+void testMutualInductanceGeneralForZAxis(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
+void testMutualInductanceGeneralPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
+void testMutualInductanceGeneralMTScaling(int maxThreads = g_default_nThreads);
+void testMutualInductanceGeneralArgumentGeneration();
+void testMutualInductanceGeneralDifferentGeometries();
+void testMutualInductanceGeneralGraphs();
+void testMutualInductanceGeneralEdgeCases();
 
-void testCoilMutualInductanceGeneralForZAxis(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
-void testCoilMutualInductanceGeneralPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
-void testCoilMutualInductanceGeneralMTScaling(int maxThreads = g_default_nThreads);
-void testCoilMutualInductanceGeneralArgumentGeneration();
-void testCoilMutualInductanceGeneralDifferentGeometries();
-void testCoilMutualInductanceGeneralGraphs();
+void testMutualInductanceGeneralMisalignedCoils();
+void testMutualInductanceGeneralParallelAxes();
+void testMutualInductanceGeneralConway();
 
-void testCoilMutualInductanceGeneralThinCoilAndFilament();
-void testCoilMutualInductanceGeneralThinCoilAndThinCoil();
-void testCoilMutualInductanceGeneralPancakeAndPancake();
-void testCoilMutualInductanceGeneralRectangularAndFilament();
+void testAmpereForceZAxis();
+void testAmpereForceZAxisPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
+void testAmpereForceZAxisMTScaling(int maxThreads = g_default_nThreads);
+void testAmpereForceGeneralForZAxis();
+void testAmpereForceGeneralPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
+void testAmpereForceGeneralMTScaling(int maxThreads = g_default_nThreads);
+void testGradientTensor();
+void testForceOnDipole();
 
-void testCoilAmpereForceZAxis();
-void testCoilAmpereForceZAxisPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
-void testCoilAmpereForceZAxisMTScaling(int maxThreads = g_default_nThreads);
-void testCoilAmpereForceGeneralForZAxis();
-void testCoilAmpereForceGeneralPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
-void testCoilAmpereForceZGeneralMTScaling(int maxThreads = g_default_nThreads);
-void testCoilGradientTensor();
-
-
-void testCoilAmpereForceForFilamentsZAxis();
-void testCoilAmpereForceGeneralCase();
-void testCoilAmpereForceThinCoils();
+void testAmpereForceForFilamentsZAxis();
+void testAmpereForceGeneralCase();
+void testAmpereForceThinCoils();
+void testAmpereForceFilamentsGeneral();
 
 
 #endif //GENERAL_COIL_PROGRAM_TEST_H

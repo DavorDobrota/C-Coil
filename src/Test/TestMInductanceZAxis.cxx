@@ -6,15 +6,24 @@
 #include <cmath>
 
 
-void testCoilMutualInductanceZAxis()
+void testMutualInductanceZAxis()
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
-    printf("%.20f\n\n", Coil::computeMutualInductance(primary, secondary, 0.2));
+    primary.setPositionAndOrientation();
+    secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.2));
 
-    FILE *input = fopen("values.txt", "r");
+    printf("%.20f\n\n", Coil::computeMutualInductance(primary, secondary));
+
+    FILE *input = fopen("values_MInductance_zAxis.txt", "r");
     FILE *output = fopen("output.txt", "w");
+
+    if(!input || !output)
+    {
+        printf("Couldn't load file!\n");
+        return;
+    }
 
     double Rt1, at1, bt1; int Nt1;
     double Rt2, at2, bt2; int Nt2;
@@ -28,10 +37,13 @@ void testCoilMutualInductanceZAxis()
         Coil prim = Coil(Rt1, at1, bt1, Nt1);
         Coil sec = Coil(Rt2, at2, bt2, Nt2);
 
+        prim.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0));
+        sec.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, distance));
+
         for (int i = 1; i <= 8; i++)
         {
-            temp = Coil::computeMutualInductance(prim, sec, distance, PrecisionFactor(i));
-            printf("%.18f\n", temp);
+            temp = Coil::computeMutualInductance(prim, sec, PrecisionFactor(i));
+            printf("%.16g\n", temp);
             fprintf(output, "%.15g\t", temp);
         }
 
@@ -43,7 +55,7 @@ void testCoilMutualInductanceZAxis()
     fclose(output);
 }
 
-void testCoilMutualInductanceZAxisArgumentGeneration()
+void testMutualInductanceZAxisArgumentGeneration()
 {
     Coil coil1 = Coil(0.05, 0.1, 0.1, 100);
     Coil coil2 = Coil(0.05, 0.1, 0.0, 10);
@@ -81,6 +93,8 @@ void testCoilMutualInductanceZAxisPerformance(ComputeMethod method, int nThreads
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
     primary.setThreadCount(nThreads);
+    primary.setPositionAndOrientation();
+    secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.2));
 
     int nOps = 8192;
     double temp;
@@ -93,13 +107,13 @@ void testCoilMutualInductanceZAxisPerformance(ComputeMethod method, int nThreads
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeMutualInductance(primary, secondary, 0.2, PrecisionFactor(i), method);
+            temp = Coil::computeMutualInductance(primary, secondary, PrecisionFactor(i), method);
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("precisionFactor(%.1f) : %6.3f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }
 }
 
-void testCoilMutualInductanceZAxisMTScaling(int maxThreads)
+void testMutualInductanceZAxisMTScaling(int maxThreads)
 {
     printf("Performance comparison between different numbers of threads:\n");
 
@@ -115,12 +129,11 @@ void testCoilMutualInductanceZAxisMTScaling(int maxThreads)
     }
 }
 
-void testCoilSelfInductance()
+void testSelfInductance()
 {
     Coil coil1 = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(), 12);
     Coil coil2 = Coil(0.03, 0.0, 0.12, 120);
     Coil coil3 = Coil(0.03, 0.03, 0.0, 30);
-    Coil coil4 = Coil(0.03, 0.0, 0.0, 1);
 
     coil1.setThreadCount(8);
 
@@ -136,7 +149,66 @@ void testCoilSelfInductance()
         printf("%.15g\n", coil3.computeAndSetSelfInductance(PrecisionFactor(i)));
     printf("\n");
 
-    for (int i = 1; i <= 12; ++i)
-        printf("%.15g\n", coil4.computeAndSetSelfInductance(PrecisionFactor(i)));
+    FILE *output = fopen("output.txt", "w");
+
+    double r1 = 0.1;
+    double alpha, beta;
+    double temp;
+
+    alpha = 1.5; beta = 0.25;
+    Coil coil4 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
+    for (int i = 1; i <= 15; ++i)
+    {
+        temp = coil4.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        printf("%.11g\n", 1e6 * temp);
+        fprintf(output, "%.11g\t", 1e6 * temp);
+    }
     printf("\n");
+    fprintf(output, "\n");
+
+    alpha = 3.0; beta = 1.0;
+    Coil coil5 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
+    for (int i = 1; i <= 15; ++i)
+    {
+        temp = coil5.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        printf("%.11g\n", 1e6 * temp);
+        fprintf(output, "%.11g\t", 1e6 * temp);
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    alpha = 4.0; beta = 3.0;
+    Coil coil6 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
+    for (int i = 1; i <= 15; ++i)
+    {
+        temp = coil6.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        printf("%.11g\n", 1e6 * temp);
+        fprintf(output, "%.11g\t", 1e6 * temp);
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    alpha = 7.0; beta = 6.0;
+    Coil coil7 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
+    for (int i = 1; i <= 15; ++i)
+    {
+        temp = coil7.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        printf("%.11g\n", 1e6 * temp);
+        fprintf(output, "%.11g\t", 1e6 * temp);
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    alpha = 9.0; beta = 4.0;
+    Coil coil8 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
+    for (int i = 1; i <= 15; ++i)
+    {
+        temp = coil8.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        printf("%.11g\n", 1e6 * temp);
+        fprintf(output, "%.11g\t", 1e6 * temp);
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    fclose(output);
 }

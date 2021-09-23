@@ -1,5 +1,6 @@
 #include "Coil.h"
 
+
 double Coil::calculateAPotential(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
 {
     // TODO - implement a solution which can completely eliminate overhead

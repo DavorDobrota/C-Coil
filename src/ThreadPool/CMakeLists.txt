@@ -1,9 +1,9 @@
-add_library(Polynomial OBJECT Polynomial.cxx)
+add_library(ThreadPool OBJECT ThreadPool.cxx)
 
-target_compile_options(Polynomial PRIVATE -fpic)
+target_compile_options(ThreadPool PRIVATE -fpic)
 
 target_include_directories(
-        Polynomial
+        ThreadPool
         INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
         PUBLIC ${CMAKE_SOURCE_DIR}/include
         PUBLIC ${CMAKE_SOURCE_DIR}/src

@@ -1,10 +1,10 @@
-#include <iostream>
+#include <cstdio>
+#include <cmath>
 
-#include "OldCoil.h"
 #include "Coil.h"
+#include "CoilGroup.h"
 #include "Test.h"
 
-extern thread_pool tp;
 
 int main()
 {

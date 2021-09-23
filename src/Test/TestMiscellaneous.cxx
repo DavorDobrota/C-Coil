@@ -1,55 +1,111 @@
-#include <cstdio>
-#include <vector>
-
 #include "Test.h"
-#include "Polynomial.h"
 #include "Coil.h"
-#include "OldCoil.h"
 #include "ComputeMethod.h"
 #include "Tensor.h"
+#include "Math/CustomMath.h"
 
-void testLegendrePolynomials()
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <chrono>
+
+
+void testFunctionPerformance()
 {
-    int numPol = 20;
+    using namespace std::chrono;
 
-    std::vector<Polynomial> legendrePolynomials = Polynomial::getLegendreSequenceUpToN(numPol);
+    int nOps = 200'000'000;
+    double temp, interval;
+    high_resolution_clock::time_point begin_time;
 
-    for (int i = 0; i < numPol; i++)
+    temp = 0.0;
+    begin_time = high_resolution_clock::now();
+    for (int i = 1; i <= nOps; ++i)
     {
-        legendrePolynomials[i].printForGrapher();
+        temp += std::sqrt(i);
     }
+    printf("%.15f\n", temp);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("sqrt  : %.1f MOps/s\n", 1e-6 * nOps / interval);
 
-    std::vector<double> zeros;
-    std::vector<double> weights;
-
-    for (int i = 1; i < numPol; ++i)
+    temp = 0.0;
+    begin_time = high_resolution_clock::now();
+    for (int i = 1; i <= nOps; ++i)
     {
-        Polynomial::getLegendreParametersForN(i,  zeros,  weights);
-
-        printf("%2d:\n", i);
-        for (double j : zeros)
-        {
-            printf("%.12f, ", j);
-        }
-        printf("\n");
-
-        for (double j : weights){
-            printf("%.12f, ", j);
-        }
-        printf("\n");
+        temp += customMath::ln(i);
     }
+    printf("%.15f\n", temp);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("ln    : %.1f MOps/s\n", 1e-6 * nOps / interval);
+
+    temp = 0.0;
+    begin_time = high_resolution_clock::now();
+    for (int i = 1; i <= nOps; ++i)
+    {
+        temp += customMath::lnf(i);
+    }
+    printf("%.15f\n", temp);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("lnf   : %.1f MOps/s\n", 1e-6 * nOps / interval);
+
+    temp = 0.0;
+    begin_time = high_resolution_clock::now();
+    for (int i = 1; i <= nOps; ++i)
+    {
+        temp += std::log10(400000.0 / i);
+    }
+    printf("%.15f\n", temp);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("log10 : %.1f MOps/s\n", 1e-6 * nOps / interval);
+
+    temp = 0.0;
+    begin_time = high_resolution_clock::now();
+    for (int i = 1; i <= nOps; ++i)
+    {
+        temp += std::log10((float) (i));
+    }
+    printf("%.15f\n", temp);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("log10f: %.1f MOps/s\n", 1e-6 * nOps / interval);
+
+    temp = 0.0;
+    begin_time = high_resolution_clock::now();
+    for (int i = 1; i <= nOps; ++i)
+    {
+        temp += std::log(i);
+    }
+    printf("%.15f\n", temp);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("log    : %.1f MOps/s\n", 1e-6 * nOps / interval);
+
+    temp = 0.0;
+    begin_time = high_resolution_clock::now();
+    for (int i = 1; i <= nOps; ++i)
+    {
+        temp += customMath::cos( 1.0 / i);
+    }
+    printf("%.15f\n", temp);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("custom cos: %.1f MOps/s\n", 1e-6 * nOps / interval);
+
+    temp = 0.0;
+    begin_time = high_resolution_clock::now();
+    for (int i = 1; i <= nOps; ++i)
+    {
+        temp += std::cos( 1.0 / i);
+    }
+    printf("%.15f\n", temp);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("std cos   : %.1f MOps/s\n", 1e-6 * nOps / interval);
 }
-
 
 void testNewCoilParameters()
 {
     Coil testCoil1 = Coil(0.03, 0.03, 0.12, 3600);
-    OldCoil oldCoil = OldCoil(1, 0.03, 0.03, 0.12, 0.001, 16, 16, 32, 3600, true, 50, 1.63e-8);
 
     printf("%.15f, %.15f, %.15f\n\n", testCoil1.getCurrentDensity(), testCoil1.getWireResistivity(), testCoil1.getSineFrequency());
 
     printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
-    printf("%.15f, %.15f, %.15f\n\n", oldCoil.mM, oldCoil.d, oldCoil.Res);
 
     testCoil1.setSineFrequency(100000);
     testCoil1.setCurrentDensity(500000);
@@ -62,7 +118,7 @@ void testNewCoilParameters()
 
     vec3::FieldVector3 vector = testCoil1.computeBFieldVector(positionVector);
     printf("%.25f %.25f\n", vector.xComponent, testCoil1.computeBFieldZ(positionVector));
-    printf("%.25f %.25f\n", vector.zComponent, testCoil1.computeBFieldH(positionVector));
+    printf("%.25f %.25f\n", vector.zComponent, testCoil1.computeBFieldX(positionVector));
 }
 
 void testMethodPrecisionCompareCPUvsGPU()
@@ -75,7 +131,7 @@ void testMethodPrecisionCompareCPUvsGPU()
     std::vector<vec3::CoordVector3> positionValues(pointCount);
 
     for (int i = 0; i < pointCount; i++)
-        positionValues[i] = vec3::CoordVector3(vec3::CYLINDRICAL, radius, i * M_PI / pointCount, 0.0);
+        positionValues[i] = vec3::CoordVector3(vec3::SPHERICAL, radius, i * M_PI / pointCount, 0.0);
 
     std::vector<double> cpuPotential;
     std::vector<double> gpuPotential;
@@ -102,17 +158,12 @@ void testMethodPrecisionCompareCPUvsGPU()
 
 void testCoilMutualInductanceForSpecialCase()
 {
-    OldCoil prim = OldCoil(1, 0.071335, 0.01397, 0.142748, 0.001, 20, 20, 60, 1142, true, 1, 1.63e-8);
-	OldCoil sec = OldCoil(1, 0.096945, 0.041529, 0.02413, 0.001, 20, 20, 80, 516, true, 1, 1.63e-8);
-
-	printf("%.15f\n", prim.MutualInductanceGeneralCalc(sec, 0.07366, 0.30988, 0.0, 0.0, true, 4.5));
-
 	Coil primary = Coil(0.071335, 0.01397, 0.142748, 1142);
 	Coil secondary = Coil(0.096945, 0.041529, 0.02413, 516);
 
-	printf("%.15f\n", Coil::computeMutualInductance(primary, secondary,
-                                                    0.07366, 0.30988,
-                                                    PrecisionFactor(4.0)));
+	secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.30988, 0.0, 0.07366));
+
+	printf("%.15f\n", Coil::computeMutualInductance(primary, secondary));
 }
 
 void testVector3()

@@ -16,7 +16,7 @@ double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &sec
     int thicknessBlocks = inductanceArguments.secondaryPrecision.thicknessBlockCount;
     int thicknessIncrements = inductanceArguments.secondaryPrecision.thicknessIncrementCount;
 
-    int numElements = lengthBlocks * lengthIncrements * thicknessBlocks* thicknessIncrements;
+    int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int maxLengthIndex = lengthIncrements - 1;

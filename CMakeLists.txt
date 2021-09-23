@@ -48,8 +48,7 @@ target_include_directories(
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src"
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil"
-        PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/OldCoil"
-        PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Polynomial"
+        PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup"
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Test"
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor"
 )

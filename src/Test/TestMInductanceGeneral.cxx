@@ -258,7 +258,7 @@ void testMutualInductanceGeneralParallelAxes()
         for (int i = 1; i <= 9; i++)
         {
             temp = Coil::computeMutualInductance(prim, sec, PrecisionFactor(i), CPU_MT);
-            printf("%.16g\n", 1e9 *  temp);
+            printf("%.12f\n", 1e9 *  temp);
             fprintf(output, "%.12f\t", 1e9 * temp);
         }
         printf("===========================================================================\n");
@@ -300,7 +300,7 @@ void testMutualInductanceGeneralEdgeCases()
     Coil coil10 = Coil(2.7, 0.2, 0.1, 1250);
     coil10.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.0));
     for (int i = 1; i <= 12; ++i)
-        printf("%.15g\n", Coil::computeMutualInductance(coil9, coil10, PrecisionFactor(i)), CPU_MT);
+        printf("%.15g\n", Coil::computeMutualInductance(coil9, coil10, PrecisionFactor(i), CPU_MT));
     printf("\n");
 }
 

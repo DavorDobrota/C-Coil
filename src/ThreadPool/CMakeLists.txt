@@ -1,6 +1,6 @@
 add_library(ThreadPool OBJECT ThreadPool.cxx)
 
-target_compile_options(CoilData PRIVATE -fpic)
+target_compile_options(ThreadPool PRIVATE -fpic)
 
 target_include_directories(
         ThreadPool

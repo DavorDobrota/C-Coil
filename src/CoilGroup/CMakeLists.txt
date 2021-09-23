@@ -1,6 +1,6 @@
 add_library(CoilGroup OBJECT CoilGroup.cxx)
 
-target_compile_options(CoilData PRIVATE -fpic)
+target_compile_options(CoilGroup PRIVATE -fpic)
 
 target_include_directories(
         CoilGroup

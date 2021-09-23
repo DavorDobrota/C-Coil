@@ -1,6 +1,6 @@
 #include "Test.h"
 #include "Coil.h"
-#include "CoilGroup/CoilGroup.h"
+#include "CoilGroup.h"
 
 #include <cstdio>
 #include <cmath>
@@ -64,11 +64,11 @@ void testAmpereForceGeneralCase()
     printf("\n");
 
     coil1.setPositionAndOrientation(vec3::CoordVector3(), M_PI/36 + 1e-7);
-    double M1 = coil1.getCurrent() * coil2.getCurrent() * Coil::computeMutualInductance(coil1, coil2, precision) +
-                coil1.getCurrent() * coil3.getCurrent() * Coil::computeMutualInductance(coil1, coil3, precision);
+    double M1 = coil1.getCurrent() * coil2.getCurrent() * Coil::computeMutualInductance(coil1, coil2, precision, CPU_MT) +
+                coil1.getCurrent() * coil3.getCurrent() * Coil::computeMutualInductance(coil1, coil3, precision, CPU_MT);
     coil1.setPositionAndOrientation(vec3::CoordVector3(), M_PI/36 - 1e-7);
-    double M2 = coil1.getCurrent() * coil2.getCurrent() * Coil::computeMutualInductance(coil1, coil2, precision) +
-            coil1.getCurrent() * coil3.getCurrent() * Coil::computeMutualInductance(coil1, coil3, precision);
+    double M2 = coil1.getCurrent() * coil2.getCurrent() * Coil::computeMutualInductance(coil1, coil2, precision, CPU_MT) +
+            coil1.getCurrent() * coil3.getCurrent() * Coil::computeMutualInductance(coil1, coil3, precision, CPU_MT);
     printf("By mutual inductance gradient : %.15g\n\n", (M1 - M2) / 2e-7);
 
     coil1.setPositionAndOrientation(

@@ -105,11 +105,11 @@ void testNewCoilParameters()
 
     printf("%.15f, %.15f, %.15f\n\n", testCoil1.getCurrentDensity(), testCoil1.getWireResistivity(), testCoil1.getSineFrequency());
 
-    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
+    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment().magnitude(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
 
     testCoil1.setSineFrequency(100000);
     testCoil1.setCurrentDensity(500000);
-    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
+    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment().magnitude(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
 
     testCoil1.setSineFrequency(0);
     testCoil1.setCurrent(1);

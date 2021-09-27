@@ -252,10 +252,14 @@ void Coil::calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
     std::vector<float> fieldHArr(polarR.size());
     std::vector<float> fieldZArr(polarR.size());
 
-    Calculate_hardware_accelerated_b(polarR.size(), &polarTheta[0], &polarR[0],
-                                     currentDensity, innerRadius, length, thickness,
-                                     thickness/16, length/16, M_PI/48,
-                                     &fieldHArr[0], &fieldZArr[0]);
+    #ifdef USE_GPU
+        Calculate_hardware_accelerated_b(polarR.size(), &polarTheta[0], &polarR[0],
+                                         currentDensity, innerRadius, length, thickness,
+                                         thickness/16, length/16, M_PI/48,
+                                         &fieldHArr[0], &fieldZArr[0]);
+    #else
+        throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
+    #endif // USE_GPU
 
     for (int i = 0; i < polarR.size(); ++i)
     {
@@ -284,10 +288,14 @@ void Coil::calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
     }
     std::vector<float> potentialArr(polarR.size());
 
-    Calculate_hardware_accelerated_a(polarR.size(), &polarTheta[0], &polarR[0],
-                                     currentDensity, innerRadius, length, thickness,
-                                     thickness / 16, length / 16, M_PI / 48,
-                                     nullptr, nullptr, &potentialArr[0]);
+    #ifdef USE_GPU
+        Calculate_hardware_accelerated_a(polarR.size(), &polarTheta[0], &polarR[0],
+                                         currentDensity, innerRadius, length, thickness,
+                                         thickness / 16, length / 16, M_PI / 48,
+                                         nullptr, nullptr, &potentialArr[0]);
+    #else
+        throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
+    #endif // USE_GPU
 
     // TODO - fix frequency in GPU potential calculation, current temporary fix
     for (int i = 0; i < polarR.size(); ++i)

@@ -13,22 +13,6 @@ namespace
     threadPool::ThreadPoolControl g_threadPool;
 }
 
-template <class C, class...Args>
-void calcThread
-(
-    int idx,
-    std::function<C(const std::vector<vec3::CoordVector3>&)> func,
-    const std::vector<vec3::CoordVector3> &pointVectorArr,
-    C &outputVector
-)
-{
-    C tempArr;
-    tempArr = func(pointVectorArr);
-    for (int i = 0; i < pointVectorArr.size(); ++i)
-        outputVector[i] += tempArr[i];
-
-    g_threadPool.getCompletedTasks().fetch_add(1ull);
-}
 
 CoilGroup::CoilGroup(std::vector<Coil> memberCoils, PrecisionFactor precisionFactor, int threadCount) :
             memberCoils(std::move(memberCoils)), defaultPrecisionFactor(precisionFactor), threadCount(threadCount) {}
@@ -192,58 +176,206 @@ std::vector<vec3::Matrix3> CoilGroup::computeAllBGradientTensors(const std::vect
 }
 
 
+// TODO: Generalize code with templates
+
 std::vector<vec3::FieldVector3>
-CoilGroup::calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async) const {
+CoilGroup::calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async) const
+{
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
 
-    std::vector<vec3::FieldVector3> outputVector(pointVectorArr.size());
+    std::vector<std::vector<vec3::FieldVector3>> intermediateValues(memberCoils.size());
+    for(auto vec : intermediateValues)
+        vec.resize(pointVectorArr.size());
 
-    for (Coil coil: memberCoils)
+    auto calcThread = []
+    (
+        int idx,
+        const Coil &coil,
+        const std::vector<vec3::CoordVector3> &pointVectorArr,
+        std::vector<vec3::FieldVector3> &outputVector
+    )
     {
-//        auto func = std::bind
-//        (
-//            static_cast<std::vector<vec3::FieldVector3>(Coil::*)(const std::vector<vec3::CoordVector3>&, ComputeMethod) const>
-//            (&Coil::computeAllBFieldComponents), &coil, _1, _2
-//        );
+        outputVector = coil.computeAllBFieldComponents(pointVectorArr);
 
-        auto func = [&coil](const std::vector<vec3::CoordVector3>& pointVectorArr)
-        {
-            return coil.computeAllBFieldComponents(pointVectorArr);
-        };
+        g_threadPool.getCompletedTasks().fetch_add(1ull);
+    };
 
+    for (int i = 0; i < memberCoils.size(); i++)
+    {
         g_threadPool.push
         (
             calcThread,
-            func,
+            std::ref(memberCoils[i]),
             std::ref(pointVectorArr),
-            std::ref(outputVector)
+            std::ref(intermediateValues[i])
         );
     }
 
     if(!async)
         g_threadPool.synchronizeThreads();
+
+    std::vector<vec3::FieldVector3> ret(pointVectorArr.size());
+
+    for(auto values : intermediateValues)
+    {
+        for(int i = 0; i < values.size(); i++)
+        {
+            ret[i] += values[i];
+        }
+    }
+
+    return ret;
 }
 
 std::vector<vec3::FieldVector3>
 CoilGroup::calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async) const
 {
-    // TODO implement a different kind of multithreading where each thread receives ONE coil to compute
-    return std::vector<vec3::FieldVector3>();
+    g_threadPool.setTaskCount(memberCoils.size());
+    g_threadPool.getCompletedTasks().store(0ull);
+
+    std::vector<std::vector<vec3::FieldVector3>> intermediateValues(memberCoils.size());
+    for(auto vec : intermediateValues)
+        vec.resize(pointVectorArr.size());
+
+    auto calcThread = []
+    (
+        int idx,
+        const Coil &coil,
+        const std::vector<vec3::CoordVector3> &pointVectorArr,
+        std::vector<vec3::FieldVector3> &outputVector
+    )
+    {
+        outputVector = coil.computeAllAPotentialComponents(pointVectorArr);
+
+        g_threadPool.getCompletedTasks().fetch_add(1ull);
+    };
+
+    for (int i = 0; i < memberCoils.size(); i++)
+    {
+        g_threadPool.push
+        (
+            calcThread,
+            std::ref(memberCoils[i]),
+            std::ref(pointVectorArr),
+            std::ref(intermediateValues[i])
+        );
+    }
+
+    if(!async)
+        g_threadPool.synchronizeThreads();
+
+    std::vector<vec3::FieldVector3> ret(pointVectorArr.size());
+
+    for(auto values : intermediateValues)
+    {
+        for(int i = 0; i < values.size(); i++)
+        {
+            ret[i] += values[i];
+        }
+    }
+
+    return ret;
 }
 
 std::vector<vec3::FieldVector3>
 CoilGroup::calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async) const
 {
-    // TODO implement a different kind of multithreading where each thread receives ONE coil to compute
-    return std::vector<vec3::FieldVector3>();
+    g_threadPool.setTaskCount(memberCoils.size());
+    g_threadPool.getCompletedTasks().store(0ull);
+
+    std::vector<std::vector<vec3::FieldVector3>> intermediateValues(memberCoils.size());
+    for(auto vec : intermediateValues)
+        vec.resize(pointVectorArr.size());
+
+    auto calcThread = []
+    (
+        int idx,
+        const Coil &coil,
+        const std::vector<vec3::CoordVector3> &pointVectorArr,
+        std::vector<vec3::FieldVector3> &outputVector
+    )
+    {
+        outputVector = coil.computeAllEFieldComponents(pointVectorArr);
+
+        g_threadPool.getCompletedTasks().fetch_add(1ull);
+    };
+
+    for (int i = 0; i < memberCoils.size(); i++)
+    {
+        g_threadPool.push
+        (
+            calcThread,
+            std::ref(memberCoils[i]),
+            std::ref(pointVectorArr),
+            std::ref(intermediateValues[i])
+        );
+    }
+
+    if(!async)
+        g_threadPool.synchronizeThreads();
+
+    std::vector<vec3::FieldVector3> ret(pointVectorArr.size());
+
+    for(auto values : intermediateValues)
+    {
+        for(int i = 0; i < values.size(); i++)
+        {
+            ret[i] += values[i];
+        }
+    }
+
+    return ret;
 }
 
 std::vector<vec3::Matrix3>
 CoilGroup::calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async) const
 {
-    // TODO implement a different kind of multithreading where each thread receives ONE coil to compute
-    return std::vector<vec3::Matrix3>();
+    g_threadPool.setTaskCount(memberCoils.size());
+    g_threadPool.getCompletedTasks().store(0ull);
+
+    std::vector<std::vector<vec3::Matrix3>> intermediateValues(memberCoils.size());
+    for(auto vec : intermediateValues)
+        vec.resize(pointVectorArr.size());
+
+    auto calcThread = []
+    (
+        int idx,
+        const Coil &coil,
+        const std::vector<vec3::CoordVector3> &pointVectorArr,
+        std::vector<vec3::Matrix3> &outputVector
+    )
+    {
+        outputVector = coil.computeAllBGradientTensors(pointVectorArr);
+
+        g_threadPool.getCompletedTasks().fetch_add(1ull);
+    };
+
+    for (int i = 0; i < memberCoils.size(); i++)
+    {
+        g_threadPool.push
+        (
+            calcThread,
+            std::ref(memberCoils[i]),
+            std::ref(pointVectorArr),
+            std::ref(intermediateValues[i])
+        );
+    }
+
+    if(!async)
+        g_threadPool.synchronizeThreads();
+
+    std::vector<vec3::Matrix3> ret(pointVectorArr.size());
+
+    for(auto values : intermediateValues)
+    {
+        for(int i = 0; i < values.size(); i++)
+        {
+            ret[i] += values[i];
+        }
+    }
+
+    return ret;
 }
 
 

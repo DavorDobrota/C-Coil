@@ -8,7 +8,7 @@
 
 int main()
 {
-
+    testCoilGroupMTvsMTD(32, 50'000);
 
     return 0;
 }

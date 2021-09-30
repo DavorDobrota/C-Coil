@@ -388,6 +388,7 @@ double CoilGroup::computeMutualInductance(const Coil &secondary, PrecisionFactor
 {
     double totalMutualInductance = 0.0;
 
+    // TODO - implement MTD in case method == CPU_MT and memberCoils.size() >= 4 * threadCount
     for (const auto & memberCoil : memberCoils)
     {
         if (memberCoil.getId() != secondary.getId())
@@ -403,6 +404,7 @@ CoilGroup::computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFa
     vec3::FieldVector3 totalTorque = vec3::FieldVector3();
     std::pair<vec3::FieldVector3, vec3::FieldVector3> tempPair;
 
+    // TODO - implement MTD in case method == CPU_MT and memberCoils.size() >= 4 * threadCount
     for (const auto & memberCoil : memberCoils)
     {
         if (memberCoil.getId() != secondary.getId())

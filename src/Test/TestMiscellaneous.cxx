@@ -277,6 +277,7 @@ void testCoilGroupMTD(int numCoils, int numPoints, int threadCount, bool print)
     }
 
     torusGroup.setThreadCount(threadCount);
+    torusGroup.setDefaultPrecisionFactor(PrecisionFactor(3.0));
 
     computedBField = torusGroup.computeAllBFieldComponents(fieldPoints, CPU_MT);
 
@@ -295,15 +296,15 @@ void testCoilGroupMTvsMTD(int threadCount, int numPoints)
     double interval;
 
     int coilCount1 = 2 * threadCount;
-    int coilCount2 = 32 * threadCount;
+    int coilCount2 = 8 * threadCount;
 
     begin_time = high_resolution_clock::now();
     testCoilGroupMTD(coilCount1, numPoints, threadCount, false);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("MT perf  : %.1f coils/s\n", coilCount1 / interval);
+    printf("MT perf  : %.0f kPoints/s\n", 1e-3 * coilCount1 * numPoints / interval);
 
     begin_time = high_resolution_clock::now();
     testCoilGroupMTD(coilCount2, numPoints, threadCount, false);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("MTD perf : %.1f coils/s", coilCount2 / interval);
+    printf("MTD perf : %.0f kPoints/s", 1e-3 * coilCount2 * numPoints / interval);
 }

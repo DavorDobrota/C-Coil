@@ -2,7 +2,8 @@
 #include "Coil.h"
 #include "ComputeMethod.h"
 #include "Tensor.h"
-#include "Math/CustomMath.h"
+#include "CustomMath.h"
+#include "CoilGroup.h"
 
 #include <cmath>
 #include <cstdio>
@@ -253,4 +254,56 @@ void testCoilPositionAndRotation()
                fieldVectors1[i].xComponent, fieldVectors1[i].yComponent, fieldVectors1[i].zComponent,
                fieldVectors2[i].xComponent, fieldVectors2[i].yComponent, fieldVectors2[i].zComponent);
     printf("\n");
+}
+
+void testCoilGroupMTD(int numCoils, int numPoints, int threadCount, bool print)
+{
+    double torusRadius = 1.0;
+
+    CoilGroup torusGroup = CoilGroup();
+    std::vector<vec3::CoordVector3> fieldPoints(numPoints);
+    std::vector<vec3::FieldVector3> computedBField;
+
+    for (int i = 0; i < numPoints; ++i)
+        fieldPoints[i] = vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, torusRadius, 2*M_PI * i / numPoints);
+
+    for (int i = 0; i < numCoils; ++i)
+    {
+        Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, torusRadius / 100.0, 10000, 10);
+        tempCoil.setPositionAndOrientation(
+                vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, torusRadius, 2*M_PI * i / numCoils),
+                M_PI_2, 2*M_PI * i / numCoils + M_PI_2);
+        torusGroup.addCoil(tempCoil);
+    }
+
+    torusGroup.setThreadCount(threadCount);
+
+    computedBField = torusGroup.computeAllBFieldComponents(fieldPoints, CPU_MT);
+
+    if (print)
+        for (int i = 0; i < numPoints; ++i)
+            printf("%.15g\n",
+                   std::sqrt(computedBField[i].xComponent * computedBField[i].xComponent +
+                   computedBField[i].yComponent * computedBField[i].yComponent));
+}
+
+void testCoilGroupMTvsMTD(int threadCount, int numPoints)
+{
+    using namespace std::chrono;
+
+    high_resolution_clock::time_point begin_time;
+    double interval;
+
+    int coilCount1 = 2 * threadCount;
+    int coilCount2 = 32 * threadCount;
+
+    begin_time = high_resolution_clock::now();
+    testCoilGroupMTD(coilCount1, numPoints, threadCount, false);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MT perf  : %.1f coils/s\n", coilCount1 / interval);
+
+    begin_time = high_resolution_clock::now();
+    testCoilGroupMTD(coilCount2, numPoints, threadCount, false);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MTD perf : %.1f coils/s", coilCount2 / interval);
 }

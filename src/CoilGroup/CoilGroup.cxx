@@ -27,6 +27,8 @@ const std::vector<Coil> &CoilGroup::getMemberCoils() const { return memberCoils;
 
 void CoilGroup::setDefaultPrecisionFactor(PrecisionFactor precisionFactor, ComputeMethod method)
 {
+    defaultPrecisionFactor = precisionFactor;
+
     if (method == GPU)
     {
         for (auto & memberCoil : memberCoils)
@@ -40,6 +42,9 @@ void CoilGroup::setDefaultPrecisionFactor(PrecisionFactor precisionFactor, Compu
 void CoilGroup::setThreadCount(int threadCount)
 {
     this->threadCount = threadCount;
+
+    for (auto & memberCoil : memberCoils)
+        memberCoil.setThreadCount(threadCount);
 }
 
 void CoilGroup::addCoil(Coil coil)
@@ -93,7 +98,7 @@ CoilGroup::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &poi
                                     ComputeMethod method) const
 {
     // true is temporary, until to-do is completed
-    if (memberCoils.size() < 2 * threadCount || method != CPU_MT || true)
+    if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
     {
         std::vector<vec3::FieldVector3> tempArr(pointVectorArr.size());
         std::vector<vec3::FieldVector3> outputArr(pointVectorArr.size());
@@ -115,7 +120,7 @@ CoilGroup::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> 
                                           ComputeMethod method) const
 {
     // true is temporary, until to-do is completed
-    if (memberCoils.size() < 2 * threadCount || method != CPU_MT || true)
+    if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
     {
         std::vector<vec3::FieldVector3> tempArr(pointVectorArr.size());
         std::vector<vec3::FieldVector3> outputArr(pointVectorArr.size());
@@ -137,7 +142,7 @@ CoilGroup::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &poi
                                       ComputeMethod method) const
 {
     // true is temporary, until to-do is completed
-    if (memberCoils.size() < 2 * threadCount || method != CPU_MT || true)
+    if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
     {
         std::vector<vec3::FieldVector3> tempArr(pointVectorArr.size());
         std::vector<vec3::FieldVector3> outputArr(pointVectorArr.size());
@@ -158,7 +163,7 @@ std::vector<vec3::Matrix3> CoilGroup::computeAllBGradientTensors(const std::vect
                                                                  ComputeMethod method) const
 {
     // true is temporary, until to-do is completed
-    if (memberCoils.size() < 2 * threadCount || method != CPU_MT || true)
+    if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
     {
         std::vector<vec3::Matrix3> tempArr(pointVectorArr.size());
         std::vector<vec3::Matrix3> outputArr(pointVectorArr.size());

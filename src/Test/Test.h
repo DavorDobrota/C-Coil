@@ -10,9 +10,11 @@ const int g_default_nThreads = 8;
 void testFunctionPerformance();
 void testNewCoilParameters();
 void testMethodPrecisionCompareCPUvsGPU();
-void testCoilPositionAndRotation();
 void testCoilMutualInductanceForSpecialCase();
 void testVector3();
+void testCoilPositionAndRotation();
+void testCoilGroupMTD(int numCoils = 100, int numPoints = 10'000, int threadCount = 8, bool print = true);
+void testCoilGroupMTvsMTD(int threadCount = 8, int numPoints = 20'000);
 
 void testPerformanceCPU_ST(int nOps = 50'000);
 void testPerformanceForComputeAll(PrecisionFactor precisionFactor = PrecisionFactor(),

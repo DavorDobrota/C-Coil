@@ -187,6 +187,6 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
     forceVector *= forceFactor;
     torqueVector *= forceFactor;
 
-    return std::make_pair(forceVector, torqueVector);
+    return {forceVector, torqueVector};
 
 }

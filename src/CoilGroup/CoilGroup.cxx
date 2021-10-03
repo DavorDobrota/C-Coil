@@ -1,5 +1,6 @@
 #include "CoilGroup.h"
 
+#include <numeric>
 #include <utility>
 #include <cmath>
 #include <functional>
@@ -97,7 +98,6 @@ std::vector<vec3::FieldVector3>
 CoilGroup::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectorArr,
                                     ComputeMethod method) const
 {
-    // true is temporary, until to-do is completed
     if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
     {
         std::vector<vec3::FieldVector3> tempArr(pointVectorArr.size());
@@ -119,7 +119,6 @@ std::vector<vec3::FieldVector3>
 CoilGroup::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectorArr,
                                           ComputeMethod method) const
 {
-    // true is temporary, until to-do is completed
     if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
     {
         std::vector<vec3::FieldVector3> tempArr(pointVectorArr.size());
@@ -141,7 +140,6 @@ std::vector<vec3::FieldVector3>
 CoilGroup::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectorArr,
                                       ComputeMethod method) const
 {
-    // true is temporary, until to-do is completed
     if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
     {
         std::vector<vec3::FieldVector3> tempArr(pointVectorArr.size());
@@ -162,7 +160,6 @@ CoilGroup::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &poi
 std::vector<vec3::Matrix3> CoilGroup::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &pointVectorArr,
                                                                  ComputeMethod method) const
 {
-    // true is temporary, until to-do is completed
     if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
     {
         std::vector<vec3::Matrix3> tempArr(pointVectorArr.size());
@@ -388,33 +385,127 @@ double CoilGroup::computeMutualInductance(const Coil &secondary, PrecisionFactor
 {
     double totalMutualInductance = 0.0;
 
-    // TODO - implement MTD in case method == CPU_MT and memberCoils.size() >= 4 * threadCount
-    for (const auto & memberCoil : memberCoils)
+    if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
     {
-        if (memberCoil.getId() != secondary.getId())
-            totalMutualInductance += Coil::computeMutualInductance(memberCoil, secondary, precisionFactor, method);
+        for (const auto &memberCoil: memberCoils) {
+            if (memberCoil.getId() != secondary.getId())
+                totalMutualInductance += Coil::computeMutualInductance(memberCoil, secondary, precisionFactor, method);
+        }
+        return totalMutualInductance;
     }
-    return totalMutualInductance;
+    else
+        return computeMutualInductanceMTD(secondary, precisionFactor);
 }
 
 std::pair<vec3::FieldVector3, vec3::FieldVector3>
 CoilGroup::computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod method) const
 {
-    vec3::FieldVector3 totalForce = vec3::FieldVector3();
-    vec3::FieldVector3 totalTorque = vec3::FieldVector3();
+    vec3::FieldVector3 totalForce{};
+    vec3::FieldVector3 totalTorque{};
     std::pair<vec3::FieldVector3, vec3::FieldVector3> tempPair;
 
-    // TODO - implement MTD in case method == CPU_MT and memberCoils.size() >= 4 * threadCount
-    for (const auto & memberCoil : memberCoils)
+    if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
     {
-        if (memberCoil.getId() != secondary.getId())
-        {
-            tempPair = Coil::computeAmpereForce(memberCoil, secondary, precisionFactor, method);
-            totalForce += tempPair.first;
-            totalTorque += tempPair.second;
+        for (const auto &memberCoil: memberCoils) {
+            if (memberCoil.getId() != secondary.getId()) {
+                tempPair = Coil::computeAmpereForce(memberCoil, secondary, precisionFactor, method);
+                totalForce += tempPair.first;
+                totalTorque += tempPair.second;
+            }
         }
+        return {totalForce, totalTorque};
     }
-    return std::make_pair(totalForce, totalTorque);
+    else
+        return computeAmpereForceMTD(secondary, precisionFactor);
+}
+
+double CoilGroup::computeMutualInductanceMTD(const Coil &secondary, PrecisionFactor precisionFactor) const
+{
+    g_threadPool.setTaskCount(memberCoils.size());
+    g_threadPool.getCompletedTasks().store(0ull);
+
+    std::vector<double> intermediateValues(memberCoils.size());
+
+    auto calcThread = []
+    (
+        int idx,
+        const Coil &coil,
+        const Coil &secondary,
+        PrecisionFactor precisionFactor,
+        double &mutualInductance
+    )
+    {
+        mutualInductance = Coil::computeMutualInductance(coil, secondary, precisionFactor);
+
+        g_threadPool.getCompletedTasks().fetch_add(1ull);
+    };
+
+    for (int i = 0; i < memberCoils.size(); i++)
+    {
+        if (memberCoils[i].getId() != secondary.getId())
+            g_threadPool.push
+            (
+                calcThread,
+                memberCoils[i],
+                secondary,
+                precisionFactor,
+                intermediateValues[i]
+            );
+    }
+
+    g_threadPool.synchronizeThreads();
+
+    double mutualInductance = std::accumulate(intermediateValues.begin(), intermediateValues.end(), 0.0);
+
+    return mutualInductance;
+}
+
+std::pair<vec3::FieldVector3, vec3::FieldVector3>
+CoilGroup::computeAmpereForceMTD(const Coil &secondary, PrecisionFactor precisionFactor) const
+{
+    g_threadPool.setTaskCount(memberCoils.size());
+    g_threadPool.getCompletedTasks().store(0ull);
+
+    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> intermediateValues(memberCoils.size());
+
+    auto calcThread = []
+    (
+        int idx,
+        const Coil &coil,
+        const Coil &secondary,
+        PrecisionFactor precisionFactor,
+        std::pair<vec3::FieldVector3, vec3::FieldVector3> &ampereForce
+    )
+    {
+        ampereForce = Coil::computeAmpereForce(coil, secondary, precisionFactor);
+
+        g_threadPool.getCompletedTasks().fetch_add(1ull);
+    };
+
+    for (int i = 0; i < memberCoils.size(); i++)
+    {
+        if (memberCoils[i].getId() != secondary.getId())
+            g_threadPool.push
+            (
+                calcThread,
+                memberCoils[i],
+                secondary,
+                precisionFactor,
+                intermediateValues[i]
+            );
+    }
+
+    g_threadPool.synchronizeThreads();
+
+    vec3::FieldVector3 force{}, torque{};
+
+    for(auto value : intermediateValues)
+    {
+        force += value.first;
+        torque += value.second;
+    }
+
+    return {force, torque};
 }
 
 std::pair<vec3::FieldVector3, vec3::FieldVector3>
@@ -430,5 +521,5 @@ CoilGroup::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::Fiel
         totalForce += tempPair.first;
         totalTorque += tempPair.second;
     }
-    return std::make_pair(totalForce, totalTorque);
+    return {totalForce, totalTorque};
 }

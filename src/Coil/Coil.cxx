@@ -159,7 +159,7 @@ CoilType Coil::getCoilType() const { return coilType; }
 
 vec3::CoordVector3 Coil::getPositionVector() const { return positionVector; }
 
-std::pair<double, double> Coil::getRotationAngles() const { return std::make_pair(yAxisAngle, zAxisAngle); }
+std::pair<double, double> Coil::getRotationAngles() const { return {yAxisAngle, zAxisAngle}; }
 
 
 void Coil::setCurrentDensity(double currentDensity)

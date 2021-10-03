@@ -68,6 +68,12 @@ class CoilGroup
 
         [[nodiscard]] std::vector<vec3::Matrix3>
         calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async = false) const;
+
+        [[nodiscard]] double computeMutualInductanceMTD(const Coil &secondary,
+                                                        PrecisionFactor precisionFactor = PrecisionFactor()) const;
+
+        [[nodiscard]] std::pair<vec3::FieldVector3, vec3::FieldVector3>
+        computeAmpereForceMTD(const Coil &secondary, PrecisionFactor precisionFactor = PrecisionFactor()) const;
 };
 
 #endif //GENERAL_COIL_PROGRAM_COILGROUP_H

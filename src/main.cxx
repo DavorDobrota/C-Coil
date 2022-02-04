@@ -8,6 +8,5 @@
 
 int main()
 {
-    testCoilGroupMTDInductanceAndForce(2);
     return 0;
 }

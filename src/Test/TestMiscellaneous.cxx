@@ -311,13 +311,14 @@ void testCoilGroupMTvsMTD(int threadCount, int numPoints)
     printf("MTD perf : %.0f kPoints/s", 1e-3 * coilCount2 * numPoints / interval);
 }
 
-void testCoilGroupMTDInductanceAndForce(int threadCount, int numCoils)
+void testCoilGroupMTDInductanceAndForce(int threadCount)
 {
     using namespace std::chrono;
 
     high_resolution_clock::time_point begin_time;
     double interval;
 
+    int numCoils = 8 * threadCount;
     CoilGroup coilGroup = CoilGroup();
     Coil referenceCoil = Coil(0.1, 0.1, 0.1, 10000);
 
@@ -333,11 +334,26 @@ void testCoilGroupMTDInductanceAndForce(int threadCount, int numCoils)
     begin_time = high_resolution_clock::now();
     printf("%.15g\n", coilGroup.computeMutualInductance(referenceCoil, PrecisionFactor(5.0), CPU_ST));
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("ST  perf  : %.3f kPoints/s\n", numCoils / interval);
+    printf("ST  perf  : %.0f coils/s\n", numCoils / interval);
 
 
     begin_time = high_resolution_clock::now();
     printf("%.15g\n", coilGroup.computeMutualInductance(referenceCoil, PrecisionFactor(5.0), CPU_MT));
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("MTD perf  : %.3f kPoints/s\n", numCoils / interval);
+    printf("MTD perf  : %.0f coils/s\n", numCoils / interval);
+
+    printf("\n");
+
+    begin_time = high_resolution_clock::now();
+    printf("%.15g\n",
+           coilGroup.computeAmpereForce(referenceCoil, PrecisionFactor(5.0), CPU_ST).first.zComponent);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("ST  perf  : %.0f coils/s\n", numCoils / interval);
+
+
+    begin_time = high_resolution_clock::now();
+    printf("%.15g\n",
+           coilGroup.computeAmpereForce(referenceCoil,PrecisionFactor(5.0), CPU_MT).first.zComponent);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MTD perf  : %.0f coils/s\n", numCoils / interval);
 }

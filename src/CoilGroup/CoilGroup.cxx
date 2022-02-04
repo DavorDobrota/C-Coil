@@ -446,10 +446,10 @@ double CoilGroup::computeMutualInductanceMTD(const Coil &secondary, PrecisionFac
             g_threadPool.push
             (
                 calcThread,
-                memberCoils[i],
-                secondary,
+                std::ref(memberCoils[i]),
+                std::ref(secondary),
                 precisionFactor,
-                intermediateValues[i]
+                std::ref(intermediateValues[i])
             );
     }
 
@@ -488,10 +488,10 @@ CoilGroup::computeAmpereForceMTD(const Coil &secondary, PrecisionFactor precisio
             g_threadPool.push
             (
                 calcThread,
-                memberCoils[i],
-                secondary,
+                std::ref(memberCoils[i]),
+                std::ref(secondary),
                 precisionFactor,
-                intermediateValues[i]
+                std::ref(intermediateValues[i])
             );
     }
 

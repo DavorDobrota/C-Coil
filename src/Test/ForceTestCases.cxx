@@ -32,12 +32,16 @@ void testAmpereForceGeneralCase()
 
     printf("%.15g T\n", group.computeBFieldVector(vec3::CoordVector3()).zComponent);
 
-//    printf("%.15g MJ\n", 1e-6 *
-//           (0.5 * coil1.computeAndSetSelfInductance(PrecisionFactor(12)) * coil1.getCurrent() * coil1.getCurrent() +
-//           0.5 * coil2.computeAndSetSelfInductance(PrecisionFactor(12)) * coil2.getCurrent() * coil2.getCurrent() +
-//           0.5 * coil3.computeAndSetSelfInductance(PrecisionFactor(12)) * coil3.getCurrent() * coil3.getCurrent()));
+    printf("%.15g MJ\n", 1e-6 *
+           (0.5 * coil1.computeAndSetSelfInductance(PrecisionFactor(12)) * coil1.getCurrent() * coil1.getCurrent() +
+           0.5 * coil2.computeAndSetSelfInductance(PrecisionFactor(12)) * coil2.getCurrent() * coil2.getCurrent() +
+           0.5 * coil3.computeAndSetSelfInductance(PrecisionFactor(12)) * coil3.getCurrent() * coil3.getCurrent() +
+           Coil::computeMutualInductance(coil1, coil2) * coil1.getCurrent() * coil2.getCurrent() +
+           Coil::computeMutualInductance(coil2, coil3) * coil2.getCurrent() * coil3.getCurrent() +
+           Coil::computeMutualInductance(coil1, coil3) * coil1.getCurrent() * coil3.getCurrent()
+           ));
 
-    std::pair<vec3::FieldVector3, vec3::FieldVector3> forcePair, forcePair2;
+    std::pair<vec3::FieldVector3, vec3::FieldVector3> forcePair;
     auto precision = PrecisionFactor(8.0);
 
     printf("Force and Torque in displacement\n");

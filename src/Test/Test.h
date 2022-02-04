@@ -10,14 +10,19 @@ const int g_default_nThreads = 8;
 void testFunctionPerformance();
 void testNewCoilParameters();
 void testMethodPrecisionCompareCPUvsGPU();
-void testCoilPositionAndRotation();
 void testCoilMutualInductanceForSpecialCase();
 void testVector3();
+void testCoilPositionAndRotation();
 
 void testPerformanceCPU_ST(int nOps = 50'000);
 void testPerformanceForComputeAll(PrecisionFactor precisionFactor = PrecisionFactor(),
                                   int nOps = 20'000, int nRepeats = 1, int nThreads = g_default_nThreads);
 void testPerformanceForVariousCoilTypes(int nOps = 100'000, int nThreads = g_default_nThreads);
+
+void testCoilGroupMTD(int numCoils = 100, int numPoints = 10'000, int threadCount = 8, bool print = true);
+void testCoilGroupMTvsMTD(int threadCount = 8, int numPoints = 20'000);
+void testCoilGroupMTDFields(int threadCount = 8);
+void testCoilGroupMTDInductanceAndForce(int threadCount = 8);
 
 void testMutualInductanceZAxis();
 void testMutualInductanceZAxisArgumentGeneration();

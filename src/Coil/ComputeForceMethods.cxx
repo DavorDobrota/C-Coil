@@ -9,7 +9,7 @@ Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, CoilPairArg
         vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
         double zForce = calculateAmpereForceZAxis(primary, secondary, secPositionVec.zComponent, forceArguments, method);
 
-        return std::make_pair(vec3::FieldVector3(0.0, 0.0, zForce), vec3::FieldVector3());
+        return {vec3::FieldVector3(0.0, 0.0, zForce), vec3::FieldVector3()};
     }
     else
         return calculateAmpereForceGeneral(primary, secondary, forceArguments, method);
@@ -35,7 +35,7 @@ Coil::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVect
     vec3::FieldVector3 magneticTorque = vec3::FieldVector3::crossProduct(dipoleMoment, magneticField);
     vec3::FieldVector3 magneticForce = magneticGradient * dipoleMoment;
 
-    return std::make_pair(magneticForce, magneticTorque);
+    return {magneticForce, magneticTorque};
 }
 
 std::pair<vec3::FieldVector3, vec3::FieldVector3>

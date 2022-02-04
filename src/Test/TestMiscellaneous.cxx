@@ -2,7 +2,8 @@
 #include "Coil.h"
 #include "ComputeMethod.h"
 #include "Tensor.h"
-#include "Math/CustomMath.h"
+#include "CustomMath.h"
+#include "CoilGroup.h"
 
 #include <cmath>
 #include <cstdio>
@@ -254,3 +255,4 @@ void testCoilPositionAndRotation()
                fieldVectors2[i].xComponent, fieldVectors2[i].yComponent, fieldVectors2[i].zComponent);
     printf("\n");
 }
+

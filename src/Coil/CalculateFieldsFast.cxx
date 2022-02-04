@@ -140,7 +140,7 @@ std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar,
             }
         }
     }
-    return std::make_pair(magneticFieldH, magneticFieldZ);
+    return {magneticFieldH, magneticFieldZ};
 }
 
 std::vector<double> Coil::calculateBGradientFast(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const

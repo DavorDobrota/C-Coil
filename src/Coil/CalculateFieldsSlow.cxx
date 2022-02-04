@@ -146,7 +146,7 @@ std::pair<double, double> Coil::calculateBFieldSlow(double zAxis, double rPolar,
             }
         }
     }
-    return std::make_pair(magneticFieldH, magneticFieldZ);
+    return {magneticFieldH, magneticFieldZ};
 }
 
 std::vector<double> Coil::calculateBGradientSlow(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const

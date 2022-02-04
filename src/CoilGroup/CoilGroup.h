@@ -58,16 +58,16 @@ class CoilGroup
     private:
         // MTD stands for Multithreading Distributed - useful when there are many coils, each is given its own thread
         [[nodiscard]] std::vector<vec3::FieldVector3>
-        calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async = false) const;
+        calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr) const;
 
         [[nodiscard]] std::vector<vec3::FieldVector3>
-        calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async = false) const;
+        calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr) const;
 
         [[nodiscard]] std::vector<vec3::FieldVector3>
-        calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async = false) const;
+        calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr) const;
 
         [[nodiscard]] std::vector<vec3::Matrix3>
-        calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async = false) const;
+        calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr) const;
 
         [[nodiscard]] double computeMutualInductanceMTD(const Coil &secondary,
                                                         PrecisionFactor precisionFactor = PrecisionFactor()) const;

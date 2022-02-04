@@ -181,7 +181,7 @@ std::vector<vec3::Matrix3> CoilGroup::computeAllBGradientTensors(const std::vect
 // TODO: Generalize code with templates
 
 std::vector<vec3::FieldVector3>
-CoilGroup::calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async) const
+CoilGroup::calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr) const
 {
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -214,8 +214,7 @@ CoilGroup::calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3>
         );
     }
 
-    if(!async)
-        g_threadPool.synchronizeThreads();
+    g_threadPool.synchronizeThreads();
 
     std::vector<vec3::FieldVector3> ret(pointVectorArr.size());
 
@@ -231,7 +230,7 @@ CoilGroup::calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3>
 }
 
 std::vector<vec3::FieldVector3>
-CoilGroup::calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async) const
+CoilGroup::calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr) const
 {
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -264,8 +263,7 @@ CoilGroup::calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVect
         );
     }
 
-    if(!async)
-        g_threadPool.synchronizeThreads();
+    g_threadPool.synchronizeThreads();
 
     std::vector<vec3::FieldVector3> ret(pointVectorArr.size());
 
@@ -281,7 +279,7 @@ CoilGroup::calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVect
 }
 
 std::vector<vec3::FieldVector3>
-CoilGroup::calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async) const
+CoilGroup::calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr) const
 {
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -314,8 +312,7 @@ CoilGroup::calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3>
         );
     }
 
-    if(!async)
-        g_threadPool.synchronizeThreads();
+    g_threadPool.synchronizeThreads();
 
     std::vector<vec3::FieldVector3> ret(pointVectorArr.size());
 
@@ -331,7 +328,7 @@ CoilGroup::calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3>
 }
 
 std::vector<vec3::Matrix3>
-CoilGroup::calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr, bool async) const
+CoilGroup::calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr) const
 {
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -364,8 +361,7 @@ CoilGroup::calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3>
         );
     }
 
-    if(!async)
-        g_threadPool.synchronizeThreads();
+    g_threadPool.synchronizeThreads();
 
     std::vector<vec3::Matrix3> ret(pointVectorArr.size());
 

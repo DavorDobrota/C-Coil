@@ -286,6 +286,8 @@ void testCoilGroupMTD(int numCoils, int numPoints, int threadCount, bool print)
             printf("%.15g\n",
                    std::sqrt(computedBField[i].xComponent * computedBField[i].xComponent +
                    computedBField[i].yComponent * computedBField[i].yComponent));
+
+
 }
 
 void testCoilGroupMTvsMTD(int threadCount, int numPoints)
@@ -307,4 +309,35 @@ void testCoilGroupMTvsMTD(int threadCount, int numPoints)
     testCoilGroupMTD(coilCount2, numPoints, threadCount, false);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("MTD perf : %.0f kPoints/s", 1e-3 * coilCount2 * numPoints / interval);
+}
+
+void testCoilGroupMTDInductanceAndForce(int threadCount, int numCoils)
+{
+    using namespace std::chrono;
+
+    high_resolution_clock::time_point begin_time;
+    double interval;
+
+    CoilGroup coilGroup = CoilGroup();
+    Coil referenceCoil = Coil(0.1, 0.1, 0.1, 10000);
+
+    for (int i = 1; i <= numCoils; ++i)
+    {
+        Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000);
+        tempCoil.setPositionAndOrientation(
+                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.15*i),
+                0.0, 0.0);
+        coilGroup.addCoil(tempCoil);
+    }
+
+    begin_time = high_resolution_clock::now();
+    printf("%.15g\n", coilGroup.computeMutualInductance(referenceCoil, PrecisionFactor(5.0), CPU_ST));
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("ST  perf  : %.3f kPoints/s\n", numCoils / interval);
+
+
+    begin_time = high_resolution_clock::now();
+    printf("%.15g\n", coilGroup.computeMutualInductance(referenceCoil, PrecisionFactor(5.0), CPU_MT));
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MTD perf  : %.3f kPoints/s\n", numCoils / interval);
 }

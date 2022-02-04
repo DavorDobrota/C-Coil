@@ -108,6 +108,7 @@ int main()
 //    Coil coil = Coil(0.1, 0.1, 0.1, 10000);
 //    printf("%.15g\n", coil.computeAndSetSelfInductance(PrecisionFactor(10.0), CPU_MT));
 
+    testCoilGroupMTDFields(8);
     testCoilGroupMTDInductanceAndForce(12);
 
     return 0;

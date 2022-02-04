@@ -4,7 +4,7 @@ add_library(
         TestMiscellaneous.cxx MInductanceGeneralTestCases.cxx TestForce.cxx
         TestFieldsPerformance.cxx TestMInductanceZAxis.cxx
         TestMInductanceGeneral.cxx ForceTestCases.cxx
-        TestArgumentGeneration.cxx)
+        TestArgumentGeneration.cxx TestMTD.cxx)
 
 target_compile_options(Test PRIVATE -fpic)
 

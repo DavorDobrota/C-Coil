@@ -487,9 +487,13 @@ class Coil
 
         static bool isZAxisCase(const Coil &primary, const Coil &secondary);
 
-        static double calculateMutualInductanceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                                     CoilPairArguments inductanceArguments,
-                                                     ComputeMethod method = CPU_ST);
+        static double calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                                         CoilPairArguments inductanceArguments,
+                                                         ComputeMethod method = CPU_ST);
+
+        static double calculateMutualInductanceZAxisFast(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                                         CoilPairArguments inductanceArguments,
+                                                         ComputeMethod method = CPU_ST);
 
         static double calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
                                                        CoilPairArguments inductanceArguments, ComputeMethod method = CPU_ST);

@@ -77,6 +77,8 @@ double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil 
 double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                 CoilPairArguments inductanceArguments, ComputeMethod method)
 {
+    //TODO implement this with MT as you deem fit. You can separate a part into a separate function or anything else
+
     double mutualInductance = 0.0;
 
     double thicknessBlock = primary.thickness / inductanceArguments.primaryPrecision.thicknessBlockCount;
@@ -303,8 +305,6 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
 
 double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, ComputeMethod method) const
 {
-    //TODO implement this with MT as you deem fit. You can separate a part into a separate function or anything else
-
     double calculatedSelfInductance = 0.0;
 
     double thicknessBlock = thickness / inductanceArguments.primaryPrecision.thicknessBlockCount;

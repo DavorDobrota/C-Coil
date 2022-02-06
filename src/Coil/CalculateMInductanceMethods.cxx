@@ -303,6 +303,8 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
 
 double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, ComputeMethod method) const
 {
+    //TODO implement this with MT as you deem fit. You can separate a part into a separate function or anything else
+
     double calculatedSelfInductance = 0.0;
 
     double thicknessBlock = thickness / inductanceArguments.primaryPrecision.thicknessBlockCount;

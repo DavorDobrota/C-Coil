@@ -8,5 +8,10 @@
 
 int main()
 {
+//    testMutualInductanceZAxis();
+    testSelfInductance();
+    testSelfInductancePerformance();
+    testMutualInductanceZAxisMTScaling();
+
     return 0;
 }

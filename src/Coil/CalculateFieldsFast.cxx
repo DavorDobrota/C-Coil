@@ -3,7 +3,6 @@
 #include "Math/CustomMath.h"
 
 #include <cmath>
-#include "immintrin.h"
 
 
 namespace
@@ -27,7 +26,7 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
     int angularIncrements = usedPrecision.angularIncrementCount - 1;
 
-    // multiplication by 2 because cosine is an even function and by 0.125 for a double change of interval (2 times 1/2)
+    // multiplication by 2 because cosine is an even function and by 0.25 for a double change of interval (2 times 1/2)
     double constant = g_MiReduced * currentDensity * thicknessBlock * angularBlock * 2 * 0.25;
 
     double topEdge = zAxis + length * 0.5;
@@ -56,7 +55,7 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
 
                     int arrPos = indBlockFi * (angularIncrements + 1) + incFi;
                     double cosinePhi = cosPhiPrecomputeArr[arrPos];
-                    double tempConstC = 1 / std::sqrt(tempConstB - tempConstA * cosinePhi);
+                    double tempConstC = 1.0 / std::sqrt(tempConstB - tempConstA * cosinePhi);
 
                     double tempConstD1 = topEdge * tempConstC;
                     double tempConstD2 = bottomEdge * tempConstC;
@@ -92,7 +91,7 @@ std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar,
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
     int angularIncrements = usedPrecision.angularIncrementCount - 1;
 
-    // multiplication by 2 because cosine is an even function and by 0.125 for a double change of interval (2 times 1/2)
+    // multiplication by 2 because cosine is an even function and by 0.25 for a double change of interval (2 times 1/2)
     double constant = g_MiReduced * currentDensity * thicknessBlock * angularBlock * 2 * 0.25;
 
     double topEdge = zAxis + length * 0.5;
@@ -162,7 +161,7 @@ std::vector<double> Coil::calculateBGradientFast(double zAxis, double rPolar, co
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
     int angularIncrements = usedPrecision.angularIncrementCount - 1;
 
-    // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
+    // multiplication by 2 because cosine is an even function and by 0.25 for a double change of interval (2 times 1/2)
     double constant = g_MiReduced * currentDensity * thicknessBlock * angularBlock * 2 * 0.25;
 
     double topEdge = zAxis + length * 0.5;

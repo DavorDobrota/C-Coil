@@ -30,6 +30,7 @@ void testMutualInductanceZAxisDifferentGeometries();
 void testCoilMutualInductanceZAxisPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
 void testMutualInductanceZAxisMTScaling(int maxThreads = g_default_nThreads);
 void testSelfInductance();
+void testSelfInductancePerformance();
 
 void testMutualInductanceGeneralForZAxis(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
 void testMutualInductanceGeneralPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);

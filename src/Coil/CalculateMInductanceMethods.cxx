@@ -1,9 +1,15 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
 #include "PrecisionGlobalVars.h"
+#include "Math/CustomMath.h"
 
 #include <cmath>
 
+
+namespace
+{
+    const double g_MiReduced = 0.0000001;
+}
 
 double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
                                             CoilPairArguments inductanceArguments, ComputeMethod method)
@@ -184,4 +190,85 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
 
     mutualInductance /= (lengthBlocks * thicknessBlocks * angularBlocks);
     return mutualInductance * 2*M_PI * secondary.numOfTurns / primary.current;
+}
+
+double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, ComputeMethod method) const
+{
+    double calculatedSelfInductance = 0.0;
+
+    double thicknessBlock = thickness / inductanceArguments.primaryPrecision.thicknessBlockCount;
+    double angularBlock = M_PI / inductanceArguments.primaryPrecision.angularBlockCount;
+    double radialBlock = 1.0 / inductanceArguments.secondaryPrecision.thicknessBlockCount;
+
+    // initialising precompute array
+    const int numPhiIncrements =
+            inductanceArguments.primaryPrecision.angularBlockCount * inductanceArguments.primaryPrecision.angularIncrementCount;
+    double cosPhiPrecomputeArr[numPhiIncrements];
+    precomputeCosPhi(inductanceArguments.primaryPrecision.angularBlockCount,
+                     inductanceArguments.primaryPrecision.angularIncrementCount,
+                     cosPhiPrecomputeArr);
+
+    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
+    int thicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrementCount - 1;
+    int angularIncrements = inductanceArguments.primaryPrecision.angularIncrementCount - 1;
+    int radialIncrements = inductanceArguments.secondaryPrecision.thicknessIncrementCount - 1;
+
+    // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
+    double constant = g_MiReduced * currentDensity * thicknessBlock * angularBlock * radialBlock * 2 * 0.125;
+    double lengthSquared = length * length;
+
+    for (int indBlockR = 0; indBlockR < inductanceArguments.secondaryPrecision.thicknessBlockCount; ++indBlockR)
+    {
+        double blockPositionR = innerRadius + radialBlock * thickness * (indBlockR + 0.5);
+
+        for (int incR = 0; incR <= radialIncrements; ++incR)
+        {
+            double incrementPositionR = blockPositionR +
+                                        (radialBlock * thickness * 0.5) * Legendre::positionMatrix[radialIncrements][incR];
+
+            double incrementWeightR = Legendre::weightsMatrix[radialIncrements][incR];
+
+            for (int indBlockT = 0; indBlockT < inductanceArguments.primaryPrecision.thicknessBlockCount; ++indBlockT)
+            {
+                double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
+
+                for (int incT = 0; incT <= thicknessIncrements; ++incT)
+                {
+                    double incrementPositionT = blockPositionT +
+                                                (thicknessBlock * 0.5) *
+                                                Legendre::positionMatrix[thicknessIncrements][incT];
+
+                    double incrementWeightT = Legendre::weightsMatrix[thicknessIncrements][incT];
+
+                    double tempConstA = 2 * incrementPositionT * incrementPositionR;
+                    double tempConstB = incrementPositionT * incrementPositionT + incrementPositionR * incrementPositionR;
+
+                    for (int indBlockFi = 0; indBlockFi < inductanceArguments.primaryPrecision.angularBlockCount; ++indBlockFi)
+                    {
+                        for (int incFi = 0; incFi <= angularIncrements; ++incFi)
+                        {
+                            double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
+
+                            int arrPos = indBlockFi * (angularIncrements + 1) + incFi;
+                            double cosinePhi = cosPhiPrecomputeArr[arrPos];
+                            double tempConstC = tempConstB - tempConstA * cosinePhi;
+
+                            double tempConstD = std::sqrt(tempConstC);
+                            double tempConstE = std::sqrt(tempConstC + lengthSquared);
+
+                            double tempConstF = length / tempConstD;
+                            double tempConstG = std::sqrt(tempConstF * tempConstF + 1.0);
+                            double tempConstH = LN(tempConstF + tempConstG);
+
+                            calculatedSelfInductance +=
+                                    constant * incrementWeightR * incrementWeightT * incrementWeightFi *
+                                    tempConstA * cosinePhi * (tempConstD - tempConstE + length * tempConstH);
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return calculatedSelfInductance * 2*M_PI * numOfTurns / (current * length);
 }

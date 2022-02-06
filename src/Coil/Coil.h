@@ -502,6 +502,8 @@ class Coil
         calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                                     CoilPairArguments forceArguments, ComputeMethod method);
 
+        [[nodiscard]] double calculateSelfInductance(CoilPairArguments inductanceArguments, ComputeMethod method) const;
+
         [[nodiscard]] int calculateChunkSize(int numOps) const;
 };
 

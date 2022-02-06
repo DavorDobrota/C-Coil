@@ -8,9 +8,9 @@
 
 int main()
 {
-    testMutualInductanceZAxis();
+//    testMutualInductanceZAxis();
 //    testSelfInductance();
-//    testSelfInductancePerformance();
+    testSelfInductancePerformance();
     testCoilMutualInductanceZAxisPerformance();
 //    testMutualInductanceZAxisMTScaling();
 

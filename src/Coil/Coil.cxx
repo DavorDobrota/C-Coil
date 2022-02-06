@@ -303,7 +303,13 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, Comput
     setPositionAndOrientation();
 
     auto arguments = CoilPairArguments::getAppropriateCoilPairArguments(*this, *this, precisionFactor);
-    double inductance = Coil::calculateSelfInductance(arguments, method);
+    double inductance;
+
+    if (coilType == CoilType::FLAT)
+        inductance = Coil::computeMutualInductance(*this, *this, arguments, method);
+    else
+        inductance = Coil::calculateSelfInductance(arguments, method);
+
     setSelfInductance(inductance);
     setPositionAndOrientation(tempPosition, tempAngles.first, tempAngles.second);
 

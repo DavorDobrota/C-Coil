@@ -349,6 +349,7 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, Comp
 
                     double incrementWeightT = Legendre::weightsMatrix[thicknessIncrements][incT];
 
+                    double tempConst = constant * incrementWeightR * incrementWeightT;
                     double tempConstA = 2 * incrementPositionT * incrementPositionR;
                     double tempConstB = incrementPositionT * incrementPositionT + incrementPositionR * incrementPositionR;
 
@@ -370,7 +371,7 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, Comp
                             double tempConstH = LN(tempConstF + tempConstG);
 
                             calculatedSelfInductance +=
-                                    constant * incrementWeightR * incrementWeightT * incrementWeightFi *
+                                    tempConst * incrementWeightFi *
                                     tempConstA * cosinePhi * (tempConstD - tempConstE + length * tempConstH);
 
                         }

@@ -31,7 +31,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
     int primLengthArrayIndex, primThicknessArrayIndex, primAngularArrayIndex;
     int secLengthArrayIndex, secThicknessArrayIndex, secAngularArrayIndex;
 
-    int totalIncrements = g_baseLayerIncrements;
+    int totalIncrements = 1;
     int currentIncrements;
 
     double primAngularRoot = std::sqrt(M_PI * (primary.getInnerRadius() + 0.5 * primary.getThickness()));
@@ -44,7 +44,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
 
     // multiplying for secondary angular increments, if present
     if (!zAxisCase)
-        totalIncrements *= g_baseLayerIncrements;
+        totalIncrements *= g_baseLayerIncrements * g_baseLayerIncrements;
 
     switch (primary.getCoilType())
     {
@@ -165,11 +165,11 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
         currentIncrements =
                 blockPrecisionCPUArray[primThicknessArrayIndex] * incrementPrecisionCPUArray[primThicknessArrayIndex] *
                 blockPrecisionCPUArray[primAngularArrayIndex] * incrementPrecisionCPUArray[primAngularArrayIndex] *
-                blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex] *
                 blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex];
 
         if (!zAxisCase)
-            currentIncrements *= blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex];
+            currentIncrements *= blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex] *
+                                 blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex];
     }
     while (currentIncrements < totalIncrements);
 

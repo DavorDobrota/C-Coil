@@ -18,6 +18,29 @@ if(USE_GPU)
 endif()
 
 #######################################
+# Add all extern include paths
+#######################################
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/extern/CTPL")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/extern/HardwareAcceleration")
+#######################################
+
+#######################################
+# Add all local include paths
+#######################################
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Test")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilData")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Math")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/LegendreMatrix")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/ThreadPool")
+#######################################
+
+#######################################
+# Add all libraries
+#######################################
 add_subdirectory(src/Test)
 list(APPEND LIBS "$<TARGET_OBJECTS:Test>")
 
@@ -48,12 +71,7 @@ if(OUTPUT_EXECUTABLE)
     target_include_directories(
             test_executable
             BEFORE
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Test"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor"
+            PUBLIC ${INCS}
     )
 endif()
 
@@ -62,12 +80,7 @@ if(OUTPUT_LIB_SHARED)
     target_include_directories(
             coil_calculations_shared
             BEFORE
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Test"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor"
+            PUBLIC ${INCS}
     )
 endif()
 

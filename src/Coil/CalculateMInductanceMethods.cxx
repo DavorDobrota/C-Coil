@@ -117,11 +117,11 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
 
     auto calculate = [&](int threadIndex, int startIndex, int endIndex, double &result)
     {
-        for (int indBlockR = startIndex; indBlockR < endIndex; ++indBlockR)
+        for (int indBlockR = 0; indBlockR < inductanceArguments.secondaryPrecision.thicknessBlockCount; ++indBlockR)
         {
             double blockPositionR = secondary.innerRadius + radialBlock * secondary.thickness * (indBlockR + 0.5);
 
-            for (int incR = 0; incR <= radialIncrements; ++incR)
+            for (int incR = startIndex; incR < endIndex; ++incR)
             {
                 double incrementPositionR = blockPositionR +
                                             (radialBlock * secondary.thickness * 0.5) * Legendre::positionMatrix[radialIncrements][incR];
@@ -191,12 +191,12 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
 
     if(method == CPU_ST)
     {
-        calculate(0, 0, inductanceArguments.secondaryPrecision.thicknessBlockCount, mutualInductance);
+        calculate(0, 0, radialIncrements + 1, mutualInductance);
         g_threadPool.getCompletedTasks().store(0ull);
     }
     else
     {
-        int incrementCount = inductanceArguments.secondaryPrecision.thicknessBlockCount;
+        int incrementCount = radialIncrements + 1;
         int threadCount = std::max(primary.getThreadCount(), secondary.getThreadCount());
         int mean = incrementCount / threadCount;
 

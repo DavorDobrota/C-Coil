@@ -2,13 +2,16 @@
 #include "LegendreMatrix.h"
 #include "PrecisionGlobalVars.h"
 #include "Math/CustomMath.h"
+#include "ThreadPool/ThreadPool.h"
 
 #include <cmath>
+#include <numeric>
 
 
 namespace
 {
     const double g_MiReduced = 0.0000001;
+    threadPool::ThreadPoolControl g_threadPool;
 }
 
 double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
@@ -77,7 +80,6 @@ double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil 
 double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                 CoilPairArguments inductanceArguments, ComputeMethod method)
 {
-    //TODO implement this with MT as you deem fit. You can separate a part into a separate function or anything else
 
     double mutualInductance = 0.0;
 
@@ -113,75 +115,126 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
     double constZ3Squared = constZ3 * constZ3;
     double constZ4Squared = constZ4 * constZ4;
 
-    for (int indBlockR = 0; indBlockR < inductanceArguments.secondaryPrecision.thicknessBlockCount; ++indBlockR)
+    auto calculate = [&](int threadIndex, int startIndex, int endIndex, double &result)
     {
-        double blockPositionR = secondary.innerRadius + radialBlock * secondary.thickness * (indBlockR + 0.5);
-
-        for (int incR = 0; incR <= radialIncrements; ++incR)
+        for (int indBlockR = startIndex; indBlockR < endIndex; ++indBlockR)
         {
-            double incrementPositionR = blockPositionR +
-                                        (radialBlock * secondary.thickness * 0.5) * Legendre::positionMatrix[radialIncrements][incR];
+            double blockPositionR = secondary.innerRadius + radialBlock * secondary.thickness * (indBlockR + 0.5);
 
-            double incrementWeightR = Legendre::weightsMatrix[radialIncrements][incR];
-
-            for (int indBlockT = 0; indBlockT < inductanceArguments.primaryPrecision.thicknessBlockCount; ++indBlockT)
+            for (int incR = 0; incR <= radialIncrements; ++incR)
             {
-                double blockPositionT = primary.innerRadius + thicknessBlock * (indBlockT + 0.5);
+                double incrementPositionR = blockPositionR +
+                                            (radialBlock * secondary.thickness * 0.5) * Legendre::positionMatrix[radialIncrements][incR];
 
-                for (int incT = 0; incT <= thicknessIncrements; ++incT)
+                double incrementWeightR = Legendre::weightsMatrix[radialIncrements][incR];
+
+                for (int indBlockT = 0; indBlockT < inductanceArguments.primaryPrecision.thicknessBlockCount; ++indBlockT)
                 {
-                    double incrementPositionT = blockPositionT +
-                                                (thicknessBlock * 0.5) *
-                                                Legendre::positionMatrix[thicknessIncrements][incT];
+                    double blockPositionT = primary.innerRadius + thicknessBlock * (indBlockT + 0.5);
 
-                    double incrementWeightT = Legendre::weightsMatrix[thicknessIncrements][incT];
-
-                    double tempConst = constant * incrementWeightR * incrementWeightT;
-                    double tempConstA = 2 * incrementPositionT * incrementPositionR;
-                    double tempConstB = incrementPositionT * incrementPositionT + incrementPositionR * incrementPositionR;
-
-                    for (int indBlockFi = 0; indBlockFi < inductanceArguments.primaryPrecision.angularBlockCount; ++indBlockFi)
+                    for (int incT = 0; incT <= thicknessIncrements; ++incT)
                     {
-                        for (int incFi = 0; incFi <= angularIncrements; ++incFi)
+                        double incrementPositionT = blockPositionT +
+                                                    (thicknessBlock * 0.5) *
+                                                    Legendre::positionMatrix[thicknessIncrements][incT];
+
+                        double incrementWeightT = Legendre::weightsMatrix[thicknessIncrements][incT];
+
+                        double tempConst = constant * incrementWeightR * incrementWeightT;
+                        double tempConstA = 2 * incrementPositionT * incrementPositionR;
+                        double tempConstB = incrementPositionT * incrementPositionT + incrementPositionR * incrementPositionR;
+
+                        for (int indBlockFi = 0; indBlockFi < inductanceArguments.primaryPrecision.angularBlockCount; ++indBlockFi)
                         {
-                            double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
+                            for (int incFi = 0; incFi <= angularIncrements; ++incFi)
+                            {
+                                double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
 
-                            int arrPos = indBlockFi * (angularIncrements + 1) + incFi;
-                            double cosinePhi = cosPhiPrecomputeArr[arrPos];
-                            double tempConstC = tempConstB - tempConstA * cosinePhi;
-                            double tempConstD = std::sqrt(tempConstC);
+                                int arrPos = indBlockFi * (angularIncrements + 1) + incFi;
+                                double cosinePhi = cosPhiPrecomputeArr[arrPos];
+                                double tempConstC = tempConstB - tempConstA * cosinePhi;
+                                double tempConstD = std::sqrt(tempConstC);
 
-                            double tempConstE1 = std::sqrt(tempConstC + constZ1Squared);
-                            double tempConstE2 = std::sqrt(tempConstC + constZ2Squared);
-                            double tempConstE3 = std::sqrt(tempConstC + constZ3Squared);
-                            double tempConstE4 = std::sqrt(tempConstC + constZ4Squared);
+                                double tempConstE1 = std::sqrt(tempConstC + constZ1Squared);
+                                double tempConstE2 = std::sqrt(tempConstC + constZ2Squared);
+                                double tempConstE3 = std::sqrt(tempConstC + constZ3Squared);
+                                double tempConstE4 = std::sqrt(tempConstC + constZ4Squared);
 
-                            double tempConstF1 = constZ1 / tempConstD;
-                            double tempConstF2 = constZ2 / tempConstD;
-                            double tempConstF3 = constZ3 / tempConstD;
-                            double tempConstF4 = constZ4 / tempConstD;
+                                double tempConstF1 = constZ1 / tempConstD;
+                                double tempConstF2 = constZ2 / tempConstD;
+                                double tempConstF3 = constZ3 / tempConstD;
+                                double tempConstF4 = constZ4 / tempConstD;
 
-                            double tempConstG1 = std::sqrt(tempConstF1 * tempConstF1 + 1.0);
-                            double tempConstG2 = std::sqrt(tempConstF2 * tempConstF2 + 1.0);
-                            double tempConstG3 = std::sqrt(tempConstF3 * tempConstF3 + 1.0);
-                            double tempConstG4 = std::sqrt(tempConstF4 * tempConstF4 + 1.0);
+                                double tempConstG1 = std::sqrt(tempConstF1 * tempConstF1 + 1.0);
+                                double tempConstG2 = std::sqrt(tempConstF2 * tempConstF2 + 1.0);
+                                double tempConstG3 = std::sqrt(tempConstF3 * tempConstF3 + 1.0);
+                                double tempConstG4 = std::sqrt(tempConstF4 * tempConstF4 + 1.0);
 
-                            double tempConstH1 = constZ1 * LN(tempConstF1 + tempConstG1);
-                            double tempConstH2 = constZ2 * LN(tempConstF2 + tempConstG2);
-                            double tempConstH3 = constZ3 * LN(tempConstF3 + tempConstG3);
-                            double tempConstH4 = constZ4 * LN(tempConstF4 + tempConstG4);
+                                double tempConstH1 = constZ1 * LN(tempConstF1 + tempConstG1);
+                                double tempConstH2 = constZ2 * LN(tempConstF2 + tempConstG2);
+                                double tempConstH3 = constZ3 * LN(tempConstF3 + tempConstG3);
+                                double tempConstH4 = constZ4 * LN(tempConstF4 + tempConstG4);
 
-                            mutualInductance +=
-                                    tempConst * incrementWeightFi * tempConstA * cosinePhi *
-                                    (tempConstH1 - tempConstH2 + tempConstH3 - tempConstH4 -
-                                    tempConstE1 + tempConstE2 - tempConstE3 + tempConstE4);
+                                result +=
+                                        tempConst * incrementWeightFi * tempConstA * cosinePhi *
+                                        (tempConstH1 - tempConstH2 + tempConstH3 - tempConstH4 -
+                                        tempConstE1 + tempConstE2 - tempConstE3 + tempConstE4);
 
+                            }
                         }
                     }
                 }
             }
         }
+        g_threadPool.getCompletedTasks().fetch_add(1ull);
+    };
+
+    if(method == CPU_ST)
+    {
+        calculate(0, 0, inductanceArguments.secondaryPrecision.thicknessBlockCount, mutualInductance);
+        g_threadPool.getCompletedTasks().store(0ull);
     }
+    else
+    {
+        int incrementCount = inductanceArguments.secondaryPrecision.thicknessBlockCount;
+        int threadCount = std::max(primary.getThreadCount(), secondary.getThreadCount());
+        int mean = incrementCount / threadCount;
+
+        g_threadPool.setTaskCount(threadCount);
+        g_threadPool.getCompletedTasks().store(0ull);
+
+        std::vector<double> results(threadCount);
+
+        int delegatedIncrements = 0;
+        for(int i = 0; i < threadCount; i++)
+        {
+            int remainingIncrements = incrementCount - delegatedIncrements;
+
+            if(remainingIncrements % (threadCount - i) == 0)
+            {
+                g_threadPool.push(
+                    calculate,
+                    delegatedIncrements, delegatedIncrements + mean,
+                    std::ref(results[i])
+                );
+                delegatedIncrements += mean;
+            }
+            else
+            {
+                g_threadPool.push(
+                    calculate,
+                    delegatedIncrements, delegatedIncrements + mean + 1,
+                    std::ref(results[i])
+                );
+                delegatedIncrements += mean + 1;
+            }
+        }
+
+        g_threadPool.synchronizeThreads();
+
+        mutualInductance = std::accumulate(results.begin(), results.end(), 0.0);
+    }
+
     return mutualInductance * 2*M_PI * secondary.numOfTurns / (primary.current * secondary.length);
 }
 

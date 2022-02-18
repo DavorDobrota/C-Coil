@@ -15,11 +15,12 @@ vec3::FieldVector3 vec3::FieldVector3::operator+(const FieldVector3 &otherVec) c
                         this->zComponent + otherVec.zComponent);
 }
 
-void vec3::FieldVector3::operator+=(const FieldVector3 &otherVec)
+vec3::FieldVector3 vec3::FieldVector3::operator+=(const FieldVector3 &otherVec)
 {
     this->xComponent += otherVec.xComponent;
     this->yComponent += otherVec.yComponent;
     this->zComponent += otherVec.zComponent;
+    return *this;
 }
 
 vec3::FieldVector3 vec3::FieldVector3::operator-(const FieldVector3 &otherVec) const
@@ -29,11 +30,12 @@ vec3::FieldVector3 vec3::FieldVector3::operator-(const FieldVector3 &otherVec) c
                         this->zComponent - otherVec.zComponent);
 }
 
-void vec3::FieldVector3::operator-=(const FieldVector3 &otherVec)
+vec3::FieldVector3 vec3::FieldVector3::operator-=(const FieldVector3 &otherVec)
 {
     this->xComponent -= otherVec.xComponent;
     this->yComponent -= otherVec.yComponent;
     this->zComponent -= otherVec.zComponent;
+    return *this;
 }
 
 vec3::FieldVector3 vec3::FieldVector3::operator*(double multiplier) const
@@ -43,11 +45,12 @@ vec3::FieldVector3 vec3::FieldVector3::operator*(double multiplier) const
                         zComponent * multiplier);
 }
 
-void vec3::FieldVector3::operator*=(double multiplier)
+vec3::FieldVector3 vec3::FieldVector3::operator*=(double multiplier)
 {
     xComponent *= multiplier;
     yComponent *= multiplier;
     zComponent *= multiplier;
+    return *this;
 }
 
 double vec3::FieldVector3::magnitude() const

@@ -22,6 +22,7 @@ endif()
 #######################################
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/extern/CTPL")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/extern/HardwareAcceleration")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/extern/pybind11/include")
 #######################################
 
 #######################################

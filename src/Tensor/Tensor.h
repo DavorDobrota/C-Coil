@@ -37,6 +37,8 @@ namespace vec3
             static FieldVector3 convertToFieldVector(CoordVector3 inputVector);
             static CoordVector3 convertToCoordVector(const FieldVector3 &inputVector);
 
+            CoordinateSystem getCoordinateSystem() { return coordinateSystem; }
+
         private:
 
             CoordinateSystem coordinateSystem;
@@ -62,11 +64,11 @@ namespace vec3
             explicit FieldVector3(double x, double y, double z);
 
             FieldVector3 operator+(const FieldVector3 &otherVec) const;
-            void operator+=(const FieldVector3 &otherVec);
+            FieldVector3 operator+=(const FieldVector3 &otherVec);
             FieldVector3 operator-(const FieldVector3 &otherVec) const;
-            void operator-=(const FieldVector3 &otherVec);
+            FieldVector3 operator-=(const FieldVector3 &otherVec);
             FieldVector3 operator*(double multiplier) const;
-            void operator*=(double multiplier);
+            FieldVector3 operator*=(double multiplier);
 
             double magnitude() const;
 
@@ -94,7 +96,7 @@ namespace vec3
             explicit Matrix3(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz);
 
             Matrix3 operator+(const Matrix3 &mat) const;
-            void operator+=(const Matrix3 &mat);
+            Matrix3 operator+=(const Matrix3 &mat);
             Matrix3 operator*(const Matrix3 &mat) const;
             FieldVector3 operator*(const FieldVector3 &vec) const;
     };

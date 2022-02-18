@@ -11,5 +11,6 @@ output.txt
 
 venv/
 build/
+dist/
 
 *.egg*/

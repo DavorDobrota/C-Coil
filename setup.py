@@ -36,7 +36,7 @@ sources = sorted([
 
 ext_modules = [
     Pybind11Extension(
-        "CoilEvolution",
+        "coil_evolution",
         sources,
     ),
 ]

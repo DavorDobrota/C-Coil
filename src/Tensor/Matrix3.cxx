@@ -15,11 +15,12 @@ vec3::Matrix3 vec3::Matrix3::operator+(const Matrix3 &mat) const
                          this->zxElement + mat.zxElement, this->zyElement + mat.zyElement, this->zzElement + mat.zzElement);
 }
 
-void vec3::Matrix3::operator+=(const Matrix3 &mat)
+vec3::Matrix3 vec3::Matrix3::operator+=(const Matrix3 &mat)
 {
     this->xxElement += mat.xxElement; this->xyElement += mat.xyElement; this->xzElement += mat.xzElement;
     this->yxElement += mat.yxElement; this->yyElement += mat.yyElement; this->yzElement += mat.yzElement;
     this->zxElement += mat.zxElement; this->zyElement += mat.zyElement; this->zzElement += mat.zzElement;
+    return *this;
 }
 
 vec3::FieldVector3 vec3::Matrix3::operator*(const FieldVector3 &vec) const

@@ -109,7 +109,7 @@ void testCoilMutualInductanceZAxisPerformance(ComputeMethod method, int nThreads
         for (int j = 0; j < currentOperations; ++j)
             temp = Coil::computeMutualInductance(primary, secondary, PrecisionFactor(i), method);
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        printf("precisionFactor(%.1f) : %6.3f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
+        printf("precisionFactor(%.1f) : %6.4f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }
 }
 
@@ -211,4 +211,27 @@ void testSelfInductance()
     fprintf(output, "\n");
 
     fclose(output);
+}
+
+void testSelfInductancePerformance()
+{
+    using namespace std::chrono;
+
+    Coil coil = Coil(0.1, 0.1, 0.1, 10000);
+    double temp;
+
+    int nOps = 131'072;
+
+    for (int i = 1; i <= 15; ++i)
+    {
+        int currentOperations = nOps / (int) pow(2, i);
+
+        high_resolution_clock::time_point begin_time = high_resolution_clock::now();
+        for (int j = 0; j < currentOperations; ++j)
+            temp = coil.computeAndSetSelfInductance(PrecisionFactor(i));
+        double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+
+        printf("precisionFactor(%.1f) : %6.4f ms/op\n", (double) i,  1'000.0 * interval / currentOperations);
+    }
+    printf("\n");
 }

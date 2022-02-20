@@ -487,9 +487,13 @@ class Coil
 
         static bool isZAxisCase(const Coil &primary, const Coil &secondary);
 
-        static double calculateMutualInductanceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                                     CoilPairArguments inductanceArguments,
-                                                     ComputeMethod method = CPU_ST);
+        static double calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                                         CoilPairArguments inductanceArguments,
+                                                         ComputeMethod method = CPU_ST);
+
+        static double calculateMutualInductanceZAxisFast(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                                         CoilPairArguments inductanceArguments,
+                                                         ComputeMethod method = CPU_ST);
 
         static double calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
                                                        CoilPairArguments inductanceArguments, ComputeMethod method = CPU_ST);
@@ -501,6 +505,8 @@ class Coil
         static std::pair<vec3::FieldVector3, vec3::FieldVector3>
         calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                                     CoilPairArguments forceArguments, ComputeMethod method);
+
+        [[nodiscard]] double calculateSelfInductance(CoilPairArguments inductanceArguments, ComputeMethod method) const;
 
         [[nodiscard]] int calculateChunkSize(int numOps) const;
 };

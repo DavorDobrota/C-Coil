@@ -1,6 +1,5 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
-#include "PrecisionGlobalVars.h"
 #include "Math/CustomMath.h"
 #include "ThreadPool/ThreadPool.h"
 

@@ -38,6 +38,7 @@ void testMutualInductanceGeneralMTScaling(int maxThreads = g_default_nThreads);
 void testMutualInductanceGeneralArgumentGeneration();
 void testMutualInductanceGeneralDifferentGeometries();
 void testMutualInductanceGeneralGraphs();
+void testMutualInductanceGeneralComputeAll(PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = 8);
 void testMutualInductanceGeneralEdgeCases();
 
 void testMutualInductanceGeneralMisalignedCoils();

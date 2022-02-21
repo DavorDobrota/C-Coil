@@ -208,6 +208,62 @@ void testMutualInductanceGeneralGraphs()
     fclose(output);
 }
 
+void testMutualInductanceGeneralComputeAll(PrecisionFactor precisionFactor, int threadCount)
+{
+    using namespace std::chrono;
+
+    Coil prim = Coil(0.1, 0.1, 0.1, 10000);
+    Coil sec = Coil(0.1, 0.1, 0.1, 10000);
+
+    int numOps = threadCount * 32;
+
+    std::vector<vec3::CoordVector3> primPositions(numOps);
+    std::vector<vec3::CoordVector3> secPositions(numOps);
+    std::vector<double> primYAxisAngle(numOps);
+    std::vector<double> primZAxisAngle(numOps);
+    std::vector<double> secYAxisAngle(numOps);
+    std::vector<double> secZAxisAngle(numOps);
+
+    std::vector<double> mutualInductanceMT(numOps);
+    std::vector<double> mutualInductanceAll(numOps);
+
+
+    for (int i = 0; i < numOps; ++i)
+    {
+        primPositions[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0);
+        secPositions[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.1, 0.2 + 0.005*i);
+        primYAxisAngle[i] = 0.0;
+        primZAxisAngle[i] = 0.0;
+        secYAxisAngle[i] = 0.5;
+        secZAxisAngle[i] = 0.5;
+    }
+
+    high_resolution_clock::time_point begin_time;
+    double interval;
+
+    begin_time = high_resolution_clock::now();
+    mutualInductanceAll = Coil::computeAllMutualInductanceArrangements(prim, sec, primPositions,secPositions,
+                                                                       primYAxisAngle, primZAxisAngle,
+                                                                       secYAxisAngle, secZAxisAngle,
+                                                                       precisionFactor, CPU_MT);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MTD perf : %.2f Ops/s\n", numOps / interval);
+
+    begin_time = high_resolution_clock::now();
+    for (int i = 0; i < numOps; ++i)
+    {
+        prim.setPositionAndOrientation(primPositions[i], primYAxisAngle[i], primZAxisAngle[i]);
+        sec.setPositionAndOrientation(secPositions[i], secYAxisAngle[i], secZAxisAngle[i]);
+        mutualInductanceMT[i] = Coil::computeMutualInductance(prim, sec, precisionFactor, CPU_MT);
+    }
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MT perf  : %.2f Ops/s\n", numOps / interval);
+
+    printf("\n");
+    printf("%.15g\n", mutualInductanceAll[threadCount]);
+    printf("%.15g\n", mutualInductanceMT[threadCount]);
+}
+
 void testMutualInductanceGeneralEdgeCases()
 {
     Coil coil1 = Coil(0.03, 0.12, 0.12, 3600);

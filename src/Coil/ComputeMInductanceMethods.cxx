@@ -1,6 +1,16 @@
 #include "Coil.h"
+#include "ThreadPool.h"
 
 #include <cmath>
+#include <functional>
+
+using namespace std::placeholders;
+
+
+namespace
+{
+    threadPool::ThreadPoolControl g_threadPool;
+}
 
 
 double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
@@ -56,15 +66,18 @@ std::vector<double> Coil::computeAllMutualInductanceArrangements(Coil primary, C
 {
     std::vector<double> outputMInductances;
 
-    if (primaryPositions.size() == secondaryPositions.size() ==
-        primaryYAngles.size() == primaryZAngles.size() == secondaryYAngles.size() == secondaryZAngles.size())
+    if (primaryPositions.size() == secondaryPositions.size() &&
+        primaryPositions.size() == primaryYAngles.size() &&
+        primaryPositions.size() == primaryZAngles.size() &&
+        primaryPositions.size() == secondaryYAngles.size() &&
+        primaryPositions.size() == secondaryZAngles.size())
     {
-        unsigned long long size = primaryPositions.size();
-        outputMInductances.resize(size);
+        unsigned long long numArrangements = primaryPositions.size();
+        outputMInductances.resize(numArrangements);
 
-        if (size < 4 * primary.getThreadCount() || method != CPU_MT)
+        if (numArrangements < 4 * primary.getThreadCount() || method != CPU_MT)
         {
-            for (int i = 0; i < size; ++i)
+            for (int i = 0; i < numArrangements; ++i)
             {
                 primary.setPositionAndOrientation(primaryPositions[i], primaryYAngles[i], primaryZAngles[i]);
                 secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
@@ -75,10 +88,41 @@ std::vector<double> Coil::computeAllMutualInductanceArrangements(Coil primary, C
         else
         {
             //TODO - implement MTD code either here or in a dedicated method, I think it is alright here, same drill as in CoilGroup
+            g_threadPool.setTaskCount(numArrangements);
+            g_threadPool.getCompletedTasks().store(0ull);
+
+            auto calcThread = []
+                    (
+                            int idx,
+                            const Coil &coil,
+                            const Coil &secondary,
+                            PrecisionFactor precisionFactor,
+                            double &mutualInductance
+                    )
+            {
+                mutualInductance = Coil::computeMutualInductance(coil, secondary, precisionFactor);
+
+                g_threadPool.getCompletedTasks().fetch_add(1ull);
+            };
+
+            for (int i = 0; i < numArrangements; ++i)
+            {
+                primary.setPositionAndOrientation(primaryPositions[i], primaryYAngles[i], primaryZAngles[i]);
+                secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
+
+                g_threadPool.push(
+                        calcThread, std::ref(primary), std::ref(secondary), precisionFactor,
+                        std::ref(outputMInductances[i]));
+            }
+
+            g_threadPool.synchronizeThreads();
         }
     }
     else
-        throw "Array sized do not match";
+    {
+        fprintf(stderr, "Array sizes do not match!\n");
+        throw "Array sizes do not match";
+    }
 
     return outputMInductances;
 }

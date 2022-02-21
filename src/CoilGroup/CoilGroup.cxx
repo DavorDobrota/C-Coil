@@ -1,11 +1,9 @@
 #include "CoilGroup.h"
+#include "ThreadPool.h"
 
 #include <numeric>
-#include <utility>
-#include <cmath>
 #include <functional>
 
-#include "ThreadPool.h"
 using namespace std::placeholders;
 
 

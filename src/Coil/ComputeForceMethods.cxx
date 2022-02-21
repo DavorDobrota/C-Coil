@@ -43,3 +43,40 @@ Coil::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVect
 {
     return computeForceOnDipoleMoment(pointVector, dipoleMoment, defaultPrecision);
 }
+
+std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
+Coil::computeAllAmpereForceArrangements(Coil primary, Coil secondary,
+                                        const std::vector<vec3::CoordVector3> &primaryPositions,
+                                        const std::vector<vec3::CoordVector3> &secondaryPositions,
+                                        const std::vector<double> &primaryYAngles, const std::vector<double> &primaryZAngles,
+                                        const std::vector<double> &secondaryYAngles, const std::vector<double> &secondaryZAngles,
+                                        PrecisionFactor precisionFactor, ComputeMethod method)
+{
+    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> outputForcesAndTorques;
+
+    if (primaryPositions.size() == secondaryPositions.size() ==
+        primaryYAngles.size() == primaryZAngles.size() == secondaryYAngles.size() == secondaryZAngles.size())
+    {
+        unsigned long long size = primaryPositions.size();
+        outputForcesAndTorques.resize(size);
+
+        if (size < 4 * primary.getThreadCount() || method != CPU_MT)
+        {
+            for (int i = 0; i < size; ++i)
+            {
+                primary.setPositionAndOrientation(primaryPositions[i], primaryYAngles[i], primaryZAngles[i]);
+                secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
+
+                outputForcesAndTorques[i] = Coil::computeAmpereForce(primary, secondary, precisionFactor, method);
+            }
+        }
+        else
+        {
+            //TODO - implement MTD code either here or in a dedicated method, I think it is alright here, same drill as in CoilGroup
+        }
+    }
+    else
+        throw "Array sized do not match";
+
+    return outputForcesAndTorques;
+}

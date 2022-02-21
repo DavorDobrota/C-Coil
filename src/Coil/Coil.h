@@ -350,6 +350,24 @@ class Coil
         computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment,
                                    const PrecisionArguments &usedPrecision) const;
 
+        static std::vector<double> computeAllMutualInductanceArrangements(Coil primary, Coil secondary,
+                                                                          const std::vector<vec3::CoordVector3> &primaryPositions,
+                                                                          const std::vector<vec3::CoordVector3> &secondaryPositions,
+                                                                          const std::vector<double> &primaryYAngles,
+                                                                          const std::vector<double> &primaryZAngles,
+                                                                          const std::vector<double> &secondaryYAngles,
+                                                                          const std::vector<double> &secondaryZAngles,
+                                                                          PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                                          ComputeMethod method = CPU_ST);
+
+    static std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
+    computeAllAmpereForceArrangements(Coil primary, Coil secondary,
+                                      const std::vector<vec3::CoordVector3> &primaryPositions,
+                                      const std::vector<vec3::CoordVector3> &secondaryPositions,
+                                      const std::vector<double> &primaryYAngles, const std::vector<double> &primaryZAngles,
+                                      const std::vector<double> &secondaryYAngles, const std::vector<double> &secondaryZAngles,
+                                      PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod method = CPU_ST);
+
     private:
         void calculateMagneticMoment();
         void calculateAverageWireThickness();

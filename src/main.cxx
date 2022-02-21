@@ -9,6 +9,6 @@
 int main()
 {
 
-    testMutualInductanceZAxisMTScaling(16);
+//    testMutualInductanceZAxisMTScaling(16);
     return 0;
 }

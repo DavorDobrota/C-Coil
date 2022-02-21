@@ -4,6 +4,7 @@
 
 #include <cmath>
 
+
 void testPerformanceCPU_ST(int nOps)
 {
     using namespace std::chrono;

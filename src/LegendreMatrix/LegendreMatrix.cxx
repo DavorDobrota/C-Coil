@@ -1,5 +1,6 @@
 #include "LegendreMatrix.h"
 
+
 namespace Legendre
 {
     const double positionMatrix[maxLegendreOrder][maxLegendreOrder] =

@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cmath>
 
+
 void testMutualInductanceGeneralForZAxis(ComputeMethod method, int nThreads)
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
@@ -208,7 +209,7 @@ void testMutualInductanceGeneralGraphs()
     fclose(output);
 }
 
-void testMutualInductanceGeneralComputeAll(PrecisionFactor precisionFactor, int threadCount)
+void testMutualInductanceGeneralComputeAllPerformance(PrecisionFactor precisionFactor, int threadCount)
 {
     using namespace std::chrono;
 
@@ -226,12 +227,13 @@ void testMutualInductanceGeneralComputeAll(PrecisionFactor precisionFactor, int 
 
     std::vector<double> mutualInductanceMT(numOps);
     std::vector<double> mutualInductanceAll(numOps);
-
+    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> forceAndTorqueMT(numOps);
+    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> forceAndTorqueAll(numOps);
 
     for (int i = 0; i < numOps; ++i)
     {
         primPositions[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0);
-        secPositions[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.1, 0.2 + 0.005*i);
+        secPositions[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.1, 0.2 + double(i) * 0.005);
         primYAxisAngle[i] = 0.0;
         primZAxisAngle[i] = 0.0;
         secYAxisAngle[i] = 0.5;
@@ -241,13 +243,14 @@ void testMutualInductanceGeneralComputeAll(PrecisionFactor precisionFactor, int 
     high_resolution_clock::time_point begin_time;
     double interval;
 
+    printf("Mutual inductance:\n");
     begin_time = high_resolution_clock::now();
     mutualInductanceAll = Coil::computeAllMutualInductanceArrangements(prim, sec, primPositions,secPositions,
                                                                        primYAxisAngle, primZAxisAngle,
                                                                        secYAxisAngle, secZAxisAngle,
                                                                        precisionFactor, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("MTD perf : %.2f Ops/s\n", numOps / interval);
+    printf("MTD perf : %.1f Ops/s\n", numOps / interval);
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < numOps; ++i)
@@ -257,11 +260,28 @@ void testMutualInductanceGeneralComputeAll(PrecisionFactor precisionFactor, int 
         mutualInductanceMT[i] = Coil::computeMutualInductance(prim, sec, precisionFactor, CPU_MT);
     }
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("MT perf  : %.2f Ops/s\n", numOps / interval);
+    printf("MT perf  : %.1f Ops/s\n", numOps / interval);
+
+    printf("\nAmpere force:\n");
+    begin_time = high_resolution_clock::now();
+    forceAndTorqueAll = Coil::computeAllAmpereForceArrangements(prim, sec, primPositions,secPositions,
+                                                                primYAxisAngle, primZAxisAngle,
+                                                                secYAxisAngle, secZAxisAngle,
+                                                                precisionFactor, CPU_MT);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MTD perf : %.1f Ops/s\n", numOps / interval);
+
+    begin_time = high_resolution_clock::now();
+    for (int i = 0; i < numOps; ++i)
+    {
+        prim.setPositionAndOrientation(primPositions[i], primYAxisAngle[i], primZAxisAngle[i]);
+        sec.setPositionAndOrientation(secPositions[i], secYAxisAngle[i], secZAxisAngle[i]);
+        forceAndTorqueMT[i] = Coil::computeAmpereForce(prim, sec, precisionFactor, CPU_MT);
+    }
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MT perf  : %.1f Ops/s\n", numOps / interval);
 
     printf("\n");
-    printf("%.15g\n", mutualInductanceAll[threadCount]);
-    printf("%.15g\n", mutualInductanceMT[threadCount]);
 }
 
 void testMutualInductanceGeneralEdgeCases()

@@ -9,8 +9,5 @@
 int main()
 {
 
-//    testMutualInductanceZAxisMTScaling(16);
-//    testMutualInductanceGeneralGraphs();
-    testMutualInductanceGeneralComputeAll(PrecisionFactor(8.0), 24);
     return 0;
 }

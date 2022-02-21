@@ -1,7 +1,6 @@
 #include "Coil.h"
 #include "ThreadPool.h"
 
-#include <cmath>
 #include <functional>
 
 using namespace std::placeholders;
@@ -87,21 +86,28 @@ Coil::computeAllAmpereForceArrangements(Coil primary, Coil secondary,
         }
         else
         {
-            //TODO - implement MTD code either here or in a dedicated method, I think it is alright here, same drill as in CoilGroup
-
             g_threadPool.setTaskCount(numArrangements);
             g_threadPool.getCompletedTasks().store(0ull);
 
             auto calcThread = []
                     (
                             int idx,
-                            const Coil &coil,
-                            const Coil &secondary,
+                            Coil primary,
+                            Coil secondary,
+                            vec3::CoordVector3 primaryPosition,
+                            vec3::CoordVector3 secondaryPosition,
+                            double primaryYAngle,
+                            double primaryZAngle,
+                            double secondaryYAngle,
+                            double secondaryZAngle,
                             PrecisionFactor precisionFactor,
                             std::pair<vec3::FieldVector3, vec3::FieldVector3> &ampereForce
                     )
             {
-                ampereForce = Coil::computeAmpereForce(coil, secondary, precisionFactor);
+                primary.setPositionAndOrientation(primaryPosition, primaryYAngle, primaryZAngle);
+                secondary.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
+
+                ampereForce = Coil::computeAmpereForce(primary, secondary, precisionFactor);
 
                 g_threadPool.getCompletedTasks().fetch_add(1ull);
             };
@@ -112,8 +118,10 @@ Coil::computeAllAmpereForceArrangements(Coil primary, Coil secondary,
                 secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
 
                 g_threadPool.push(
-                        calcThread, std::ref(primary), std::ref(secondary), precisionFactor,
-                        std::ref(outputForcesAndTorques[i]));
+                        calcThread, std::ref(primary), std::ref(secondary),
+                        primaryPositions[i], secondaryPositions[i],
+                        primaryYAngles[i], primaryZAngles[i], secondaryYAngles[i], secondaryZAngles[i],
+                        precisionFactor, std::ref(outputForcesAndTorques[i]));
             }
 
             g_threadPool.synchronizeThreads();

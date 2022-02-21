@@ -2,7 +2,6 @@
 #include "LegendreMatrix.h"
 
 #include <cmath>
-#include <cstdio>
 
 
 double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,

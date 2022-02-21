@@ -1,16 +1,16 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
 #include "CoilData.h"
-#include "PrecisionGlobalVars.h"
 
-#include <cstdio>
 #include <cmath>
+
 
 namespace
 {
     const int g_defaultLegendreOrder = 12;
     const int g_defaultBlockCount = 1;
 }
+
 
 PrecisionArguments::PrecisionArguments() :
         PrecisionArguments(g_defaultBlockCount, g_defaultBlockCount, g_defaultBlockCount,

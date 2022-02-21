@@ -87,32 +87,39 @@ std::vector<double> Coil::computeAllMutualInductanceArrangements(Coil primary, C
         }
         else
         {
-            //TODO - implement MTD code either here or in a dedicated method, I think it is alright here, same drill as in CoilGroup
             g_threadPool.setTaskCount(numArrangements);
             g_threadPool.getCompletedTasks().store(0ull);
 
             auto calcThread = []
                     (
                             int idx,
-                            const Coil &coil,
-                            const Coil &secondary,
+                            Coil primary,
+                            Coil secondary,
+                            vec3::CoordVector3 primaryPosition,
+                            vec3::CoordVector3 secondaryPosition,
+                            double primaryYAngle,
+                            double primaryZAngle,
+                            double secondaryYAngle,
+                            double secondaryZAngle,
                             PrecisionFactor precisionFactor,
                             double &mutualInductance
                     )
             {
-                mutualInductance = Coil::computeMutualInductance(coil, secondary, precisionFactor);
+                primary.setPositionAndOrientation(primaryPosition, primaryYAngle, primaryZAngle);
+                secondary.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
+
+                mutualInductance = Coil::computeMutualInductance(primary, secondary, precisionFactor);
 
                 g_threadPool.getCompletedTasks().fetch_add(1ull);
             };
 
             for (int i = 0; i < numArrangements; ++i)
             {
-                primary.setPositionAndOrientation(primaryPositions[i], primaryYAngles[i], primaryZAngles[i]);
-                secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
-
                 g_threadPool.push(
-                        calcThread, std::ref(primary), std::ref(secondary), precisionFactor,
-                        std::ref(outputMInductances[i]));
+                        calcThread, std::ref(primary), std::ref(secondary),
+                        primaryPositions[i], secondaryPositions[i],
+                        primaryYAngles[i], primaryZAngles[i], secondaryYAngles[i], secondaryZAngles[i],
+                        precisionFactor, std::ref(outputMInductances[i]));
             }
 
             g_threadPool.synchronizeThreads();

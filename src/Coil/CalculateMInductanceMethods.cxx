@@ -13,6 +13,7 @@ namespace
     threadPool::ThreadPoolControl g_threadPool;
 }
 
+
 double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                 CoilPairArguments inductanceArguments, ComputeMethod method)
 {

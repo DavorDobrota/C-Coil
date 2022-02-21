@@ -9,6 +9,7 @@
 #include <vector>
 #include <chrono>
 
+
 void testCoilGroupMTD(int numCoils, int numPoints, int threadCount, bool print)
 {
     double torusRadius = 1.0;

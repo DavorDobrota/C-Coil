@@ -1,11 +1,13 @@
 #include "Coil.h"
 
+
 namespace
 {
     const double g_minRelativePrecision = 1.0;
     const double g_maxRelativePrecision = 15.0;
     const double g_defaultRelativePrecision = 5.0;
 }
+
 
 PrecisionFactor::PrecisionFactor() : PrecisionFactor(g_defaultRelativePrecision) {}
 

@@ -10,6 +10,7 @@ namespace
     const double g_MiReduced = 0.0000001;
 }
 
+
 double Coil::calculateAPotentialFast(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
 {
     double magneticPotential = 0.0;

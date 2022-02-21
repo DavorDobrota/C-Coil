@@ -1,5 +1,6 @@
 #include "CoilData.h"
 
+
 CoilData::CoilData(const Coil &coil)
 {
     numOfTurns = coil.getNumOfTurns();

@@ -2,13 +2,13 @@
 #include "LegendreMatrix.h"
 
 #include <cmath>
-#include <cstdio>
 
 
 namespace
 {
     const double g_MiReduced = 0.0000001;
 }
+
 
 double Coil::calculateAPotentialSlow(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
 {

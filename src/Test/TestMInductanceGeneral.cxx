@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cmath>
 
+
 void testMutualInductanceGeneralForZAxis(ComputeMethod method, int nThreads)
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);

@@ -4,10 +4,7 @@
 #include "ThreadPool.h"
 
 #include <cmath>
-#include <algorithm>
-#include <numeric>
 #include <cstdio>
-#include <chrono>
 
 
 namespace

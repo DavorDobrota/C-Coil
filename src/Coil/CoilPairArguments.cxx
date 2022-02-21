@@ -2,7 +2,6 @@
 #include "CoilData.h"
 
 #include <cmath>
-#include <cstdio>
 
 
 CoilPairArguments::CoilPairArguments() : CoilPairArguments(PrecisionArguments(), PrecisionArguments()) {}

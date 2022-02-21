@@ -23,6 +23,7 @@ void testCoilGroupMTD(int numCoils = 100, int numPoints = 10'000, int threadCoun
 void testCoilGroupMTvsMTD(int threadCount = 8, int numPoints = 20'000);
 void testCoilGroupMTDFields(int threadCount = 8);
 void testCoilGroupMTDInductanceAndForce(int threadCount = 8);
+void testMInductanceAndForceComputeAllPerformance(PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = 8);
 
 void testMutualInductanceZAxis();
 void testMutualInductanceZAxisArgumentGeneration();

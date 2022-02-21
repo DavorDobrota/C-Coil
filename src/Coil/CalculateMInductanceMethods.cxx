@@ -1,6 +1,5 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
-#include "PrecisionGlobalVars.h"
 #include "Math/CustomMath.h"
 #include "ThreadPool/ThreadPool.h"
 
@@ -13,6 +12,7 @@ namespace
     const double g_MiReduced = 0.0000001;
     threadPool::ThreadPoolControl g_threadPool;
 }
+
 
 double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                 CoilPairArguments inductanceArguments, ComputeMethod method)

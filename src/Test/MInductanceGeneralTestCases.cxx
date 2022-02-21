@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cmath>
 
+
 void testMutualInductanceGeneralMisalignedCoils()
 {
     Coil primary = Coil(0.06, 0.0, 0.12, 120);

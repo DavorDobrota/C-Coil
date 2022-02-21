@@ -3,6 +3,7 @@
 
 #include <vector>
 
+
 namespace vec3
 {
     enum CoordinateSystem {CARTESIAN, CYLINDRICAL, SPHERICAL};

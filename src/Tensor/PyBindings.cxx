@@ -1,7 +1,8 @@
 #include <sstream>
 
-#include <Tensor.h>
 #include <PyMain.h>
+#include <Tensor.h>
+
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 namespace py = pybind11;

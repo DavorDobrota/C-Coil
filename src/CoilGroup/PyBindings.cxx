@@ -1,7 +1,8 @@
 #include <Coil.h>
-#include <ComputeMethod.h>
 #include <CoilGroup.h>
+#include <ComputeMethod.h>
 #include <PyMain.h>
+
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 namespace py = pybind11;

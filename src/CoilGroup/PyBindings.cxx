@@ -75,4 +75,6 @@ void initCoilGroup(py::module_ &mainModule)
             "compute_force_on_dipole_moment", &CoilGroup::computeForceOnDipoleMoment,
             py::arg("point_vector"), py::arg("dipole_moment")
         );
+
+    // TODO: Add __repr__
 }

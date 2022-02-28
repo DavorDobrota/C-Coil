@@ -55,21 +55,25 @@ void initTensor(py::module_ &mainModule)
     coordVector3.def("__repr__", [](vec3::CoordVector3 self) -> std::string {
         std::stringstream output;
 
+        output << "CoordVector3(";
+
         switch(self.getCoordinateSystem())
         {
             case vec3::CoordinateSystem::CARTESIAN:
-                output << "{x: " << self.component1 << ", y: " << self.component2
-                       << ", z: " << self.component3 << "}";
+                output << "x=" << self.component1 << ", y=" << self.component2
+                       << ", z=" << self.component3;
                 break;
             case vec3::CoordinateSystem::CYLINDRICAL:
-                output << "{z: " << self.component1 << ", r: " << self.component2
-                       << ", p: " << self.component3 << "}";
+                output << "z=" << self.component1 << ", r=" << self.component2
+                       << ", p=" << self.component3;
                 break;
             case vec3::CoordinateSystem::SPHERICAL:
-                output << "{r: " << self.component1 << ", t: " << self.component2
-                       << ", p: " << self.component3 << "}";
+                output << "r=" << self.component1 << ", t=" << self.component2
+                       << ", p=" << self.component3;
                 break;
         };
+
+        output << ")";
 
         return output.str();
     });
@@ -99,8 +103,8 @@ void initTensor(py::module_ &mainModule)
     fieldVector3.def("__repr__", [](vec3::FieldVector3 self) -> std::string {
         std::stringstream output;
 
-        output << "{x: " << self.xComponent << ", y: " << self.yComponent
-               << ", z: " << self.zComponent << "}";
+        output << "FieldVector3(" << "x=" << self.xComponent << ", y=" << self.yComponent
+               << ", z=" << self.zComponent << ")";
 
         return output.str();
     });
@@ -135,9 +139,9 @@ void initTensor(py::module_ &mainModule)
     matrix3.def("__repr__", [](vec3::Matrix3 self) -> std::string {
         std::stringstream output;
 
-        output << "[[" << self.xxElement << ", " << self.xyElement << ", " << self.xzElement << "], ["
-                       << self.yxElement << ", " << self.yyElement << ", " << self.yzElement << "], ["
-                       << self.zxElement << ", " << self.zyElement << ", " << self.zzElement << "]]";
+        output << "Matrix3([[" << self.xxElement << ", " << self.xyElement << ", " << self.xzElement << "], ["
+                               << self.yxElement << ", " << self.yyElement << ", " << self.yzElement << "], ["
+                               << self.zxElement << ", " << self.zyElement << ", " << self.zzElement << "]])";
 
         return output.str();
     });

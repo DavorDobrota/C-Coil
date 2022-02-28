@@ -27,4 +27,6 @@ void initCoilData(py::module_ &mainModule)
             .def_readwrite("thickness_increments", &CoilData::thicknessIncrements)
             .def_readonly("position_array", &CoilData::positionArray)
             .def_readonly("weight_array", &CoilData::weightArray);
+
+    // TODO: Add __repr__
 }

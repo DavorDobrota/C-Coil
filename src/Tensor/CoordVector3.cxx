@@ -93,22 +93,25 @@ void vec3::CoordVector3::convertToSpherical()
     }
 }
 
-void vec3::CoordVector3::convertAllToCartesian(std::vector<CoordVector3> &vector3Array)
+std::vector<vec3::CoordVector3> vec3::CoordVector3::convertAllToCartesian(std::vector<CoordVector3> &vector3Array)
 {
     for (auto & i : vector3Array)
         i.convertToCartesian();
+    return vector3Array;
 }
 
-void vec3::CoordVector3::convertAllToCylindrical(std::vector<CoordVector3> &vector3Array)
+std::vector<vec3::CoordVector3> vec3::CoordVector3::convertAllToCylindrical(std::vector<CoordVector3> &vector3Array)
 {
     for (auto & i : vector3Array)
         i.convertToCylindrical();
+    return vector3Array;
 }
 
-void vec3::CoordVector3::convertAllToSpherical(std::vector<CoordVector3> &vector3Array)
+std::vector<vec3::CoordVector3> vec3::CoordVector3::convertAllToSpherical(std::vector<CoordVector3> &vector3Array)
 {
     for (auto & i : vector3Array)
         i.convertToSpherical();
+    return vector3Array;
 }
 
 void vec3::CoordVector3::convertCartesianToCylindrical()

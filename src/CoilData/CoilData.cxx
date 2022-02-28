@@ -14,5 +14,4 @@ CoilData::CoilData(const Coil &coil)
     angularIterations = arguments.angularBlockCount * arguments.angularIncrementCount;
     lengthIterations = arguments.lengthBlockCount * arguments.lengthIncrementCount;
     thicknessIncrements = arguments.thicknessBlockCount * arguments.thicknessIncrementCount;
-
 }

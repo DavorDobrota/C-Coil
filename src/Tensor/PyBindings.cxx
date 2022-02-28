@@ -2,6 +2,9 @@
 
 #include <Tensor.h>
 #include <PyMain.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
 
 
 void initTensor(py::module_ &mainModule)
@@ -48,22 +51,22 @@ void initTensor(py::module_ &mainModule)
 
     coordVector3.def_property_readonly("coordinateSystem", &vec3::CoordVector3::getCoordinateSystem);
 
-    coordVector3.def("__repr__", [](vec3::CoordVector3 vec) -> std::string {
+    coordVector3.def("__repr__", [](vec3::CoordVector3 self) -> std::string {
         std::stringstream output;
 
-        switch(vec.getCoordinateSystem())
+        switch(self.getCoordinateSystem())
         {
             case vec3::CoordinateSystem::CARTESIAN:
-                output << "{x: " << vec.component1 << ", y: " << vec.component2
-                       << ", z: " << vec.component3 << "}";
+                output << "{x: " << self.component1 << ", y: " << self.component2
+                       << ", z: " << self.component3 << "}";
                 break;
             case vec3::CoordinateSystem::CYLINDRICAL:
-                output << "{z: " << vec.component1 << ", r: " << vec.component2
-                       << ", p: " << vec.component3 << "}";
+                output << "{z: " << self.component1 << ", r: " << self.component2
+                       << ", p: " << self.component3 << "}";
                 break;
             case vec3::CoordinateSystem::SPHERICAL:
-                output << "{r: " << vec.component1 << ", t: " << vec.component2
-                       << ", p: " << vec.component3 << "}";
+                output << "{r: " << self.component1 << ", t: " << self.component2
+                       << ", p: " << self.component3 << "}";
                 break;
         };
 
@@ -92,15 +95,49 @@ void initTensor(py::module_ &mainModule)
     fieldVector3.def_static("scalar_product", &vec3::FieldVector3::scalarProduct);
     fieldVector3.def_static("cross_product", &vec3::FieldVector3::crossProduct);
 
-    fieldVector3.def("__repr__", [](vec3::FieldVector3 vec) -> std::string {
+    fieldVector3.def("__repr__", [](vec3::FieldVector3 self) -> std::string {
         std::stringstream output;
 
-        output << "{x: " << vec.xComponent << ", y: " << vec.yComponent
-               << ", z: " << vec.zComponent << "}";
+        output << "{x: " << self.xComponent << ", y: " << self.yComponent
+               << ", z: " << self.zComponent << "}";
 
         return output.str();
     });
 
 
-    // TODO: Matrix3
+    // Matrix3
+
+    matrix3.def_readwrite("xx_element", &vec3::Matrix3::xxElement)
+        .def_readwrite("xy_element", &vec3::Matrix3::xyElement)
+        .def_readwrite("xz_element", &vec3::Matrix3::xzElement)
+        .def_readwrite("yx_element", &vec3::Matrix3::yxElement)
+        .def_readwrite("yy_element", &vec3::Matrix3::yyElement)
+        .def_readwrite("yz_element", &vec3::Matrix3::yzElement)
+        .def_readwrite("zx_element", &vec3::Matrix3::zxElement)
+        .def_readwrite("zy_element", &vec3::Matrix3::zyElement)
+        .def_readwrite("zz_element", &vec3::Matrix3::zzElement);
+
+    matrix3.def(py::init<>())
+        .def(py::init<double, double, double, double, double, double, double, double, double>());
+
+    matrix3.def("__add__", &vec3::Matrix3::operator+)
+        .def("__iadd__", &vec3::Matrix3::operator+=)
+        .def(
+            "__mul__",
+            static_cast<vec3::Matrix3 (vec3::Matrix3::*)(const vec3::Matrix3&) const>(&vec3::Matrix3::operator*)
+        )
+        .def(
+            "__mul__",
+            static_cast<vec3::FieldVector3 (vec3::Matrix3::*)(const vec3::FieldVector3&) const>(&vec3::Matrix3::operator*)
+        );
+
+    matrix3.def("__repr__", [](vec3::Matrix3 self) -> std::string {
+        std::stringstream output;
+
+        output << "[[" << self.xxElement << ", " << self.xyElement << ", " << self.xzElement << "], ["
+                       << self.yxElement << ", " << self.yyElement << ", " << self.yzElement << "], ["
+                       << self.zxElement << ", " << self.zyElement << ", " << self.zzElement << "]]";
+
+        return output.str();
+    });
 }

@@ -5,8 +5,7 @@
 
 class CoilGroup
 {
-    public:
-
+    private:
         std::vector<Coil> memberCoils;
         PrecisionFactor defaultPrecisionFactor;
         int threadCount{};

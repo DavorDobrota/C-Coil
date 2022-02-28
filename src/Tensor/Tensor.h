@@ -30,9 +30,9 @@ namespace vec3
             void convertToCylindrical();
             void convertToSpherical();
 
-            static void convertAllToCartesian(std::vector<CoordVector3> &Vector3Array);
-            static void convertAllToCylindrical(std::vector<CoordVector3> &Vector3Array);
-            static void convertAllToSpherical(std::vector<CoordVector3> &Vector3Array);
+            static std::vector<CoordVector3> convertAllToCartesian(std::vector<CoordVector3> &Vector3Array);
+            static std::vector<CoordVector3> convertAllToCylindrical(std::vector<CoordVector3> &Vector3Array);
+            static std::vector<CoordVector3> convertAllToSpherical(std::vector<CoordVector3> &Vector3Array);
 
             static FieldVector3 convertToFieldVector(CoordVector3 inputVector);
             static CoordVector3 convertToCoordVector(const FieldVector3 &inputVector);

@@ -2,75 +2,85 @@
 
 #include <cmath>
 
+#include <sstream>
+
 
 vec3::FieldVector3::FieldVector3() : FieldVector3(0.0, 0.0, 0.0) {}
 
-vec3::FieldVector3::FieldVector3(double x, double y, double z) : xComponent(x), yComponent(y), zComponent(z) {}
+vec3::FieldVector3::FieldVector3(double x, double y, double z) : x(x), y(y), z(z) {}
 
 
 vec3::FieldVector3 vec3::FieldVector3::operator+(const FieldVector3 &otherVec) const
 {
-    return FieldVector3(this->xComponent + otherVec.xComponent,
-                        this->yComponent + otherVec.yComponent,
-                        this->zComponent + otherVec.zComponent);
+    return FieldVector3(this->x + otherVec.x,
+                        this->y + otherVec.y,
+                        this->z + otherVec.z);
 }
 
 vec3::FieldVector3 vec3::FieldVector3::operator+=(const FieldVector3 &otherVec)
 {
-    this->xComponent += otherVec.xComponent;
-    this->yComponent += otherVec.yComponent;
-    this->zComponent += otherVec.zComponent;
+    this->x += otherVec.x;
+    this->y += otherVec.y;
+    this->z += otherVec.z;
     return *this;
 }
 
 vec3::FieldVector3 vec3::FieldVector3::operator-(const FieldVector3 &otherVec) const
 {
-    return FieldVector3(this->xComponent - otherVec.xComponent,
-                        this->yComponent - otherVec.yComponent,
-                        this->zComponent - otherVec.zComponent);
+    return FieldVector3(this->x - otherVec.x,
+                        this->y - otherVec.y,
+                        this->z - otherVec.z);
 }
 
 vec3::FieldVector3 vec3::FieldVector3::operator-=(const FieldVector3 &otherVec)
 {
-    this->xComponent -= otherVec.xComponent;
-    this->yComponent -= otherVec.yComponent;
-    this->zComponent -= otherVec.zComponent;
+    this->x -= otherVec.x;
+    this->y -= otherVec.y;
+    this->z -= otherVec.z;
     return *this;
 }
 
 vec3::FieldVector3 vec3::FieldVector3::operator*(double multiplier) const
 {
-    return FieldVector3(xComponent * multiplier,
-                        yComponent * multiplier,
-                        zComponent * multiplier);
+    return FieldVector3(x * multiplier,
+                        y * multiplier,
+                        z * multiplier);
 }
 
 vec3::FieldVector3 vec3::FieldVector3::operator*=(double multiplier)
 {
-    xComponent *= multiplier;
-    yComponent *= multiplier;
-    zComponent *= multiplier;
+    x *= multiplier;
+    y *= multiplier;
+    z *= multiplier;
     return *this;
 }
 
 double vec3::FieldVector3::magnitude() const
 {
-    return std::sqrt(xComponent * xComponent + yComponent * yComponent + zComponent * zComponent);
+    return std::sqrt(x * x + y * y + z * z);
 }
 
 
-double vec3::FieldVector3::scalarProduct(FieldVector3 vec1, FieldVector3 vec2)
+double vec3::FieldVector3::scalarProduct(FieldVector3 vector1, FieldVector3 vector2)
 {
-    return vec1.xComponent * vec2.xComponent + vec1.yComponent * vec2.yComponent + vec1.zComponent * vec2.zComponent;
+    return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
 }
 
-vec3::FieldVector3 vec3::FieldVector3::crossProduct(FieldVector3 vec1, FieldVector3 vec2)
+vec3::FieldVector3 vec3::FieldVector3::crossProduct(FieldVector3 vector1, FieldVector3 vector2)
 {
 
-    double xOutput = vec1.yComponent * vec2.zComponent - vec1.zComponent * vec2.yComponent;
-    double yOutput = vec1.zComponent * vec2.xComponent - vec1.xComponent * vec2.zComponent;
-    double zOutput = vec1.xComponent * vec2.yComponent - vec1.yComponent * vec2.xComponent;
+    double xOutput = vector1.y * vector2.z - vector1.z * vector2.y;
+    double yOutput = vector1.z * vector2.x - vector1.x * vector2.z;
+    double zOutput = vector1.x * vector2.y - vector1.y * vector2.x;
 
     return FieldVector3(xOutput, yOutput, zOutput);
 }
 
+vec3::FieldVector3::operator std::string() const
+{
+    std::stringstream output;
+
+    output << "FieldVector3(" << "x=" << x << ", y=" << y << ", z=" << z << ")";
+
+    return output.str();
+}

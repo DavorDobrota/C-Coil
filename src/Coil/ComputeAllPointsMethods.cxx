@@ -23,9 +23,9 @@ void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &
         vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
         finalVec.convertToCylindrical();
 
-        cylindricalZArr[i] = finalVec.component1;
-        cylindricalRArr[i] = finalVec.component2;
-        cylindricalPhiArr[i] = finalVec.component3;
+        cylindricalZArr[i] = finalVec.elem1;
+        cylindricalRArr[i] = finalVec.elem2;
+        cylindricalPhiArr[i] = finalVec.elem3;
     }
 }
 
@@ -72,7 +72,7 @@ std::vector<double>Coil::computeAllBFieldX(const std::vector<vec3::CoordVector3>
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = computedFieldArr[i].xComponent;
+        outputArr[i] = computedFieldArr[i].x;
 
     return outputArr;
 }
@@ -90,7 +90,7 @@ std::vector<double>Coil::computeAllBFieldY(const std::vector<vec3::CoordVector3>
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = computedFieldArr[i].yComponent;
+        outputArr[i] = computedFieldArr[i].y;
 
     return outputArr;
 }
@@ -108,7 +108,7 @@ std::vector<double>Coil::computeAllBFieldZ(const std::vector<vec3::CoordVector3>
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = computedFieldArr[i].zComponent;
+        outputArr[i] = computedFieldArr[i].z;
 
     return outputArr;
 }
@@ -126,9 +126,9 @@ std::vector<double>Coil::computeAllBFieldAbs(const std::vector<vec3::CoordVector
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = std::sqrt(computedFieldArr[i].xComponent * computedFieldArr[i].xComponent +
-                                 computedFieldArr[i].yComponent * computedFieldArr[i].yComponent +
-                                 computedFieldArr[i].zComponent * computedFieldArr[i].zComponent);
+        outputArr[i] = std::sqrt(computedFieldArr[i].x * computedFieldArr[i].x +
+                                 computedFieldArr[i].y * computedFieldArr[i].y +
+                                 computedFieldArr[i].z * computedFieldArr[i].z);
 
     return outputArr;
 }
@@ -172,7 +172,7 @@ std::vector<double> Coil::computeAllAPotentialX(const std::vector<vec3::CoordVec
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = computedFieldArr[i].xComponent;
+        outputArr[i] = computedFieldArr[i].x;
 
     return outputArr;
 }
@@ -190,7 +190,7 @@ std::vector<double> Coil::computeAllAPotentialY(const std::vector<vec3::CoordVec
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = computedFieldArr[i].yComponent;
+        outputArr[i] = computedFieldArr[i].y;
 
     return outputArr;
 }
@@ -208,7 +208,7 @@ std::vector<double> Coil::computeAllAPotentialZ(const std::vector<vec3::CoordVec
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = computedFieldArr[i].zComponent;
+        outputArr[i] = computedFieldArr[i].z;
 
     return outputArr;
 }
@@ -226,9 +226,9 @@ std::vector<double> Coil::computeAllAPotentialAbs(const std::vector<vec3::CoordV
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = std::sqrt(computedFieldArr[i].xComponent * computedFieldArr[i].xComponent +
-                                 computedFieldArr[i].yComponent * computedFieldArr[i].yComponent +
-                                 computedFieldArr[i].zComponent * computedFieldArr[i].zComponent);
+        outputArr[i] = std::sqrt(computedFieldArr[i].x * computedFieldArr[i].x +
+                                 computedFieldArr[i].y * computedFieldArr[i].y +
+                                 computedFieldArr[i].z * computedFieldArr[i].z);
 
     return outputArr;
 }

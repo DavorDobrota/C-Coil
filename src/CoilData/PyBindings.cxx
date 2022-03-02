@@ -28,5 +28,5 @@ void initCoilData(py::module_ &mainModule)
             .def_readonly("position_array", &CoilData::positionArray)
             .def_readonly("weight_array", &CoilData::weightArray);
 
-    // TODO: Add __repr__
+    coilData.def("__repr__", &CoilData::operator std::string);
 }

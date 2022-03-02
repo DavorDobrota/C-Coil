@@ -3,6 +3,9 @@
 
 #include "Coil.h"
 
+#include <string>
+
+
 class CoilGroup
 {
     private:
@@ -53,6 +56,8 @@ class CoilGroup
 
         [[nodiscard]] std::pair<vec3::FieldVector3, vec3::FieldVector3>
         computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment) const;
+
+        explicit operator std::string() const;
 
     private:
         // MTD stands for Multithreading Distributed - useful when there are many coils, each is given its own thread

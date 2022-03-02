@@ -13,7 +13,7 @@ void testAmpereForceForFilamentsZAxis()
 
     for (int i = 1; i <= 8; i++)
     {
-        printf("%.16g\n", 1000 * Coil::computeAmpereForce(coil1, coil2, PrecisionFactor(i)).first.zComponent);
+        printf("%.16g\n", 1000 * Coil::computeAmpereForce(coil1, coil2, PrecisionFactor(i)).first.z);
     }
 
     printf("\n");
@@ -30,7 +30,7 @@ void testAmpereForceGeneralCase()
     group.addCoil(coil2);
     group.addCoil(coil3);
 
-    printf("%.15g T\n", group.computeBFieldVector(vec3::CoordVector3()).zComponent);
+    printf("%.15g T\n", group.computeBFieldVector(vec3::CoordVector3()).z);
 
     printf("%.15g MJ\n", 1e-6 *
            (0.5 * coil1.computeAndSetSelfInductance(PrecisionFactor(12)) * coil1.getCurrent() * coil1.getCurrent() +
@@ -52,8 +52,8 @@ void testAmpereForceGeneralCase()
             coil1.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.002 * j, 0.001 * i));
             forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
             printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-                   forcePair.first.xComponent, forcePair.first.yComponent, forcePair.first.zComponent,
-                   forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
+                   forcePair.first.x, forcePair.first.y, forcePair.first.z,
+                   forcePair.second.x, forcePair.second.y, forcePair.second.z);
         }
     }
     printf("Force and Torque in rotation\n");
@@ -62,8 +62,8 @@ void testAmpereForceGeneralCase()
         coil1.setPositionAndOrientation(vec3::CoordVector3(), M_PI/360 * i, M_PI_2);
         forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
         printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-               forcePair.first.xComponent, forcePair.first.yComponent, forcePair.first.zComponent,
-               forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
+               forcePair.first.x, forcePair.first.y, forcePair.first.z,
+               forcePair.second.x, forcePair.second.y, forcePair.second.z);
     }
     printf("\n");
 
@@ -79,22 +79,22 @@ void testAmpereForceGeneralCase()
             vec3::CoordVector3(vec3::CARTESIAN, 0.001, 0.0, 0.0), M_PI/180, 3 * M_PI_2);
     forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
     printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-           forcePair.first.xComponent, forcePair.first.yComponent, forcePair.first.zComponent,
-           forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
+           forcePair.first.x, forcePair.first.y, forcePair.first.z,
+           forcePair.second.x, forcePair.second.y, forcePair.second.z);
 
     coil1.setPositionAndOrientation(
             vec3::CoordVector3(vec3::CARTESIAN, 0.001, 0.0, 0.001), M_PI/180, 3 * M_PI_2);
     forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
     printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-           forcePair.first.xComponent, forcePair.first.yComponent, forcePair.first.zComponent,
-           forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
+           forcePair.first.x, forcePair.first.y, forcePair.first.z,
+           forcePair.second.x, forcePair.second.y, forcePair.second.z);
 
     coil1.setPositionAndOrientation(
             vec3::CoordVector3(vec3::CARTESIAN, 0.001, 0.001, 0.001), M_PI/180, 3 * M_PI_2);
     forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
     printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-           forcePair.first.xComponent, forcePair.first.yComponent, forcePair.first.zComponent,
-           forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
+           forcePair.first.x, forcePair.first.y, forcePair.first.z,
+           forcePair.second.x, forcePair.second.y, forcePair.second.z);
 }
 
 void testAmpereForceThinCoils()
@@ -108,7 +108,7 @@ void testAmpereForceThinCoils()
     for (int i = 1; i <= 10; ++i)
     {
         tempForce = Coil::computeAmpereForce(coil1, coil2, PrecisionFactor(i), method);
-        printf("%.16g mN\n", 1000 * tempForce.first.zComponent);
+        printf("%.16g mN\n", 1000 * tempForce.first.z);
     }
     printf("\n");
 
@@ -118,7 +118,7 @@ void testAmpereForceThinCoils()
     for (int i = 1; i <= 12; ++i)
     {
         tempForce = Coil::computeAmpereForce(coil3, coil4, PrecisionFactor(i), method);
-        printf("%.16g mN\n", 1000 * tempForce.first.zComponent);
+        printf("%.16g mN\n", 1000 * tempForce.first.z);
     }
     printf("\n");
 
@@ -128,7 +128,7 @@ void testAmpereForceThinCoils()
     for (int i = 1; i <= 10; ++i)
     {
         tempForce = Coil::computeAmpereForce(coil5, coil6, PrecisionFactor(i), method);
-        printf("%.16g mN\n", 1000 * tempForce.first.zComponent);
+        printf("%.16g mN\n", 1000 * tempForce.first.z);
     }
     printf("\n");
 
@@ -138,7 +138,7 @@ void testAmpereForceThinCoils()
     for (int i = 1; i <= 10; ++i)
     {
         tempForce = Coil::computeAmpereForce(coil7, coil8, PrecisionFactor(i), method);
-        printf("%.16g N\n", tempForce.first.zComponent);
+        printf("%.16g N\n", tempForce.first.z);
     }
     printf("\n");
 
@@ -148,7 +148,7 @@ void testAmpereForceThinCoils()
     {
         coil10.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.05));
         tempForce = Coil::computeAmpereForce(coil9, coil10, PrecisionFactor(i), method);
-        printf("%.16g N\n", tempForce.first.zComponent);
+        printf("%.16g N\n", tempForce.first.z);
     }
     printf("\n");
 
@@ -158,7 +158,7 @@ void testAmpereForceThinCoils()
     {
         coil12.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.02));
         tempForce = Coil::computeAmpereForce(coil11, coil12, PrecisionFactor(i), method);
-        printf("%.16g N\n", tempForce.first.zComponent);
+        printf("%.16g N\n", tempForce.first.z);
     }
     printf("\n");
 
@@ -168,7 +168,7 @@ void testAmpereForceThinCoils()
     for (int i = 1; i <= 10; ++i)
     {
         tempForce = Coil::computeAmpereForce(coil13, coil14, PrecisionFactor(i), method);
-        printf("%.16g mN\n", 1000 * tempForce.first.zComponent);
+        printf("%.16g mN\n", 1000 * tempForce.first.z);
     }
     printf("\n");
 }
@@ -190,7 +190,7 @@ void testAmpereForceFilamentsGeneral()
     {
         tempForce = Coil::computeAmpereForce(coil1, coil2, PrecisionFactor(i));
         printf("(%20.16g, %20.16g, %20.16g) microN\n",
-               1e6 * tempForce.first.xComponent, 1e6 * tempForce.first.yComponent, 1e6 * tempForce.first.zComponent);
+               1e6 * tempForce.first.x, 1e6 * tempForce.first.y, 1e6 * tempForce.first.z);
     }
     printf("\n");
 
@@ -205,7 +205,7 @@ void testAmpereForceFilamentsGeneral()
     {
         tempForce = Coil::computeAmpereForce(coil3, coil4, PrecisionFactor(i));
         printf("(%20.16g, %20.16g, %20.16g) nanoN\n",
-               1e9 * tempForce.first.xComponent, 1e9 * tempForce.first.yComponent, 1e9 * tempForce.first.zComponent);
+               1e9 * tempForce.first.x, 1e9 * tempForce.first.y, 1e9 * tempForce.first.z);
     }
     printf("\n");
 
@@ -220,7 +220,7 @@ void testAmpereForceFilamentsGeneral()
     {
         tempForce = Coil::computeAmpereForce(coil5, coil6, PrecisionFactor(i));
         printf("(%20.16g, %20.16g, %20.16g) microN\n",
-               1e6 * tempForce.first.xComponent, 1e6 * tempForce.first.yComponent, 1e6 * tempForce.first.zComponent);
+               1e6 * tempForce.first.x, 1e6 * tempForce.first.y, 1e6 * tempForce.first.z);
     }
     printf("\n");
 
@@ -235,7 +235,7 @@ void testAmpereForceFilamentsGeneral()
     {
         tempForce = Coil::computeAmpereForce(coil7, coil8, PrecisionFactor(i));
         printf("(%20.16g, %20.16g, %20.16g) microN\n",
-               1e6 * tempForce.first.xComponent, 1e6 * tempForce.first.yComponent, 1e6 * tempForce.first.zComponent);
+               1e6 * tempForce.first.x, 1e6 * tempForce.first.y, 1e6 * tempForce.first.z);
     }
     printf("\n");
 
@@ -250,7 +250,7 @@ void testAmpereForceFilamentsGeneral()
     {
         tempForce = Coil::computeAmpereForce(coil9, coil10, PrecisionFactor(i));
         printf("(%20.16g, %20.16g, %20.16g) microN\n",
-               1e6 * tempForce.first.xComponent, 1e6 * tempForce.first.yComponent, 1e6 * tempForce.first.zComponent);
+               1e6 * tempForce.first.x, 1e6 * tempForce.first.y, 1e6 * tempForce.first.z);
     }
     printf("\n");
 
@@ -264,7 +264,7 @@ void testAmpereForceFilamentsGeneral()
                 vec3::CoordVector3(vec3::CARTESIAN, 0.003, 0.0, 0.001 * i));
         tempForce = Coil::computeAmpereForce(coil11, coil12, PrecisionFactor(8.0));
         printf("%20.16g\t %20.16g\n",
-               1e7 * tempForce.first.xComponent, 1e7 * tempForce.first.zComponent);
+               1e7 * tempForce.first.x, 1e7 * tempForce.first.z);
     }
     printf("\n");
 
@@ -277,7 +277,7 @@ void testAmpereForceFilamentsGeneral()
         coil14.setPositionAndOrientation(
                 vec3::CoordVector3(vec3::CARTESIAN, i, 0.0, 1e-18));
         tempForce = Coil::computeAmpereForce(coil13, coil14, PrecisionFactor(10.0));
-        printf("%6g %20.16g\t %20.16g\n",i, 1e6 * tempForce.first.xComponent, 1e6 * tempForce.first.zComponent);
+        printf("%6g %20.16g\t %20.16g\n",i, 1e6 * tempForce.first.x, 1e6 * tempForce.first.z);
     }
     printf("\n");
 
@@ -291,7 +291,7 @@ void testAmpereForceFilamentsGeneral()
     {
         tempForce = Coil::computeAmpereForce(coil15, coil16, PrecisionFactor(i));
         printf("(%20.16g, %20.16g, %20.16g) nanoN\n",
-               1e9 * tempForce.first.xComponent, 1e9 * tempForce.first.yComponent, 1e9 * tempForce.first.zComponent);
+               1e9 * tempForce.first.x, 1e9 * tempForce.first.y, 1e9 * tempForce.first.z);
     }
     printf("\n");
 
@@ -303,7 +303,7 @@ void testAmpereForceFilamentsGeneral()
     {
         tempForce = Coil::computeAmpereForce(coil17, coil18, PrecisionFactor(i));
         printf("(%20.16g, %20.16g, %20.16g) nanoN\n",
-               1e9 * tempForce.first.xComponent, 1e9 * tempForce.first.yComponent, 1e9 * tempForce.first.zComponent);
+               1e9 * tempForce.first.x, 1e9 * tempForce.first.y, 1e9 * tempForce.first.z);
     }
     printf("\n");
 
@@ -315,7 +315,7 @@ void testAmpereForceFilamentsGeneral()
     {
         tempForce = Coil::computeAmpereForce(coil19, coil20, PrecisionFactor(i));
         printf("(%20.16g, %20.16g, %20.16g) nanoN\n",
-               1e9 * tempForce.first.xComponent, 1e9 * tempForce.first.yComponent, 1e9 * tempForce.first.zComponent);
+               1e9 * tempForce.first.x, 1e9 * tempForce.first.y, 1e9 * tempForce.first.z);
     }
     printf("\n");
 }

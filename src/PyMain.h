@@ -4,6 +4,7 @@
 #include <pybind11/pybind11.h>
 
 void initTensor(pybind11::module_ &mainModule);
+void initCoil(pybind11::module_ &mainModule);
 void initCoilData(pybind11::module_ &mainModule);
 void initCoilGroup(pybind11::module_ &mainModule);
 

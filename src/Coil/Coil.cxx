@@ -5,6 +5,8 @@
 
 #include <cmath>
 
+#include <sstream>
+
 
 namespace
 {
@@ -379,14 +381,25 @@ bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
     vec3::FieldVector3 primPositionVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
     vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
 
-    if (primPositionVec.xComponent / primary.innerRadius < g_zAxisApproximationRatio &&
-        primPositionVec.yComponent / primary.innerRadius < g_zAxisApproximationRatio &&
-        secPositionVec.xComponent / primary.innerRadius < g_zAxisApproximationRatio &&
-        secPositionVec.yComponent / primary.innerRadius < g_zAxisApproximationRatio &&
+    if (primPositionVec.x / primary.innerRadius < g_zAxisApproximationRatio &&
+        primPositionVec.y / primary.innerRadius < g_zAxisApproximationRatio &&
+        secPositionVec.x / primary.innerRadius < g_zAxisApproximationRatio &&
+        secPositionVec.y / primary.innerRadius < g_zAxisApproximationRatio &&
         primary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio &&
         secondary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio)
     {
         return true;
     }
     return false;
+}
+
+Coil::operator std::string() const
+{
+    std::stringstream output;
+
+    // TODO: finish this method
+    output << "Coil("
+        << ")";
+
+    return output.str();
 }

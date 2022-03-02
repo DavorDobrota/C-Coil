@@ -74,9 +74,9 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
     vec3::FieldVector3 displacementVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
     vec3::FieldVector3 offsetVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
 
-    double xDisplacement = displacementVec.xComponent;
-    double yDisplacement = displacementVec.yComponent;
-    double zDisplacement = displacementVec.zComponent;
+    double xDisplacement = displacementVec.x;
+    double yDisplacement = displacementVec.y;
+    double zDisplacement = displacementVec.z;
     double alphaAngle = secondary.yAxisAngle;
     double betaAngle = secondary.zAxisAngle;
 
@@ -100,8 +100,8 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
     // sometimes the function is even so a shortcut can be used to improve performance and efficiency
     double ringIntervalSize;
 
-    if (relativeVec.xComponent / primary.innerRadius < g_zAxisApproximationRatio &&
-        relativeVec.yComponent / primary.innerRadius < g_zAxisApproximationRatio ||
+    if (relativeVec.x / primary.innerRadius < g_zAxisApproximationRatio &&
+        relativeVec.y / primary.innerRadius < g_zAxisApproximationRatio ||
         relativeAlpha < g_zAxisApproximationRatio || relativeBeta < g_zAxisApproximationRatio)
     {
         ringIntervalSize = M_PI;
@@ -150,13 +150,13 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
                             int phiPosition = phiBlock * angularIncrements + phiIndex;
 
                             double displacementX = xDisplacement + lengthDisplacement * sin(alphaAngle) * cos(betaAngle) +
-                                                   ringRadius * unitRingValues[phiPosition].first.xComponent;
+                                                   ringRadius * unitRingValues[phiPosition].first.x;
 
                             double displacementY = yDisplacement + lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
-                                                   ringRadius * unitRingValues[phiPosition].first.yComponent;
+                                                   ringRadius * unitRingValues[phiPosition].first.y;
 
                             double displacementZ = zDisplacement + lengthDisplacement * cos(alphaAngle) +
-                                                   ringRadius * unitRingValues[phiPosition].first.zComponent;
+                                                   ringRadius * unitRingValues[phiPosition].first.z;
 
                             positionVectors.emplace_back(vec3::CARTESIAN, displacementX, displacementY, displacementZ);
 

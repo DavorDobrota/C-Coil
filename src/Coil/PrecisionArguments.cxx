@@ -6,6 +6,9 @@
 #include <cstdio>
 #include <cmath>
 
+#include <sstream>
+
+
 namespace
 {
     const int g_defaultLegendreOrder = 12;
@@ -176,4 +179,20 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
                lengthBlocks * lengthIncrements, thicknessIncrements * thicknessBlocks, angularBlocks*angularIncrements);
     #endif //PRINT_ENABLED
     return PrecisionArguments(angularBlocks, thicknessBlocks, lengthBlocks, angularIncrements, thicknessIncrements, lengthIncrements);
+}
+
+PrecisionArguments::operator std::string() const
+{
+    std::stringstream output;
+
+    output << "PrecisionArguments("
+        << "angular_block_count=" << angularBlockCount
+        << ", thickness_block_count=" << thicknessBlockCount
+        << ", length_block_count=" << lengthBlockCount
+        << ", angular_increment_count=" << angularIncrementCount
+        << ", thickness_increment_count=" << thicknessIncrementCount
+        << ", length_increment_count=" << lengthIncrementCount
+        << ")";
+
+    return output.str();
 }

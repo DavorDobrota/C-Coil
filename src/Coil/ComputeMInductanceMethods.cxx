@@ -9,7 +9,7 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
     if (isZAxisCase(primary, secondary))
     {
         vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
-        return calculateMutualInductanceZAxis(primary, secondary, secPositionVec.zComponent, inductanceArguments, method);
+        return calculateMutualInductanceZAxis(primary, secondary, secPositionVec.z, inductanceArguments, method);
     }
     else
         return calculateMutualInductanceGeneral(primary, secondary, inductanceArguments, method);

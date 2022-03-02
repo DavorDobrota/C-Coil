@@ -1,5 +1,7 @@
 #include "CoilGroup.h"
 
+#include <sstream>
+
 #include <numeric>
 #include <utility>
 #include <cmath>
@@ -176,9 +178,6 @@ std::vector<vec3::Matrix3> CoilGroup::computeAllBGradientTensors(const std::vect
     else
         return calculateAllBGradientTensorsMTD(pointVectorArr);
 }
-
-
-// TODO: Generalize code with templates
 
 std::vector<vec3::FieldVector3>
 CoilGroup::calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr) const
@@ -518,4 +517,35 @@ CoilGroup::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::Fiel
         totalTorque += tempPair.second;
     }
     return {totalForce, totalTorque};
+}
+
+CoilGroup::operator std::string() const
+{
+    std::stringstream output;
+
+    auto stringifyVector = [](auto &ar) -> std::string
+    {
+        std::stringstream output;
+
+        output << "[";
+
+        for(int i = 0; i < ar.size(); i++)
+        {
+            if(i != 0)
+                output << ", ";
+            output << std::string(ar[i]);
+        }
+
+        output << "]";
+
+        return output.str();
+    };
+
+    output << "CoilGroup("
+           << "member_coils=" << stringifyVector(memberCoils)
+           << ", default_precision_factor=" << std::string(defaultPrecisionFactor)
+           << ", thread_count=" << threadCount
+           << ")";
+
+    return output.str();
 }

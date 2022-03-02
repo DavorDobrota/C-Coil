@@ -7,7 +7,7 @@ Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, CoilPairArg
     if (isZAxisCase(primary, secondary))
     {
         vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
-        double zForce = calculateAmpereForceZAxis(primary, secondary, secPositionVec.zComponent, forceArguments, method);
+        double zForce = calculateAmpereForceZAxis(primary, secondary, secPositionVec.z, forceArguments, method);
 
         return {vec3::FieldVector3(0.0, 0.0, zForce), vec3::FieldVector3()};
     }

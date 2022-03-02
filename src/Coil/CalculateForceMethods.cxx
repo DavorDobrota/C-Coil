@@ -77,9 +77,9 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
 
     vec3::FieldVector3 displacementVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
 
-    double xDisplacement = displacementVec.xComponent;
-    double yDisplacement = displacementVec.yComponent;
-    double zDisplacement = displacementVec.zComponent;
+    double xDisplacement = displacementVec.x;
+    double yDisplacement = displacementVec.y;
+    double zDisplacement = displacementVec.z;
     double alphaAngle = secondary.yAxisAngle;
     double betaAngle = secondary.zAxisAngle;
 
@@ -143,13 +143,13 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                             int phiPosition = phiBlock * angularIncrements + phiIndex;
 
                             double displacementX = xDisplacement + lengthDisplacement * sin(alphaAngle) * cos(betaAngle) +
-                                                   ringRadius * unitRingValues[phiPosition].first.xComponent;
+                                                   ringRadius * unitRingValues[phiPosition].first.x;
 
                             double displacementY = yDisplacement + lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
-                                                   ringRadius * unitRingValues[phiPosition].first.yComponent;
+                                                   ringRadius * unitRingValues[phiPosition].first.y;
 
                             double displacementZ = zDisplacement + lengthDisplacement * cos(alphaAngle) +
-                                                   ringRadius * unitRingValues[phiPosition].first.zComponent;
+                                                   ringRadius * unitRingValues[phiPosition].first.z;
 
                             positionVectors.emplace_back(vec3::CARTESIAN, displacementX, displacementY, displacementZ);
 

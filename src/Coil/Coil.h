@@ -7,6 +7,7 @@
 #include "PrecisionGlobalVars.h"
 
 #include <vector>
+#include <string>
 
 
 #define PRINT_ENABLED 0
@@ -28,6 +29,8 @@ struct PrecisionFactor
     explicit PrecisionFactor(double relativePrecision);
 
     double relativePrecision;
+
+    explicit operator std::string() const;
 };
 
 struct PrecisionArguments
@@ -47,6 +50,8 @@ struct PrecisionArguments
     static PrecisionArguments getCoilPrecisionArgumentsCPU(const Coil &coil, PrecisionFactor precisionFactor);
 
     static PrecisionArguments getCoilPrecisionArgumentsGPU(const Coil &coil, PrecisionFactor precisionFactor);
+
+    explicit operator std::string() const;
 };
 
 struct CoilPairArguments
@@ -62,8 +67,9 @@ struct CoilPairArguments
                                                              PrecisionFactor precisionFactor,
                                                              ComputeMethod method = CPU_ST, bool zAxisCase = true);
 
-    private:
+    explicit operator std::string() const;
 
+    private:
         static CoilPairArguments calculateCoilPairArgumentsCPU(const Coil &primary, const Coil &secondary,
                                                                PrecisionFactor precisionFactor, bool zAxisCase = false);
 
@@ -74,7 +80,6 @@ struct CoilPairArguments
 class Coil
 {
     private:
-
         unsigned long long id;
 
         double innerRadius;
@@ -349,6 +354,8 @@ class Coil
         [[nodiscard]] std::pair<vec3::FieldVector3, vec3::FieldVector3>
         computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment,
                                    const PrecisionArguments &usedPrecision) const;
+
+        explicit operator std::string() const;
 
     private:
         void calculateMagneticMoment();

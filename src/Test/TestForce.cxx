@@ -16,7 +16,7 @@ void testAmpereForceZAxis()
     {
         sec1.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.08 + i*0.001));
         printf("%.15f\n",
-               Coil::computeAmpereForce(prim1, sec1, PrecisionFactor(8.0), CPU_MT).first.zComponent);
+               Coil::computeAmpereForce(prim1, sec1, PrecisionFactor(8.0), CPU_MT).first.z);
     }
     printf("\n");
 }
@@ -41,7 +41,7 @@ void testAmpereForceZAxisPerformance(ComputeMethod method, int nThreads)
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeAmpereForce(primary, secondary, PrecisionFactor(i), method).first.zComponent;
+            temp = Coil::computeAmpereForce(primary, secondary, PrecisionFactor(i), method).first.z;
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("precisionFactor(%.1f) : %6.4f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }
@@ -77,8 +77,8 @@ void testAmpereForceGeneralForZAxis()
         sec.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.08 + i * 0.001));
         forcePair = Coil::computeAmpereForce(prim, sec, PrecisionFactor(8.0), CPU_MT);
         printf("%.15f %.15f %.15f %.15f %.15f %.15f\n",
-               forcePair.first.xComponent, forcePair.first.yComponent, forcePair.first.zComponent,
-               forcePair.second.xComponent, forcePair.second.yComponent, forcePair.second.zComponent);
+               forcePair.first.x, forcePair.first.y, forcePair.first.z,
+               forcePair.second.x, forcePair.second.y, forcePair.second.z);
     }
     printf("\n");
 }
@@ -137,7 +137,7 @@ void testGradientTensor()
     for (int i = 0; i < 1000; ++i)
     {
         tensor = coil.computeBGradientTensor(vec3::CoordVector3(vec3::CYLINDRICAL, 0.001 * i, 0.0, 0.0));
-        printf("%.15f %.15f %.15f\n", tensor.xxElement / (1e-7), tensor.yyElement / (1e-7), tensor.zzElement / (1e-7));
+        printf("%.15f %.15f %.15f\n", tensor.xx / (1e-7), tensor.yy / (1e-7), tensor.zz / (1e-7));
     }
     printf("\n");
 
@@ -146,9 +146,9 @@ void testGradientTensor()
     {
         tensor = coil.computeBGradientTensor(vec3::CoordVector3(vec3::CYLINDRICAL, i * 0.001, 0.5, M_PI / 4));
         printf("%.8f %.8f %.8f | %.8f %.8f %.8f | %.8f %.8f %.8f\n",
-               tensor.xxElement / (1e-7), tensor.xyElement / (1e-7), tensor.xzElement / (1e-7),
-               tensor.yxElement / (1e-7), tensor.yyElement / (1e-7), tensor.yzElement / (1e-7),
-               tensor.zxElement / (1e-7), tensor.zyElement / (1e-7), tensor.zzElement / (1e-7));
+               tensor.xx / (1e-7), tensor.xy / (1e-7), tensor.xz / (1e-7),
+               tensor.yx / (1e-7), tensor.yy / (1e-7), tensor.yz / (1e-7),
+               tensor.zx / (1e-7), tensor.zy / (1e-7), tensor.zz / (1e-7));
     }
     printf("\n");
 }
@@ -163,20 +163,20 @@ void testForceOnDipole()
     std::pair momentPair = coil1.computeForceOnDipoleMoment(coil2.getPositionVector(), coil2.getMagneticMoment());
 
     printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-           amperePair.first.xComponent + amperePair.first.xComponent,
-           amperePair.first.yComponent + amperePair.first.yComponent,
-           amperePair.first.zComponent + amperePair.first.zComponent,
-           amperePair.second.xComponent + amperePair.second.xComponent,
-           amperePair.second.yComponent + amperePair.second.yComponent,
-           amperePair.second.zComponent + amperePair.second.zComponent);
+           amperePair.first.x + amperePair.first.x,
+           amperePair.first.y + amperePair.first.y,
+           amperePair.first.z + amperePair.first.z,
+           amperePair.second.x + amperePair.second.x,
+           amperePair.second.y + amperePair.second.y,
+           amperePair.second.z + amperePair.second.z);
 
     printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-           momentPair.first.xComponent + momentPair.first.xComponent,
-           momentPair.first.yComponent + momentPair.first.yComponent,
-           momentPair.first.zComponent + momentPair.first.zComponent,
-           momentPair.second.xComponent + momentPair.second.xComponent,
-           momentPair.second.yComponent + momentPair.second.yComponent,
-           momentPair.second.zComponent + momentPair.second.zComponent);
+           momentPair.first.x + momentPair.first.x,
+           momentPair.first.y + momentPair.first.y,
+           momentPair.first.z + momentPair.first.z,
+           momentPair.second.x + momentPair.second.x,
+           momentPair.second.y + momentPair.second.y,
+           momentPair.second.z + momentPair.second.z);
 
     Coil coil3 = Coil(0.2, 0.1, 0.1, 100, 100);
     Coil coil4 = Coil(0.2, 0.1, 0.1, 100, 100);
@@ -187,18 +187,18 @@ void testForceOnDipole()
     momentPair = coil3.computeForceOnDipoleMoment(coil4.getPositionVector(), coil4.getMagneticMoment());
 
     printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-           amperePair.first.xComponent + amperePair.first.xComponent,
-           amperePair.first.yComponent + amperePair.first.yComponent,
-           amperePair.first.zComponent + amperePair.first.zComponent,
-           amperePair.second.xComponent + amperePair.second.xComponent,
-           amperePair.second.yComponent + amperePair.second.yComponent,
-           amperePair.second.zComponent + amperePair.second.zComponent);
+           amperePair.first.x + amperePair.first.x,
+           amperePair.first.y + amperePair.first.y,
+           amperePair.first.z + amperePair.first.z,
+           amperePair.second.x + amperePair.second.x,
+           amperePair.second.y + amperePair.second.y,
+           amperePair.second.z + amperePair.second.z);
 
     printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
-           momentPair.first.xComponent + momentPair.first.xComponent,
-           momentPair.first.yComponent + momentPair.first.yComponent,
-           momentPair.first.zComponent + momentPair.first.zComponent,
-           momentPair.second.xComponent + momentPair.second.xComponent,
-           momentPair.second.yComponent + momentPair.second.yComponent,
-           momentPair.second.zComponent + momentPair.second.zComponent);
+           momentPair.first.x + momentPair.first.x,
+           momentPair.first.y + momentPair.first.y,
+           momentPair.first.z + momentPair.first.z,
+           momentPair.second.x + momentPair.second.x,
+           momentPair.second.y + momentPair.second.y,
+           momentPair.second.z + momentPair.second.z);
 }

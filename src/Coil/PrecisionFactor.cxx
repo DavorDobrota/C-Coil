@@ -1,5 +1,8 @@
 #include "Coil.h"
 
+#include <sstream>
+
+
 namespace
 {
     const double g_minRelativePrecision = 1.0;
@@ -15,4 +18,13 @@ PrecisionFactor::PrecisionFactor(double relativePrecision)
         PrecisionFactor::relativePrecision = g_defaultRelativePrecision;
     else
         PrecisionFactor::relativePrecision = relativePrecision;
+}
+
+PrecisionFactor::operator std::string() const
+{
+    std::stringstream output;
+
+    output << "PrecisionFactor(relative_precision=" << relativePrecision << ")";
+
+    return output.str();
 }

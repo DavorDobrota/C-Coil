@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <cmath>
 
-void testMutualInductanceGeneralForZAxis(ComputeMethod method, int nThreads)
+void testMutualInductanceGeneralForZAxis(ComputeMethod computeMethod, int nThreads)
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
@@ -38,7 +38,7 @@ void testMutualInductanceGeneralForZAxis(ComputeMethod method, int nThreads)
 
         for (int i = 1.0; i <= 8; ++i)
         {
-            temp = Coil::computeMutualInductance(prim, sec, PrecisionFactor(i), method);
+            temp = Coil::computeMutualInductance(prim, sec, PrecisionFactor(i), computeMethod);
             printf("%.18f\n", temp);
             fprintf(output, "%.20f\t", temp);
         }
@@ -50,7 +50,7 @@ void testMutualInductanceGeneralForZAxis(ComputeMethod method, int nThreads)
     fclose(output);
 }
 
-void testMutualInductanceGeneralPerformance(ComputeMethod method, int nThreads)
+void testMutualInductanceGeneralPerformance(ComputeMethod computeMethod, int nThreads)
 {
     using namespace std::chrono;
 
@@ -72,7 +72,7 @@ void testMutualInductanceGeneralPerformance(ComputeMethod method, int nThreads)
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeMutualInductance(primary, secondary, PrecisionFactor(i), method);
+            temp = Coil::computeMutualInductance(primary, secondary, PrecisionFactor(i), computeMethod);
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("precisionFactor(%.1f) : %6.2f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
 

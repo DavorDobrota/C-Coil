@@ -21,7 +21,7 @@ void testAmpereForceZAxis()
     printf("\n");
 }
 
-void testAmpereForceZAxisPerformance(ComputeMethod method, int nThreads)
+void testAmpereForceZAxisPerformance(ComputeMethod computeMethod, int nThreads)
 {
     using namespace std::chrono;
 
@@ -41,7 +41,7 @@ void testAmpereForceZAxisPerformance(ComputeMethod method, int nThreads)
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeAmpereForce(primary, secondary, PrecisionFactor(i), method).first.z;
+            temp = Coil::computeAmpereForce(primary, secondary, PrecisionFactor(i), computeMethod).first.z;
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("precisionFactor(%.1f) : %6.4f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }
@@ -83,7 +83,7 @@ void testAmpereForceGeneralForZAxis()
     printf("\n");
 }
 
-void testAmpereForceGeneralPerformance(ComputeMethod method, int nThreads)
+void testAmpereForceGeneralPerformance(ComputeMethod computeMethod, int nThreads)
 {
     using namespace std::chrono;
 
@@ -105,7 +105,7 @@ void testAmpereForceGeneralPerformance(ComputeMethod method, int nThreads)
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeAmpereForce(primary, secondary, PrecisionFactor(i), method);
+            temp = Coil::computeAmpereForce(primary, secondary, PrecisionFactor(i), computeMethod);
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("precisionFactor(%.1f) : %6.3f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }

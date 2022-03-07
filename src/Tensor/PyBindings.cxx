@@ -28,9 +28,9 @@ void initTensor(py::module_ &mainModule)
 
     // CoordVector3
 
-    coordVector3.def_readwrite("elem_1", &vec3::CoordVector3::elem1)
-        .def_readwrite("elem_2", &vec3::CoordVector3::elem2)
-        .def_readwrite("elem_3", &vec3::CoordVector3::elem3);
+    coordVector3.def_readwrite("elem_1", &vec3::CoordVector3::comp1)
+        .def_readwrite("elem_2", &vec3::CoordVector3::comp2)
+        .def_readwrite("elem_3", &vec3::CoordVector3::comp3);
 
     coordVector3.def(py::init<>())
         .def(

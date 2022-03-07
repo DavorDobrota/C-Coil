@@ -19,9 +19,9 @@ CoilPairArguments::CoilPairArguments(const PrecisionArguments &primaryPrecision,
 
 CoilPairArguments CoilPairArguments::getAppropriateCoilPairArguments(const Coil &primary, const Coil &secondary,
                                                                      PrecisionFactor precisionFactor,
-                                                                     ComputeMethod method, bool zAxisCase)
+                                                                     ComputeMethod computeMethod, bool zAxisCase)
 {
-    if (method == GPU)
+    if (computeMethod == GPU)
         return CoilPairArguments::calculateCoilPairArgumentsGPU(primary, secondary, precisionFactor, zAxisCase);
     else
         return CoilPairArguments::calculateCoilPairArgumentsCPU(primary, secondary, precisionFactor, zAxisCase);

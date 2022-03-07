@@ -28,11 +28,11 @@ int CoilGroup::getThreadCount() const { return threadCount; }
 const std::vector<Coil> &CoilGroup::getMemberCoils() const { return memberCoils; }
 
 
-void CoilGroup::setDefaultPrecisionFactor(PrecisionFactor precisionFactor, ComputeMethod method)
+void CoilGroup::setDefaultPrecisionFactor(PrecisionFactor precisionFactor, ComputeMethod computeMethod)
 {
     defaultPrecisionFactor = precisionFactor;
 
-    if (method == GPU)
+    if (computeMethod == GPU)
     {
         for (auto & memberCoil : memberCoils)
             memberCoil.setDefaultPrecision(PrecisionArguments::getCoilPrecisionArgumentsGPU(memberCoil, precisionFactor));
@@ -97,107 +97,107 @@ vec3::Matrix3 CoilGroup::computeBGradientTensor(vec3::CoordVector3 pointVector) 
 }
 
 std::vector<vec3::FieldVector3>
-CoilGroup::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                    ComputeMethod method) const
+CoilGroup::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
+                                    ComputeMethod computeMethod) const
 {
-    if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
+    if (memberCoils.size() < 4 * threadCount || computeMethod != CPU_MT)
     {
-        std::vector<vec3::FieldVector3> tempArr(pointVectorArr.size());
-        std::vector<vec3::FieldVector3> outputArr(pointVectorArr.size());
+        std::vector<vec3::FieldVector3> tempArr(pointVectors.size());
+        std::vector<vec3::FieldVector3> outputArr(pointVectors.size());
 
         for (const auto & memberCoil : memberCoils)
         {
-            tempArr = memberCoil.computeAllBFieldComponents(pointVectorArr, method);
-            for (int i = 0; i < pointVectorArr.size(); ++i)
+            tempArr = memberCoil.computeAllBFieldComponents(pointVectors, computeMethod);
+            for (int i = 0; i < pointVectors.size(); ++i)
                 outputArr[i] += tempArr[i];
         }
         return outputArr;
     }
     else
-        return calculateAllBFieldComponentsMTD(pointVectorArr);
+        return calculateAllBFieldComponentsMTD(pointVectors);
 }
 
 std::vector<vec3::FieldVector3>
-CoilGroup::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                          ComputeMethod method) const
+CoilGroup::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectors,
+                                          ComputeMethod computeMethod) const
 {
-    if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
+    if (memberCoils.size() < 4 * threadCount || computeMethod != CPU_MT)
     {
-        std::vector<vec3::FieldVector3> tempArr(pointVectorArr.size());
-        std::vector<vec3::FieldVector3> outputArr(pointVectorArr.size());
+        std::vector<vec3::FieldVector3> tempArr(pointVectors.size());
+        std::vector<vec3::FieldVector3> outputArr(pointVectors.size());
 
         for (const auto & memberCoil : memberCoils)
         {
-            tempArr = memberCoil.computeAllAPotentialComponents(pointVectorArr, method);
-            for (int i = 0; i < pointVectorArr.size(); ++i)
+            tempArr = memberCoil.computeAllAPotentialComponents(pointVectors, computeMethod);
+            for (int i = 0; i < pointVectors.size(); ++i)
                 outputArr[i] += tempArr[i];
         }
         return outputArr;
     }
     else
-        return calculateAllAPotentialComponentsMTD(pointVectorArr);
+        return calculateAllAPotentialComponentsMTD(pointVectors);
 }
 
 std::vector<vec3::FieldVector3>
-CoilGroup::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                      ComputeMethod method) const
+CoilGroup::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
+                                      ComputeMethod computeMethod) const
 {
-    if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
+    if (memberCoils.size() < 4 * threadCount || computeMethod != CPU_MT)
     {
-        std::vector<vec3::FieldVector3> tempArr(pointVectorArr.size());
-        std::vector<vec3::FieldVector3> outputArr(pointVectorArr.size());
+        std::vector<vec3::FieldVector3> tempArr(pointVectors.size());
+        std::vector<vec3::FieldVector3> outputArr(pointVectors.size());
 
         for (const auto & memberCoil : memberCoils)
         {
-            tempArr = memberCoil.computeAllEFieldComponents(pointVectorArr, method);
-            for (int i = 0; i < pointVectorArr.size(); ++i)
+            tempArr = memberCoil.computeAllEFieldComponents(pointVectors, computeMethod);
+            for (int i = 0; i < pointVectors.size(); ++i)
                 outputArr[i] += tempArr[i];
         }
         return outputArr;
     }
     else
-        return calculateAllAPotentialComponentsMTD(pointVectorArr);
+        return calculateAllAPotentialComponentsMTD(pointVectors);
 }
 
-std::vector<vec3::Matrix3> CoilGroup::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                                 ComputeMethod method) const
+std::vector<vec3::Matrix3> CoilGroup::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                 ComputeMethod computeMethod) const
 {
-    if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
+    if (memberCoils.size() < 4 * threadCount || computeMethod != CPU_MT)
     {
-        std::vector<vec3::Matrix3> tempArr(pointVectorArr.size());
-        std::vector<vec3::Matrix3> outputArr(pointVectorArr.size());
+        std::vector<vec3::Matrix3> tempArr(pointVectors.size());
+        std::vector<vec3::Matrix3> outputArr(pointVectors.size());
 
         for (const auto & memberCoil : memberCoils)
         {
-            tempArr = memberCoil.computeAllBGradientTensors(pointVectorArr, method);
-            for (int i = 0; i < pointVectorArr.size(); ++i)
+            tempArr = memberCoil.computeAllBGradientTensors(pointVectors, computeMethod);
+            for (int i = 0; i < pointVectors.size(); ++i)
                 outputArr[i] += tempArr[i];
         }
         return outputArr;
     }
     else
-        return calculateAllBGradientTensorsMTD(pointVectorArr);
+        return calculateAllBGradientTensorsMTD(pointVectors);
 }
 
 std::vector<vec3::FieldVector3>
-CoilGroup::calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr) const
+CoilGroup::calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const
 {
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
 
     std::vector<std::vector<vec3::FieldVector3>> intermediateValues(memberCoils.size());
     for(auto vec : intermediateValues)
-        vec.resize(pointVectorArr.size());
+        vec.resize(pointVectors.size());
 
     auto calcThread = []
     (
         int idx,
         const Coil &coil,
-        const std::vector<vec3::CoordVector3> &pointVectorArr,
+        const std::vector<vec3::CoordVector3> &pointVectors,
         std::vector<vec3::FieldVector3> &outputVector
     )
     {
-        outputVector = coil.computeAllBFieldComponents(pointVectorArr);
+        outputVector = coil.computeAllBFieldComponents(pointVectors);
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
@@ -208,14 +208,14 @@ CoilGroup::calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3>
         (
             calcThread,
             std::ref(memberCoils[i]),
-            std::ref(pointVectorArr),
+            std::ref(pointVectors),
             std::ref(intermediateValues[i])
         );
     }
 
     g_threadPool.synchronizeThreads();
 
-    std::vector<vec3::FieldVector3> ret(pointVectorArr.size());
+    std::vector<vec3::FieldVector3> ret(pointVectors.size());
 
     for(auto values : intermediateValues)
     {
@@ -229,24 +229,24 @@ CoilGroup::calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3>
 }
 
 std::vector<vec3::FieldVector3>
-CoilGroup::calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr) const
+CoilGroup::calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const
 {
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
 
     std::vector<std::vector<vec3::FieldVector3>> intermediateValues(memberCoils.size());
     for(auto vec : intermediateValues)
-        vec.resize(pointVectorArr.size());
+        vec.resize(pointVectors.size());
 
     auto calcThread = []
     (
         int idx,
         const Coil &coil,
-        const std::vector<vec3::CoordVector3> &pointVectorArr,
+        const std::vector<vec3::CoordVector3> &pointVectors,
         std::vector<vec3::FieldVector3> &outputVector
     )
     {
-        outputVector = coil.computeAllAPotentialComponents(pointVectorArr);
+        outputVector = coil.computeAllAPotentialComponents(pointVectors);
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
@@ -257,14 +257,14 @@ CoilGroup::calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVect
         (
             calcThread,
             std::ref(memberCoils[i]),
-            std::ref(pointVectorArr),
+            std::ref(pointVectors),
             std::ref(intermediateValues[i])
         );
     }
 
     g_threadPool.synchronizeThreads();
 
-    std::vector<vec3::FieldVector3> ret(pointVectorArr.size());
+    std::vector<vec3::FieldVector3> ret(pointVectors.size());
 
     for(auto values : intermediateValues)
     {
@@ -278,24 +278,24 @@ CoilGroup::calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVect
 }
 
 std::vector<vec3::FieldVector3>
-CoilGroup::calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr) const
+CoilGroup::calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const
 {
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
 
     std::vector<std::vector<vec3::FieldVector3>> intermediateValues(memberCoils.size());
     for(auto vec : intermediateValues)
-        vec.resize(pointVectorArr.size());
+        vec.resize(pointVectors.size());
 
     auto calcThread = []
     (
         int idx,
         const Coil &coil,
-        const std::vector<vec3::CoordVector3> &pointVectorArr,
+        const std::vector<vec3::CoordVector3> &pointVectors,
         std::vector<vec3::FieldVector3> &outputVector
     )
     {
-        outputVector = coil.computeAllEFieldComponents(pointVectorArr);
+        outputVector = coil.computeAllEFieldComponents(pointVectors);
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
@@ -306,14 +306,14 @@ CoilGroup::calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3>
         (
             calcThread,
             std::ref(memberCoils[i]),
-            std::ref(pointVectorArr),
+            std::ref(pointVectors),
             std::ref(intermediateValues[i])
         );
     }
 
     g_threadPool.synchronizeThreads();
 
-    std::vector<vec3::FieldVector3> ret(pointVectorArr.size());
+    std::vector<vec3::FieldVector3> ret(pointVectors.size());
 
     for(auto values : intermediateValues)
     {
@@ -327,24 +327,24 @@ CoilGroup::calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3>
 }
 
 std::vector<vec3::Matrix3>
-CoilGroup::calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3> &pointVectorArr) const
+CoilGroup::calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const
 {
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
 
     std::vector<std::vector<vec3::Matrix3>> intermediateValues(memberCoils.size());
     for(auto vec : intermediateValues)
-        vec.resize(pointVectorArr.size());
+        vec.resize(pointVectors.size());
 
     auto calcThread = []
     (
         int idx,
         const Coil &coil,
-        const std::vector<vec3::CoordVector3> &pointVectorArr,
+        const std::vector<vec3::CoordVector3> &pointVectors,
         std::vector<vec3::Matrix3> &outputVector
     )
     {
-        outputVector = coil.computeAllBGradientTensors(pointVectorArr);
+        outputVector = coil.computeAllBGradientTensors(pointVectors);
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
@@ -355,14 +355,14 @@ CoilGroup::calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3>
         (
             calcThread,
             std::ref(memberCoils[i]),
-            std::ref(pointVectorArr),
+            std::ref(pointVectors),
             std::ref(intermediateValues[i])
         );
     }
 
     g_threadPool.synchronizeThreads();
 
-    std::vector<vec3::Matrix3> ret(pointVectorArr.size());
+    std::vector<vec3::Matrix3> ret(pointVectors.size());
 
     for(auto values : intermediateValues)
     {
@@ -376,15 +376,15 @@ CoilGroup::calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3>
 }
 
 
-double CoilGroup::computeMutualInductance(const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod method) const
+double CoilGroup::computeMutualInductance(const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod computeMethod) const
 {
     double totalMutualInductance = 0.0;
 
-    if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
+    if (memberCoils.size() < 4 * threadCount || computeMethod != CPU_MT)
     {
         for (const auto &memberCoil: memberCoils) {
             if (memberCoil.getId() != secondary.getId())
-                totalMutualInductance += Coil::computeMutualInductance(memberCoil, secondary, precisionFactor, method);
+                totalMutualInductance += Coil::computeMutualInductance(memberCoil, secondary, precisionFactor, computeMethod);
         }
         return totalMutualInductance;
     }
@@ -393,17 +393,17 @@ double CoilGroup::computeMutualInductance(const Coil &secondary, PrecisionFactor
 }
 
 std::pair<vec3::FieldVector3, vec3::FieldVector3>
-CoilGroup::computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod method) const
+CoilGroup::computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod computeMethod) const
 {
     vec3::FieldVector3 totalForce{};
     vec3::FieldVector3 totalTorque{};
     std::pair<vec3::FieldVector3, vec3::FieldVector3> tempPair;
 
-    if (memberCoils.size() < 4 * threadCount || method != CPU_MT)
+    if (memberCoils.size() < 4 * threadCount || computeMethod != CPU_MT)
     {
         for (const auto &memberCoil: memberCoils) {
             if (memberCoil.getId() != secondary.getId()) {
-                tempPair = Coil::computeAmpereForce(memberCoil, secondary, precisionFactor, method);
+                tempPair = Coil::computeAmpereForce(memberCoil, secondary, precisionFactor, computeMethod);
                 totalForce += tempPair.first;
                 totalTorque += tempPair.second;
             }

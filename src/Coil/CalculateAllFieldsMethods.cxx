@@ -319,11 +319,11 @@ void Coil::calculateAllBFieldSwitch(const std::vector<double> &cylindricalZArr,
                                     std::vector<double> &computedFieldHArr,
                                     std::vector<double> &computedFieldZArr,
                                     const PrecisionArguments &usedPrecision,
-                                    ComputeMethod method) const
+                                    ComputeMethod computeMethod) const
 {
     int chunkSize = calculateChunkSize(cylindricalZArr.size());
 
-    switch (method)
+    switch (computeMethod)
     {
         case GPU:
             calculateAllBFieldGPU(cylindricalZArr, cylindricalRArr,
@@ -343,11 +343,11 @@ void Coil::calculateAllAPotentialSwitch(const std::vector<double> &cylindricalZA
                                         const std::vector<double> &cylindricalRArr,
                                         std::vector<double> &computedPotentialArr,
                                         const PrecisionArguments &usedPrecision,
-                                        ComputeMethod method) const
+                                        ComputeMethod computeMethod) const
 {
     int chunkSize = calculateChunkSize(cylindricalZArr.size());
 //    printf("%d\n", chunkSize);
-    switch (method)
+    switch (computeMethod)
     {
         case GPU:
 
@@ -368,11 +368,11 @@ void Coil::calculateAllBGradientSwitch(const std::vector<double> &cylindricalZAr
                                        std::vector<double> &computedGradientRZ,
                                        std::vector<double> &computedGradientZZ,
                                        const PrecisionArguments &usedPrecision,
-                                       ComputeMethod method) const
+                                       ComputeMethod computeMethod) const
 {
     int chunkSize = calculateChunkSize(cylindricalZArr.size());
 
-    switch (method)
+    switch (computeMethod)
     {
         case GPU:
             calculateAllBGradientGPU(cylindricalZArr, cylindricalRArr,

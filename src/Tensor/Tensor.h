@@ -16,12 +16,12 @@ namespace vec3
     {
         public:
 
-            double elem1;
-            double elem2;
-            double elem3;
+            double comp1;
+            double comp2;
+            double comp3;
 
             CoordVector3();
-            explicit CoordVector3(CoordinateSystem system, double elem1, double elem2, double elem3);
+            explicit CoordVector3(CoordinateSystem system, double comp1, double comp2, double comp3);
 
             [[nodiscard]] bool isCartesian() const;
             [[nodiscard]] bool isCylindrical() const;

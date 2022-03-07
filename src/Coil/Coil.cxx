@@ -113,7 +113,7 @@ double Coil::getLength() const { return length; }
 
 double Coil::getAverageWireThickness() const { return averageWireThickness; }
 
-bool Coil::isSineDriven1() const { return isSineDriven; }
+bool Coil::isSineDriven() const { return sineDriven; }
 
 double Coil::getSineFrequency() const { return sineFrequency; }
 
@@ -185,12 +185,12 @@ void Coil::setSineFrequency(double sineFrequency)
 {
     if (sineFrequency > 0.0)
     {
-        isSineDriven = true;
+        sineDriven = true;
         this->sineFrequency = sineFrequency;
     }
     else
     {
-        isSineDriven = false;
+        sineDriven = false;
         this->sineFrequency = 0.0;
     }
     calculateImpedance();
@@ -201,9 +201,9 @@ void Coil::setDefaultPrecision(const PrecisionArguments &precisionSettings)
     this->defaultPrecision = precisionSettings;
 }
 
-void Coil::setDefaultPrecision(PrecisionFactor precisionFactor, ComputeMethod method)
+void Coil::setDefaultPrecision(PrecisionFactor precisionFactor, ComputeMethod computeMethod)
 {
-    if (method == GPU)
+    if (computeMethod == GPU)
         this->defaultPrecision = PrecisionArguments::getCoilPrecisionArgumentsGPU(*this, precisionFactor);
     else
         this->defaultPrecision = PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor);
@@ -292,7 +292,7 @@ void Coil::calculateTransformationMatrices()
                                                 sinY * cosZ, sinY * sinZ, cosY);
 }
 
-double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method)
+double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, ComputeMethod computeMethod)
 {
     if (coilType == CoilType::FILAMENT)
     {
@@ -304,7 +304,7 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, Comput
     std::pair tempAngles = getRotationAngles();
     setPositionAndOrientation();
 
-    double inductance = Coil::computeMutualInductance(*this, *this, precisionFactor, method);
+    double inductance = Coil::computeMutualInductance(*this, *this, precisionFactor, computeMethod);
     setSelfInductance(inductance);
     setPositionAndOrientation(tempPosition, tempAngles.first, tempAngles.second);
 
@@ -397,8 +397,29 @@ Coil::operator std::string() const
 {
     std::stringstream output;
 
-    // TODO: finish this method
     output << "Coil("
+        << "id=" << id
+        << ", inner_radius=" << innerRadius
+        << ", thickness=" << thickness
+        << ", length=" << length
+        << ", num_of_turns=" << numOfTurns
+        << ", current_density=" << currentDensity
+        << ", current=" << current
+        << ", wire_resistivity=" << wireResistivity
+        << ", is_sine_driven=" << sineDriven
+        << ", sine_frequency=" << sineFrequency
+        << ", magnetic_moment=" << magneticMoment
+        << ", average_wire_thickness=" << averageWireThickness
+        << ", resistance=" << resistance
+        << ", self_inductance=" << selfInductance
+        << ", reactance=" << reactance
+        << ", impedance=" << impedance
+        << ", use_fast_method=" << useFastMethod
+        << ", thread_count=" << threadCount
+        << ", default_precision=" << std::string(defaultPrecision)
+        << ", position_vector=" << std::string(positionVector)
+        << ", y_axis_angle=" << yAxisAngle
+        << ", z_axis_angle=" << zAxisAngle
         << ")";
 
     return output.str();

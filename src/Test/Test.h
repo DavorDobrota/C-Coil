@@ -27,12 +27,12 @@ void testCoilGroupMTDInductanceAndForce(int threadCount = 8);
 void testMutualInductanceZAxis();
 void testMutualInductanceZAxisArgumentGeneration();
 void testMutualInductanceZAxisDifferentGeometries();
-void testCoilMutualInductanceZAxisPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
+void testCoilMutualInductanceZAxisPerformance(ComputeMethod computeMethod = CPU_ST, int nThreads = g_default_nThreads);
 void testMutualInductanceZAxisMTScaling(int maxThreads = g_default_nThreads);
 void testSelfInductance();
 
-void testMutualInductanceGeneralForZAxis(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
-void testMutualInductanceGeneralPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
+void testMutualInductanceGeneralForZAxis(ComputeMethod computeMethod = CPU_ST, int nThreads = g_default_nThreads);
+void testMutualInductanceGeneralPerformance(ComputeMethod computeMethod = CPU_ST, int nThreads = g_default_nThreads);
 void testMutualInductanceGeneralMTScaling(int maxThreads = g_default_nThreads);
 void testMutualInductanceGeneralArgumentGeneration();
 void testMutualInductanceGeneralDifferentGeometries();
@@ -44,10 +44,10 @@ void testMutualInductanceGeneralParallelAxes();
 void testMutualInductanceGeneralConway();
 
 void testAmpereForceZAxis();
-void testAmpereForceZAxisPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
+void testAmpereForceZAxisPerformance(ComputeMethod computeMethod = CPU_ST, int nThreads = g_default_nThreads);
 void testAmpereForceZAxisMTScaling(int maxThreads = g_default_nThreads);
 void testAmpereForceGeneralForZAxis();
-void testAmpereForceGeneralPerformance(ComputeMethod method = CPU_ST, int nThreads = g_default_nThreads);
+void testAmpereForceGeneralPerformance(ComputeMethod computeMethod = CPU_ST, int nThreads = g_default_nThreads);
 void testAmpereForceGeneralMTScaling(int maxThreads = g_default_nThreads);
 void testGradientTensor();
 void testForceOnDipole();

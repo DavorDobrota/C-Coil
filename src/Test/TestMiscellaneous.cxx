@@ -172,44 +172,44 @@ void testVector3()
     for (int i = 0; i < 100; ++i)
     {
         vec3::CoordVector3 vector = vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, 1, i * M_PI / 25);
-        printf("%.6f %.6f %.6f | ", vector.elem1, vector.elem2, vector.elem3);
+        printf("%.6f %.6f %.6f | ", vector.comp1, vector.comp2, vector.comp3);
         vector.convertToCartesian();
-        printf("%.6f %.6f %.6f | ", vector.elem1, vector.elem2, vector.elem3);
+        printf("%.6f %.6f %.6f | ", vector.comp1, vector.comp2, vector.comp3);
         vector.convertToSpherical();
-        printf("%.6f %.6f %.6f\n", vector.elem1, vector.elem2, vector.elem3);
+        printf("%.6f %.6f %.6f\n", vector.comp1, vector.comp2, vector.comp3);
     }
     printf("\n");
 
     for (int i = 0; i < 100; ++i)
     {
         vec3::CoordVector3 vector = vec3::CoordVector3(vec3::CYLINDRICAL, 1, 1, i * M_PI / 25);
-        printf("%.6f %.6f %.6f | ", vector.elem1, vector.elem2, vector.elem3);
+        printf("%.6f %.6f %.6f | ", vector.comp1, vector.comp2, vector.comp3);
         vector.convertToCartesian();
-        printf("%.6f %.6f %.6f | ", vector.elem1, vector.elem2, vector.elem3);
+        printf("%.6f %.6f %.6f | ", vector.comp1, vector.comp2, vector.comp3);
         vector.convertToSpherical();
-        printf("%.6f %.6f %.6f\n", vector.elem1, vector.elem2, vector.elem3);
+        printf("%.6f %.6f %.6f\n", vector.comp1, vector.comp2, vector.comp3);
     }
     printf("\n");
 
     for (int i = 0; i < 100; ++i)
     {
         vec3::CoordVector3 vector = vec3::CoordVector3(vec3::SPHERICAL, 1, M_PI/2, -M_PI + i * M_PI / 25);
-        printf("%.6f %.6f %.6f | ", vector.elem1, vector.elem2, vector.elem3);
+        printf("%.6f %.6f %.6f | ", vector.comp1, vector.comp2, vector.comp3);
         vector.convertToCartesian();
-        printf("%.6f %.6f %.6f | ", vector.elem1, vector.elem2, vector.elem3);
+        printf("%.6f %.6f %.6f | ", vector.comp1, vector.comp2, vector.comp3);
         vector.convertToCylindrical();
-        printf("%.6f %.6f %.6f\n", vector.elem1, vector.elem2, vector.elem3);
+        printf("%.6f %.6f %.6f\n", vector.comp1, vector.comp2, vector.comp3);
     }
     printf("\n");
 
     for (int i = 0; i < 100; ++i)
     {
         vec3::CoordVector3 vector = vec3::CoordVector3(vec3::SPHERICAL, 1, i * M_PI / 25, 0.0);
-        printf("%.6f %.6f %.6f | ", vector.elem1, vector.elem2, vector.elem3);
+        printf("%.6f %.6f %.6f | ", vector.comp1, vector.comp2, vector.comp3);
         vector.convertToCartesian();
-        printf("%.6f %.6f %.6f | ", vector.elem1, vector.elem2, vector.elem3);
+        printf("%.6f %.6f %.6f | ", vector.comp1, vector.comp2, vector.comp3);
         vector.convertToCylindrical();
-        printf("%.6f %.6f %.6f\n", vector.elem1, vector.elem2, vector.elem3);
+        printf("%.6f %.6f %.6f\n", vector.comp1, vector.comp2, vector.comp3);
     }
     printf("\n");
 }

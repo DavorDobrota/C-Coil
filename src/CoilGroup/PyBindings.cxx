@@ -32,7 +32,7 @@ void initCoilGroup(py::module_ &mainModule)
     coilGroup.def(
             "set_default_precision_factor", &CoilGroup::setDefaultPrecisionFactor,
             py::arg("precision_factor") = PrecisionFactor(),
-            py::arg("method") = CPU_ST)
+            py::arg("compute_method") = CPU_ST)
         .def("set_thread_count", &CoilGroup::setThreadCount, py::arg("thread_count"))
         .def("add_coil", &CoilGroup::addCoil, py::arg("coil"));
 
@@ -43,27 +43,27 @@ void initCoilGroup(py::module_ &mainModule)
 
     coilGroup.def(
             "compute_all_B_field_components", &CoilGroup::computeAllBFieldComponents,
-            py::arg("point_vector_arr"), py::arg("method") = CPU_ST)
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
         .def(
             "compute_all_A_potential_components", &CoilGroup::computeAllAPotentialComponents,
-            py::arg("point_vector_arr"), py::arg("method") = CPU_ST)
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
         .def(
             "compute_all_E_field_components", &CoilGroup::computeAllEFieldComponents,
-            py::arg("point_vector_arr"), py::arg("method") = CPU_ST)
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
         .def(
             "compute_all_B_gradient_tensors", &CoilGroup::computeAllBGradientTensors,
-            py::arg("point_vector_arr"), py::arg("method") = CPU_ST);
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST);
 
     coilGroup.def(
             "compute_mutual_inductance", &CoilGroup::computeMutualInductance,
             py::arg("secondary"),
             py::arg("precision_factor") = PrecisionFactor(),
-            py::arg("method") = CPU_ST)
+            py::arg("compute_method") = CPU_ST)
         .def(
             "compute_ampere_force", &CoilGroup::computeAmpereForce,
             py::arg("secondary"),
             py::arg("precision_factor") = PrecisionFactor(),
-            py::arg("method") = CPU_ST);
+            py::arg("compute_method") = CPU_ST);
 
     coilGroup.def(
         "compute_force_on_dipole_moment", &CoilGroup::computeForceOnDipoleMoment,

@@ -82,7 +82,7 @@ void initCoil(py::module_ &mainModule)
         "get_appropriate_coil_pair_arguments", &CoilPairArguments::getAppropriateCoilPairArguments,
         py::arg("primary"), py::arg("secondary"),
         py::arg("precision_factor"),
-        py::arg("method") = CPU_ST, py::arg("z_axis_case") = true);
+        py::arg("computeMethod") = CPU_ST, py::arg("z_axis_case") = true);
 
     coilPairArguments.def("__repr__", &CoilPairArguments::operator std::string);
 
@@ -90,4 +90,78 @@ void initCoil(py::module_ &mainModule)
     // Coil
 
     // TODO: Finish Coil
+
+    coil.def(py::init<>())
+        .def(
+            py::init<double, double, double, int, double, double, double,
+                     PrecisionFactor, int, vec3::CoordVector3, double, double>(),
+            py::arg("inner_radius"), py::arg("thickness"), py::arg("length"), py::arg("num_of_turns"),
+            py::arg("current"), py::arg("wire_resistivity"), py::arg("sine_frequency"),
+            py::arg("precision_factor") = PrecisionFactor(), py::arg("thread_count") = defaultThreadCount,
+            py::arg("coordinate_position") = vec3::CoordVector3(),
+            py::arg("y_axis_angle") = 0.0, py::arg("z_axis_angle") = 0.0)
+        .def(
+            py::init<double, double, double, int, double, double, PrecisionFactor, int>(),
+            py::arg("inner_radius"), py::arg("thickness"), py::arg("length"),
+            py::arg("num_of_turns"), py::arg("current"), py::arg("sine_frequency"),
+            py::arg("precision_factor") = PrecisionFactor(), py::arg("thread_count") = defaultThreadCount)
+        .def(
+            py::init<double, double, double, int, double, PrecisionFactor, int>(),
+            py::arg("inner_radius"), py::arg("thickness"), py::arg("length"),
+            py::arg("num_of_turns"), py::arg("current"), py::arg("precision_factor") = PrecisionFactor(),
+            py::arg("thread_count") = defaultThreadCount)
+        .def(
+            py::init<double, double, double, int, PrecisionFactor, int>(),
+            py::arg("inner_radius"), py::arg("thickness"), py::arg("length"),
+            py::arg("num_of_turns"), py::arg("precision_factor") = PrecisionFactor(),
+            py::arg("thread_count") = defaultThreadCount);
+
+    coil.def("get_id", &Coil::getId)
+        .def("get_inner_radius", &Coil::getInnerRadius)
+        .def("get_thickness", &Coil::getThickness)
+        .def("get_length", &Coil::getLength)
+        .def("get_num_of_turns", &Coil::getNumOfTurns);
+
+    coil.def("get_current_density", &Coil::getCurrentDensity)
+        .def("get_current", &Coil::getCurrent);
+
+    coil.def("get_wire_resistivity", &Coil::getWireResistivity)
+        .def("is_sine_driven", &Coil::isSineDriven)
+        .def("get_sine_frequency", &Coil::getSineFrequency);
+
+    coil.def("get_magnetic_moment", &Coil::getMagneticMoment)
+        .def("get_average_wire_thickness", &Coil::getAverageWireThickness);
+
+    coil.def("get_self_inductance", &Coil::getSelfInductance)
+        .def("get_resistance", &Coil::getResistance)
+        .def("get_reactance", &Coil::getReactance)
+        .def("get_impedance", &Coil::getImpedance);
+
+    coil.def("get_precision_settings", &Coil::getPrecisionSettings)
+        .def("get_thread_count", &Coil::getThreadCount)
+        .def("is_using_fast_method", &Coil::isUsingFastMethod)
+        .def("get_coil_type", &Coil::getCoilType);
+
+    coil.def("get_position_vector", &Coil::getPositionVector)
+        .def("get_rotation_angles", &Coil::getRotationAngles);
+
+    coil.def("set_current_density", &Coil::setCurrentDensity, py::arg("current_density"))
+        .def("set_current", &Coil::setCurrent, py::arg("current"))
+        .def("set_wire_resistivity", &Coil::setWireResistivity, py::arg("wire_resistivity"))
+        .def("set_sine_frequency", &Coil::setSineFrequency, py::arg("sine_frequency"))
+        .def(
+            "set_default_precision",
+            static_cast<void (Coil::*)(const PrecisionArguments&)>(&Coil::setDefaultPrecision),
+            py::arg("precision_settings"))
+        .def(
+            "set_default_precision",
+            static_cast<void (Coil::*)(PrecisionFactor, ComputeMethod)>(&Coil::setDefaultPrecision),
+            py::arg("precision_factor"), py::arg("compute_method"))
+        .def("set_thread_count", &Coil::setThreadCount, py::arg("thread_count"));
+
+    coil.def("set_self_inductance", &Coil::setSelfInductance, py::arg("self_inductance"));
+
+    coil.def(
+        "set_position_and_orientation", &Coil::setPositionAndOrientation,
+        py::arg("position_vector"), py::arg("y_axis_angle"), py::arg("z_axis_angle"));
 }

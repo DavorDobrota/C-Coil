@@ -6,7 +6,7 @@
 
 
 double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                       CoilPairArguments forceArguments, ComputeMethod method)
+                                       CoilPairArguments forceArguments, ComputeMethod computeMethod)
 {
     PrecisionArguments primaryPrecisionArguments = forceArguments.primaryPrecision;
 
@@ -59,7 +59,7 @@ double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondar
     }
 
     double ampereForce = 0.0;
-    std::vector<double> fieldH = primary.computeAllBFieldX(positionVectors, primaryPrecisionArguments, method);
+    std::vector<double> fieldH = primary.computeAllBFieldX(positionVectors, primaryPrecisionArguments, computeMethod);
 
     for (int i = 0; i < fieldH.size(); ++i)
     {
@@ -71,7 +71,7 @@ double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondar
 
 std::pair<vec3::FieldVector3, vec3::FieldVector3>
 Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                  CoilPairArguments forceArguments, ComputeMethod method)
+                                  CoilPairArguments forceArguments, ComputeMethod computeMethod)
 {
     std::vector<double> forceAndTorqueComponents(6);
 
@@ -165,7 +165,7 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
         }
     }
     std::vector<vec3::FieldVector3> magneticFields = primary.computeAllBFieldComponents(positionVectors,
-                                                                                        primaryPrecisionArguments, method);
+                                                                                        primaryPrecisionArguments, computeMethod);
 
     vec3::FieldVector3 forceVector;
     vec3::FieldVector3 torqueVector;

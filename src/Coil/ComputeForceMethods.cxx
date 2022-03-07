@@ -2,26 +2,26 @@
 
 
 std::pair<vec3::FieldVector3, vec3::FieldVector3>
-Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, CoilPairArguments forceArguments, ComputeMethod method)
+Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, CoilPairArguments forceArguments, ComputeMethod computeMethod)
 {
     if (isZAxisCase(primary, secondary))
     {
         vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
-        double zForce = calculateAmpereForceZAxis(primary, secondary, secPositionVec.z, forceArguments, method);
+        double zForce = calculateAmpereForceZAxis(primary, secondary, secPositionVec.z, forceArguments, computeMethod);
 
         return {vec3::FieldVector3(0.0, 0.0, zForce), vec3::FieldVector3()};
     }
     else
-        return calculateAmpereForceGeneral(primary, secondary, forceArguments, method);
+        return calculateAmpereForceGeneral(primary, secondary, forceArguments, computeMethod);
 }
 
 std::pair<vec3::FieldVector3, vec3::FieldVector3>
-Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod method)
+Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod computeMethod)
 {
     bool zAxisCase = isZAxisCase(primary, secondary);
-    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, method, zAxisCase);
+    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, computeMethod, zAxisCase);
 
-    return computeAmpereForce(primary, secondary, args, method);
+    return computeAmpereForce(primary, secondary, args, computeMethod);
 }
 
 

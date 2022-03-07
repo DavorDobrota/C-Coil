@@ -85,7 +85,7 @@ void testMutualInductanceZAxisArgumentGeneration()
     }
 }
 
-void testCoilMutualInductanceZAxisPerformance(ComputeMethod method, int nThreads)
+void testCoilMutualInductanceZAxisPerformance(ComputeMethod computeMethod, int nThreads)
 {
     using namespace std::chrono;
 
@@ -107,7 +107,7 @@ void testCoilMutualInductanceZAxisPerformance(ComputeMethod method, int nThreads
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeMutualInductance(primary, secondary, PrecisionFactor(i), method);
+            temp = Coil::computeMutualInductance(primary, secondary, PrecisionFactor(i), computeMethod);
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("precisionFactor(%.1f) : %6.3f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }

@@ -8,36 +8,36 @@
 
 vec3::CoordVector3::CoordVector3() : CoordVector3(CARTESIAN, 0.0, 0.0, 0.0) {}
 
-vec3::CoordVector3::CoordVector3(CoordinateSystem system, double elem1, double elem2, double elem3)
-                                : coordinateSystem(system), elem1(elem1), elem2(elem2), elem3(elem3)
+vec3::CoordVector3::CoordVector3(CoordinateSystem system, double comp1, double comp2, double comp3)
+                                : coordinateSystem(system), comp1(comp1), comp2(comp2), comp3(comp3)
 {
     switch (system)
     {
         case CYLINDRICAL:
-            if (elem2 < 0)
+            if (comp2 < 0)
             {
-                fprintf(stderr, "CYLINDRICAL: Radius cannot be negative: %.15f\n", elem2);
+                fprintf(stderr, "CYLINDRICAL: Radius cannot be negative: %.15f\n", comp2);
                 throw "Radius cannot be negative";
             }
-            elem3 = std::fmod(elem3, 2*M_PI);
-            if (elem3 < 0)
-                elem3 += 2*M_PI;
+            comp3 = std::fmod(comp3, 2*M_PI);
+            if (comp3 < 0)
+                comp3 += 2*M_PI;
             break;
         case SPHERICAL:
-            if (elem1 < 0)
+            if (comp1 < 0)
             {
-                fprintf(stderr, "SPHERICAL: Radius cannot be negative: %.15f\n", elem1);
+                fprintf(stderr, "SPHERICAL: Radius cannot be negative: %.15f\n", comp1);
                 throw "Radius cannot be negative";
             }
 
-            if (elem2 < 0 || elem2 > M_PI)
+            if (comp2 < 0 || comp2 > M_PI)
             {
-                fprintf(stderr, "SPHERICAL: Theta must be between 0 and PI: %.15f\n", elem2);
+                fprintf(stderr, "SPHERICAL: Theta must be between 0 and PI: %.15f\n", comp2);
                 throw "Theta must be between 0 and PI";
             }
-            elem3 = std::fmod(elem3, 2*M_PI);
-            if (elem3 < 0)
-                elem3 += 2*M_PI;
+            comp3 = std::fmod(comp3, 2*M_PI);
+            if (comp3 < 0)
+                comp3 += 2*M_PI;
             break;
         default:
             break;
@@ -118,59 +118,59 @@ std::vector<vec3::CoordVector3> vec3::CoordVector3::convertAllToSpherical(std::v
 
 void vec3::CoordVector3::convertCartesianToCylindrical()
 {
-    double newElem1 = elem3;
-    double newElem2 = std::sqrt(elem1 * elem1 + elem2 * elem2);
-    double newElem3 = std::atan2(elem2, elem1);
+    double newElem1 = comp3;
+    double newElem2 = std::sqrt(comp1 * comp1 + comp2 * comp2);
+    double newElem3 = std::atan2(comp2, comp1);
 
-    elem1 = newElem1;
-    elem2 = newElem2;
-    elem3 = newElem3;
+    comp1 = newElem1;
+    comp2 = newElem2;
+    comp3 = newElem3;
 
-    if (elem3 < 0)
-        elem3 += 2*M_PI;
+    if (comp3 < 0)
+        comp3 += 2*M_PI;
 
     coordinateSystem = CYLINDRICAL;
 }
 
 void vec3::CoordVector3::convertCartesianToSpherical()
 {
-    double temp1 = elem1 * elem1;
-    double temp2 = elem2 * elem2;
+    double temp1 = comp1 * comp1;
+    double temp2 = comp2 * comp2;
 
-    double newElem1 = std::sqrt(temp1 + temp2 + elem3 * elem3);
-    double newElem2 = std::atan2(std::sqrt(temp1 + temp2), elem3);
-    double newElem3 = std::atan2(elem2, elem1);
+    double newElem1 = std::sqrt(temp1 + temp2 + comp3 * comp3);
+    double newElem2 = std::atan2(std::sqrt(temp1 + temp2), comp3);
+    double newElem3 = std::atan2(comp2, comp1);
 
-    elem1 = newElem1;
-    elem2 = newElem2;
-    elem3 = newElem3;
+    comp1 = newElem1;
+    comp2 = newElem2;
+    comp3 = newElem3;
 
-    if (elem3 < 0)
-        elem3 += 2*M_PI;
+    if (comp3 < 0)
+        comp3 += 2*M_PI;
 
     coordinateSystem = SPHERICAL;
 }
 
 void vec3::CoordVector3::convertCylindricalToCartesian()
 {
-    double newElem1 = elem2 * std::cos(elem3);
-    double newElem2 = elem2 * std::sin(elem3);
-    double newElem3 = elem1;
+    double newElem1 = comp2 * std::cos(comp3);
+    double newElem2 = comp2 * std::sin(comp3);
+    double newElem3 = comp1;
 
-    elem1 = newElem1;
-    elem2 = newElem2;
-    elem3 = newElem3;
+    comp1 = newElem1;
+    comp2 = newElem2;
+    comp3 = newElem3;
 
     coordinateSystem = CARTESIAN;
 }
 
 void vec3::CoordVector3::convertCylindricalToSpherical()
 {
-    double newElem1 = std::sqrt(elem1 * elem1 + elem2 * elem2);
-    double newElem2 = std::atan2(elem2, elem1);
+    double newElem1 = std::sqrt(comp1 * comp1 + comp2 * comp2);
+    double newElem2 = std::atan2(comp2, comp1);
 
-    elem1 = newElem1;
-    elem2 = newElem2;
+    comp1 = newElem1;
+    comp2 = newElem2;
     // the third component remains the same
 
     coordinateSystem = SPHERICAL;
@@ -178,24 +178,24 @@ void vec3::CoordVector3::convertCylindricalToSpherical()
 
 void vec3::CoordVector3::convertSphericalToCartesian()
 {
-    double newElem1 = elem1 * std::sin(elem2) * std::cos(elem3);
-    double newElem2 = elem1 * std::sin(elem2) * std::sin(elem3);
-    double newElem3 = elem1 * std::cos(elem2);
+    double newElem1 = comp1 * std::sin(comp2) * std::cos(comp3);
+    double newElem2 = comp1 * std::sin(comp2) * std::sin(comp3);
+    double newElem3 = comp1 * std::cos(comp2);
 
-    elem1 = newElem1;
-    elem2 = newElem2;
-    elem3 = newElem3;
+    comp1 = newElem1;
+    comp2 = newElem2;
+    comp3 = newElem3;
 
     coordinateSystem = CARTESIAN;
 }
 
 void vec3::CoordVector3::convertSphericalToCylindrical()
 {
-    double newElem1 = elem1 * std::cos(elem2);
-    double newElem2 = elem1 * std::sin(elem2);
+    double newElem1 = comp1 * std::cos(comp2);
+    double newElem2 = comp1 * std::sin(comp2);
 
-    elem1 = newElem1;
-    elem2 = newElem2;
+    comp1 = newElem1;
+    comp2 = newElem2;
     // the third component remains the same
 
     coordinateSystem = CYLINDRICAL;
@@ -205,7 +205,7 @@ vec3::FieldVector3 vec3::CoordVector3::convertToFieldVector(const CoordVector3 &
 {
     CoordVector3 vectorCopy = vector;
     vectorCopy.convertToCartesian();
-    return vec3::FieldVector3(vectorCopy.elem1, vectorCopy.elem2, vectorCopy.elem3);
+    return vec3::FieldVector3(vectorCopy.comp1, vectorCopy.comp2, vectorCopy.comp3);
 }
 
 vec3::CoordVector3 vec3::CoordVector3::convertToCoordVector(const FieldVector3 &vector)
@@ -222,16 +222,16 @@ vec3::CoordVector3::operator std::string() const
     switch(getCoordinateSystem())
     {
         case vec3::CoordinateSystem::CARTESIAN:
-            output << "x=" << elem1 << ", y=" << elem2
-                   << ", z=" << elem3;
+            output << "x=" << comp1 << ", y=" << comp2
+                   << ", z=" << comp3;
             break;
         case vec3::CoordinateSystem::CYLINDRICAL:
-            output << "z=" << elem1 << ", r=" << elem2
-                   << ", p=" << elem3;
+            output << "z=" << comp1 << ", r=" << comp2
+                   << ", p=" << comp3;
             break;
         case vec3::CoordinateSystem::SPHERICAL:
-            output << "r=" << elem1 << ", t=" << elem2
-                   << ", p=" << elem3;
+            output << "r=" << comp1 << ", t=" << comp2
+                   << ", p=" << comp3;
             break;
     };
 

@@ -6,7 +6,7 @@
 
 
 double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                            CoilPairArguments inductanceArguments, ComputeMethod method)
+                                            CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
 {
     PrecisionArguments primaryPrecisionArguments = inductanceArguments.primaryPrecision;
 
@@ -57,7 +57,7 @@ double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &sec
             }
         }
     }
-    std::vector<double> potentialA = primary.computeAllAPotentialAbs(positionVectors, primaryPrecisionArguments, method);
+    std::vector<double> potentialA = primary.computeAllAPotentialAbs(positionVectors, primaryPrecisionArguments, computeMethod);
     double mutualInductance = 0.0;
 
     for (int i = 0; i < potentialA.size(); ++i)
@@ -69,7 +69,7 @@ double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &sec
 }
 
 double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
-                                              CoilPairArguments inductanceArguments, ComputeMethod method)
+                                              CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
 {
     vec3::FieldVector3 displacementVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
     vec3::FieldVector3 offsetVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
@@ -172,7 +172,7 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
         }
     }
     std::vector<vec3::FieldVector3> potentialVectors =
-            primary.computeAllAPotentialComponents(positionVectors, primaryPrecisionArguments, method);
+            primary.computeAllAPotentialComponents(positionVectors, primaryPrecisionArguments, computeMethod);
 
     double mutualInductance = 0.0;
 

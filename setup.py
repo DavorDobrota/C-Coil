@@ -1,7 +1,15 @@
+import os
 from glob import glob
 from setuptools import setup
 from pybind11.setup_helpers import Pybind11Extension
 
+
+if os.name == "nt":
+    os.environ["CPPFLAGS"] = "/std:c++17 /O2 /arch:AVX2 /fp:fast"
+else:
+    os.environ["CPPFLAGS"] = "-std=c++17 -Ofast -msse -msse2 -msse3" \
+                             " -msse4 -msse4a -msse4.1 -msse4.2 -mavx" \
+                             " -mavx2 -ffast-math"
 
 macros = [
     ("USE_GPU", 0)
@@ -42,7 +50,7 @@ ext_modules = [
 ]
 
 with open("README.md", "r") as f:
-    long_description=f.read()
+    long_description = f.read()
 
 setup(
     name="coil-evolution",

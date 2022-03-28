@@ -5,20 +5,23 @@ from pybind11.setup_helpers import Pybind11Extension
 
 
 if os.name == "nt":
-    os.environ["CPPFLAGS"] = "/std:c++17 /O2 /arch:AVX2 /fp:fast"
+    os.environ["CL"] = "/std:c++17 /O2 /arch:AVX2 /fp:fast"
 else:
     os.environ["CPPFLAGS"] = "-std=c++17 -Ofast -msse -msse2 -msse3" \
                              " -msse4 -msse4a -msse4.1 -msse4.2 -mavx" \
                              " -mavx2 -ffast-math"
 
-macros = [
-    ("USE_GPU", 0)
-]
+macros = []
+
+if os.name == "nt":
+    os.environ["CL"] += " /DUSE_GPU#0"
+else:
+    macros += [("USE_GPU", 0)]
 
 header_include_dirs = [
     "extern/CTPL/",
-    "extern/pybind11/include",
-    "extern/HardwareAcceleration",
+    "extern/pybind11/include/",
+    "extern/HardwareAcceleration/",
     "src/",
     "src/Coil/",
     "src/CoilData/",

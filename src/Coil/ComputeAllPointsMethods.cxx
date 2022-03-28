@@ -1,7 +1,8 @@
 #include "Coil.h"
 #include "PrecisionGlobalVars.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 
 void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &pointVectors,

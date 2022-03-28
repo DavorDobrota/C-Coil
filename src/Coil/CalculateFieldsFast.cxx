@@ -2,7 +2,8 @@
 #include "LegendreMatrix.h"
 #include "Math/CustomMath.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include "immintrin.h"
 
 
@@ -20,8 +21,16 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
 
     // initialising precompute array
     const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
-    double cosPhiPrecomputeArr[numPhiIncrements];
-    precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
+    
+    #if defined(__GNUC__)
+        if(numPhiIncrements > 20480)
+            throw "Number of increments too great (the maximum is 20480)";
+        double cosPhiPrecomputeArr[numPhiIncrements];
+        precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
+    #else
+        std::vector<double> cosPhiPrecomputeArr(numPhiIncrements);
+        precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, &cosPhiPrecomputeArr.front());
+    #endif
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
@@ -85,8 +94,16 @@ std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar,
 
     // initialising precompute array
     const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
-    double cosPhiPrecomputeArr[numPhiIncrements];
-    precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
+    
+    #if defined(__GNUC__)
+        if(numPhiIncrements > 20480)
+            throw "Number of increments too great (the maximum is 20480)";
+        double cosPhiPrecomputeArr[numPhiIncrements];
+        precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
+    #else
+        std::vector<double> cosPhiPrecomputeArr(numPhiIncrements);
+        precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, &cosPhiPrecomputeArr.front());
+    #endif
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
@@ -155,9 +172,17 @@ std::vector<double> Coil::calculateBGradientFast(double zAxis, double rPolar, co
 
     // initialising precompute array
     const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
-    double cosPhiPrecomputeArr[numPhiIncrements];
-    precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
-
+    
+    #if defined(__GNUC__)
+        if(numPhiIncrements > 20480)
+            throw "Number of increments too great (the maximum is 20480)";
+        double cosPhiPrecomputeArr[numPhiIncrements];
+        precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
+    #else
+        std::vector<double> cosPhiPrecomputeArr(numPhiIncrements);
+        precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, &cosPhiPrecomputeArr.front());
+    #endif
+    
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
     int angularIncrements = usedPrecision.angularIncrementCount - 1;

@@ -2,7 +2,8 @@
 #include "LegendreMatrix.h"
 #include "PrecisionGlobalVars.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 
 double Coil::calculateMutualInductanceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,

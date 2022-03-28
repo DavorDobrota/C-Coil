@@ -2,8 +2,9 @@
 #include "Coil.h"
 #include "Tensor.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <cstdio>
-#include <cmath>
 #include <chrono>
 
 

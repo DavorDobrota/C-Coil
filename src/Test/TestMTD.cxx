@@ -4,7 +4,8 @@
 #include "Tensor.h"
 #include "CoilGroup.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <cstdio>
 #include <vector>
 #include <chrono>

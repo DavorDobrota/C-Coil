@@ -1,6 +1,7 @@
 #include "Coil.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 
 vec3::CoordVector3 Coil::adaptInputVectorForPoint(const vec3::CoordVector3 &pointVector) const

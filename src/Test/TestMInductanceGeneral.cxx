@@ -1,9 +1,10 @@
 #include "Test.h"
 #include "Coil.h"
-#include "ctpl.h"
+#include "ctpl_stl.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <cstdio>
-#include <cmath>
 
 void testMutualInductanceGeneralForZAxis(ComputeMethod computeMethod, int nThreads)
 {

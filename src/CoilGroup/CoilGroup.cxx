@@ -2,9 +2,10 @@
 
 #include <sstream>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <numeric>
 #include <utility>
-#include <cmath>
 #include <functional>
 
 #include "ThreadPool.h"

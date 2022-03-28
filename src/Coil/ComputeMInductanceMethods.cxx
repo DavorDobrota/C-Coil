@@ -1,6 +1,7 @@
 #include "Coil.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 
 double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,

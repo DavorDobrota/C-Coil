@@ -3,7 +3,8 @@
 #include "hardware_acceleration.h"
 #include "ThreadPool.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <algorithm>
 #include <numeric>
 #include <cstdio>
@@ -252,7 +253,7 @@ void Coil::calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
     std::vector<float> fieldHArr(polarR.size());
     std::vector<float> fieldZArr(polarR.size());
 
-    #ifdef USE_GPU
+    #if USE_GPU == 1
         Calculate_hardware_accelerated_b(polarR.size(), &polarTheta[0], &polarR[0],
                                          currentDensity, innerRadius, length, thickness,
                                          thickness/16, length/16, M_PI/48,
@@ -288,7 +289,7 @@ void Coil::calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
     }
     std::vector<float> potentialArr(polarR.size());
 
-    #ifdef USE_GPU
+    #if USE_GPU == 1
         Calculate_hardware_accelerated_a(polarR.size(), &polarTheta[0], &polarR[0],
                                          currentDensity, innerRadius, length, thickness,
                                          thickness / 16, length / 16, M_PI / 48,

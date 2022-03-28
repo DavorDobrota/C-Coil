@@ -89,8 +89,6 @@ void initCoil(py::module_ &mainModule)
 
     // Coil
 
-    // TODO: Finish Coil
-
     coil.def(py::init<>())
         .def(
             py::init<double, double, double, int, double, double, double,

@@ -1,9 +1,10 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
-#include "ctpl.h"
+#include "ctpl_stl.h"
 #include "Math/CustomMath.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include <sstream>
 

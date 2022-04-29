@@ -4,7 +4,12 @@ project(General_Coil_Program)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-Ofast -msse -msse2 -msse3 -msse4 -msse4a -msse4.1 -msse4.2 -mavx -mavx2 -ffast-math")
+
+if(WIN32)
+    set(CMAKE_CXX_FLAGS "/std:c++17 /O2 /arch:AVX2 /fp:fast")
+else()
+    set(CMAKE_CXX_FLAGS "-Ofast -mavx2 -ffast-math")
+endif()
 
 option(USE_GPU "Enable GPU acceleration" OFF)
 

@@ -7,9 +7,7 @@ from pybind11.setup_helpers import Pybind11Extension
 if os.name == "nt":
     os.environ["CL"] = "/std:c++17 /O2 /arch:AVX2 /fp:fast"
 else:
-    os.environ["CPPFLAGS"] = "-std=c++17 -Ofast -msse -msse2 -msse3" \
-                             " -msse4 -msse4a -msse4.1 -msse4.2 -mavx" \
-                             " -mavx2 -ffast-math"
+    os.environ["CPPFLAGS"] = "-std=c++17 -Ofast -mavx2 -ffast-math"
 
 macros = []
 

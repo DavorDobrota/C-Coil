@@ -35,6 +35,7 @@ list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/extern/pybind11/include")
 #######################################
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Test")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Benchmark")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilData")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup")

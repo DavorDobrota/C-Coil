@@ -1,12 +1,12 @@
-#include "Test.h"
+#include "Benchmark.h"
 #include "Coil.h"
-#include "ctpl_stl.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <chrono>
 
 
-void testPerformanceCPU_ST(int nOps)
+void benchmarkCPU_ST(int nOps)
 {
     using namespace std::chrono;
 
@@ -48,7 +48,7 @@ void testPerformanceCPU_ST(int nOps)
     printf("gradient G  : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 }
 
-void testPerformanceForComputeAll(PrecisionFactor precisionFactor, int nOps, int nRepeats, int nThreads)
+void benchmarkComputeAll(PrecisionFactor precisionFactor, int nOps, int nRepeats, int nThreads)
 {
     using namespace std::chrono;
 
@@ -190,7 +190,7 @@ void testPerformanceForComputeAll(PrecisionFactor precisionFactor, int nOps, int
     printf("\n");
 }
 
-void testPerformanceForVariousCoilTypes(int nOps, int nThreads)
+void benchmarkVariousCoilTypes(int nOps, int nThreads)
 {
     using namespace std::chrono;
 

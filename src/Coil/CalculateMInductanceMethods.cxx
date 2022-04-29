@@ -89,10 +89,22 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
     // initialising precompute array
     const int numPhiIncrements =
             inductanceArguments.primaryPrecision.angularBlockCount * inductanceArguments.primaryPrecision.angularIncrementCount;
-    double cosPhiPrecomputeArr[numPhiIncrements];
-    precomputeCosPhi(inductanceArguments.primaryPrecision.angularBlockCount,
-                     inductanceArguments.primaryPrecision.angularIncrementCount,
-                     cosPhiPrecomputeArr);
+
+    #if defined(__GNUC__)
+        if(numPhiIncrements > 20480)
+            throw "Number of increments too great (the maximum is 20480)";
+        double cosPhiPrecomputeArr[numPhiIncrements];
+        precomputeCosPhi(
+                inductanceArguments.primaryPrecision.angularBlockCount,
+                inductanceArguments.primaryPrecision.angularIncrementCount,
+                cosPhiPrecomputeArr);
+    #else
+        std::vector<double> cosPhiPrecomputeArr(numPhiIncrements);
+        precomputeCosPhi(
+            inductanceArguments.primaryPrecision.angularBlockCount,
+            inductanceArguments.primaryPrecision.angularIncrementCount,
+            cosPhiPrecomputeArr);
+    #endif
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrementCount - 1;
@@ -366,10 +378,24 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, Comp
     // initialising precompute array
     const int numPhiIncrements =
             inductanceArguments.primaryPrecision.angularBlockCount * inductanceArguments.primaryPrecision.angularIncrementCount;
-    double cosPhiPrecomputeArr[numPhiIncrements];
-    precomputeCosPhi(inductanceArguments.primaryPrecision.angularBlockCount,
-                     inductanceArguments.primaryPrecision.angularIncrementCount,
-                     cosPhiPrecomputeArr);
+
+    #if defined(__GNUC__)
+        if(numPhiIncrements > 20480)
+            throw "Number of increments too great (the maximum is 20480)";
+        double cosPhiPrecomputeArr[numPhiIncrements];
+        precomputeCosPhi(
+                inductanceArguments.primaryPrecision.angularBlockCount,
+                inductanceArguments.primaryPrecision.angularIncrementCount,
+                cosPhiPrecomputeArr);
+    #else
+        std::vector<double> cosPhiPrecomputeArr(numPhiIncrements);
+            precomputeCosPhi(
+                inductanceArguments.primaryPrecision.angularBlockCount,
+                inductanceArguments.primaryPrecision.angularIncrementCount,
+                cosPhiPrecomputeArr);
+    #endif
+
+
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrementCount - 1;

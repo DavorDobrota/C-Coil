@@ -3,6 +3,8 @@
 
 #include "Coil.h"
 
+#include <string>
+
 #define TYPE double
 
 // TODO - complete module, it is not supposed to be part of this project
@@ -25,6 +27,8 @@ struct CoilData
 
     TYPE positionArray[arrSize];
     TYPE weightArray[arrSize];
+
+    explicit operator std::string() const;
 };
 
 #endif //GENERAL_COIL_PROGRAM_COILDATA_H

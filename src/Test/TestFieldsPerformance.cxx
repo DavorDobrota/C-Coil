@@ -1,8 +1,9 @@
 #include "Test.h"
 #include "Coil.h"
-#include "ctpl.h"
+#include "ctpl_stl.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 
 void testPerformanceCPU_ST(int nOps)

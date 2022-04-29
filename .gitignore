@@ -8,3 +8,9 @@ output.txt
 *.lib
 *.so
 *.a
+
+venv/
+build/
+dist/
+
+*.egg*/

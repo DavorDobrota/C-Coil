@@ -1,9 +1,10 @@
 #include "Test.h"
 #include "Coil.h"
-#include "ctpl.h"
+#include "ctpl_stl.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <cstdio>
-#include <cmath>
 
 
 void testMutualInductanceZAxis()
@@ -85,7 +86,7 @@ void testMutualInductanceZAxisArgumentGeneration()
     }
 }
 
-void testCoilMutualInductanceZAxisPerformance(ComputeMethod method, int nThreads)
+void testCoilMutualInductanceZAxisPerformance(ComputeMethod computeMethod, int nThreads)
 {
     using namespace std::chrono;
 
@@ -107,7 +108,7 @@ void testCoilMutualInductanceZAxisPerformance(ComputeMethod method, int nThreads
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeMutualInductance(primary, secondary, PrecisionFactor(i), method);
+            temp = Coil::computeMutualInductance(primary, secondary, PrecisionFactor(i), computeMethod);
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("precisionFactor(%.1f) : %6.4f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }

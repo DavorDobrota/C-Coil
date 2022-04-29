@@ -1,44 +1,58 @@
 #include "Tensor.h"
 
+#include <sstream>
+
 
 vec3::Matrix3::Matrix3() : Matrix3(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) {}
 
 vec3::Matrix3::Matrix3(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz) :
-                        xxElement(xx), xyElement(xy), xzElement(xz),
-                        yxElement(yx), yyElement(yy), yzElement(yz),
-                        zxElement(zx), zyElement(zy), zzElement(zz) {}
+                        xx(xx), xy(xy), xz(xz),
+                        yx(yx), yy(yy), yz(yz),
+                        zx(zx), zy(zy), zz(zz) {}
 
 
 vec3::Matrix3 vec3::Matrix3::operator+(const Matrix3 &mat) const
 {
-    return vec3::Matrix3(this->xxElement + mat.xxElement, this->xyElement + mat.xyElement, this->xzElement + mat.xzElement,
-                         this->yxElement + mat.yxElement, this->yyElement + mat.yyElement, this->yzElement + mat.yzElement,
-                         this->zxElement + mat.zxElement, this->zyElement + mat.zyElement, this->zzElement + mat.zzElement);
+    return vec3::Matrix3(this->xx + mat.xx, this->xy + mat.xy, this->xz + mat.xz,
+                         this->yx + mat.yx, this->yy + mat.yy, this->yz + mat.yz,
+                         this->zx + mat.zx, this->zy + mat.zy, this->zz + mat.zz);
 }
 
-void vec3::Matrix3::operator+=(const Matrix3 &mat)
+vec3::Matrix3 vec3::Matrix3::operator+=(const Matrix3 &mat)
 {
-    this->xxElement += mat.xxElement; this->xyElement += mat.xyElement; this->xzElement += mat.xzElement;
-    this->yxElement += mat.yxElement; this->yyElement += mat.yyElement; this->yzElement += mat.yzElement;
-    this->zxElement += mat.zxElement; this->zyElement += mat.zyElement; this->zzElement += mat.zzElement;
+    this->xx += mat.xx; this->xy += mat.xy; this->xz += mat.xz;
+    this->yx += mat.yx; this->yy += mat.yy; this->yz += mat.yz;
+    this->zx += mat.zx; this->zy += mat.zy; this->zz += mat.zz;
+    return *this;
 }
 
 vec3::FieldVector3 vec3::Matrix3::operator*(const FieldVector3 &vec) const
 {
-    return vec3::FieldVector3(this->xxElement * vec.xComponent + this->xyElement * vec.yComponent + this->xzElement * vec.zComponent,
-                              this->yxElement * vec.xComponent + this->yyElement * vec.yComponent + this->yzElement * vec.zComponent,
-                              this->zxElement * vec.xComponent + this->zyElement * vec.yComponent + this->zzElement * vec.zComponent);
+    return vec3::FieldVector3(this->xx * vec.x + this->xy * vec.y + this->xz * vec.z,
+                              this->yx * vec.x + this->yy * vec.y + this->yz * vec.z,
+                              this->zx * vec.x + this->zy * vec.y + this->zz * vec.z);
 }
 
 vec3::Matrix3 vec3::Matrix3::operator*(const Matrix3 &mat) const
 {
-    return vec3::Matrix3(this->xxElement * mat.xxElement + this->xyElement * mat.yxElement + this->xzElement * mat.zxElement,
-                         this->xxElement * mat.xyElement + this->xyElement * mat.yyElement + this->xzElement * mat.zyElement,
-                         this->xxElement * mat.xzElement + this->xyElement * mat.yzElement + this->xzElement * mat.zzElement,
-                         this->yxElement * mat.xxElement + this->yyElement * mat.yxElement + this->yzElement * mat.zxElement,
-                         this->yxElement * mat.xyElement + this->yyElement * mat.yyElement + this->yzElement * mat.zyElement,
-                         this->yxElement * mat.xzElement + this->yyElement * mat.yzElement + this->yzElement * mat.zzElement,
-                         this->zxElement * mat.xxElement + this->zyElement * mat.yxElement + this->zzElement * mat.zxElement,
-                         this->zxElement * mat.xyElement + this->zyElement * mat.yyElement + this->zzElement * mat.zyElement,
-                         this->zxElement * mat.xzElement + this->zyElement * mat.yzElement + this->zzElement * mat.zzElement);
+    return vec3::Matrix3(this->xx * mat.xx + this->xy * mat.yx + this->xz * mat.zx,
+                         this->xx * mat.xy + this->xy * mat.yy + this->xz * mat.zy,
+                         this->xx * mat.xz + this->xy * mat.yz + this->xz * mat.zz,
+                         this->yx * mat.xx + this->yy * mat.yx + this->yz * mat.zx,
+                         this->yx * mat.xy + this->yy * mat.yy + this->yz * mat.zy,
+                         this->yx * mat.xz + this->yy * mat.yz + this->yz * mat.zz,
+                         this->zx * mat.xx + this->zy * mat.yx + this->zz * mat.zx,
+                         this->zx * mat.xy + this->zy * mat.yy + this->zz * mat.zy,
+                         this->zx * mat.xz + this->zy * mat.yz + this->zz * mat.zz);
+}
+
+vec3::Matrix3::operator std::string() const
+{
+    std::stringstream output;
+
+    output << "Matrix3([[" << xx << ", " << xy << ", " << xz << "], ["
+           << yx << ", " << yy << ", " << yz << "], ["
+           << zx << ", " << zy << ", " << zz << "]])";
+
+    return output.str();
 }

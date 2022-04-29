@@ -3,9 +3,9 @@
 #include "Math/CustomMath.h"
 #include "ThreadPool/ThreadPool.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <numeric>
-
 
 namespace
 {
@@ -13,9 +13,8 @@ namespace
     threadPool::ThreadPoolControl g_threadPool;
 }
 
-
 double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                                CoilPairArguments inductanceArguments, ComputeMethod method)
+                                            CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
 {
     PrecisionArguments primaryPrecisionArguments = inductanceArguments.primaryPrecision;
 
@@ -66,7 +65,7 @@ double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil 
             }
         }
     }
-    std::vector<double> potentialA = primary.computeAllAPotentialAbs(positionVectors, primaryPrecisionArguments, method);
+    std::vector<double> potentialA = primary.computeAllAPotentialAbs(positionVectors, primaryPrecisionArguments, computeMethod);
     double mutualInductance = 0.0;
 
     for (int i = 0; i < potentialA.size(); ++i)
@@ -78,7 +77,7 @@ double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil 
 }
 
 double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                                CoilPairArguments inductanceArguments, ComputeMethod method)
+                                                CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
 {
 
     double mutualInductance = 0.0;
@@ -90,10 +89,22 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
     // initialising precompute array
     const int numPhiIncrements =
             inductanceArguments.primaryPrecision.angularBlockCount * inductanceArguments.primaryPrecision.angularIncrementCount;
-    double cosPhiPrecomputeArr[numPhiIncrements];
-    precomputeCosPhi(inductanceArguments.primaryPrecision.angularBlockCount,
-                     inductanceArguments.primaryPrecision.angularIncrementCount,
-                     cosPhiPrecomputeArr);
+
+    #if defined(__GNUC__)
+        if(numPhiIncrements > 20480)
+            throw "Number of increments too great (the maximum is 20480)";
+        double cosPhiPrecomputeArr[numPhiIncrements];
+        precomputeCosPhi(
+                inductanceArguments.primaryPrecision.angularBlockCount,
+                inductanceArguments.primaryPrecision.angularIncrementCount,
+                cosPhiPrecomputeArr);
+    #else
+        std::vector<double> cosPhiPrecomputeArr(numPhiIncrements);
+        precomputeCosPhi(
+            inductanceArguments.primaryPrecision.angularBlockCount,
+            inductanceArguments.primaryPrecision.angularIncrementCount,
+            &cosPhiPrecomputeArr.front());
+    #endif
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrementCount - 1;
@@ -103,7 +114,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * primary.currentDensity * thicknessBlock * angularBlock * radialBlock * 0.125;
 
-    zDisplacement -= vec3::CoordVector3::convertToFieldVector(primary.getPositionVector()).zComponent;
+    zDisplacement -= vec3::CoordVector3::convertToFieldVector(primary.getPositionVector()).z;
 
     double constZ1 = zDisplacement + secondary.length * 0.5 + primary.length * 0.5;
     double constZ2 = zDisplacement + secondary.length * 0.5 - primary.length * 0.5;
@@ -189,7 +200,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
 
-    if(method == CPU_ST)
+    if(computeMethod == CPU_ST)
     {
         calculate(0, 0, radialIncrements + 1, mutualInductance);
         g_threadPool.getCompletedTasks().store(0ull);
@@ -239,14 +250,14 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
 }
 
 double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
-                                              CoilPairArguments inductanceArguments, ComputeMethod method)
+                                              CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
 {
     vec3::FieldVector3 displacementVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
     vec3::FieldVector3 offsetVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
 
-    double xDisplacement = displacementVec.xComponent;
-    double yDisplacement = displacementVec.yComponent;
-    double zDisplacement = displacementVec.zComponent;
+    double xDisplacement = displacementVec.x;
+    double yDisplacement = displacementVec.y;
+    double zDisplacement = displacementVec.z;
     double alphaAngle = secondary.yAxisAngle;
     double betaAngle = secondary.zAxisAngle;
 
@@ -270,8 +281,8 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
     // sometimes the function is even so a shortcut can be used to improve performance and efficiency
     double ringIntervalSize;
 
-    if (relativeVec.xComponent / primary.innerRadius < g_zAxisApproximationRatio &&
-        relativeVec.yComponent / primary.innerRadius < g_zAxisApproximationRatio ||
+    if (relativeVec.x / primary.innerRadius < g_zAxisApproximationRatio &&
+        relativeVec.y / primary.innerRadius < g_zAxisApproximationRatio ||
         relativeAlpha < g_zAxisApproximationRatio || relativeBeta < g_zAxisApproximationRatio)
     {
         ringIntervalSize = M_PI;
@@ -320,13 +331,13 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
                             int phiPosition = phiBlock * angularIncrements + phiIndex;
 
                             double displacementX = xDisplacement + lengthDisplacement * sin(alphaAngle) * cos(betaAngle) +
-                                                   ringRadius * unitRingValues[phiPosition].first.xComponent;
+                                                   ringRadius * unitRingValues[phiPosition].first.x;
 
                             double displacementY = yDisplacement + lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
-                                                   ringRadius * unitRingValues[phiPosition].first.yComponent;
+                                                   ringRadius * unitRingValues[phiPosition].first.y;
 
                             double displacementZ = zDisplacement + lengthDisplacement * cos(alphaAngle) +
-                                                   ringRadius * unitRingValues[phiPosition].first.zComponent;
+                                                   ringRadius * unitRingValues[phiPosition].first.z;
 
                             positionVectors.emplace_back(vec3::CARTESIAN, displacementX, displacementY, displacementZ);
 
@@ -342,7 +353,7 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
         }
     }
     std::vector<vec3::FieldVector3> potentialVectors =
-            primary.computeAllAPotentialComponents(positionVectors, primaryPrecisionArguments, method);
+            primary.computeAllAPotentialComponents(positionVectors, primaryPrecisionArguments, computeMethod);
 
     double mutualInductance = 0.0;
 
@@ -356,7 +367,7 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
     return mutualInductance * 2*M_PI * secondary.numOfTurns / primary.current;
 }
 
-double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, ComputeMethod method) const
+double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, ComputeMethod computeMethod) const
 {
     double calculatedSelfInductance = 0.0;
 
@@ -367,10 +378,24 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, Comp
     // initialising precompute array
     const int numPhiIncrements =
             inductanceArguments.primaryPrecision.angularBlockCount * inductanceArguments.primaryPrecision.angularIncrementCount;
-    double cosPhiPrecomputeArr[numPhiIncrements];
-    precomputeCosPhi(inductanceArguments.primaryPrecision.angularBlockCount,
-                     inductanceArguments.primaryPrecision.angularIncrementCount,
-                     cosPhiPrecomputeArr);
+
+    #if defined(__GNUC__)
+        if(numPhiIncrements > 20480)
+            throw "Number of increments too great (the maximum is 20480)";
+        double cosPhiPrecomputeArr[numPhiIncrements];
+        precomputeCosPhi(
+                inductanceArguments.primaryPrecision.angularBlockCount,
+                inductanceArguments.primaryPrecision.angularIncrementCount,
+                cosPhiPrecomputeArr);
+    #else
+        std::vector<double> cosPhiPrecomputeArr(numPhiIncrements);
+            precomputeCosPhi(
+                inductanceArguments.primaryPrecision.angularBlockCount,
+                inductanceArguments.primaryPrecision.angularIncrementCount,
+                &cosPhiPrecomputeArr.front());
+    #endif
+
+
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrementCount - 1;

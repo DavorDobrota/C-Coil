@@ -4,7 +4,8 @@
 #include "Tensor.h"
 #include "CoilGroup.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <cstdio>
 #include <vector>
 #include <chrono>
@@ -38,8 +39,8 @@ void testCoilGroupMTD(int numCoils, int numPoints, int threadCount, bool print)
     if (print)
         for (int i = 0; i < numPoints; ++i)
             printf("%.15g\n",
-                   std::sqrt(computedBField[i].xComponent * computedBField[i].xComponent +
-                             computedBField[i].yComponent * computedBField[i].yComponent));
+                   std::sqrt(computedBField[i].x * computedBField[i].x +
+                             computedBField[i].y * computedBField[i].y));
 
 
 }
@@ -96,21 +97,21 @@ void testCoilGroupMTDFields(int threadCount)
         referencePoints[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 1.0 * i / numPoints, -0.1);
 
     computedAPotential = coilGroup.computeAllAPotentialComponents(referencePoints, CPU_ST);
-    printf("%.15g\n", computedAPotential[numPoints / 2].xComponent);
+    printf("%.15g\n", computedAPotential[numPoints / 2].x);
     computedAPotential = coilGroup.computeAllAPotentialComponents(referencePoints, CPU_MT);
-    printf("%.15g\n", computedAPotential[numPoints / 2].xComponent);
+    printf("%.15g\n", computedAPotential[numPoints / 2].x);
     printf("\n");
 
     computedBField = coilGroup.computeAllBFieldComponents(referencePoints, CPU_ST);
-    printf("%.15g\n", computedBField[numPoints / 2].xComponent);
+    printf("%.15g\n", computedBField[numPoints / 2].x);
     computedBField = coilGroup.computeAllBFieldComponents(referencePoints, CPU_MT);
-    printf("%.15g\n", computedBField[numPoints / 2].xComponent);
+    printf("%.15g\n", computedBField[numPoints / 2].x);
     printf("\n");
 
     computedBGradient = coilGroup.computeAllBGradientTensors(referencePoints, CPU_ST);
-    printf("%.15g\n", computedBGradient[numPoints / 2].xyElement);
+    printf("%.15g\n", computedBGradient[numPoints / 2].xy);
     computedBGradient = coilGroup.computeAllBGradientTensors(referencePoints, CPU_MT);
-    printf("%.15g\n", computedBGradient[numPoints / 2].xyElement);
+    printf("%.15g\n", computedBGradient[numPoints / 2].xy);
     printf("\n");
 }
 
@@ -149,14 +150,14 @@ void testCoilGroupMTDInductanceAndForce(int threadCount)
 
     begin_time = high_resolution_clock::now();
     printf("%.15g\n",
-           coilGroup.computeAmpereForce(referenceCoil, PrecisionFactor(5.0), CPU_ST).first.zComponent);
+           coilGroup.computeAmpereForce(referenceCoil, PrecisionFactor(5.0), CPU_ST).first.z);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("ST  perf  : %.0f coils/s\n", numCoils / interval);
 
 
     begin_time = high_resolution_clock::now();
     printf("%.15g\n",
-           coilGroup.computeAmpereForce(referenceCoil,PrecisionFactor(5.0), CPU_MT).first.zComponent);
+           coilGroup.computeAmpereForce(referenceCoil,PrecisionFactor(5.0), CPU_MT).first.z);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("MTD perf  : %.0f coils/s\n", numCoils / interval);
 }

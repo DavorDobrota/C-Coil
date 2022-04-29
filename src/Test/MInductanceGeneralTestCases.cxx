@@ -2,7 +2,7 @@
 #include "Coil.h"
 
 #include <cstdio>
-#include <cmath>
+#include <math.h>
 
 
 void testMutualInductanceGeneralMisalignedCoils()

@@ -103,7 +103,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
         precomputeCosPhi(
             inductanceArguments.primaryPrecision.angularBlockCount,
             inductanceArguments.primaryPrecision.angularIncrementCount,
-            cosPhiPrecomputeArr);
+            &cosPhiPrecomputeArr.front());
     #endif
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
@@ -392,7 +392,7 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, Comp
             precomputeCosPhi(
                 inductanceArguments.primaryPrecision.angularBlockCount,
                 inductanceArguments.primaryPrecision.angularIncrementCount,
-                cosPhiPrecomputeArr);
+                &cosPhiPrecomputeArr.front());
     #endif
 
 

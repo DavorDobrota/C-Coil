@@ -21,7 +21,7 @@ double Coil::calculateAPotentialSlow(double zAxis, double rPolar, const Precisio
 
     // initialising precompute array
     const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
-    
+
     #if defined(__GNUC__)
         if(numPhiIncrements > 20480)
             throw "Number of increments too great (the maximum is 20480)";
@@ -96,7 +96,7 @@ std::pair<double, double> Coil::calculateBFieldSlow(double zAxis, double rPolar,
 
     // initialising precompute array
     const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
-    
+
     #if defined(__GNUC__)
         if(numPhiIncrements > 20480)
             throw "Number of increments too great (the maximum is 20480)";
@@ -179,7 +179,7 @@ std::vector<double> Coil::calculateBGradientSlow(double zAxis, double rPolar, co
 
     // initialising precompute array
     const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
-    
+
     #if defined(__GNUC__)
         if(numPhiIncrements > 20480)
             throw "Number of increments too great (the maximum is 20480)";

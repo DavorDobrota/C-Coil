@@ -3,7 +3,6 @@
 #include "ComputeMethod.h"
 #include "Tensor.h"
 #include "CustomMath.h"
-#include "CoilGroup.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>

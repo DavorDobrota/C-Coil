@@ -1,5 +1,4 @@
 #include "Coil.h"
-#include "PrecisionGlobalVars.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>

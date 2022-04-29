@@ -3,6 +3,7 @@
 
 #include <cstdio>
 
+
 void testMutualInductanceZAxisDifferentGeometries()
 {
     vec3::CoordVector3 defaultVec = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.2);

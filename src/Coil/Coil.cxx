@@ -305,7 +305,14 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, Comput
     std::pair tempAngles = getRotationAngles();
     setPositionAndOrientation();
 
-    double inductance = Coil::computeMutualInductance(*this, *this, precisionFactor, computeMethod);
+    auto arguments = CoilPairArguments::getAppropriateCoilPairArguments(*this, *this, precisionFactor);
+    double inductance;
+
+    if (coilType == CoilType::FLAT)
+        inductance = Coil::computeMutualInductance(*this, *this, arguments, computeMethod);
+    else
+        inductance = Coil::calculateSelfInductance(arguments, computeMethod);
+
     setSelfInductance(inductance);
     setPositionAndOrientation(tempPosition, tempAngles.first, tempAngles.second);
 

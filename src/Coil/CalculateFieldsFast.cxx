@@ -21,7 +21,7 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
 
     // initialising precompute array
     const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
-    
+
     #if defined(__GNUC__)
         if(numPhiIncrements > 20480)
             throw "Number of increments too great (the maximum is 20480)";
@@ -36,7 +36,7 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
     int angularIncrements = usedPrecision.angularIncrementCount - 1;
 
-    // multiplication by 2 because cosine is an even function and by 0.125 for a double change of interval (2 times 1/2)
+    // multiplication by 2 because cosine is an even function and by 0.25 for a double change of interval (2 times 1/2)
     double constant = g_MiReduced * currentDensity * thicknessBlock * angularBlock * 2 * 0.25;
 
     double topEdge = zAxis + length * 0.5;
@@ -65,7 +65,7 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
 
                     int arrPos = indBlockFi * (angularIncrements + 1) + incFi;
                     double cosinePhi = cosPhiPrecomputeArr[arrPos];
-                    double tempConstC = 1 / std::sqrt(tempConstB - tempConstA * cosinePhi);
+                    double tempConstC = 1.0 / std::sqrt(tempConstB - tempConstA * cosinePhi);
 
                     double tempConstD1 = topEdge * tempConstC;
                     double tempConstD2 = bottomEdge * tempConstC;
@@ -94,7 +94,7 @@ std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar,
 
     // initialising precompute array
     const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
-    
+
     #if defined(__GNUC__)
         if(numPhiIncrements > 20480)
             throw "Number of increments too great (the maximum is 20480)";
@@ -109,7 +109,7 @@ std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar,
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
     int angularIncrements = usedPrecision.angularIncrementCount - 1;
 
-    // multiplication by 2 because cosine is an even function and by 0.125 for a double change of interval (2 times 1/2)
+    // multiplication by 2 because cosine is an even function and by 0.25 for a double change of interval (2 times 1/2)
     double constant = g_MiReduced * currentDensity * thicknessBlock * angularBlock * 2 * 0.25;
 
     double topEdge = zAxis + length * 0.5;
@@ -172,7 +172,7 @@ std::vector<double> Coil::calculateBGradientFast(double zAxis, double rPolar, co
 
     // initialising precompute array
     const int numPhiIncrements = usedPrecision.angularBlockCount * usedPrecision.angularIncrementCount;
-    
+
     #if defined(__GNUC__)
         if(numPhiIncrements > 20480)
             throw "Number of increments too great (the maximum is 20480)";
@@ -182,12 +182,12 @@ std::vector<double> Coil::calculateBGradientFast(double zAxis, double rPolar, co
         std::vector<double> cosPhiPrecomputeArr(numPhiIncrements);
         precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, &cosPhiPrecomputeArr.front());
     #endif
-    
+
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
     int angularIncrements = usedPrecision.angularIncrementCount - 1;
 
-    // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
+    // multiplication by 2 because cosine is an even function and by 0.25 for a double change of interval (2 times 1/2)
     double constant = g_MiReduced * currentDensity * thicknessBlock * angularBlock * 2 * 0.25;
 
     double topEdge = zAxis + length * 0.5;

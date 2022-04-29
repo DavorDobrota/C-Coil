@@ -5,6 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+
 void testPerformanceCPU_ST(int nOps)
 {
     using namespace std::chrono;

@@ -10,6 +10,7 @@
 #include <vector>
 #include <chrono>
 
+
 void testCoilGroupMTD(int numCoils, int numPoints, int threadCount, bool print)
 {
     double torusRadius = 1.0;
@@ -161,3 +162,77 @@ void testCoilGroupMTDInductanceAndForce(int threadCount)
     printf("MTD perf  : %.0f coils/s\n", numCoils / interval);
 }
 
+void testMInductanceAndForceComputeAllPerformance(PrecisionFactor precisionFactor, int threadCount)
+{
+    using namespace std::chrono;
+
+    Coil prim = Coil(0.1, 0.1, 0.1, 10000);
+    Coil sec = Coil(0.1, 0.1, 0.1, 10000);
+
+    int numOps = threadCount * 32;
+
+    std::vector<vec3::CoordVector3> primPositions(numOps);
+    std::vector<vec3::CoordVector3> secPositions(numOps);
+    std::vector<double> primYAxisAngle(numOps);
+    std::vector<double> primZAxisAngle(numOps);
+    std::vector<double> secYAxisAngle(numOps);
+    std::vector<double> secZAxisAngle(numOps);
+
+    std::vector<double> mutualInductanceMT(numOps);
+    std::vector<double> mutualInductanceAll(numOps);
+    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> forceAndTorqueMT(numOps);
+    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> forceAndTorqueAll(numOps);
+
+    for (int i = 0; i < numOps; ++i)
+    {
+        primPositions[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0);
+        secPositions[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.1, 0.2 + double(i) * 0.005);
+        primYAxisAngle[i] = 0.0;
+        primZAxisAngle[i] = 0.0;
+        secYAxisAngle[i] = 0.5;
+        secZAxisAngle[i] = 0.5;
+    }
+
+    high_resolution_clock::time_point begin_time;
+    double interval;
+
+    printf("Mutual inductance:\n");
+    begin_time = high_resolution_clock::now();
+    mutualInductanceAll = Coil::computeAllMutualInductanceArrangements(prim, sec, primPositions,secPositions,
+                                                                       primYAxisAngle, primZAxisAngle,
+                                                                       secYAxisAngle, secZAxisAngle,
+                                                                       precisionFactor, CPU_MT);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MTD perf : %.1f Ops/s\n", numOps / interval);
+
+    begin_time = high_resolution_clock::now();
+    for (int i = 0; i < numOps; ++i)
+    {
+        prim.setPositionAndOrientation(primPositions[i], primYAxisAngle[i], primZAxisAngle[i]);
+        sec.setPositionAndOrientation(secPositions[i], secYAxisAngle[i], secZAxisAngle[i]);
+        mutualInductanceMT[i] = Coil::computeMutualInductance(prim, sec, precisionFactor, CPU_MT);
+    }
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MT perf  : %.1f Ops/s\n", numOps / interval);
+
+    printf("\nAmpere force:\n");
+    begin_time = high_resolution_clock::now();
+    forceAndTorqueAll = Coil::computeAllAmpereForceArrangements(prim, sec, primPositions,secPositions,
+                                                                primYAxisAngle, primZAxisAngle,
+                                                                secYAxisAngle, secZAxisAngle,
+                                                                precisionFactor, CPU_MT);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MTD perf : %.1f Ops/s\n", numOps / interval);
+
+    begin_time = high_resolution_clock::now();
+    for (int i = 0; i < numOps; ++i)
+    {
+        prim.setPositionAndOrientation(primPositions[i], primYAxisAngle[i], primZAxisAngle[i]);
+        sec.setPositionAndOrientation(secPositions[i], secYAxisAngle[i], secZAxisAngle[i]);
+        forceAndTorqueMT[i] = Coil::computeAmpereForce(prim, sec, precisionFactor, CPU_MT);
+    }
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MT perf  : %.1f Ops/s\n", numOps / interval);
+
+    printf("\n");
+}

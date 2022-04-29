@@ -9,8 +9,8 @@
 #include <vector>
 #include <string>
 
-
 #define PRINT_ENABLED 0
+
 
 const int precisionArraySize = 864;
 const int defaultThreadCount = 8;
@@ -355,6 +355,24 @@ class Coil
         computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment,
                                    const PrecisionArguments &usedPrecision) const;
 
+        static std::vector<double> computeAllMutualInductanceArrangements(Coil primary, Coil secondary,
+                                                                          const std::vector<vec3::CoordVector3> &primaryPositions,
+                                                                          const std::vector<vec3::CoordVector3> &secondaryPositions,
+                                                                          const std::vector<double> &primaryYAngles,
+                                                                          const std::vector<double> &primaryZAngles,
+                                                                          const std::vector<double> &secondaryYAngles,
+                                                                          const std::vector<double> &secondaryZAngles,
+                                                                          PrecisionFactor precisionFactor = PrecisionFactor(),
+                                                                          ComputeMethod computeMethod = CPU_ST);
+
+        static std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
+        computeAllAmpereForceArrangements(Coil primary, Coil secondary,
+                                          const std::vector<vec3::CoordVector3> &primaryPositions,
+                                          const std::vector<vec3::CoordVector3> &secondaryPositions,
+                                          const std::vector<double> &primaryYAngles, const std::vector<double> &primaryZAngles,
+                                          const std::vector<double> &secondaryYAngles, const std::vector<double> &secondaryZAngles,
+                                          PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod computeMethod = CPU_ST);
+
         explicit operator std::string() const;
 
     private:
@@ -494,9 +512,13 @@ class Coil
 
         static bool isZAxisCase(const Coil &primary, const Coil &secondary);
 
-        static double calculateMutualInductanceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                                     CoilPairArguments inductanceArguments,
-                                                     ComputeMethod computeMethod = CPU_ST);
+        static double calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                                         CoilPairArguments inductanceArguments,
+                                                         ComputeMethod computeMethod = CPU_ST);
+
+        static double calculateMutualInductanceZAxisFast(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                                         CoilPairArguments inductanceArguments,
+                                                         ComputeMethod computeMethod = CPU_ST);
 
         static double calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
                                                        CoilPairArguments inductanceArguments, ComputeMethod computeMethod = CPU_ST);
@@ -508,6 +530,8 @@ class Coil
         static std::pair<vec3::FieldVector3, vec3::FieldVector3>
         calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                                     CoilPairArguments forceArguments, ComputeMethod computeMethod);
+
+        [[nodiscard]] double calculateSelfInductance(CoilPairArguments inductanceArguments, ComputeMethod computeMethod) const;
 
         [[nodiscard]] int calculateChunkSize(int numOps) const;
 };

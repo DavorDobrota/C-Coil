@@ -1,7 +1,6 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
 #include "CoilData.h"
-#include "PrecisionGlobalVars.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>

@@ -6,6 +6,7 @@
 #include <math.h>
 #include <cstdio>
 
+
 void testAmpereForceForFilamentsZAxis()
 {
     Coil coil1 = Coil(0.5, 0.0, 0.0, 1, 100);

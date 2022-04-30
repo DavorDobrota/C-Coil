@@ -36,7 +36,7 @@ void benchmarkMutualInductanceGeneral(ComputeMethod computeMethod, int nThreads)
     }
 }
 
-void testMutualInductanceGeneralMTScaling(int maxThreads)
+void benchmarkMutualInductanceGeneralMTScaling(int maxThreads)
 {
     printf("Performance comparison between different numbers of threads:\n");
 

@@ -12,7 +12,6 @@ void benchmarkComputeAll(PrecisionFactor precisionFactor = PrecisionFactor(),
 void benchmarkVariousCoilTypes(int nOps = 100'000, int nThreads = g_default_nThreads);
 
 void benchmarkMutualInductanceGeneral(ComputeMethod computeMethod = CPU_ST, int nThreads = g_default_nThreads);
-void benchmarkMutualInductanceGeneralForZAxis(ComputeMethod computeMethod = CPU_ST, int nThreads = g_default_nThreads);
 void benchmarkMutualInductanceGeneralMTScaling(int maxThreads = g_default_nThreads);
 
 void benchmarkCoilMutualInductanceZAxis(ComputeMethod computeMethod = CPU_ST, int nThreads = g_default_nThreads);

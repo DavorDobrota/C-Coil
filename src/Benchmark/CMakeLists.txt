@@ -1,6 +1,7 @@
 add_library(
         Benchmark OBJECT
 
+        BenchmarkMiscellaneous.cxx
         BenchmarkForce.cxx
         BenchmarkFields.cxx
         BenchmarkMInductanceZAxis.cxx

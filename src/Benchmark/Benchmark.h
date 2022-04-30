@@ -24,8 +24,6 @@ void benchmarkAmpereForceGeneral(ComputeMethod computeMethod = CPU_ST, int nThre
 void benchmarkAmpereForceZAxisMTScaling(int maxThreads = g_default_nThreads);
 void benchmarkAmpereForceGeneralMTScaling(int maxThreads = g_default_nThreads);
 
-void benchmarkMathFunctions();
-
 void benchmarkCoilGroupMTvsMTD(int threadCount = g_default_nThreads, int numPoints = 20'000);
 void benchmarkCoilGroupMTDFields(int threadCount = g_default_nThreads);
 void benchmarkCoilGroupMTDInductanceAndForce(int threadCount = g_default_nThreads);

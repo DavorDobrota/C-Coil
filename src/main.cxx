@@ -2,6 +2,7 @@
 #include <math.h>
 #include <cstdio>
 
+#include "Benchmark.h"
 #include "Coil.h"
 #include "CoilGroup.h"
 #include "Test.h"

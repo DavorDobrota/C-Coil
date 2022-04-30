@@ -1,7 +1,6 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
 #include "ctpl_stl.h"
-#include "Math/CustomMath.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -333,7 +332,7 @@ void Coil::precomputeCosPhi(int numAngularBlocks, int numAngularIncrements, doub
             double incrementPositionFi = blockPositionFi +
                     (angularBlock * 0.5) * Legendre::positionMatrix[numAngularIncrements - 1][incFi];
             int arrPos = indBlockFi * numAngularIncrements + incFi;
-            outputArray[arrPos] = COS(incrementPositionFi);
+            outputArray[arrPos] = std::cos(incrementPositionFi);
         }
     }
 }

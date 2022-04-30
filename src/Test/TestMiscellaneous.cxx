@@ -2,7 +2,6 @@
 #include "Coil.h"
 #include "ComputeMethod.h"
 #include "Tensor.h"
-#include "CustomMath.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>

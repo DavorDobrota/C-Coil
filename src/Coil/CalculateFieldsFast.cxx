@@ -1,6 +1,5 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
-#include "Math/CustomMath.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -73,7 +72,7 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
                     double tempConstE1 = std::sqrt(tempConstD1 * tempConstD1 + 1.0);
                     double tempConstE2 = std::sqrt(tempConstD2 * tempConstD2 + 1.0);
 
-                    double tempConstF = LN((tempConstE1 + tempConstD1) / (tempConstE2 + tempConstD2));
+                    double tempConstF = std::log((tempConstE1 + tempConstD1) / (tempConstE2 + tempConstD2));
 
                     magneticPotential += constant * incrementWeightT * incrementWeightFi * incrementPositionT *
                                          cosinePhi * tempConstF;

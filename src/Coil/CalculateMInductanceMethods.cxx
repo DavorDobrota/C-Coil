@@ -1,6 +1,5 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
-#include "Math/CustomMath.h"
 #include "ThreadPool/ThreadPool.h"
 
 #define _USE_MATH_DEFINES
@@ -181,10 +180,10 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
                                 double tempConstG3 = std::sqrt(tempConstF3 * tempConstF3 + 1.0);
                                 double tempConstG4 = std::sqrt(tempConstF4 * tempConstF4 + 1.0);
 
-                                double tempConstH1 = constZ1 * LN(tempConstF1 + tempConstG1);
-                                double tempConstH2 = constZ2 * LN(tempConstF2 + tempConstG2);
-                                double tempConstH3 = constZ3 * LN(tempConstF3 + tempConstG3);
-                                double tempConstH4 = constZ4 * LN(tempConstF4 + tempConstG4);
+                                double tempConstH1 = constZ1 * std::log(tempConstF1 + tempConstG1);
+                                double tempConstH2 = constZ2 * std::log(tempConstF2 + tempConstG2);
+                                double tempConstH3 = constZ3 * std::log(tempConstF3 + tempConstG3);
+                                double tempConstH4 = constZ4 * std::log(tempConstF4 + tempConstG4);
 
                                 result +=
                                         tempConst * incrementWeightFi * tempConstA * cosinePhi *
@@ -448,7 +447,7 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, Comp
 
                             double tempConstF = length / tempConstD;
                             double tempConstG = std::sqrt(tempConstF * tempConstF + 1.0);
-                            double tempConstH = LN(tempConstF + tempConstG);
+                            double tempConstH = std::log(tempConstF + tempConstG);
 
                             calculatedSelfInductance +=
                                     tempConst * incrementWeightFi *

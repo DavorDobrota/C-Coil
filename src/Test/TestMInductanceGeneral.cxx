@@ -6,13 +6,13 @@
 #include <cstdio>
 
 
-void testMutualInductanceGeneralForZAxis(ComputeMethod computeMethod, int nThreads)
+void testMutualInductanceGeneralForZAxis(ComputeMethod computeMethod, int threadCount)
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
-    primary.setThreadCount(nThreads);
-    secondary.setThreadCount(nThreads);
+    primary.setThreadCount(threadCount);
+    secondary.setThreadCount(threadCount);
     primary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0), 0.0, 0.0);
     secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 1e-10, 0.0, 0.2), 0.0, 0.0);
 

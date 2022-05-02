@@ -18,7 +18,7 @@ vec3::CoordVector3::CoordVector3(CoordinateSystem system, double comp1, double c
             if (comp2 < 0)
             {
                 fprintf(stderr, "CYLINDRICAL: Radius cannot be negative: %.15f\n", comp2);
-                throw "Radius cannot be negative";
+                throw std::logic_error("Radius cannot be negative");
             }
             comp3 = std::fmod(comp3, 2*M_PI);
             if (comp3 < 0)
@@ -28,13 +28,13 @@ vec3::CoordVector3::CoordVector3(CoordinateSystem system, double comp1, double c
             if (comp1 < 0)
             {
                 fprintf(stderr, "SPHERICAL: Radius cannot be negative: %.15f\n", comp1);
-                throw "Radius cannot be negative";
+                throw std::logic_error("Radius cannot be negative");
             }
 
             if (comp2 < 0 || comp2 > M_PI)
             {
                 fprintf(stderr, "SPHERICAL: Theta must be between 0 and PI: %.15f\n", comp2);
-                throw "Theta must be between 0 and PI";
+                throw std::logic_error("Theta must be between 0 and PI");
             }
             comp3 = std::fmod(comp3, 2*M_PI);
             if (comp3 < 0)

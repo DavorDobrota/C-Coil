@@ -1,5 +1,5 @@
-#ifndef GENERAL_COIL_PROGRAM_COMP_H
-#define GENERAL_COIL_PROGRAM_COMP_H
+#ifndef GENERAL_COIL_PROGRAM_COMPARE_H
+#define GENERAL_COIL_PROGRAM_COMPARE_H
 
 #include "Coil.h"
 #include "Benchmark.h"
@@ -24,6 +24,6 @@ void compMInductanceGeneralEdgeCases();
 void compMutualInductanceZAxis();
 void compSelfInductance();
 
-void compCoilGroupMTD(int numCoils = 100, int numPoints = 10'000, int threadCount = g_default_nThreads, bool print = true);
+void compCoilGroupMTD(int coilCount = 100, int pointCount = 10'000, int threadCount = g_defaultThreadCount, bool print = true);
 
-#endif //GENERAL_COIL_PROGRAM_COMP_H
+#endif //GENERAL_COIL_PROGRAM_COMPARE_H

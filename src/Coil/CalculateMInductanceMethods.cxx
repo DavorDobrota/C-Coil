@@ -91,7 +91,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
 
     #if defined(__GNUC__)
         if(numPhiIncrements > 20480)
-            throw "Number of increments too great (the maximum is 20480)";
+            throw std::logic_error("Number of increments too great (the maximum is 20480)");
         double cosPhiPrecomputeArr[numPhiIncrements];
         precomputeCosPhi(
                 inductanceArguments.primaryPrecision.angularBlockCount,
@@ -380,7 +380,7 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, Comp
 
     #if defined(__GNUC__)
         if(numPhiIncrements > 20480)
-            throw "Number of increments too great (the maximum is 20480)";
+            throw std::logic_error("Number of increments too great (the maximum is 20480)");
         double cosPhiPrecomputeArr[numPhiIncrements];
         precomputeCosPhi(
                 inductanceArguments.primaryPrecision.angularBlockCount,

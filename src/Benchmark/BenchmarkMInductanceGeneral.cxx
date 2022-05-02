@@ -7,25 +7,25 @@
 #include <chrono>
 
 
-void benchMInductanceGeneral(ComputeMethod computeMethod, int nThreads)
+void benchMInductanceGeneral(ComputeMethod computeMethod, int threadCount)
 {
     using namespace std::chrono;
 
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
-    primary.setThreadCount(nThreads);
+    primary.setThreadCount(threadCount);
     primary.setPositionAndOrientation();
     secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.2));
 
-    int nOps = 1024;
+    int opCount = 1024;
     double temp;
 
     printf("Expected execution time for one MInductance general case calculation of specified precision\n");
 
     for (int i = 1; i <= 9; ++i)
     {
-        int currentOperations = nOps / (int) pow(2, i);
+        int currentOperations = opCount / (int) pow(2, i);
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
@@ -36,7 +36,7 @@ void benchMInductanceGeneral(ComputeMethod computeMethod, int nThreads)
     }
 }
 
-void benchMInductanceGeneralMTScaling(int maxThreads)
+void benchMInductanceGeneralMTScaling(int maxThreadCount)
 {
     printf("Performance comparison between different numbers of threads:\n");
 
@@ -44,7 +44,7 @@ void benchMInductanceGeneralMTScaling(int maxThreads)
     benchMInductanceGeneral(CPU_ST);
     printf("\n");
 
-    for (int i = 2; i <= maxThreads; ++i)
+    for (int i = 2; i <= maxThreadCount; ++i)
     {
         printf(" -> %2d threads:\n", i);
         benchMInductanceGeneral(CPU_MT, i);

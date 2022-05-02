@@ -6,7 +6,7 @@
 #include <chrono>
 
 
-void benchComputeFieldsST(int nOps)
+void benchComputeFieldsST(int opCount)
 {
     using namespace std::chrono;
 
@@ -21,61 +21,61 @@ void benchComputeFieldsST(int nOps)
 
     PrecisionArguments precision = testCoil.getPrecisionSettings();
 
-    int numOperations = nOps *
+    int numOperations = opCount *
                         precision.thicknessBlockCount * precision.thicknessIncrementCount *
                         precision.lengthBlockCount * precision.lengthIncrementCount *
                         precision.angularBlockCount * precision.angularIncrementCount;
 
     begin_time = high_resolution_clock::now();
-    for (int i = 0; i < nOps; ++i){
+    for (int i = 0; i < opCount; ++i){
         temp1 = testCoil.computeAPotentialAbs(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, i*0.000001));
     }
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("potential A : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 
     begin_time = high_resolution_clock::now();
-    for (int i = 0; i < nOps; ++i){
+    for (int i = 0; i < opCount; ++i){
         temp2 = testCoil.computeBFieldVector(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, i*0.000001));
     }
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("combined B  : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 
     begin_time = high_resolution_clock::now();
-    for (int i = 0; i < nOps; ++i){
+    for (int i = 0; i < opCount; ++i){
         temp3 = testCoil.computeBGradientTensor(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, i*0.000001));
     }
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("gradient G  : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 }
 
-void benchComputeAllFields(PrecisionFactor precisionFactor, int nOps, int nRepeats, int nThreads)
+void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int repeatCount, int threadCount)
 {
     using namespace std::chrono;
 
-    Coil testCoilFast = Coil(0.03, 0.03, 0.12, 3600, precisionFactor, nThreads);
-    Coil testCoilSlow = Coil(0.03, 0.03, 0.0, 30, precisionFactor, nThreads);
+    Coil testCoilFast = Coil(0.03, 0.03, 0.12, 3600, precisionFactor, threadCount);
+    Coil testCoilSlow = Coil(0.03, 0.03, 0.0, 30, precisionFactor, threadCount);
 
     const double radius = 0.1;
 
     PrecisionArguments precisionSlow = testCoilSlow.getPrecisionSettings();
     PrecisionArguments precisionFast = testCoilFast.getPrecisionSettings();
 
-    const long long numOperationsSlow = (long long) nOps *
+    const long long numOperationsSlow = (long long) opCount *
                                         precisionSlow.thicknessBlockCount * precisionSlow.thicknessIncrementCount *
                                         precisionSlow.angularBlockCount * precisionSlow.angularIncrementCount;
 
-    const long long numOperationsFast1 = (long long) nOps *
+    const long long numOperationsFast1 = (long long) opCount *
                                          precisionFast.thicknessBlockCount * precisionFast.thicknessIncrementCount *
                                          precisionFast.angularBlockCount * precisionFast.angularIncrementCount;
 
     const long long numOperationsFast2 = numOperationsFast1 * precisionFast.lengthBlockCount * precisionFast.lengthIncrementCount;
 
-    const long long numOperationsGpu = nOps * 48 * 16 * 16;
+    const long long numOperationsGpu = opCount * 48 * 16 * 16;
 
-    std::vector<vec3::CoordVector3> positionValues(nOps);
+    std::vector<vec3::CoordVector3> positionValues(opCount);
 
-    for (int i = 0; i < nOps; i++)
-        positionValues[i] = vec3::CoordVector3(vec3::CYLINDRICAL, 0.1, i * M_PI / nOps, 0.0);
+    for (int i = 0; i < opCount; i++)
+        positionValues[i] = vec3::CoordVector3(vec3::CYLINDRICAL, 0.1, i * M_PI / opCount, 0.0);
 
     std::vector<double> cpuPotential;
     std::vector<double> gpuPotential;
@@ -93,19 +93,19 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int nOps, int nRepea
     cpuPotential = testCoilSlow.computeAllAPotentialAbs(positionValues, CPU_ST);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A CPU_ST slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
-           1e-6 * numOperationsSlow / interval, 1e-6 * numOperationsSlow / interval, nOps / interval);
+           1e-6 * numOperationsSlow / interval, 1e-6 * numOperationsSlow / interval, opCount / interval);
 
     begin_time = high_resolution_clock::now();
     cpuFieldVectors = testCoilSlow.computeAllBFieldComponents(positionValues, CPU_ST);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("combined  B CPU_ST slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
-           1e-6 * numOperationsSlow / interval, 1e-6 * numOperationsSlow / interval, nOps / interval);
+           1e-6 * numOperationsSlow / interval, 1e-6 * numOperationsSlow / interval, opCount / interval);
 
     begin_time = high_resolution_clock::now();
     cpuGradientMatrices = testCoilSlow.computeAllBGradientTensors(positionValues, CPU_ST);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_ST slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
-           1e-6 * numOperationsSlow / interval, 1e-6 * numOperationsSlow / interval, nOps / interval);
+           1e-6 * numOperationsSlow / interval, 1e-6 * numOperationsSlow / interval, opCount / interval);
 
 
     // ST methods fast - repetitions removed for single core, it is just too slow compared to the rest
@@ -113,84 +113,84 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int nOps, int nRepea
     cpuPotential = testCoilFast.computeAllAPotentialAbs(positionValues, CPU_ST);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A CPU_ST fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
-           1e-6 * numOperationsFast1 / interval, 1e-6 * numOperationsFast2 / interval, nOps / interval);
+           1e-6 * numOperationsFast1 / interval, 1e-6 * numOperationsFast2 / interval, opCount / interval);
 
     begin_time = high_resolution_clock::now();
     cpuFieldVectors = testCoilFast.computeAllBFieldComponents(positionValues, CPU_ST);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("combined  B CPU_ST fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
-           1e-6 * numOperationsFast1 / interval, 1e-6 * numOperationsFast2 / interval, nOps / interval);
+           1e-6 * numOperationsFast1 / interval, 1e-6 * numOperationsFast2 / interval, opCount / interval);
 
     begin_time = high_resolution_clock::now();
     cpuGradientMatrices = testCoilFast.computeAllBGradientTensors(positionValues, CPU_ST);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_ST fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
-           1e-6 * numOperationsFast1 / interval, 1e-6 * numOperationsFast2 / interval, nOps / interval);
+           1e-6 * numOperationsFast1 / interval, 1e-6 * numOperationsFast2 / interval, opCount / interval);
 
     // MT methods slow
     begin_time = high_resolution_clock::now();
-    for (int i = 0; i < nRepeats; i++)
+    for (int i = 0; i < repeatCount; i++)
         cpuPotential = testCoilSlow.computeAllAPotentialAbs(positionValues, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A CPU_MT slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
-           1e-6 * (numOperationsSlow * nRepeats) / interval, 1e-6 * (numOperationsSlow * nRepeats) / interval, (nOps * nRepeats) / interval);
+           1e-6 * (numOperationsSlow * repeatCount) / interval, 1e-6 * (numOperationsSlow * repeatCount) / interval, (opCount * repeatCount) / interval);
 
     begin_time = high_resolution_clock::now();
-    for (int i = 0; i < nRepeats; i++)
+    for (int i = 0; i < repeatCount; i++)
         cpuFieldVectors = testCoilSlow.computeAllBFieldComponents(positionValues, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("combined  B CPU_MT slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
-           1e-6 * (numOperationsSlow * nRepeats) / interval, 1e-6 * (numOperationsSlow * nRepeats) / interval, (nOps * nRepeats) / interval);
+           1e-6 * (numOperationsSlow * repeatCount) / interval, 1e-6 * (numOperationsSlow * repeatCount) / interval, (opCount * repeatCount) / interval);
 
     begin_time = high_resolution_clock::now();
-    for (int i = 0; i < nRepeats; i++)
+    for (int i = 0; i < repeatCount; i++)
         cpuGradientMatrices = testCoilSlow.computeAllBGradientTensors(positionValues, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_MT slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
-           1e-6 * (numOperationsSlow * nRepeats) / interval, 1e-6 * (numOperationsSlow * nRepeats) / interval, (nOps * nRepeats) / interval);
+           1e-6 * (numOperationsSlow * repeatCount) / interval, 1e-6 * (numOperationsSlow * repeatCount) / interval, (opCount * repeatCount) / interval);
 
     // MT methods fast
     begin_time = high_resolution_clock::now();
-    for (int i = 0; i < nRepeats; i++)
+    for (int i = 0; i < repeatCount; i++)
         cpuPotential = testCoilFast.computeAllAPotentialAbs(positionValues, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A CPU_MT fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
-           1e-6 * (numOperationsFast1 * nRepeats) / interval, 1e-6 * (numOperationsFast2 * nRepeats) / interval, (nOps * nRepeats) / interval);
+           1e-6 * (numOperationsFast1 * repeatCount) / interval, 1e-6 * (numOperationsFast2 * repeatCount) / interval, (opCount * repeatCount) / interval);
 
     begin_time = high_resolution_clock::now();
-    for (int i = 0; i < nRepeats; i++)
+    for (int i = 0; i < repeatCount; i++)
         cpuFieldVectors = testCoilFast.computeAllBFieldComponents(positionValues, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("combined  B CPU_MT fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
-           1e-6 * (numOperationsFast1 * nRepeats) / interval, 1e-6 * (numOperationsFast2 * nRepeats) / interval, (nOps * nRepeats) / interval);
+           1e-6 * (numOperationsFast1 * repeatCount) / interval, 1e-6 * (numOperationsFast2 * repeatCount) / interval, (opCount * repeatCount) / interval);
 
     begin_time = high_resolution_clock::now();
-    for (int i = 0; i < nRepeats; i++)
+    for (int i = 0; i < repeatCount; i++)
         cpuGradientMatrices = testCoilFast.computeAllBGradientTensors(positionValues, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_MT fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
-           1e-6 * (numOperationsFast1 * nRepeats) / interval, 1e-6 * (numOperationsFast2 * nRepeats) / interval, (nOps * nRepeats) / interval);
+           1e-6 * (numOperationsFast1 * repeatCount) / interval, 1e-6 * (numOperationsFast2 * repeatCount) / interval, (opCount * repeatCount) / interval);
 
     // GPU methods
     begin_time = high_resolution_clock::now();
-    for (int i = 0; i < nRepeats; i++)
+    for (int i = 0; i < repeatCount; i++)
         gpuPotential = testCoilFast.computeAllAPotentialAbs(positionValues, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A GPU : %.1f MInc/s | %.0f points/s\n",
-           1e-6 * (numOperationsGpu * nRepeats) / interval, (nOps * nRepeats) / interval);
+           1e-6 * (numOperationsGpu * repeatCount) / interval, (opCount * repeatCount) / interval);
 
 
     begin_time = high_resolution_clock::now();
-    for (int i = 0; i < nRepeats; i++)
+    for (int i = 0; i < repeatCount; i++)
         gpuFieldVectors = testCoilFast.computeAllBFieldComponents(positionValues, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("combined  B GPU : %.1f MInc/s | %.0f points/s\n",
-           1e-6 * (numOperationsGpu * nRepeats) / interval, (nOps * nRepeats) / interval);
+           1e-6 * (numOperationsGpu * repeatCount) / interval, (opCount * repeatCount) / interval);
 
     printf("\n");
 }
 
-void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
+void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
 {
     using namespace std::chrono;
 
@@ -211,10 +211,10 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
 
     high_resolution_clock::time_point beginTime;
     double interval, incrementsPerSec, pointsPerSec;
-    std::vector<vec3::CoordVector3> positionValues(nOps);
+    std::vector<vec3::CoordVector3> positionValues(opCount);
 
-    for (int i = 0; i < nOps; ++i)
-        positionValues[i] = vec3::CoordVector3(vec3::SPHERICAL, 1.0, M_PI * i / nOps, 0.0);
+    for (int i = 0; i < opCount; ++i)
+        positionValues[i] = vec3::CoordVector3(vec3::SPHERICAL, 1.0, M_PI * i / opCount, 0.0);
 
     std::vector<vec3::FieldVector3> potentialArr;
     std::vector<vec3::FieldVector3> fieldArr;
@@ -227,27 +227,27 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(loop, PrecisionFactor(i));
         int numIterations = precision.angularBlockCount * precision.angularIncrementCount;
-        long long totalIterations = (long long) nOps * numIterations;
+        long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
         potentialArr = loop.computeAllAPotentialComponents(positionValues, precision, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
         incrementsPerSec = totalIterations / interval;
-        pointsPerSec = nOps / interval;
+        pointsPerSec = opCount / interval;
         printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
         fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
 
-    for (int t = 2; t <= nThreads; ++t)
+    for (int t = 2; t <= threadCount; ++t)
     {
         for (int i = 1; i <= 8; ++i)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(loop, PrecisionFactor(i));
             int numIterations = precision.angularBlockCount * precision.angularIncrementCount;
-            long long totalIterations = (long long) nOps * numIterations;
+            long long totalIterations = (long long) opCount * numIterations;
             loop.setThreadCount(t);
 
             beginTime = high_resolution_clock::now();
@@ -255,7 +255,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
             incrementsPerSec = totalIterations / interval;
-            pointsPerSec = nOps / interval;
+            pointsPerSec = opCount / interval;
             printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
             fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
         }
@@ -270,27 +270,27 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(loop, PrecisionFactor(i));
         int numIterations = precision.angularBlockCount * precision.angularIncrementCount;
-        long long totalIterations = (long long) nOps * numIterations;
+        long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
         fieldArr = loop.computeAllBFieldComponents(positionValues, precision, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
         incrementsPerSec = totalIterations / interval;
-        pointsPerSec = nOps / interval;
+        pointsPerSec = opCount / interval;
         printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
         fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
 
-    for (int t = 2; t <= nThreads; ++t)
+    for (int t = 2; t <= threadCount; ++t)
     {
         for (int i = 1; i <= 8; ++i)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(loop, PrecisionFactor(i));
             int numIterations = precision.angularBlockCount * precision.angularIncrementCount;
-            long long totalIterations = (long long) nOps * numIterations;
+            long long totalIterations = (long long) opCount * numIterations;
             loop.setThreadCount(t);
 
             beginTime = high_resolution_clock::now();
@@ -298,7 +298,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
             incrementsPerSec = totalIterations / interval;
-            pointsPerSec = nOps / interval;
+            pointsPerSec = opCount / interval;
             printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
             fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
         }
@@ -313,27 +313,27 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(loop, PrecisionFactor(i));
         int numIterations = precision.angularBlockCount * precision.angularIncrementCount;
-        long long totalIterations = (long long) nOps * numIterations;
+        long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
         gradientArr = loop.computeAllBGradientTensors(positionValues, precision, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
         incrementsPerSec = totalIterations / interval;
-        pointsPerSec = nOps / interval;
+        pointsPerSec = opCount / interval;
         printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
         fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
 
-    for (int t = 2; t <= nThreads; ++t)
+    for (int t = 2; t <= threadCount; ++t)
     {
         for (int i = 1; i <= 8; ++i)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(loop, PrecisionFactor(i));
             int numIterations = precision.angularBlockCount * precision.angularIncrementCount;
-            long long totalIterations = (long long) nOps * numIterations;
+            long long totalIterations = (long long) opCount * numIterations;
             loop.setThreadCount(t);
 
             beginTime = high_resolution_clock::now();
@@ -341,7 +341,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
             incrementsPerSec = totalIterations / interval;
-            pointsPerSec = nOps / interval;
+            pointsPerSec = opCount / interval;
             printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
             fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
         }
@@ -358,21 +358,21 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
         int numIterations =
                 precision.angularBlockCount * precision.angularIncrementCount
                 * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-        long long totalIterations = (long long) nOps * numIterations;
+        long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
         potentialArr = pancake.computeAllAPotentialComponents(positionValues, precision, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
         incrementsPerSec = totalIterations / interval;
-        pointsPerSec = nOps / interval;
+        pointsPerSec = opCount / interval;
         printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
         fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
 
-    for (int t = 2; t <= nThreads; ++t)
+    for (int t = 2; t <= threadCount; ++t)
     {
         for (int i = 1; i <= 8; ++i)
         {
@@ -380,7 +380,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             int numIterations =
                     precision.angularBlockCount * precision.angularIncrementCount
                     * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-            long long totalIterations = (long long) nOps * numIterations;
+            long long totalIterations = (long long) opCount * numIterations;
             pancake.setThreadCount(t);
 
             beginTime = high_resolution_clock::now();
@@ -388,7 +388,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
             incrementsPerSec = totalIterations/ interval;
-            pointsPerSec = nOps / interval;
+            pointsPerSec = opCount / interval;
             printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
             fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
         }
@@ -405,21 +405,21 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
         int numIterations =
                 precision.angularBlockCount * precision.angularIncrementCount
                 * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-        long long totalIterations = (long long) nOps * numIterations;
+        long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
         fieldArr = pancake.computeAllBFieldComponents(positionValues, precision, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
         incrementsPerSec = totalIterations / interval;
-        pointsPerSec = nOps / interval;
+        pointsPerSec = opCount / interval;
         printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
         fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
 
-    for (int t = 2; t <= nThreads; ++t)
+    for (int t = 2; t <= threadCount; ++t)
     {
         for (int i = 1; i <= 8; ++i)
         {
@@ -427,7 +427,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             int numIterations =
                     precision.angularBlockCount * precision.angularIncrementCount
                     * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-            long long totalIterations = (long long) nOps * numIterations;
+            long long totalIterations = (long long) opCount * numIterations;
             pancake.setThreadCount(t);
 
             beginTime = high_resolution_clock::now();
@@ -435,7 +435,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
             incrementsPerSec = totalIterations / interval;
-            pointsPerSec = nOps / interval;
+            pointsPerSec = opCount / interval;
             printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
             fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
         }
@@ -452,21 +452,21 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
         int numIterations =
                 precision.angularBlockCount * precision.angularIncrementCount
                 * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-        long long totalIterations = (long long) nOps * numIterations;
+        long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
         gradientArr = pancake.computeAllBGradientTensors(positionValues, precision, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
         incrementsPerSec = totalIterations / interval;
-        pointsPerSec = nOps / interval;
+        pointsPerSec = opCount / interval;
         printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
         fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
 
-    for (int t = 2; t <= nThreads; ++t)
+    for (int t = 2; t <= threadCount; ++t)
     {
         for (int i = 1; i <= 8; ++i)
         {
@@ -474,7 +474,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             int numIterations =
                     precision.angularBlockCount * precision.angularIncrementCount
                     * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-            long long totalIterations = (long long) nOps * numIterations;
+            long long totalIterations = (long long) opCount * numIterations;
             pancake.setThreadCount(t);
 
             beginTime = high_resolution_clock::now();
@@ -482,7 +482,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
             incrementsPerSec = totalIterations / interval;
-            pointsPerSec = nOps / interval;
+            pointsPerSec = opCount / interval;
             printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
             fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
         }
@@ -499,21 +499,21 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
         int numIterations =
                 precision.angularBlockCount * precision.angularIncrementCount
                 * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-        long long totalIterations = (long long) nOps * numIterations;
+        long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
         potentialArr = thin.computeAllAPotentialComponents(positionValues, precision, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
         incrementsPerSec = totalIterations / interval;
-        pointsPerSec = nOps / interval;
+        pointsPerSec = opCount / interval;
         printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
         fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
 
-    for (int t = 2; t <= nThreads; ++t)
+    for (int t = 2; t <= threadCount; ++t)
     {
         for (int i = 1; i <= 8; ++i)
         {
@@ -521,7 +521,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             int numIterations =
                     precision.angularBlockCount * precision.angularIncrementCount
                     * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-            long long totalIterations = (long long) nOps * numIterations;
+            long long totalIterations = (long long) opCount * numIterations;
             thin.setThreadCount(t);
 
             beginTime = high_resolution_clock::now();
@@ -529,7 +529,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
             incrementsPerSec = totalIterations/ interval;
-            pointsPerSec = nOps / interval;
+            pointsPerSec = opCount / interval;
             printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
             fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
         }
@@ -546,21 +546,21 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
         int numIterations =
                 precision.angularBlockCount * precision.angularIncrementCount
                 * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-        long long totalIterations = (long long) nOps * numIterations;
+        long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
         fieldArr = thin.computeAllBFieldComponents(positionValues, precision, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
         incrementsPerSec = totalIterations / interval;
-        pointsPerSec = nOps / interval;
+        pointsPerSec = opCount / interval;
         printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
         fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
 
-    for (int t = 2; t <= nThreads; ++t)
+    for (int t = 2; t <= threadCount; ++t)
     {
         for (int i = 1; i <= 8; ++i)
         {
@@ -568,7 +568,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             int numIterations =
                     precision.angularBlockCount * precision.angularIncrementCount
                     * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-            long long totalIterations = (long long) nOps * numIterations;
+            long long totalIterations = (long long) opCount * numIterations;
             thin.setThreadCount(t);
 
             beginTime = high_resolution_clock::now();
@@ -576,7 +576,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
             incrementsPerSec = totalIterations / interval;
-            pointsPerSec = nOps / interval;
+            pointsPerSec = opCount / interval;
             printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
             fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
         }
@@ -593,21 +593,21 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
         int numIterations =
                 precision.angularBlockCount * precision.angularIncrementCount
                 * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-        long long totalIterations = (long long) nOps * numIterations;
+        long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
         gradientArr = thin.computeAllBGradientTensors(positionValues, precision, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
         incrementsPerSec = totalIterations / interval;
-        pointsPerSec = nOps / interval;
+        pointsPerSec = opCount / interval;
         printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
         fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
 
-    for (int t = 2; t <= nThreads; ++t)
+    for (int t = 2; t <= threadCount; ++t)
     {
         for (int i = 1; i <= 8; ++i)
         {
@@ -615,7 +615,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             int numIterations =
                     precision.angularBlockCount * precision.angularIncrementCount
                     * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-            long long totalIterations = (long long) nOps * numIterations;
+            long long totalIterations = (long long) opCount * numIterations;
             thin.setThreadCount(t);
 
             beginTime = high_resolution_clock::now();
@@ -623,7 +623,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
             incrementsPerSec = totalIterations / interval;
-            pointsPerSec = nOps / interval;
+            pointsPerSec = opCount / interval;
             printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
             fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
         }
@@ -640,21 +640,21 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
         int numIterations =
                 precision.angularBlockCount * precision.angularIncrementCount
                 * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-        long long totalIterations = (long long) nOps * numIterations;
+        long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
         potentialArr = thick.computeAllAPotentialComponents(positionValues, precision, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
         incrementsPerSec = totalIterations / interval;
-        pointsPerSec = nOps / interval;
+        pointsPerSec = opCount / interval;
         printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
         fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
 
-    for (int t = 2; t <= nThreads; ++t)
+    for (int t = 2; t <= threadCount; ++t)
     {
         for (int i = 1; i <= 8; ++i)
         {
@@ -662,7 +662,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             int numIterations =
                     precision.angularBlockCount * precision.angularIncrementCount
                     * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-            long long totalIterations = (long long) nOps * numIterations;
+            long long totalIterations = (long long) opCount * numIterations;
             thick.setThreadCount(t);
 
             beginTime = high_resolution_clock::now();
@@ -670,7 +670,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
             incrementsPerSec = totalIterations/ interval;
-            pointsPerSec = nOps / interval;
+            pointsPerSec = opCount / interval;
             printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
             fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
         }
@@ -687,21 +687,21 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
         int numIterations =
                 precision.angularBlockCount * precision.angularIncrementCount
                 * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-        long long totalIterations = (long long) nOps * numIterations;
+        long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
         fieldArr = thick.computeAllBFieldComponents(positionValues, precision, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
         incrementsPerSec = totalIterations / interval;
-        pointsPerSec = nOps / interval;
+        pointsPerSec = opCount / interval;
         printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
         fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
 
-    for (int t = 2; t <= nThreads; ++t)
+    for (int t = 2; t <= threadCount; ++t)
     {
         for (int i = 1; i <= 8; ++i)
         {
@@ -709,7 +709,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             int numIterations =
                     precision.angularBlockCount * precision.angularIncrementCount
                     * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-            long long totalIterations = (long long) nOps * numIterations;
+            long long totalIterations = (long long) opCount * numIterations;
             thick.setThreadCount(t);
 
             beginTime = high_resolution_clock::now();
@@ -717,7 +717,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
             incrementsPerSec = totalIterations / interval;
-            pointsPerSec = nOps / interval;
+            pointsPerSec = opCount / interval;
             printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
             fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
         }
@@ -734,21 +734,21 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
         int numIterations =
                 precision.angularBlockCount * precision.angularIncrementCount
                 * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-        long long totalIterations = (long long) nOps * numIterations;
+        long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
         gradientArr = thick.computeAllBGradientTensors(positionValues, precision, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
         incrementsPerSec = totalIterations / interval;
-        pointsPerSec = nOps / interval;
+        pointsPerSec = opCount / interval;
         printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
         fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
 
-    for (int t = 2; t <= nThreads; ++t)
+    for (int t = 2; t <= threadCount; ++t)
     {
         for (int i = 1; i <= 8; ++i)
         {
@@ -756,7 +756,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             int numIterations =
                     precision.angularBlockCount * precision.angularIncrementCount
                     * precision.thicknessBlockCount * precision.thicknessIncrementCount;
-            long long totalIterations = (long long) nOps * numIterations;
+            long long totalIterations = (long long) opCount * numIterations;
             thick.setThreadCount(t);
 
             beginTime = high_resolution_clock::now();
@@ -764,7 +764,7 @@ void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
             interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
 
             incrementsPerSec = totalIterations / interval;
-            pointsPerSec = nOps / interval;
+            pointsPerSec = opCount / interval;
             printf("%.1f MInc/s | %.0f kPoints/s\n", 1e-6 * incrementsPerSec, 1e-3 * pointsPerSec);
             fprintf(output, "%.3f\t", 1e-6 * incrementsPerSec);
         }

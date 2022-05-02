@@ -21,9 +21,11 @@ header_include_dirs = [
     "extern/pybind11/include/",
     "extern/HardwareAcceleration/",
     "src/",
+    "src/Benchmark/",
     "src/Coil/",
     "src/CoilData/",
     "src/CoilGroup/",
+    "src/Compare/",
     "src/LegendreMatrix/",
     "src/Math/",
     "src/Tensor/",
@@ -33,9 +35,11 @@ header_include_dirs = [
 
 sources = sorted([
     *glob("src/*.cxx"),
+    *glob("src/Benchmark/*.cxx"),
     *glob("src/Coil/*.cxx"),
     *glob("src/CoilData/*.cxx"),
     *glob("src/CoilGroup/*.cxx"),
+    *glob("src/Compare/*.cxx"),
     *glob("src/LegendreMatrix/*.cxx"),
     *glob("src/Math/*.cxx"),
     *glob("src/Tensor/*.cxx"),

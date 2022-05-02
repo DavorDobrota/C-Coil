@@ -7,4 +7,6 @@ PYBIND11_MODULE(coil_evolution, m)
     initCoil(m);
     initCoilData(m);
     initCoilGroup(m);
+    initBenchmark(m);
+    initCompare(m);
 }

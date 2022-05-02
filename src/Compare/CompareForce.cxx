@@ -1,4 +1,4 @@
-#include "Comp.h"
+#include "Compare.h"
 #include "Coil.h"
 #include "CoilGroup.h"
 

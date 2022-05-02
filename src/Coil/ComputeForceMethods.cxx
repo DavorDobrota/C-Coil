@@ -130,7 +130,7 @@ Coil::computeAllAmpereForceArrangements(Coil primary, Coil secondary,
     else
     {
         fprintf(stderr, "Array sizes do not match!\n");
-        throw "Array sizes do not match";
+        throw std::logic_error("Array sizes do not match");
     }
 
     return outputForcesAndTorques;

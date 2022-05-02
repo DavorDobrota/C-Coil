@@ -23,7 +23,7 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
 
     #if defined(__GNUC__)
         if(numPhiIncrements > 20480)
-            throw "Number of increments too great (the maximum is 20480)";
+            throw std::logic_error("Number of increments too great (the maximum is 20480)");
         double cosPhiPrecomputeArr[numPhiIncrements];
         precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
     #else
@@ -96,7 +96,7 @@ std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar,
 
     #if defined(__GNUC__)
         if(numPhiIncrements > 20480)
-            throw "Number of increments too great (the maximum is 20480)";
+            throw std::logic_error("Number of increments too great (the maximum is 20480)");
         double cosPhiPrecomputeArr[numPhiIncrements];
         precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
     #else
@@ -174,7 +174,7 @@ std::vector<double> Coil::calculateBGradientFast(double zAxis, double rPolar, co
 
     #if defined(__GNUC__)
         if(numPhiIncrements > 20480)
-            throw "Number of increments too great (the maximum is 20480)";
+            throw std::logic_error("Number of increments too great (the maximum is 20480)");
         double cosPhiPrecomputeArr[numPhiIncrements];
         precomputeCosPhi(usedPrecision.angularBlockCount, usedPrecision.angularIncrementCount, cosPhiPrecomputeArr);
     #else

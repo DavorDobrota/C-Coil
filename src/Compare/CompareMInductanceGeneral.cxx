@@ -1,4 +1,4 @@
-#include "Comp.h"
+#include "Compare.h"
 #include "Coil.h"
 
 #define _USE_MATH_DEFINES

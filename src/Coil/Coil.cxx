@@ -297,7 +297,7 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, Comput
     if (coilType == CoilType::FILAMENT)
     {
         fprintf(stderr, "ERROR: The integral of a filament is divergent, try a thin rectangular coil\n");
-        throw "Coil loop calculation not supported";
+        throw std::logic_error("Coil loop calculation not supported");
     }
     // centering the coil at (0, 0, 0) and setting angles to 0 improves the accuracy by leveraging the z-axis formula
     vec3::CoordVector3 tempPosition = getPositionVector();

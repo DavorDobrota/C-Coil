@@ -7,25 +7,25 @@
 #include <chrono>
 
 
-void benchMInductanceZAxis(ComputeMethod computeMethod, int nThreads)
+void benchMInductanceZAxis(ComputeMethod computeMethod, int threadCount)
 {
     using namespace std::chrono;
 
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
-    primary.setThreadCount(nThreads);
+    primary.setThreadCount(threadCount);
     primary.setPositionAndOrientation();
     secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.2));
 
-    int nOps = 8192;
+    int opCount = 8192;
     double temp;
 
     printf("Expected execution time for one MInductance z-axis calculation of specified precision\n");
 
     for (int i = 1; i <= 9; ++i)
     {
-        int currentOperations = nOps / (int) pow(2, i);
+        int currentOperations = opCount / (int) pow(2, i);
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
@@ -35,7 +35,7 @@ void benchMInductanceZAxis(ComputeMethod computeMethod, int nThreads)
     }
 }
 
-void benchMInductanceZAxisMTScaling(int maxThreads)
+void benchMInductanceZAxisMTScaling(int maxThreadCount)
 {
     printf("Performance comparison between different numbers of threads:\n");
 
@@ -43,7 +43,7 @@ void benchMInductanceZAxisMTScaling(int maxThreads)
     benchMInductanceZAxis(CPU_ST);
     printf("\n");
 
-    for (int i = 2; i <= maxThreads; ++i)
+    for (int i = 2; i <= maxThreadCount; ++i)
     {
         printf(" -> %2d threads:\n", i);
         benchMInductanceZAxis(CPU_MT, i);
@@ -58,11 +58,11 @@ void benchSelfInductance()
     Coil coil = Coil(0.1, 0.1, 0.1, 10000);
     double temp;
 
-    int nOps = 131'072;
+    int opCount = 131'072;
 
     for (int i = 1; i <= 15; ++i)
     {
-        int currentOperations = nOps / (int) pow(2, i);
+        int currentOperations = opCount / (int) pow(2, i);
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)

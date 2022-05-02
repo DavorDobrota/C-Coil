@@ -2,7 +2,7 @@
 #include "Coil.h"
 #include "ComputeMethod.h"
 #include "Tensor.h"
-#include "Test.h"
+#include "Comp.h"
 #include "CoilGroup.h"
 
 #define _USE_MATH_DEFINES

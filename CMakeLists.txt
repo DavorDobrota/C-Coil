@@ -39,6 +39,7 @@ list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Benchmark")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilData")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Comp")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/LegendreMatrix")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/ThreadPool")
@@ -49,6 +50,9 @@ list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/ThreadPool")
 #######################################
 add_subdirectory(src/Benchmark)
 list(APPEND LIBS "$<TARGET_OBJECTS:Benchmark>")
+
+add_subdirectory(src/Comp)
+list(APPEND LIBS "$<TARGET_OBJECTS:Comp>")
 
 add_subdirectory(src/Test)
 list(APPEND LIBS "$<TARGET_OBJECTS:Test>")

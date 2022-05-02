@@ -2,13 +2,10 @@ add_library(
         Test OBJECT
 
         TestMiscellaneous.cxx
-        MInductanceGeneralTestCases.cxx
         TestMInductanceGeneral.cxx
-        ForceTestCases.cxx
         TestForce.cxx
         TestMInductanceZAxis.cxx
-        TestArgumentGeneration.cxx
-        TestMTD.cxx)
+        TestArgumentGeneration.cxx)
 
 target_compile_options(Test PRIVATE -fpic)
 

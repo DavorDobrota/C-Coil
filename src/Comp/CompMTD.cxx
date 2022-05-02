@@ -1,4 +1,4 @@
-#include "Test.h"
+#include "Comp.h"
 #include "Coil.h"
 #include "ComputeMethod.h"
 #include "Tensor.h"

@@ -31,7 +31,7 @@ void testNewCoilParameters()
     printf("%.25f %.25f\n", vector.z, testCoil1.computeBFieldX(positionVector));
 }
 
-void testMethodPrecisionCompareCPUvsGPU()
+void compMethodPrecisionCPUvsGPU()
 {
     Coil testCoil = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(6.0), 12);
 
@@ -66,7 +66,7 @@ void testMethodPrecisionCompareCPUvsGPU()
     }
 }
 
-void testCoilMutualInductanceForSpecialCase()
+void compMInductanceForSpecialCase()
 {
 	Coil primary = Coil(0.071335, 0.01397, 0.142748, 1142);
 	Coil secondary = Coil(0.096945, 0.041529, 0.02413, 516);

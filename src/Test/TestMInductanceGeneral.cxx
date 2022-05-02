@@ -51,7 +51,7 @@ void testMutualInductanceGeneralForZAxis(ComputeMethod computeMethod, int nThrea
     fclose(output);
 }
 
-void testMutualInductanceGeneralArgumentGeneration()
+void testMInductanceGeneralArgumentGeneration()
 {
     Coil coil1 = Coil(0.05, 0.1, 0.1, 100);
     Coil coil2 = Coil(0.05, 0.1, 0.0, 10);
@@ -81,7 +81,7 @@ void testMutualInductanceGeneralArgumentGeneration()
     }
 }
 
-void testMutualInductanceGeneralGraphs()
+void compMInductanceGeneralGraphs()
 {
     FILE *output = fopen("output.txt", "w");
 
@@ -163,7 +163,7 @@ void testMutualInductanceGeneralGraphs()
     fclose(output);
 }
 
-void testMutualInductanceGeneralEdgeCases()
+void compMInductanceGeneralEdgeCases()
 {
     Coil coil1 = Coil(0.03, 0.12, 0.12, 3600);
     Coil coil2 = Coil(0.03, 0.12, 0.12, 3600);

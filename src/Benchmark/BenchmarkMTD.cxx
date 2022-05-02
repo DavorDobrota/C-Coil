@@ -12,7 +12,7 @@
 #include <chrono>
 
 
-void benchmarkCoilGroupMTvsMTD(int threadCount, int numPoints)
+void benchCoilGroupMTvsMTD(int threadCount, int numPoints)
 {
     using namespace std::chrono;
 
@@ -23,17 +23,17 @@ void benchmarkCoilGroupMTvsMTD(int threadCount, int numPoints)
     int coilCount2 = 8 * threadCount;
 
     begin_time = high_resolution_clock::now();
-    testCoilGroupMTD(coilCount1, numPoints, threadCount, false);
+    compCoilGroupMTD(coilCount1, numPoints, threadCount, false);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("MT perf  : %.0f kPoints/s\n", 1e-3 * coilCount1 * numPoints / interval);
 
     begin_time = high_resolution_clock::now();
-    testCoilGroupMTD(coilCount2, numPoints, threadCount, false);
+    compCoilGroupMTD(coilCount2, numPoints, threadCount, false);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("MTD perf : %.0f kPoints/s", 1e-3 * coilCount2 * numPoints / interval);
 }
 
-void benchmarkCoilGroupMTDFields(int threadCount)
+void benchCoilGroupComputeAllFieldsMTD(int threadCount)
 {
     using namespace std::chrono;
 
@@ -82,7 +82,7 @@ void benchmarkCoilGroupMTDFields(int threadCount)
     printf("\n");
 }
 
-void benchmarkCoilGroupMTDInductanceAndForce(int threadCount)
+void benchCoilGroupMInductanceAndForceMTD(int threadCount)
 {
     using namespace std::chrono;
 
@@ -129,7 +129,7 @@ void benchmarkCoilGroupMTDInductanceAndForce(int threadCount)
     printf("MTD perf  : %.0f coils/s\n", numCoils / interval);
 }
 
-void benchmarkMInductanceAndForceComputeAll(PrecisionFactor precisionFactor, int threadCount)
+void benchMInductanceAndForceComputeAll(PrecisionFactor precisionFactor, int threadCount)
 {
     using namespace std::chrono;
 

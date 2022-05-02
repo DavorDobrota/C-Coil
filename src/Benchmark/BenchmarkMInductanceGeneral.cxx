@@ -7,7 +7,7 @@
 #include <chrono>
 
 
-void benchmarkMutualInductanceGeneral(ComputeMethod computeMethod, int nThreads)
+void benchMInductanceGeneral(ComputeMethod computeMethod, int nThreads)
 {
     using namespace std::chrono;
 
@@ -36,18 +36,18 @@ void benchmarkMutualInductanceGeneral(ComputeMethod computeMethod, int nThreads)
     }
 }
 
-void benchmarkMutualInductanceGeneralMTScaling(int maxThreads)
+void benchMInductanceGeneralMTScaling(int maxThreads)
 {
     printf("Performance comparison between different numbers of threads:\n");
 
     printf(" -> single thread:\n");
-    benchmarkMutualInductanceGeneral(CPU_ST);
+    benchMInductanceGeneral(CPU_ST);
     printf("\n");
 
     for (int i = 2; i <= maxThreads; ++i)
     {
         printf(" -> %2d threads:\n", i);
-        benchmarkMutualInductanceGeneral(CPU_MT, i);
+        benchMInductanceGeneral(CPU_MT, i);
         printf("\n");
     }
 }

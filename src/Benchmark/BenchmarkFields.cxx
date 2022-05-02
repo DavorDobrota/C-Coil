@@ -6,7 +6,7 @@
 #include <chrono>
 
 
-void benchmarkCPU_ST(int nOps)
+void benchComputeFieldsST(int nOps)
 {
     using namespace std::chrono;
 
@@ -48,7 +48,7 @@ void benchmarkCPU_ST(int nOps)
     printf("gradient G  : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 }
 
-void benchmarkComputeAll(PrecisionFactor precisionFactor, int nOps, int nRepeats, int nThreads)
+void benchComputeAllFields(PrecisionFactor precisionFactor, int nOps, int nRepeats, int nThreads)
 {
     using namespace std::chrono;
 
@@ -190,7 +190,7 @@ void benchmarkComputeAll(PrecisionFactor precisionFactor, int nOps, int nRepeats
     printf("\n");
 }
 
-void benchmarkVariousCoilTypes(int nOps, int nThreads)
+void benchComputeAllFieldsEveryCoilType(int nOps, int nThreads)
 {
     using namespace std::chrono;
 

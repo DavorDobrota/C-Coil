@@ -6,7 +6,7 @@
 #include <cstdio>
 
 
-void testMutualInductanceZAxis()
+void compMutualInductanceZAxis()
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
@@ -55,7 +55,7 @@ void testMutualInductanceZAxis()
     fclose(output);
 }
 
-void testMutualInductanceZAxisArgumentGeneration()
+void testMInductanceZAxisArgumentGeneration()
 {
     Coil coil1 = Coil(0.05, 0.1, 0.1, 100);
     Coil coil2 = Coil(0.05, 0.1, 0.0, 10);
@@ -85,7 +85,7 @@ void testMutualInductanceZAxisArgumentGeneration()
     }
 }
 
-void testSelfInductance()
+void compSelfInductance()
 {
     Coil coil1 = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(), 12);
     Coil coil2 = Coil(0.03, 0.0, 0.12, 120);

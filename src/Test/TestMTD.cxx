@@ -10,7 +10,7 @@
 #include <vector>
 
 
-void testCoilGroupMTD(int numCoils, int numPoints, int threadCount, bool print)
+void compCoilGroupMTD(int numCoils, int numPoints, int threadCount, bool print)
 {
     double torusRadius = 1.0;
 

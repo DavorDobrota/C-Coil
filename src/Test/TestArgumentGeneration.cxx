@@ -4,7 +4,7 @@
 #include <cstdio>
 
 
-void testMutualInductanceZAxisDifferentGeometries()
+void testMInductanceZAxisDifferentGeometries()
 {
     vec3::CoordVector3 defaultVec = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.2);
 
@@ -91,7 +91,7 @@ void testMutualInductanceZAxisDifferentGeometries()
     printf("\n");
 }
 
-void testMutualInductanceGeneralDifferentGeometries()
+void testMInductanceGeneralDifferentGeometries()
 {
     vec3::CoordVector3 defaultVec = vec3::CoordVector3(vec3::CARTESIAN, 1e-8, 0.0, 0.2);
 

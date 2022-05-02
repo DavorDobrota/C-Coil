@@ -6,37 +6,37 @@
 
 
 void testNewCoilParameters();
-void testMethodPrecisionCompareCPUvsGPU();
-void testCoilMutualInductanceForSpecialCase();
+void compMethodPrecisionCPUvsGPU();
+void compMInductanceForSpecialCase();
 void testVector3();
 void testCoilPositionAndRotation();
 
-void testCoilGroupMTD(int numCoils = 100, int numPoints = 10'000, int threadCount = 8, bool print = true);
+void compCoilGroupMTD(int numCoils = 100, int numPoints = 10'000, int threadCount = 8, bool print = true);
 
-void testMutualInductanceZAxis();
-void testMutualInductanceZAxisArgumentGeneration();
-void testMutualInductanceZAxisDifferentGeometries();
-void testSelfInductance();
+void compMutualInductanceZAxis();
+void testMInductanceZAxisArgumentGeneration();
+void testMInductanceZAxisDifferentGeometries();
+void compSelfInductance();
 
-void testMutualInductanceGeneralArgumentGeneration();
-void testMutualInductanceGeneralDifferentGeometries();
-void testMutualInductanceGeneralGraphs();
-void testMutualInductanceGeneralEdgeCases();
+void testMInductanceGeneralArgumentGeneration();
+void testMInductanceGeneralDifferentGeometries();
+void compMInductanceGeneralGraphs();
+void compMInductanceGeneralEdgeCases();
 
-void testMutualInductanceGeneralMisalignedCoils();
-void testMutualInductanceGeneralParallelAxes();
-void testMutualInductanceGeneralConway();
+void compMInductanceGeneralMisalignedCoils();
+void compMInductanceGeneralParallelAxes();
+void compMInductanceGeneralCase();
 
-void testAmpereForceZAxis();
+void compAmpereForceZAxis();
 
 void testAmpereForceGeneralForZAxis();
 void testGradientTensor();
-void testForceOnDipole();
+void compForceOnDipoleVsAmpereForce();
 
-void testAmpereForceForFilamentsZAxis();
-void testAmpereForceGeneralCase();
-void testAmpereForceThinCoils();
-void testAmpereForceFilamentsGeneral();
+void compAmpereForceFilamentsZAxis();
+void compAmpereForceThinCoilsZAxis();
+void compAmpereForceFilamentsGeneral();
+void compAmpereForceThickCoilsGeneral();
 
 
 #endif //GENERAL_COIL_PROGRAM_TEST_H

@@ -5,7 +5,7 @@
 #include <math.h>
 
 
-void testMutualInductanceGeneralMisalignedCoils()
+void compMInductanceGeneralMisalignedCoils()
 {
     Coil primary = Coil(0.06, 0.0, 0.12, 120);
     Coil secondary = Coil(0.05, 0.0, 0.0, 1);
@@ -102,7 +102,7 @@ void testMutualInductanceGeneralMisalignedCoils()
     printf("\n");
 }
 
-void testMutualInductanceGeneralParallelAxes()
+void compMInductanceGeneralParallelAxes()
 {
     double tempInductance;
     auto precision = PrecisionFactor(6.0);
@@ -162,7 +162,7 @@ void testMutualInductanceGeneralParallelAxes()
     fclose(output);
 }
 
-void testMutualInductanceGeneralConway()
+void compMInductanceGeneralCase()
 {
     FILE *output = fopen("output.txt", "w");
 

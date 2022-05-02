@@ -8,7 +8,7 @@
 #include <chrono>
 
 
-void benchmarkAmpereForceZAxis(ComputeMethod computeMethod, int nThreads)
+void benchForceZAxis(ComputeMethod computeMethod, int nThreads)
 {
     using namespace std::chrono;
 
@@ -34,7 +34,7 @@ void benchmarkAmpereForceZAxis(ComputeMethod computeMethod, int nThreads)
     }
 }
 
-void benchmarkAmpereForceGeneral(ComputeMethod computeMethod, int nThreads)
+void benchForceGeneral(ComputeMethod computeMethod, int nThreads)
 {
     using namespace std::chrono;
 
@@ -62,34 +62,34 @@ void benchmarkAmpereForceGeneral(ComputeMethod computeMethod, int nThreads)
     }
 }
 
-void benchmarkAmpereForceZAxisMTScaling(int maxThreads)
+void benchForceZAxisMTScaling(int maxThreads)
 {
     printf("Performance comparison between different numbers of threads:\n");
 
     printf(" -> single thread:\n");
-    benchmarkAmpereForceZAxis(CPU_ST);
+    benchForceZAxis(CPU_ST);
     printf("\n");
 
     for (int i = 2; i <= maxThreads; ++i)
     {
         printf(" -> %2d threads:\n", i);
-        benchmarkAmpereForceZAxis(CPU_MT, i);
+        benchForceZAxis(CPU_MT, i);
         printf("\n");
     }
 }
 
-void benchmarkAmpereForceGeneralMTScaling(int maxThreads)
+void benchForceGeneralMTScaling(int maxThreads)
 {
     printf("Performance comparison between different numbers of threads:\n");
 
     printf(" -> single thread:\n");
-    benchmarkAmpereForceGeneral(CPU_ST);
+    benchForceGeneral(CPU_ST);
     printf("\n");
 
     for (int i = 2; i <= maxThreads; ++i)
     {
         printf(" -> %2d threads:\n", i);
-        benchmarkAmpereForceGeneral(CPU_MT, i);
+        benchForceGeneral(CPU_MT, i);
         printf("\n");
     }
 }

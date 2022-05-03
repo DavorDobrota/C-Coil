@@ -541,5 +541,18 @@ void initCoil(py::module_ &mainModule)
             ) const>(&Coil::computeForceOnDipoleMoment),
             py::arg("point_vector"), py::arg("dipole_moment"), py::arg("used_precision"));
 
+    coil.def_static(
+            "compute_all_mutual_inductance_arrangements", &Coil::computeAllMutualInductanceArrangements,
+            py::arg("primary"), py::arg("secondary"), py::arg("primary_positions"), py::arg("secondary_positions"),
+            py::arg("primary_Y_angles"), py::arg("primary_Z_angles"),
+            py::arg("secondary_Y_angles"), py::arg("secondary_Z_angles"),
+            py::arg("precision_factor") = PrecisionFactor(), py::arg("compute_method") = CPU_ST)
+        .def_static(
+            "compute_all_ampere_force_arrangements", &Coil::computeAllAmpereForceArrangements,
+            py::arg("primary"), py::arg("secondary"), py::arg("primary_positions"), py::arg("secondary_positions"),
+            py::arg("primary_Y_angles"), py::arg("primary_Z_angles"),
+            py::arg("secondary_Y_angles"), py::arg("secondary_Z_angles"),
+            py::arg("precision_factor") = PrecisionFactor(), py::arg("compute_method") = CPU_ST);
+
     coil.def("__repr__", &Coil::operator std::string);
 }

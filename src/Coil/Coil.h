@@ -14,6 +14,7 @@
 
 const int precisionArraySize = 864;
 const int defaultThreadCount = 8;
+const int maxPhiBlocks = 200;
 
 const extern int blockPrecisionCPUArray[precisionArraySize];
 const extern int incrementPrecisionCPUArray[precisionArraySize];
@@ -383,8 +384,6 @@ class Coil
         void calculateImpedance();
         void calculateCoilType();
         void calculateTransformationMatrices();
-
-        static void precomputeCosPhi(int numAngularBlocks, int numAngularIncrements, double *outputArray);
 
         [[nodiscard]] std::pair<double, double> calculateBField(double zAxis, double rPolar,
                                                                 const PrecisionArguments &usedPrecision) const;

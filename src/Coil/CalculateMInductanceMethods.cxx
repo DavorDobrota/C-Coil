@@ -85,26 +85,6 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
     double angularBlock = M_PI / inductanceArguments.primaryPrecision.angularBlockCount;
     double radialBlock = 1.0 / inductanceArguments.secondaryPrecision.thicknessBlockCount;
 
-    // initialising precompute array
-    const int numPhiIncrements =
-            inductanceArguments.primaryPrecision.angularBlockCount * inductanceArguments.primaryPrecision.angularIncrementCount;
-
-    #if defined(__GNUC__)
-        if(numPhiIncrements > 20480)
-            throw std::logic_error("Number of increments too great (the maximum is 20480)");
-        double cosPhiPrecomputeArr[numPhiIncrements];
-        precomputeCosPhi(
-                inductanceArguments.primaryPrecision.angularBlockCount,
-                inductanceArguments.primaryPrecision.angularIncrementCount,
-                cosPhiPrecomputeArr);
-    #else
-        std::vector<double> cosPhiPrecomputeArr(numPhiIncrements);
-        precomputeCosPhi(
-            inductanceArguments.primaryPrecision.angularBlockCount,
-            inductanceArguments.primaryPrecision.angularIncrementCount,
-            &cosPhiPrecomputeArr.front());
-    #endif
-
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrementCount - 1;
     int angularIncrements = inductanceArguments.primaryPrecision.angularIncrementCount - 1;
@@ -112,6 +92,21 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
 
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * primary.currentDensity * thicknessBlock * angularBlock * radialBlock * 0.125;
+
+    std::vector<std::vector<double>> cosPhiPrecomputeMat(inductanceArguments.primaryPrecision.angularBlockCount);
+
+    for (int indBlockPhi = 0; indBlockPhi < inductanceArguments.primaryPrecision.angularBlockCount; ++indBlockPhi)
+    {
+        double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
+        cosPhiPrecomputeMat[indBlockPhi].reserve(angularIncrements);
+
+        for (int incPhi = 0; incPhi < angularIncrements; ++incPhi)
+        {
+            double incrementPositionFi = blockPositionPhi +
+                                         (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incPhi];
+            cosPhiPrecomputeMat[indBlockPhi][incPhi] = std::cos(incrementPositionFi);
+        }
+    }
 
     zDisplacement -= vec3::CoordVector3::convertToFieldVector(primary.getPositionVector()).z;
 
@@ -151,17 +146,16 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
                         double incrementWeightT = Legendre::weightsMatrix[thicknessIncrements][incT];
 
                         double tempConst = constant * incrementWeightR * incrementWeightT;
-                        double tempConstA = 2 * incrementPositionT * incrementPositionR;
+                        double tempConstA = 2.0 * incrementPositionT * incrementPositionR;
                         double tempConstB = incrementPositionT * incrementPositionT + incrementPositionR * incrementPositionR;
 
-                        for (int indBlockFi = 0; indBlockFi < inductanceArguments.primaryPrecision.angularBlockCount; ++indBlockFi)
+                        for (int indBlockPhi = 0; indBlockPhi < inductanceArguments.primaryPrecision.angularBlockCount; ++indBlockPhi)
                         {
-                            for (int incFi = 0; incFi <= angularIncrements; ++incFi)
+                            for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
                             {
-                                double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
+                                double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incPhi];
+                                double cosinePhi = cosPhiPrecomputeMat[indBlockPhi][incPhi];
 
-                                int arrPos = indBlockFi * (angularIncrements + 1) + incFi;
-                                double cosinePhi = cosPhiPrecomputeArr[arrPos];
                                 double tempConstC = tempConstB - tempConstA * cosinePhi;
                                 double tempConstD = std::sqrt(tempConstC);
 
@@ -374,28 +368,6 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, Comp
     double angularBlock = M_PI / inductanceArguments.primaryPrecision.angularBlockCount;
     double radialBlock = 1.0 / inductanceArguments.secondaryPrecision.thicknessBlockCount;
 
-    // initialising precompute array
-    const int numPhiIncrements =
-            inductanceArguments.primaryPrecision.angularBlockCount * inductanceArguments.primaryPrecision.angularIncrementCount;
-
-    #if defined(__GNUC__)
-        if(numPhiIncrements > 20480)
-            throw std::logic_error("Number of increments too great (the maximum is 20480)");
-        double cosPhiPrecomputeArr[numPhiIncrements];
-        precomputeCosPhi(
-                inductanceArguments.primaryPrecision.angularBlockCount,
-                inductanceArguments.primaryPrecision.angularIncrementCount,
-                cosPhiPrecomputeArr);
-    #else
-        std::vector<double> cosPhiPrecomputeArr(numPhiIncrements);
-            precomputeCosPhi(
-                inductanceArguments.primaryPrecision.angularBlockCount,
-                inductanceArguments.primaryPrecision.angularIncrementCount,
-                &cosPhiPrecomputeArr.front());
-    #endif
-
-
-
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrementCount - 1;
     int angularIncrements = inductanceArguments.primaryPrecision.angularIncrementCount - 1;
@@ -404,6 +376,21 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, Comp
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * currentDensity * thicknessBlock * angularBlock * radialBlock * 2 * 0.125;
     double lengthSquared = length * length;
+
+    std::vector<std::vector<double>> cosPhiPrecomputeMat(inductanceArguments.primaryPrecision.angularBlockCount);
+
+    for (int indBlockPhi = 0; indBlockPhi < inductanceArguments.primaryPrecision.angularBlockCount; ++indBlockPhi)
+    {
+        double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
+        cosPhiPrecomputeMat[indBlockPhi].reserve(angularIncrements);
+
+        for (int incPhi = 0; incPhi < angularIncrements; ++incPhi)
+        {
+            double incrementPositionFi = blockPositionPhi +
+                                         (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incPhi];
+            cosPhiPrecomputeMat[indBlockPhi][incPhi] = std::cos(incrementPositionFi);
+        }
+    }
 
     for (int indBlockR = 0; indBlockR < inductanceArguments.secondaryPrecision.thicknessBlockCount; ++indBlockR)
     {
@@ -437,9 +424,8 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, Comp
                         for (int incFi = 0; incFi <= angularIncrements; ++incFi)
                         {
                             double incrementWeightFi = Legendre::weightsMatrix[angularIncrements][incFi];
+                            double cosinePhi = cosPhiPrecomputeMat[indBlockFi][incFi];
 
-                            int arrPos = indBlockFi * (angularIncrements + 1) + incFi;
-                            double cosinePhi = cosPhiPrecomputeArr[arrPos];
                             double tempConstC = tempConstB - tempConstA * cosinePhi;
 
                             double tempConstD = std::sqrt(tempConstC);

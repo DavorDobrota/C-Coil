@@ -8,8 +8,14 @@
 #include "Test.h"
 
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "Simplify"
 int main()
 {
+
+
+//    benchComputeAllFields(PrecisionFactor(9.0), 10'000, 2, 8);
+    benchComputeAllFieldsEveryCoilType(415'701, 8);
 
 //    benchMInductanceZAxisMTScaling(12);
 //    benchMInductanceGeneralMTScaling(16);
@@ -25,3 +31,4 @@ int main()
 
     return 0;
 }
+#pragma clang diagnostic pop

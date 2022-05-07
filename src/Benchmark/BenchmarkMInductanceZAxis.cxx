@@ -55,6 +55,8 @@ void benchSelfInductance()
 {
     using namespace std::chrono;
 
+    printf("Expected execution time for one self inductance calculation of specified precision\n");
+
     Coil coil = Coil(0.1, 0.1, 0.1, 10000);
     double temp;
 

@@ -31,7 +31,7 @@ void benchMInductanceGeneral(ComputeMethod computeMethod, int threadCount)
         for (int j = 0; j < currentOperations; ++j)
             temp = Coil::computeMutualInductance(primary, secondary, PrecisionFactor(i), computeMethod);
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        printf("precisionFactor(%.1f) : %6.2f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
+        printf("precisionFactor(%.1f) : %6.3f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
 
     }
 }

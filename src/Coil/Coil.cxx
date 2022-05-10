@@ -1,9 +1,11 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
-#include "ctpl.h"
-#include "Math/CustomMath.h"
+#include "ctpl_stl.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
+
+#include <sstream>
 
 
 namespace
@@ -111,7 +113,7 @@ double Coil::getLength() const { return length; }
 
 double Coil::getAverageWireThickness() const { return averageWireThickness; }
 
-bool Coil::isSineDriven1() const { return isSineDriven; }
+bool Coil::isSineDriven() const { return sineDriven; }
 
 double Coil::getSineFrequency() const { return sineFrequency; }
 
@@ -183,12 +185,12 @@ void Coil::setSineFrequency(double sineFrequency)
 {
     if (sineFrequency > 0.0)
     {
-        isSineDriven = true;
+        sineDriven = true;
         this->sineFrequency = sineFrequency;
     }
     else
     {
-        isSineDriven = false;
+        sineDriven = false;
         this->sineFrequency = 0.0;
     }
     calculateImpedance();
@@ -199,9 +201,9 @@ void Coil::setDefaultPrecision(const PrecisionArguments &precisionSettings)
     this->defaultPrecision = precisionSettings;
 }
 
-void Coil::setDefaultPrecision(PrecisionFactor precisionFactor, ComputeMethod method)
+void Coil::setDefaultPrecision(PrecisionFactor precisionFactor, ComputeMethod computeMethod)
 {
-    if (method == GPU)
+    if (computeMethod == GPU)
         this->defaultPrecision = PrecisionArguments::getCoilPrecisionArgumentsGPU(*this, precisionFactor);
     else
         this->defaultPrecision = PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor);
@@ -290,12 +292,12 @@ void Coil::calculateTransformationMatrices()
                                                 sinY * cosZ, sinY * sinZ, cosY);
 }
 
-double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, ComputeMethod method)
+double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, ComputeMethod computeMethod)
 {
     if (coilType == CoilType::FILAMENT)
     {
         fprintf(stderr, "ERROR: The integral of a filament is divergent, try a thin rectangular coil\n");
-        throw "Coil loop calculation not supported";
+        throw std::logic_error("Coil loop calculation not supported");
     }
     // centering the coil at (0, 0, 0) and setting angles to 0 improves the accuracy by leveraging the z-axis formula
     vec3::CoordVector3 tempPosition = getPositionVector();
@@ -306,9 +308,9 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, Comput
     double inductance;
 
     if (coilType == CoilType::FLAT)
-        inductance = Coil::computeMutualInductance(*this, *this, arguments, method);
+        inductance = Coil::computeMutualInductance(*this, *this, arguments, computeMethod);
     else
-        inductance = Coil::calculateSelfInductance(arguments, method);
+        inductance = Coil::calculateSelfInductance(arguments, computeMethod);
 
     setSelfInductance(inductance);
     setPositionAndOrientation(tempPosition, tempAngles.first, tempAngles.second);
@@ -316,24 +318,6 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, Comput
     return inductance;
 }
 
-
-void Coil::precomputeCosPhi(int numAngularBlocks, int numAngularIncrements, double *outputArray)
-{
-    double angularBlock = M_PI / numAngularBlocks;
-
-    for (int indBlockFi = 0; indBlockFi < numAngularBlocks; ++indBlockFi)
-    {
-        double blockPositionFi = angularBlock * (indBlockFi + 0.5);
-
-        for (int incFi = 0; incFi < numAngularIncrements; ++incFi)
-        {
-            double incrementPositionFi = blockPositionFi +
-                    (angularBlock * 0.5) * Legendre::positionMatrix[numAngularIncrements - 1][incFi];
-            int arrPos = indBlockFi * numAngularIncrements + incFi;
-            outputArray[arrPos] = COS(incrementPositionFi);
-        }
-    }
-}
 
 std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
 Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
@@ -386,14 +370,46 @@ bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
     vec3::FieldVector3 primPositionVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
     vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
 
-    if (primPositionVec.xComponent / primary.innerRadius < g_zAxisApproximationRatio &&
-        primPositionVec.yComponent / primary.innerRadius < g_zAxisApproximationRatio &&
-        secPositionVec.xComponent / primary.innerRadius < g_zAxisApproximationRatio &&
-        secPositionVec.yComponent / primary.innerRadius < g_zAxisApproximationRatio &&
+    if (primPositionVec.x / primary.innerRadius < g_zAxisApproximationRatio &&
+        primPositionVec.y / primary.innerRadius < g_zAxisApproximationRatio &&
+        secPositionVec.x / primary.innerRadius < g_zAxisApproximationRatio &&
+        secPositionVec.y / primary.innerRadius < g_zAxisApproximationRatio &&
         primary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio &&
         secondary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio)
     {
         return true;
     }
     return false;
+}
+
+Coil::operator std::string() const
+{
+    std::stringstream output;
+
+    output << "Coil("
+        << "id=" << id
+        << ", inner_radius=" << innerRadius
+        << ", thickness=" << thickness
+        << ", length=" << length
+        << ", num_of_turns=" << numOfTurns
+        << ", current_density=" << currentDensity
+        << ", current=" << current
+        << ", wire_resistivity=" << wireResistivity
+        << ", is_sine_driven=" << sineDriven
+        << ", sine_frequency=" << sineFrequency
+        << ", magnetic_moment=" << magneticMoment
+        << ", average_wire_thickness=" << averageWireThickness
+        << ", resistance=" << resistance
+        << ", self_inductance=" << selfInductance
+        << ", reactance=" << reactance
+        << ", impedance=" << impedance
+        << ", use_fast_method=" << useFastMethod
+        << ", thread_count=" << threadCount
+        << ", default_precision=" << std::string(defaultPrecision)
+        << ", position_vector=" << std::string(positionVector)
+        << ", y_axis_angle=" << yAxisAngle
+        << ", z_axis_angle=" << zAxisAngle
+        << ")";
+
+    return output.str();
 }

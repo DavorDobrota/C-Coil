@@ -4,7 +4,12 @@ project(General_Coil_Program)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-Ofast -msse -msse2 -msse3 -msse4 -msse4a -msse4.1 -msse4.2 -mavx -mavx2 -ffast-math")
+
+if(WIN32)
+    set(CMAKE_CXX_FLAGS "/std:c++17 /O2 /arch:AVX2 /arch:AVX /fp:fast")
+else()
+    set(CMAKE_CXX_FLAGS "-Ofast -mavx2 -ffast-math")
+endif()
 
 option(USE_GPU "Enable GPU acceleration" OFF)
 
@@ -18,6 +23,37 @@ if(USE_GPU)
 endif()
 
 #######################################
+# Add all extern include paths
+#######################################
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/extern/CTPL")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/extern/HardwareAcceleration")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/extern/pybind11/include")
+#######################################
+
+#######################################
+# Add all local include paths
+#######################################
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Test")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Benchmark")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilData")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Compare")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/LegendreMatrix")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/ThreadPool")
+#######################################
+
+#######################################
+# Add all libraries
+#######################################
+add_subdirectory(src/Benchmark)
+list(APPEND LIBS "$<TARGET_OBJECTS:Benchmark>")
+
+add_subdirectory(src/Compare)
+list(APPEND LIBS "$<TARGET_OBJECTS:Compare>")
+
 add_subdirectory(src/Test)
 list(APPEND LIBS "$<TARGET_OBJECTS:Test>")
 
@@ -29,9 +65,6 @@ list(APPEND LIBS "$<TARGET_OBJECTS:CoilData>")
 
 add_subdirectory(src/CoilGroup)
 list(APPEND LIBS "$<TARGET_OBJECTS:CoilGroup>")
-
-add_subdirectory(src/Math)
-list(APPEND LIBS "$<TARGET_OBJECTS:CustomMath>")
 
 add_subdirectory(src/LegendreMatrix)
 list(APPEND LIBS "$<TARGET_OBJECTS:LegendreMatrix>")
@@ -48,12 +81,7 @@ if(OUTPUT_EXECUTABLE)
     target_include_directories(
             test_executable
             BEFORE
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Test"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor"
+            PUBLIC ${INCS}
     )
 endif()
 
@@ -62,12 +90,7 @@ if(OUTPUT_LIB_SHARED)
     target_include_directories(
             coil_calculations_shared
             BEFORE
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Test"
-            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor"
+            PUBLIC ${INCS}
     )
 endif()
 
@@ -90,10 +113,12 @@ if(USE_GPU)
     endif()
 endif()
 
-if(OUTPUT_EXECUTABLE)
-    target_link_libraries(test_executable pthread)
-endif()
+if(!WIN32)
+    if(OUTPUT_EXECUTABLE)
+        target_link_libraries(test_executable pthread)
+    endif()
 
-if(OUTPUT_LIB_SHARED)
-    target_link_libraries(coil_calculations_shared pthread)
+    if(OUTPUT_LIB_SHARED)
+        target_link_libraries(coil_calculations_shared pthread)
+    endif()
 endif()

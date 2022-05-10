@@ -1,30 +1,31 @@
 #include "Coil.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 
-void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &pointVectorArr,
+void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &pointVectors,
                                          std::vector<double> &cylindricalZArr,
                                          std::vector<double> &cylindricalRArr,
                                          std::vector<double> &cylindricalPhiArr) const
 {
-    cylindricalZArr.resize(pointVectorArr.size());
-    cylindricalRArr.resize(pointVectorArr.size());
-    cylindricalPhiArr.resize(pointVectorArr.size());
+    cylindricalZArr.resize(pointVectors.size());
+    cylindricalRArr.resize(pointVectors.size());
+    cylindricalPhiArr.resize(pointVectors.size());
 
     vec3::FieldVector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVector);
 
-    for (int i = 0; i < pointVectorArr.size(); ++i)
+    for (int i = 0; i < pointVectors.size(); ++i)
     {
-        vec3::FieldVector3 pointVec = vec3::CoordVector3::convertToFieldVector(pointVectorArr[i]);
+        vec3::FieldVector3 pointVec = vec3::CoordVector3::convertToFieldVector(pointVectors[i]);
         vec3::FieldVector3 transformedVec = inverseTransformationMatrix * (pointVec - positionVec);
 
         vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
         finalVec.convertToCylindrical();
 
-        cylindricalZArr[i] = finalVec.component1;
-        cylindricalRArr[i] = finalVec.component2;
-        cylindricalPhiArr[i] = finalVec.component3;
+        cylindricalZArr[i] = finalVec.comp1;
+        cylindricalRArr[i] = finalVec.comp2;
+        cylindricalPhiArr[i] = finalVec.comp3;
     }
 }
 
@@ -39,18 +40,18 @@ std::vector<vec3::FieldVector3> Coil::adaptOutputVectorsForAllPoints(const std::
 }
 
 
-std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectorArr,
+std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
                                                                  const PrecisionArguments &usedPrecision,
-                                                                 ComputeMethod method) const
+                                                                 ComputeMethod computeMethod) const
 {
     std::vector<double> cylindricalZArr, cylindricalRArr, cylindricalPhiArr;
     std::vector<double> fieldH, fieldZ;
-    std::vector<vec3::FieldVector3> computedFieldArr(pointVectorArr.size());
+    std::vector<vec3::FieldVector3> computedFieldArr(pointVectors.size());
 
-    adaptInputVectorsForAllPoints(pointVectorArr, cylindricalZArr, cylindricalRArr, cylindricalPhiArr);
-    calculateAllBFieldSwitch(cylindricalZArr, cylindricalRArr, fieldH, fieldZ, usedPrecision, method);
+    adaptInputVectorsForAllPoints(pointVectors, cylindricalZArr, cylindricalRArr, cylindricalPhiArr);
+    calculateAllBFieldSwitch(cylindricalZArr, cylindricalRArr, fieldH, fieldZ, usedPrecision, computeMethod);
 
-    for (int i = 0; i < pointVectorArr.size(); ++i)
+    for (int i = 0; i < pointVectors.size(); ++i)
         computedFieldArr[i] = vec3::FieldVector3(fieldH[i] * std::cos(cylindricalPhiArr[i]),
                                                  fieldH[i] * std::sin(cylindricalPhiArr[i]),
                                                  fieldZ[i]);
@@ -58,99 +59,99 @@ std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vect
     return adaptOutputVectorsForAllPoints(computedFieldArr);
 }
 
-std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                                 ComputeMethod method) const
+std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                 ComputeMethod computeMethod) const
 {
-    return computeAllBFieldComponents(pointVectorArr, defaultPrecision, method);
+    return computeAllBFieldComponents(pointVectors, defaultPrecision, computeMethod);
 }
 
-std::vector<double>Coil::computeAllBFieldX(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                           const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<double>Coil::computeAllBFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
+                                           const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectorArr, usedPrecision, method);
+    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = computedFieldArr[i].xComponent;
+        outputArr[i] = computedFieldArr[i].x;
 
     return outputArr;
 }
 
-std::vector<double> Coil::computeAllBFieldX(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                            ComputeMethod method) const
+std::vector<double> Coil::computeAllBFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            ComputeMethod computeMethod) const
 {
-    return computeAllBFieldX(pointVectorArr, defaultPrecision, method);
+    return computeAllBFieldX(pointVectors, defaultPrecision, computeMethod);
 }
 
-std::vector<double>Coil::computeAllBFieldY(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                           const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<double>Coil::computeAllBFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
+                                           const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectorArr, usedPrecision, method);
+    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = computedFieldArr[i].yComponent;
+        outputArr[i] = computedFieldArr[i].y;
 
     return outputArr;
 }
 
-std::vector<double> Coil::computeAllBFieldY(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                           ComputeMethod method) const
+std::vector<double> Coil::computeAllBFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
+                                           ComputeMethod computeMethod) const
 {
-    return computeAllBFieldY(pointVectorArr, defaultPrecision, method);
+    return computeAllBFieldY(pointVectors, defaultPrecision, computeMethod);
 }
 
-std::vector<double>Coil::computeAllBFieldZ(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                           const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<double>Coil::computeAllBFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
+                                           const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectorArr, usedPrecision, method);
+    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = computedFieldArr[i].zComponent;
+        outputArr[i] = computedFieldArr[i].z;
 
     return outputArr;
 }
 
-std::vector<double> Coil::computeAllBFieldZ(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                            ComputeMethod method) const
+std::vector<double> Coil::computeAllBFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            ComputeMethod computeMethod) const
 {
-    return computeAllBFieldZ(pointVectorArr, defaultPrecision, method);
+    return computeAllBFieldZ(pointVectors, defaultPrecision, computeMethod);
 }
 
-std::vector<double>Coil::computeAllBFieldAbs(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                             const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<double>Coil::computeAllBFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
+                                             const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectorArr, usedPrecision, method);
+    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = std::sqrt(computedFieldArr[i].xComponent * computedFieldArr[i].xComponent +
-                                 computedFieldArr[i].yComponent * computedFieldArr[i].yComponent +
-                                 computedFieldArr[i].zComponent * computedFieldArr[i].zComponent);
+        outputArr[i] = std::sqrt(computedFieldArr[i].x * computedFieldArr[i].x +
+                                 computedFieldArr[i].y * computedFieldArr[i].y +
+                                 computedFieldArr[i].z * computedFieldArr[i].z);
 
     return outputArr;
 }
 
-std::vector<double> Coil::computeAllBFieldAbs(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                              ComputeMethod method) const
+std::vector<double> Coil::computeAllBFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
+                                              ComputeMethod computeMethod) const
 {
-    return computeAllBFieldAbs(pointVectorArr, defaultPrecision, method);
+    return computeAllBFieldAbs(pointVectors, defaultPrecision, computeMethod);
 }
 
 
-std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectorArr,
+std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectors,
                                                                      const PrecisionArguments &usedPrecision,
-                                                                     ComputeMethod method) const
+                                                                     ComputeMethod computeMethod) const
 {
     std::vector<double> cylindricalZArr, cylindricalRArr, cylindricalPhiArr;
     std::vector<double> potentialArr;
-    std::vector<vec3::FieldVector3> computedFieldArr(pointVectorArr.size());
+    std::vector<vec3::FieldVector3> computedFieldArr(pointVectors.size());
 
-    adaptInputVectorsForAllPoints(pointVectorArr, cylindricalZArr, cylindricalRArr, cylindricalPhiArr);
-    calculateAllAPotentialSwitch(cylindricalZArr, cylindricalRArr, potentialArr, usedPrecision, method);
+    adaptInputVectorsForAllPoints(pointVectors, cylindricalZArr, cylindricalRArr, cylindricalPhiArr);
+    calculateAllAPotentialSwitch(cylindricalZArr, cylindricalRArr, potentialArr, usedPrecision, computeMethod);
 
-    for (int i = 0; i < pointVectorArr.size(); ++i)
+    for (int i = 0; i < pointVectors.size(); ++i)
         computedFieldArr[i] = vec3::FieldVector3(potentialArr[i] * (-1) * std::sin(cylindricalPhiArr[i]),
                                                  potentialArr[i] * std::cos(cylindricalPhiArr[i]),
                                                  0.0);
@@ -158,91 +159,91 @@ std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::
     return adaptOutputVectorsForAllPoints(computedFieldArr);
 }
 
-std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                                     ComputeMethod method) const
+std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                     ComputeMethod computeMethod) const
 {
-    return computeAllAPotentialComponents(pointVectorArr, defaultPrecision, method);
+    return computeAllAPotentialComponents(pointVectors, defaultPrecision, computeMethod);
 }
 
-std::vector<double> Coil::computeAllAPotentialX(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<double> Coil::computeAllAPotentialX(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllAPotentialComponents(pointVectorArr, usedPrecision, method);
+    std::vector<vec3::FieldVector3> computedFieldArr = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = computedFieldArr[i].xComponent;
+        outputArr[i] = computedFieldArr[i].x;
 
     return outputArr;
 }
 
-std::vector<double> Coil::computeAllAPotentialX(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                ComputeMethod method) const
+std::vector<double> Coil::computeAllAPotentialX(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                ComputeMethod computeMethod) const
 {
-    return computeAllAPotentialX(pointVectorArr, defaultPrecision, method);
+    return computeAllAPotentialX(pointVectors, defaultPrecision, computeMethod);
 }
 
-std::vector<double> Coil::computeAllAPotentialY(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<double> Coil::computeAllAPotentialY(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllAPotentialComponents(pointVectorArr, usedPrecision, method);
+    std::vector<vec3::FieldVector3> computedFieldArr = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = computedFieldArr[i].yComponent;
+        outputArr[i] = computedFieldArr[i].y;
 
     return outputArr;
 }
 
-std::vector<double> Coil::computeAllAPotentialY(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                ComputeMethod method) const
+std::vector<double> Coil::computeAllAPotentialY(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                ComputeMethod computeMethod) const
 {
-    return computeAllAPotentialY(pointVectorArr, defaultPrecision, method);
+    return computeAllAPotentialY(pointVectors, defaultPrecision, computeMethod);
 }
 
-std::vector<double> Coil::computeAllAPotentialZ(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<double> Coil::computeAllAPotentialZ(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllAPotentialComponents(pointVectorArr, usedPrecision, method);
+    std::vector<vec3::FieldVector3> computedFieldArr = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = computedFieldArr[i].zComponent;
+        outputArr[i] = computedFieldArr[i].z;
 
     return outputArr;
 }
 
-std::vector<double> Coil::computeAllAPotentialZ(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                ComputeMethod method) const
+std::vector<double> Coil::computeAllAPotentialZ(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                ComputeMethod computeMethod) const
 {
-    return computeAllAPotentialZ(pointVectorArr, defaultPrecision, method);
+    return computeAllAPotentialZ(pointVectors, defaultPrecision, computeMethod);
 }
 
-std::vector<double> Coil::computeAllAPotentialAbs(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                  const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<double> Coil::computeAllAPotentialAbs(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                  const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllAPotentialComponents(pointVectorArr, usedPrecision, method);
+    std::vector<vec3::FieldVector3> computedFieldArr = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
-        outputArr[i] = std::sqrt(computedFieldArr[i].xComponent * computedFieldArr[i].xComponent +
-                                 computedFieldArr[i].yComponent * computedFieldArr[i].yComponent +
-                                 computedFieldArr[i].zComponent * computedFieldArr[i].zComponent);
+        outputArr[i] = std::sqrt(computedFieldArr[i].x * computedFieldArr[i].x +
+                                 computedFieldArr[i].y * computedFieldArr[i].y +
+                                 computedFieldArr[i].z * computedFieldArr[i].z);
 
     return outputArr;
 }
 
-std::vector<double> Coil::computeAllAPotentialAbs(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                  ComputeMethod method) const
+std::vector<double> Coil::computeAllAPotentialAbs(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                  ComputeMethod computeMethod) const
 {
-    return computeAllAPotentialAbs(pointVectorArr, defaultPrecision, method);
+    return computeAllAPotentialAbs(pointVectors, defaultPrecision, computeMethod);
 }
 
 
-std::vector<double> Coil::computeAllEFieldX(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                            const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<double> Coil::computeAllEFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<double> output = computeAllAPotentialX(pointVectorArr, usedPrecision, method);
+    std::vector<double> output = computeAllAPotentialX(pointVectors, usedPrecision, computeMethod);
 
     for (double & i : output)
         i *= (2 * M_PI * sineFrequency);
@@ -250,16 +251,16 @@ std::vector<double> Coil::computeAllEFieldX(const std::vector<vec3::CoordVector3
     return output;
 }
 
-std::vector<double> Coil::computeAllEFieldX(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                            ComputeMethod method) const
+std::vector<double> Coil::computeAllEFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            ComputeMethod computeMethod) const
 {
-    return computeAllEFieldX(pointVectorArr, defaultPrecision, method);
+    return computeAllEFieldX(pointVectors, defaultPrecision, computeMethod);
 }
 
-std::vector<double> Coil::computeAllEFieldY(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                            const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<double> Coil::computeAllEFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<double> output = computeAllAPotentialY(pointVectorArr, usedPrecision, method);
+    std::vector<double> output = computeAllAPotentialY(pointVectors, usedPrecision, computeMethod);
     double frequencyFactor = 2 * M_PI * sineFrequency;
 
     for (double & i : output)
@@ -268,16 +269,16 @@ std::vector<double> Coil::computeAllEFieldY(const std::vector<vec3::CoordVector3
     return output;
 }
 
-std::vector<double> Coil::computeAllEFieldY(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                            ComputeMethod method) const
+std::vector<double> Coil::computeAllEFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            ComputeMethod computeMethod) const
 {
-    return computeAllEFieldY(pointVectorArr, defaultPrecision, method);
+    return computeAllEFieldY(pointVectors, defaultPrecision, computeMethod);
 }
 
-std::vector<double> Coil::computeAllEFieldZ(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                            const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<double> Coil::computeAllEFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<double> output = computeAllAPotentialZ(pointVectorArr, usedPrecision, method);
+    std::vector<double> output = computeAllAPotentialZ(pointVectors, usedPrecision, computeMethod);
     double frequencyFactor = 2 * M_PI * sineFrequency;
 
     for (double & i : output)
@@ -286,16 +287,16 @@ std::vector<double> Coil::computeAllEFieldZ(const std::vector<vec3::CoordVector3
     return output;
 }
 
-std::vector<double> Coil::computeAllEFieldZ(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                            ComputeMethod method) const
+std::vector<double> Coil::computeAllEFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            ComputeMethod computeMethod) const
 {
-    return computeAllEFieldZ(pointVectorArr, defaultPrecision, method);
+    return computeAllEFieldZ(pointVectors, defaultPrecision, computeMethod);
 }
 
-std::vector<double> Coil::computeAllEFieldAbs(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                              const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<double> Coil::computeAllEFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
+                                              const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<double> output = computeAllAPotentialAbs(pointVectorArr, usedPrecision, method);
+    std::vector<double> output = computeAllAPotentialAbs(pointVectors, usedPrecision, computeMethod);
     double frequencyFactor = 2 * M_PI * sineFrequency;
 
     for (double & i : output)
@@ -304,17 +305,17 @@ std::vector<double> Coil::computeAllEFieldAbs(const std::vector<vec3::CoordVecto
     return output;
 }
 
-std::vector<double> Coil::computeAllEFieldAbs(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                              ComputeMethod method) const
+std::vector<double> Coil::computeAllEFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
+                                              ComputeMethod computeMethod) const
 {
-    return computeAllEFieldAbs(pointVectorArr, defaultPrecision, method);
+    return computeAllEFieldAbs(pointVectors, defaultPrecision, computeMethod);
 }
 
-std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectorArr,
+std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
                                                                  const PrecisionArguments &usedPrecision,
-                                                                 ComputeMethod method) const
+                                                                 ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> output = computeAllAPotentialComponents(pointVectorArr, usedPrecision, method);
+    std::vector<vec3::FieldVector3> output = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
     double frequencyFactor = 2 * M_PI * sineFrequency;
 
     for (auto & i : output)
@@ -323,19 +324,19 @@ std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vect
     return output;
 }
 
-std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                                 ComputeMethod method) const
+std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                 ComputeMethod computeMethod) const
 {
-    return computeAllEFieldComponents(pointVectorArr, defaultPrecision, method);
+    return computeAllEFieldComponents(pointVectors, defaultPrecision, computeMethod);
 }
 
 
-std::vector<vec3::Matrix3> Coil::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                            const PrecisionArguments &usedPrecision, ComputeMethod method) const
+std::vector<vec3::Matrix3> Coil::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
     std::vector<double> cylindricalZArr, cylindricalRArr, cylindricalPhiArr;
 
-    adaptInputVectorsForAllPoints(pointVectorArr, cylindricalZArr, cylindricalRArr, cylindricalPhiArr);
+    adaptInputVectorsForAllPoints(pointVectors, cylindricalZArr, cylindricalRArr, cylindricalPhiArr);
 
     std::vector<double> gradientRPhi;
     std::vector<double> gradientRR;
@@ -343,7 +344,7 @@ std::vector<vec3::Matrix3> Coil::computeAllBGradientTensors(const std::vector<ve
     std::vector<double> gradientZZ;
 
     calculateAllBGradientSwitch(cylindricalZArr, cylindricalRArr,
-                                gradientRPhi, gradientRR, gradientRZ, gradientZZ, usedPrecision, method);
+                                gradientRPhi, gradientRR, gradientRZ, gradientZZ, usedPrecision, computeMethod);
 
     std::vector<vec3::Matrix3> computedGradientMatrix(gradientRPhi.size());
 
@@ -377,8 +378,8 @@ std::vector<vec3::Matrix3> Coil::computeAllBGradientTensors(const std::vector<ve
     return computedGradientMatrix;
 }
 
-std::vector<vec3::Matrix3> Coil::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &pointVectorArr,
-                                                            ComputeMethod method) const
+std::vector<vec3::Matrix3> Coil::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                            ComputeMethod computeMethod) const
 {
-    return computeAllBGradientTensors(pointVectorArr, defaultPrecision, method);
+    return computeAllBGradientTensors(pointVectors, defaultPrecision, computeMethod);
 }

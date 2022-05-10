@@ -1,7 +1,11 @@
 #include "Coil.h"
 #include "CoilData.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <cstdio>
+
+#include <sstream>
 
 
 CoilPairArguments::CoilPairArguments() : CoilPairArguments(PrecisionArguments(), PrecisionArguments()) {}
@@ -16,9 +20,9 @@ CoilPairArguments::CoilPairArguments(const PrecisionArguments &primaryPrecision,
 
 CoilPairArguments CoilPairArguments::getAppropriateCoilPairArguments(const Coil &primary, const Coil &secondary,
                                                                      PrecisionFactor precisionFactor,
-                                                                     ComputeMethod method, bool zAxisCase)
+                                                                     ComputeMethod computeMethod, bool zAxisCase)
 {
-    if (method == GPU)
+    if (computeMethod == GPU)
         return CoilPairArguments::calculateCoilPairArgumentsGPU(primary, secondary, precisionFactor, zAxisCase);
     else
         return CoilPairArguments::calculateCoilPairArgumentsCPU(primary, secondary, precisionFactor, zAxisCase);
@@ -337,4 +341,16 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
     #endif // PRINT_ENABLED
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
+}
+
+CoilPairArguments::operator std::string() const
+{
+    std::stringstream output;
+
+    output << "CoilPairArguments("
+           << "primary_precision=" << std::string(primaryPrecision)
+           << ", secondary_precision=" << std::string(secondaryPrecision)
+           << ")";
+
+    return output.str();
 }

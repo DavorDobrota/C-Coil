@@ -1,11 +1,13 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
 
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <cstdio>
 
 
 double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                       CoilPairArguments forceArguments, ComputeMethod method)
+                                       CoilPairArguments forceArguments, ComputeMethod computeMethod)
 {
     PrecisionArguments primaryPrecisionArguments = forceArguments.primaryPrecision;
 
@@ -58,7 +60,7 @@ double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondar
     }
 
     double ampereForce = 0.0;
-    std::vector<double> fieldH = primary.computeAllBFieldX(positionVectors, primaryPrecisionArguments, method);
+    std::vector<double> fieldH = primary.computeAllBFieldX(positionVectors, primaryPrecisionArguments, computeMethod);
 
     for (int i = 0; i < fieldH.size(); ++i)
     {
@@ -70,15 +72,15 @@ double Coil::calculateAmpereForceZAxis(const Coil &primary, const Coil &secondar
 
 std::pair<vec3::FieldVector3, vec3::FieldVector3>
 Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                  CoilPairArguments forceArguments, ComputeMethod method)
+                                  CoilPairArguments forceArguments, ComputeMethod computeMethod)
 {
     std::vector<double> forceAndTorqueComponents(6);
 
     vec3::FieldVector3 displacementVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
 
-    double xDisplacement = displacementVec.xComponent;
-    double yDisplacement = displacementVec.yComponent;
-    double zDisplacement = displacementVec.zComponent;
+    double xDisplacement = displacementVec.x;
+    double yDisplacement = displacementVec.y;
+    double zDisplacement = displacementVec.z;
     double alphaAngle = secondary.yAxisAngle;
     double betaAngle = secondary.zAxisAngle;
 
@@ -142,13 +144,13 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                             int phiPosition = phiBlock * angularIncrements + phiIndex;
 
                             double displacementX = xDisplacement + lengthDisplacement * sin(alphaAngle) * cos(betaAngle) +
-                                                   ringRadius * unitRingValues[phiPosition].first.xComponent;
+                                                   ringRadius * unitRingValues[phiPosition].first.x;
 
                             double displacementY = yDisplacement + lengthDisplacement * sin(alphaAngle) * sin(betaAngle) +
-                                                   ringRadius * unitRingValues[phiPosition].first.yComponent;
+                                                   ringRadius * unitRingValues[phiPosition].first.y;
 
                             double displacementZ = zDisplacement + lengthDisplacement * cos(alphaAngle) +
-                                                   ringRadius * unitRingValues[phiPosition].first.zComponent;
+                                                   ringRadius * unitRingValues[phiPosition].first.z;
 
                             positionVectors.emplace_back(vec3::CARTESIAN, displacementX, displacementY, displacementZ);
 
@@ -164,7 +166,7 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
         }
     }
     std::vector<vec3::FieldVector3> magneticFields = primary.computeAllBFieldComponents(positionVectors,
-                                                                                        primaryPrecisionArguments, method);
+                                                                                        primaryPrecisionArguments, computeMethod);
 
     vec3::FieldVector3 forceVector;
     vec3::FieldVector3 torqueVector;

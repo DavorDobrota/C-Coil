@@ -49,8 +49,7 @@ int main()
 //        fprintf(output, "\n");
 //    }
 
-    compMInductanceGeneralCase();
-    compAmpereForceFilamentsGeneral();
+    benchMathFunctions();
 
     return 0;
 }

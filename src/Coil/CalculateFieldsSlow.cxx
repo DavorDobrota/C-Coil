@@ -32,9 +32,9 @@ double Coil::calculateAPotentialSlow(double zAxis, double rPolar, const Precisio
     for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlockCount; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
-        cosPhiPrecomputeMat[indBlockPhi].reserve(angularIncrements);
+        cosPhiPrecomputeMat[indBlockPhi].reserve(usedPrecision.angularIncrementCount);
 
-        for (int incPhi = 0; incPhi < angularIncrements; ++incPhi)
+        for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
         {
             double incrementPositionFi = blockPositionPhi +
                                          (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incPhi];
@@ -107,9 +107,9 @@ std::pair<double, double> Coil::calculateBFieldSlow(double zAxis, double rPolar,
     for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlockCount; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
-        cosPhiPrecomputeMat[indBlockPhi].reserve(angularIncrements);
+        cosPhiPrecomputeMat[indBlockPhi].reserve(usedPrecision.angularIncrementCount);
 
-        for (int incPhi = 0; incPhi < angularIncrements; ++incPhi)
+        for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
         {
             double incrementPositionFi = blockPositionPhi +
                                          (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incPhi];
@@ -190,9 +190,9 @@ std::vector<double> Coil::calculateBGradientSlow(double zAxis, double rPolar, co
     for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlockCount; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
-        cosPhiPrecomputeMat[indBlockPhi].reserve(angularIncrements);
+        cosPhiPrecomputeMat[indBlockPhi].reserve(usedPrecision.angularIncrementCount);
 
-        for (int incPhi = 0; incPhi < angularIncrements; ++incPhi)
+        for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
         {
             double incrementPositionFi = blockPositionPhi +
                                          (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incPhi];

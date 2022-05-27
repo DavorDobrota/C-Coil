@@ -98,9 +98,9 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
     for (int indBlockPhi = 0; indBlockPhi < inductanceArguments.primaryPrecision.angularBlockCount; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
-        cosPhiPrecomputeMat[indBlockPhi].reserve(angularIncrements);
+        cosPhiPrecomputeMat[indBlockPhi].reserve(angularIncrements + 1);
 
-        for (int incPhi = 0; incPhi < angularIncrements; ++incPhi)
+        for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
         {
             double incrementPositionFi = blockPositionPhi +
                                          (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incPhi];
@@ -382,9 +382,9 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, Comp
     for (int indBlockPhi = 0; indBlockPhi < inductanceArguments.primaryPrecision.angularBlockCount; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
-        cosPhiPrecomputeMat[indBlockPhi].reserve(angularIncrements);
+        cosPhiPrecomputeMat[indBlockPhi].reserve(angularIncrements + 1);
 
-        for (int incPhi = 0; incPhi < angularIncrements; ++incPhi)
+        for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
         {
             double incrementPositionFi = blockPositionPhi +
                                          (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][incPhi];

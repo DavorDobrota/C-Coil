@@ -49,6 +49,8 @@ int main()
 //        fprintf(output, "\n");
 //    }
 
+
+    benchComputeAllFieldsEveryCoilType(200'003, 8);
     benchMathFunctions();
 
     return 0;

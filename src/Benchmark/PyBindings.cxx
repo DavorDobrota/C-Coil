@@ -21,7 +21,12 @@ void initBenchmark(py::module_ &mainModule)
             py::arg("thread_count") = g_defaultThreadCount)
         .def(
             "bench_compute_all_fields_every_coil_type", benchComputeAllFieldsEveryCoilType,
-            py::arg("op_count") = 100'000, py::arg("thread_count") = g_defaultThreadCount);
+            py::arg("op_count") = 100'000, py::arg("thread_count") = g_defaultThreadCount)
+        .def(
+            "bench_compute_all_fields_workload_scaling_MT", benchComputeAllFieldsWorkloadScalingMT,
+            py::arg("precision_factor") = PrecisionFactor(),
+            py::arg("thread_count") = g_defaultThreadCount,
+            py::arg("max_points_log2") = g_maxPot);
 
     benchmarkModule.def(
             "bench_m_inductance_Z_axis", benchMInductanceZAxis,

@@ -347,7 +347,7 @@ void Coil::calculateAllAPotentialSwitch(const std::vector<double> &cylindricalZA
                                         ComputeMethod computeMethod) const
 {
     int chunkSize = calculateChunkSize(cylindricalZArr.size());
-//    printf("%d\n", chunkSize);
+
     switch (computeMethod)
     {
         case GPU:

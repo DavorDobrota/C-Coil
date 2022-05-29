@@ -5,6 +5,7 @@
 
 
 const int g_defaultThreadCount = 8;
+const int maxPot = 25;
 
 void benchMathFunctions();
 
@@ -12,6 +13,8 @@ void benchComputeFieldsST(int opCount = 50'000);
 void benchComputeAllFields(PrecisionFactor precisionFactor = PrecisionFactor(),
                            int opCount = 20'000, int repeatCount = 1, int threadCount = g_defaultThreadCount);
 void benchComputeAllFieldsEveryCoilType(int opCount = 100'000, int threadCount = g_defaultThreadCount);
+void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor = PrecisionFactor(),
+                                            int threadCount = g_defaultThreadCount, int maxPointsLog2 = maxPot);
 
 void benchMInductanceZAxis(ComputeMethod computeMethod = CPU_ST, int threadCount = g_defaultThreadCount);
 void benchMInductanceZAxisMTScaling(int maxThreadCount = g_defaultThreadCount);

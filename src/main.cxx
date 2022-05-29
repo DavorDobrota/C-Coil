@@ -14,8 +14,8 @@
 int main()
 {
 
-//    const int xDim = 7501;
-//    const int yDim = 7501;
+//    const int xDim = 2501;
+//    const int yDim = 2501;
 //    const double xSize = 0.25;
 //    const double ySize = 0.25;
 //    const double zPos = 0.0;
@@ -49,9 +49,16 @@ int main()
 //        fprintf(output, "\n");
 //    }
 
+//    benchComputeAllFieldsEveryCoilType(200'003, 8);
+//    benchMathFunctions();
 
-    benchComputeAllFieldsEveryCoilType(200'003, 8);
-    benchMathFunctions();
+//    benchMInductanceZAxisMTScaling(16);
+//    benchMInductanceGeneralMTScaling(16);
+//    benchSelfInductance();
+//    benchForceZAxisMTScaling(16);
+//    benchForceGeneralMTScaling(16);
+
+    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 16, 26);
 
     return 0;
 }

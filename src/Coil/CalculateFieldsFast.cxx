@@ -34,7 +34,7 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
     for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlockCount; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
-        cosPhiPrecomputeMat[indBlockPhi].reserve(usedPrecision.angularIncrementCount);
+        cosPhiPrecomputeMat[indBlockPhi].resize(usedPrecision.angularIncrementCount);
 
         for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
         {
@@ -107,7 +107,7 @@ std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar,
     for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlockCount; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
-        cosPhiPrecomputeMat[indBlockPhi].reserve(usedPrecision.angularIncrementCount);
+        cosPhiPrecomputeMat[indBlockPhi].resize(usedPrecision.angularIncrementCount);
 
         for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
         {
@@ -186,7 +186,7 @@ std::vector<double> Coil::calculateBGradientFast(double zAxis, double rPolar, co
     for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlockCount; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
-        cosPhiPrecomputeMat[indBlockPhi].reserve(usedPrecision.angularIncrementCount);
+        cosPhiPrecomputeMat[indBlockPhi].resize(usedPrecision.angularIncrementCount);
 
         for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
         {

@@ -51,7 +51,7 @@ void benchMathFunctions()
     begin_time = high_resolution_clock::now();
     for (int i = 1; i <= opCount; ++i)
     {
-        temp += std::log10(400000.0 / i);
+        temp += std::log10(i);
     }
     printf("%.15f\n", temp);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();

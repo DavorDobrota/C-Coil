@@ -801,7 +801,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
     printf("Vector potential performance for precision factor %.1f and %d threads\n",
            precisionFactor.relativePrecision, threadCount);
 
-    for (int i = 0; i < maxPointsLog2; ++i)
+    for (int i = 0; i <= maxPointsLog2; ++i)
     {
         int numPoints = int(std::pow(2, i));
 
@@ -827,7 +827,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
     printf("Magnetic field performance for precision factor %.1f and %d threads\n",
            precisionFactor.relativePrecision, threadCount);
 
-    for (int i = 0; i < maxPointsLog2; ++i)
+    for (int i = 0; i <= maxPointsLog2; ++i)
     {
         int numPoints = int(std::pow(2, i));
 
@@ -853,7 +853,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
     printf("Magnetic gradient performance for precision factor %.1f and %d threads\n",
            precisionFactor.relativePrecision, threadCount);
 
-    for (int i = 0; i < maxPointsLog2; ++i)
+    for (int i = 0; i <= maxPointsLog2; ++i)
     {
         int numPoints = int(std::pow(2, i));
 

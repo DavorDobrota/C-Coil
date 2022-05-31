@@ -1,18 +1,10 @@
-#define DLL_BUILD
-
 #include "hardware_acceleration.h"
 
 #include <cstdio>
-#include <cstring>
-#include <cstdlib>
-#include <cassert>
 
-#include <chrono>
-
-#include "constants.h"
-#include "cut_buffer_CUDA.h"
-#include "timing.h"
-#include "error_check.h"
+#include "CUDAConstants.h"
+#include "Timing.h"
+#include "CUDAErrorCheck.h"
 
 #define DEBUG_TIMINGS 1
 
@@ -163,7 +155,8 @@ void calculateG(long long numOps, ParamG par)
 	
 namespace 
 {
-    long long g_last_num_ops = 0, g_last_blocks = 0;
+    long long g_last_num_ops = 0;
+//    long long g_last_blocks = 0;
 
     TYPE *g_zCoordArr = nullptr;
     TYPE *g_rCoordArr = nullptr;
@@ -235,7 +228,11 @@ void Calculate_hardware_accelerated_g
 
     long long blocks = ceil(double(num_ops) / NTHREADS);
 
-    resourceStartupG(num_ops);
+    if (num_ops > g_last_num_ops)
+    {
+        resourceStartupG(num_ops);
+//        g_last_blocks = blocks;
+    }
 
     par.z = g_zCoordArr;
     par.r = g_rCoordArr;

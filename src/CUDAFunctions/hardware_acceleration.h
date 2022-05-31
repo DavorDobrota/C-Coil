@@ -1,7 +1,7 @@
 #ifndef COPPER_HARDWARE_ACCELERATED_FUNCTIONS
 #define COPPER_HARDWARE_ACCELERATED_FUNCTIONS
 
-#include "constants.h"
+#include "CUDAConstants.h"
 
 
 void Calculate_hardware_accelerated_a

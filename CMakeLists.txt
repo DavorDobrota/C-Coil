@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-project(General_Coil_Program)
+project(Coil_Evolution)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,7 +20,11 @@ option(OUTPUT_EXECUTABLE "Build a test executable" ON)
 
 if(USE_GPU)
     add_compile_definitions(USE_GPU)
+
     set(CUDA_NVCC_FLAGS "--use_fast_math --optimise -O3")
+    set(CMAKE_CUDA_ARCHITECTURES "52;61;72;75;86")
+
+    project(Coil_Evolution LANGUAGES CXX CUDA)
 endif()
 
 #######################################
@@ -44,6 +48,7 @@ list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CUDAFunctions")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/LegendreMatrix")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/ThreadPool")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Utils")
 #######################################
 
 #######################################
@@ -76,6 +81,9 @@ list(APPEND LIBS "$<TARGET_OBJECTS:LegendreMatrix>")
 add_subdirectory(src/Tensor)
 list(APPEND LIBS "$<TARGET_OBJECTS:Tensor>")
 
+add_subdirectory(src/Utils)
+list(APPEND LIBS "$<TARGET_OBJECTS:Utils>")
+
 add_subdirectory(src/ThreadPool)
 list(APPEND LIBS "$<TARGET_OBJECTS:ThreadPool>")
 #######################################
@@ -87,6 +95,12 @@ if(OUTPUT_EXECUTABLE)
             BEFORE
             PUBLIC ${INCS}
     )
+#    if(USE_GPU)
+#        set_target_properties(test_executable PROPERTIES CUDA_ARCHITECTURES "all-major")
+#    endif()
+    if(!WIN32)
+        target_link_libraries(test_executable pthread)
+    endif()
 endif()
 
 if(OUTPUT_LIB_SHARED)
@@ -96,33 +110,10 @@ if(OUTPUT_LIB_SHARED)
             BEFORE
             PUBLIC ${INCS}
     )
-endif()
-
-if(USE_GPU)
-    if(WIN32)
-        add_library(hardware_acceleration SHARED IMPORTED)
-        set_property(TARGET hardware_acceleration PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/hardware_acceleration.dll")
-        set_property(TARGET hardware_acceleration PROPERTY IMPORTED_IMPLIB "${CMAKE_CURRENT_SOURCE_DIR}/lib/hardware_acceleration.lib")
-    else()
-        add_library(hardware_acceleration SHARED IMPORTED)
-        set_property(TARGET hardware_acceleration PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/lib/libhardware_acceleration_shared.so")
-    endif()
-
-    if(OUTPUT_EXECUTABLE)
-        target_link_libraries(test_executable hardware_acceleration)
-    endif()
-
-    if(OUTPUT_LIB_SHARED)
-        target_link_libraries(coil_calculations_shared hardware_acceleration)
-    endif()
-endif()
-
-if(!WIN32)
-    if(OUTPUT_EXECUTABLE)
-        target_link_libraries(test_executable pthread)
-    endif()
-
-    if(OUTPUT_LIB_SHARED)
+#    if(USE_GPU)
+#        set_target_properties(coil_calculations_shared PROPERTIES CUDA_ARCHITECTURES "all-major")
+#    endif()
+    if(!WIN32)
         target_link_libraries(coil_calculations_shared pthread)
     endif()
 endif()

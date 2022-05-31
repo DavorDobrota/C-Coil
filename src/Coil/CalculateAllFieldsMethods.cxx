@@ -293,7 +293,7 @@ void Coil::calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
         Calculate_hardware_accelerated_a(polarR.size(), &polarTheta[0], &polarR[0],
                                          currentDensity, innerRadius, length, thickness,
                                          thickness / 16, length / 16, M_PI / 48,
-                                         nullptr, nullptr, &potentialArr[0]);
+                                         &potentialArr[0]);
     #else
         throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
     #endif // USE_GPU

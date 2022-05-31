@@ -1,19 +1,11 @@
-#define DLL_BUILD
-
 #include "hardware_acceleration.h"
 
 #include <cstdio>
-#include <cstring>
-#include <cstdlib>
-#include <cassert>
 #include <cmath>
 
-#include <chrono>
-
-#include "constants.h"
-#include "cut_buffer_CUDA.h"
-#include "timing.h"
-#include "error_check.h"
+#include "CUDAConstants.h"
+#include "Timing.h"
+#include "CUDAErrorCheck.h"
 
 #define DEBUG_TIMINGS 1
 
@@ -135,7 +127,8 @@ void calculateB(long long numOps, ParamB par)
 
 namespace
 {
-    long long g_last_num_ops = 0, g_last_blocks = 0;
+    long long g_last_num_ops = 0;
+//    long long g_last_blocks = 0;
 
     TYPE *g_fieldBhArr = nullptr;
     TYPE *g_fieldBzArr = nullptr;
@@ -161,7 +154,7 @@ void resourceCleanupB()
     g_fieldBzArr = nullptr;
 }
 
-void resourceStartupB(long long num_ops, long long blocks)
+void resourceStartupB(long long num_ops)
 {
     resourceCleanupB();
 
@@ -169,9 +162,6 @@ void resourceStartupB(long long num_ops, long long blocks)
     gpuErrchk(cudaMalloc(&g_rCoordArr, num_ops * sizeof(TYPE)));
     gpuErrchk(cudaMalloc(&g_fieldBhArr, num_ops * sizeof(TYPE)));
     gpuErrchk(cudaMalloc(&g_fieldBzArr, num_ops * sizeof(TYPE)));
-
-    g_last_blocks = blocks;
-    g_last_num_ops = num_ops;
 }
 
 
@@ -195,9 +185,11 @@ void Calculate_hardware_accelerated_b
 
     long long blocks = ceil(double(num_ops) / NTHREADS);
 
-    if(g_last_num_ops < num_ops || g_last_blocks < blocks)
+    if(g_last_num_ops < num_ops)
     {
-        resourceStartupB(num_ops, blocks);
+        resourceStartupB(num_ops);
+        g_last_num_ops = num_ops;
+//        g_last_blocks = blocks;
     }
 
     #if DEBUG_TIMINGS

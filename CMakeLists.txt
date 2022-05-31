@@ -20,13 +20,13 @@ option(OUTPUT_EXECUTABLE "Build a test executable" ON)
 
 if(USE_GPU)
     add_compile_definitions(USE_GPU)
+    set(CUDA_NVCC_FLAGS "--use_fast_math --optimise -O3")
 endif()
 
 #######################################
 # Add all extern include paths
 #######################################
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/extern/CTPL")
-list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/extern/HardwareAcceleration")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/extern/pybind11/include")
 #######################################
 
@@ -40,6 +40,7 @@ list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilData")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Compare")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CUDAFunctions")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/LegendreMatrix")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/ThreadPool")
@@ -65,6 +66,9 @@ list(APPEND LIBS "$<TARGET_OBJECTS:CoilData>")
 
 add_subdirectory(src/CoilGroup)
 list(APPEND LIBS "$<TARGET_OBJECTS:CoilGroup>")
+
+add_subdirectory(src/CUDAFunctions)
+list(APPEND LIBS "$<TARGET_OBJECTS:CUDAFunctions>")
 
 add_subdirectory(src/LegendreMatrix)
 list(APPEND LIBS "$<TARGET_OBJECTS:LegendreMatrix>")

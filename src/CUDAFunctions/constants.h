@@ -1,0 +1,15 @@
+#ifndef COPPER_CONSTANTS
+#define COPPER_CONSTANTS
+
+#define TYPE float
+
+#define NTHREADS 128
+#define REDUCTIONFACTOR (NTHREADS * 2)
+
+#define MODERATOR (506.25 * 11.25)
+#define PI 3.14159265357989323
+#define MI 0.0000001
+
+#define INCREMENTCOUNT 16
+
+#endif // COPPER_CONSTANTS

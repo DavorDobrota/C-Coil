@@ -8,6 +8,7 @@
 void testNewCoilParameters();
 void testVector3();
 void testCoilPositionAndRotation();
+void testRawGPUPerformance();
 
 void testMInductanceZAxisArgumentGeneration();
 void testMInductanceZAxisDifferentGeometries();

@@ -2,11 +2,13 @@
 #include "Coil.h"
 #include "ComputeMethod.h"
 #include "Tensor.h"
+#include "hardware_acceleration.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cstdio>
 #include <vector>
+#include <chrono>
 
 
 void testNewCoilParameters()
@@ -118,4 +120,144 @@ void testCoilPositionAndRotation()
                fieldVectors1[i].x, fieldVectors1[i].y, fieldVectors1[i].z,
                fieldVectors2[i].x, fieldVectors2[i].y, fieldVectors2[i].z);
     printf("\n");
+}
+
+void testRawGPUPerformance()
+{
+    using namespace std::chrono;
+
+    FILE *output = fopen("output.txt", "w");
+
+    printf("Testing raw GPU performance for a given number of points\n\n");
+
+    high_resolution_clock::time_point beginTime;
+    double interval;
+    double pointsPerSec;
+
+    int maxPointsLog2 = 28;
+
+    std::vector<float> zCoords;
+    std::vector<float> rCoords;
+
+    std::vector<float> potentialArr;
+
+    std::vector<float> fieldHArr;
+    std::vector<float> fieldZArr;
+
+    std::vector<float> gradientRPArr;
+    std::vector<float> gradientRRArr;
+    std::vector<float> gradientRZArr;
+    std::vector<float> gradientZZArr;
+
+    printf("Vector potential performance\n");
+
+    for (int i = 0; i <= maxPointsLog2; ++i)
+    {
+        int numPoints = int(std::pow(2, i));
+
+        zCoords.resize(numPoints);
+        rCoords.resize(numPoints);
+        potentialArr.resize(numPoints);
+
+        for (int j = 0; j < numPoints; ++j)
+        {
+            zCoords[j] = j / 1000.0;
+            rCoords[j] = 0.1 + j / 1000000.0;
+        }
+
+        beginTime = high_resolution_clock::now();
+        Calculate_hardware_accelerated_a(rCoords.size(), &zCoords[0], &rCoords[0],
+                                         1000000, 0.03, 0.12, 0.03,
+                                         16, 16, 16,
+                                         &potentialArr[0]);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
+        pointsPerSec = numPoints / interval;
+
+        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+
+        rCoords.clear();
+        zCoords.clear();
+        potentialArr.clear();
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    printf("Magnetic field performance\n");
+
+    for (int i = 0; i <= maxPointsLog2; ++i)
+    {
+        int numPoints = int(std::pow(2, i));
+
+        zCoords.resize(numPoints);
+        rCoords.resize(numPoints);
+        fieldHArr.resize(numPoints);
+        fieldZArr.resize(numPoints);
+
+        for (int j = 0; j < numPoints; ++j)
+        {
+            zCoords[j] = j / 1000.0;
+            rCoords[j] = 0.1 + j / 1000000.0;
+        }
+
+        beginTime = high_resolution_clock::now();
+        Calculate_hardware_accelerated_b(rCoords.size(), &zCoords[0], &rCoords[0],
+                                         1000000, 0.03, 0.12, 0.03,
+                                         16, 16, 16,
+                                         &fieldHArr[0], &fieldZArr[0]);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
+        pointsPerSec = numPoints / interval;
+
+        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+
+        rCoords.clear();
+        zCoords.clear();
+        fieldHArr.clear();
+        fieldZArr.clear();
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    printf("Magnetic gradient performance\n");
+
+    for (int i = 0; i <= maxPointsLog2; ++i)
+    {
+        int numPoints = int(std::pow(2, i));
+
+        zCoords.resize(numPoints);
+        rCoords.resize(numPoints);
+        gradientRPArr.resize(numPoints);
+        gradientRRArr.resize(numPoints);
+        gradientRZArr.resize(numPoints);
+        gradientZZArr.resize(numPoints);
+
+        for (int j = 0; j < numPoints; ++j)
+        {
+            zCoords[j] = j / 1000.0;
+            rCoords[j] = 0.1 + j / 1000000.0;
+        }
+
+        beginTime = high_resolution_clock::now();
+        Calculate_hardware_accelerated_g(rCoords.size(), &zCoords[0], &rCoords[0],
+                                         1000000, 0.03, 0.12, 0.03,
+                                         16, 16, 16,
+                                         &gradientRPArr[0], &gradientRRArr[0],
+                                         &gradientRZArr[0], &gradientZZArr[0]);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
+        pointsPerSec = numPoints / interval;
+
+        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+
+        rCoords.clear();
+        zCoords.clear();
+        gradientRPArr.clear();
+        gradientRRArr.clear();
+        gradientRZArr.clear();
+        gradientZZArr.clear();
+    }
+    printf("\n");
+
+    fclose(output);
 }

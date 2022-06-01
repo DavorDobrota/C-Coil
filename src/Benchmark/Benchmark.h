@@ -15,6 +15,7 @@ void benchComputeAllFields(PrecisionFactor precisionFactor = PrecisionFactor(),
 void benchComputeAllFieldsEveryCoilType(int opCount = 100'000, int threadCount = g_defaultThreadCount);
 void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor = PrecisionFactor(),
                                             int threadCount = g_defaultThreadCount, int maxPointsLog2 = g_maxPot);
+void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor = PrecisionFactor(), int maxPointsLog2 = g_maxPot); // TODO - binding
 
 void benchMInductanceZAxis(ComputeMethod computeMethod = CPU_ST, int threadCount = g_defaultThreadCount);
 void benchMInductanceZAxisMTScaling(int maxThreadCount = g_defaultThreadCount);

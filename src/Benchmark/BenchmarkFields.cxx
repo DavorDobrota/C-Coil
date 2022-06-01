@@ -797,7 +797,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
 
     FILE *output = fopen("output.txt", "w");
 
-    printf("Benchmarking expected performance for a given number of points\n\n");
+    printf("Benchmarking expected CPU performance for a given number of points\n\n");
 
     Coil coil = Coil(0.1, 0.1, 0.1, 10000);
     coil.setThreadCount(threadCount);
@@ -879,6 +879,107 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
 
         beginTime = high_resolution_clock::now();
         gradientArr = coil.computeAllBGradientTensors(positions, CPU_MT);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
+        pointsPerSec = numPoints / interval;
+
+        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+
+        positions.clear();
+        gradientArr.clear();
+    }
+    printf("\n");
+
+    fclose(output);
+}
+
+void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, int maxPointsLog2)
+{
+    using namespace std::chrono;
+
+    FILE *output = fopen("output.txt", "w");
+
+    printf("Benchmarking expected GPU performance for a given number of points\n\n");
+
+    Coil coil = Coil(0.1, 0.1, 0.1, 10000);
+    coil.setDefaultPrecision(precisionFactor);
+
+    high_resolution_clock::time_point beginTime;
+    double interval;
+    double pointsPerSec;
+
+    std::vector<vec3::CoordVector3> positions;
+
+    std::vector<vec3::FieldVector3> potentialArr;
+    std::vector<vec3::FieldVector3> fieldArr;
+    std::vector<vec3::Matrix3> gradientArr;
+
+    printf("Vector potential performance for precision factor %.1f\n",
+           precisionFactor.relativePrecision);
+
+    for (int i = 0; i <= maxPointsLog2; ++i)
+    {
+        int numPoints = int(std::pow(2, i));
+
+        positions.resize(numPoints);
+        potentialArr.resize(numPoints);
+        for (int j = 0; j < numPoints; ++j)
+            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+
+        beginTime = high_resolution_clock::now();
+        potentialArr = coil.computeAllAPotentialComponents(positions, GPU);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
+        pointsPerSec = numPoints / interval;
+
+        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+
+        positions.clear();
+        potentialArr.clear();
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    printf("Magnetic field performance for precision factor %.1f\n",
+           precisionFactor.relativePrecision);
+
+    for (int i = 0; i <= maxPointsLog2; ++i)
+    {
+        int numPoints = int(std::pow(2, i));
+
+        positions.resize(numPoints);
+        potentialArr.resize(numPoints);
+        for (int j = 0; j < numPoints; ++j)
+            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+
+        beginTime = high_resolution_clock::now();
+        fieldArr = coil.computeAllBFieldComponents(positions, GPU);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
+        pointsPerSec = numPoints / interval;
+
+        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+
+        positions.clear();
+        fieldArr.clear();
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    printf("Magnetic gradient performance for precision factor %.1f\n",
+           precisionFactor.relativePrecision);
+
+    for (int i = 0; i <= maxPointsLog2; ++i)
+    {
+        int numPoints = int(std::pow(2, i));
+
+        positions.resize(numPoints);
+        potentialArr.resize(numPoints);
+        for (int j = 0; j < numPoints; ++j)
+            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+
+        beginTime = high_resolution_clock::now();
+        gradientArr = coil.computeAllBGradientTensors(positions, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
         pointsPerSec = numPoints / interval;
 

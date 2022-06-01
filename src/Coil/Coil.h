@@ -14,7 +14,6 @@
 
 const int precisionArraySize = 864;
 const int defaultThreadCount = 8;
-const int maxPhiBlocks = 200;
 
 const extern int blockPrecisionCPUArray[precisionArraySize];
 const extern int incrementPrecisionCPUArray[precisionArraySize];

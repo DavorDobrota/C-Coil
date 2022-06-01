@@ -1,7 +1,16 @@
 #include "Coil.h"
+#include "ThreadPool.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <numeric>
+#include <cstdio>
+
+namespace
+{
+    const int pointMultiplier = 1024;
+    threadPool::ThreadPoolControl g_threadPool;
+}
 
 
 void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &pointVectors,
@@ -13,19 +22,63 @@ void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &
     cylindricalRArr.resize(pointVectors.size());
     cylindricalPhiArr.resize(pointVectors.size());
 
-    vec3::FieldVector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVector);
+    const int chunkSize = pointVectors.size() / (2 * threadCount);
 
-    for (int i = 0; i < pointVectors.size(); ++i)
+    if (pointVectors.size() > pointMultiplier * threadCount)
     {
-        vec3::FieldVector3 pointVec = vec3::CoordVector3::convertToFieldVector(pointVectors[i]);
-        vec3::FieldVector3 transformedVec = inverseTransformationMatrix * (pointVec - positionVec);
+//        printf("Made it here\n");
+        g_threadPool.setTaskCount(cylindricalZArr.size());
+        g_threadPool.getCompletedTasks().store(0ull);
 
-        vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
-        finalVec.convertToCylindrical();
+        auto calcThread = [](
+                int idx,
+                Coil coil,
+                const std::vector<vec3::CoordVector3> &pointVectors,
+                std::vector<double> &cylindricalZArr,
+                std::vector<double> &cylindricalRArr,
+                std::vector<double> &cylindricalPhiArr,
+                size_t startIdx, size_t stopIdx
+        ) -> void
+        {
+            for(size_t i = startIdx; i < stopIdx; i++)
+            {
+                auto result = coil.adaptInputVectorForPoint(pointVectors[i]);
 
-        cylindricalZArr[i] = finalVec.comp1;
-        cylindricalRArr[i] = finalVec.comp2;
-        cylindricalPhiArr[i] = finalVec.comp3;
+                cylindricalZArr[i] = result.comp1;
+                cylindricalRArr[i] = result.comp2;
+                cylindricalPhiArr[i] = result.comp3;
+
+                g_threadPool.getCompletedTasks().fetch_add(1ull);
+            }
+        };
+
+        for(size_t i = 0; i < (size_t)std::ceil((double)cylindricalZArr.size() / (double)chunkSize); i++)
+        {
+            g_threadPool.push(
+                    calcThread,
+                    std::ref(*this),
+                    std::ref(pointVectors),
+                    std::ref(cylindricalZArr), std::ref(cylindricalRArr), std::ref(cylindricalPhiArr),
+                    i * chunkSize, std::min((i + 1) * chunkSize, cylindricalZArr.size())
+            );
+        }
+
+        g_threadPool.synchronizeThreads();
+    }
+    else {
+        vec3::FieldVector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVector);
+
+        for (int i = 0; i < pointVectors.size(); ++i) {
+            vec3::FieldVector3 pointVec = vec3::CoordVector3::convertToFieldVector(pointVectors[i]);
+            vec3::FieldVector3 transformedVec = inverseTransformationMatrix * (pointVec - positionVec);
+
+            vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
+            finalVec.convertToCylindrical();
+
+            cylindricalZArr[i] = finalVec.comp1;
+            cylindricalRArr[i] = finalVec.comp2;
+            cylindricalPhiArr[i] = finalVec.comp3;
+        }
     }
 }
 

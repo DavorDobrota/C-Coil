@@ -8,8 +8,6 @@
 #include <math.h>
 #include <algorithm>
 #include <numeric>
-#include <cstdio>
-#include <chrono>
 
 
 namespace

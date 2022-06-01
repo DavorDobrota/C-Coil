@@ -13,7 +13,7 @@
 #pragma ide diagnostic ignored "Simplify"
 int main()
 {
-    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 12, 26);
+    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(1.0), 12, 26);
     benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 26);
     testRawGPUPerformance();
 

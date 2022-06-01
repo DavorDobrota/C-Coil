@@ -2,6 +2,7 @@
 
 #include "hardware_acceleration.h"
 #include "ThreadPool.h"
+#include "hardware_acceleration.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -232,6 +233,39 @@ void Coil::calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
+void Coil::calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
+                                     const std::vector<double> &cylindricalRArr,
+                                     std::vector<double> &computedPotentialArr,
+                                     const PrecisionArguments &usedPrecision) const
+{
+    computedPotentialArr.resize(cylindricalZArr.size());
+
+    std::vector<float> z_arr(cylindricalZArr.size());
+    std::vector<float> r_arr(cylindricalZArr.size());
+    std::vector<float> potential_arr(cylindricalZArr.size());
+
+    for (int i = 0; i < cylindricalZArr.size(); ++i)
+    {
+        z_arr[i] = cylindricalZArr[i];
+        r_arr[i] = cylindricalRArr[i];
+    }
+
+    #if USE_GPU == 1
+        Calculate_hardware_accelerated_a(z_arr.size(), &z_arr[0], &r_arr[0],
+                                         currentDensity, innerRadius, length, thickness,
+                                         16, 16, 16,
+                                         &potential_arr[0]);
+    #else
+        throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
+    #endif // USE_GPU
+
+    for (int i = 0; i < potential_arr.size(); ++i)
+        computedPotentialArr[i] = potential_arr[i];
+}
+#pragma clang diagnostic pop
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 void Coil::calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
                                  const std::vector<double> &cylindricalRArr,
                                  std::vector<double> &computedFieldHArr,
@@ -241,69 +275,36 @@ void Coil::calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
     computedFieldHArr.resize(cylindricalZArr.size());
     computedFieldZArr.resize(cylindricalZArr.size());
 
-    std::vector<float> polarR(cylindricalZArr.size());
-    std::vector<float> polarTheta(cylindricalZArr.size());
+    std::vector<float> z_arr(cylindricalZArr.size());
+    std::vector<float> r_arr(cylindricalZArr.size());
+    std::vector<float> fieldH_arr(cylindricalZArr.size());
+    std::vector<float> fieldZ_arr(cylindricalZArr.size());
 
     for (int i = 0; i < cylindricalZArr.size(); ++i)
     {
-        polarR[i] = std::sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]);
-        polarTheta[i] = atan2(cylindricalRArr[i], cylindricalZArr[i]);
+        z_arr[i] = cylindricalZArr[i];
+        r_arr[i] = cylindricalRArr[i];
     }
 
-    std::vector<float> fieldHArr(polarR.size());
-    std::vector<float> fieldZArr(polarR.size());
-
     #if USE_GPU == 1
-        Calculate_hardware_accelerated_b(polarR.size(), &polarTheta[0], &polarR[0],
+        Calculate_hardware_accelerated_b(z_arr.size(), &z_arr[0], &r_arr[0],
                                          currentDensity, innerRadius, length, thickness,
                                          thickness/16, length/16, M_PI/48,
-                                         &fieldHArr[0], &fieldZArr[0]);
+                                         &fieldH_arr[0], &fieldZ_arr[0]);
     #else
         throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
     #endif // USE_GPU
 
-    for (int i = 0; i < polarR.size(); ++i)
+    for (int i = 0; i < fieldH_arr.size(); ++i)
     {
-        computedFieldHArr[i] = fieldHArr[i];
-        computedFieldZArr[i] = fieldZArr[i];
+        computedFieldHArr[i] = fieldH_arr[i];
+        computedFieldZArr[i] = fieldZ_arr[i];
     }
 }
 #pragma clang diagnostic pop
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-void Coil::calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
-                                     const std::vector<double> &cylindricalRArr,
-                                     std::vector<double> &computedPotentialArr,
-                                     const PrecisionArguments &usedPrecision) const
-{
-    computedPotentialArr.resize(cylindricalZArr.size());
-
-    std::vector<float> polarR(cylindricalZArr.size());
-    std::vector<float> polarTheta(cylindricalZArr.size());
-
-    for (int i = 0; i < cylindricalZArr.size(); ++i)
-    {
-        polarR[i] = std::sqrt(cylindricalZArr[i] * cylindricalZArr[i] + cylindricalRArr[i] * cylindricalRArr[i]);
-        polarTheta[i] = std::atan2(cylindricalRArr[i], cylindricalZArr[i]);
-    }
-    std::vector<float> potentialArr(polarR.size());
-
-    #if USE_GPU == 1
-        Calculate_hardware_accelerated_a(polarR.size(), &polarTheta[0], &polarR[0],
-                                         currentDensity, innerRadius, length, thickness,
-                                         thickness / 16, length / 16, M_PI / 48,
-                                         &potentialArr[0]);
-    #else
-        throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
-    #endif // USE_GPU
-
-    // TODO - fix frequency in GPU potential calculation, current temporary fix
-    for (int i = 0; i < polarR.size(); ++i)
-        computedPotentialArr[i] = potentialArr[i] / (2 * M_PI);
-}
-#pragma clang diagnostic pop
-
 void Coil::calculateAllBGradientGPU(const std::vector<double> &cylindricalZArr,
                                     const std::vector<double> &cylindricalRArr,
                                     std::vector<double> &computedGradientRPhi,
@@ -312,8 +313,43 @@ void Coil::calculateAllBGradientGPU(const std::vector<double> &cylindricalZArr,
                                     std::vector<double> &computedGradientZZ,
                                     const PrecisionArguments &usedPrecision) const
 {
-    // TODO - sometime in the distant future, this may be implemented
+    computedGradientRPhi.resize(cylindricalZArr.size());
+    computedGradientRR.resize(cylindricalZArr.size());
+    computedGradientRZ.resize(cylindricalZArr.size());
+    computedGradientZZ.resize(cylindricalZArr.size());
+
+    std::vector<float> z_arr(cylindricalZArr.size());
+    std::vector<float> r_arr(cylindricalZArr.size());
+    std::vector<float> gradRP_arr(cylindricalZArr.size());
+    std::vector<float> gradRR_arr(cylindricalZArr.size());
+    std::vector<float> gradRZ_arr(cylindricalZArr.size());
+    std::vector<float> gradZZ_arr(cylindricalZArr.size());
+
+    for (int i = 0; i < cylindricalZArr.size(); ++i)
+    {
+        z_arr[i] = cylindricalZArr[i];
+        r_arr[i] = cylindricalRArr[i];
+    }
+
+    #if USE_GPU == 1
+        Calculate_hardware_accelerated_g(z_arr.size(), &z_arr[0], &r_arr[0],
+                                         currentDensity, innerRadius, length, thickness,
+                                         thickness/16, length/16, M_PI/48,
+                                         &gradRP_arr[0], &gradRR_arr[0],
+                                         &gradRZ_arr[0], &gradZZ_arr[0]);
+    #else
+        throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
+    #endif // USE_GPU
+
+    for (int i = 0; i < gradRP_arr.size(); ++i)
+    {
+        computedGradientRPhi[i] = gradRP_arr[i];
+        computedGradientRR[i] = gradRR_arr[i];
+        computedGradientRZ[i] = gradRZ_arr[i];
+        computedGradientZZ[i] = gradZZ_arr[i];
+    }
 }
+#pragma clang diagnostic pop
 
 void Coil::calculateAllBFieldSwitch(const std::vector<double> &cylindricalZArr,
                                     const std::vector<double> &cylindricalRArr,

@@ -13,16 +13,6 @@
 #pragma ide diagnostic ignored "Simplify"
 int main()
 {
-//    benchComputeAllFieldsEveryCoilType(200'003, 8);
-//    benchMathFunctions();
-
-//    benchMInductanceZAxisMTScaling(16);
-//    benchMInductanceGeneralMTScaling(16);
-//    benchSelfInductance();
-//    benchForceZAxisMTScaling(16);
-//    benchForceGeneralMTScaling(16);
-
-//    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(1.0), 16, 25);
 
     return 0;
 }

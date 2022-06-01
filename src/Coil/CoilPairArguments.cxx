@@ -206,6 +206,9 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
 CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &primary, const Coil &secondary,
                                                                    PrecisionFactor precisionFactor, bool zAxisCase)
 {
+    // TODO - implement GPU increment balancing properly
+    return calculateCoilPairArgumentsCPU(primary, secondary, precisionFactor, zAxisCase);
+
     const int primLengthIncrements = arrSize;
     const int primThicknessIncrements = arrSize;
     const int primAngularIncrements = arrSize;

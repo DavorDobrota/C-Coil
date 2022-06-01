@@ -41,6 +41,23 @@ void compMethodPrecisionCPUvsGPU()
     }
 }
 
+void compPrecisionCPUvsGPU()
+{
+    printf("Comparing calculation precision in GPU and CPU cases (CPU | GPU)\n\n");
+
+    Coil prim = Coil(0.03, 0.03, 0.12, 3600);
+    Coil sec = Coil(0.03, 0.03, 0.12, 3600);
+    sec.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.2));
+
+    printf("M inductance: %.15g | %.15g\n",
+           Coil::computeMutualInductance(prim, sec, PrecisionFactor(7.0), CPU_MT),
+           Coil::computeMutualInductance(prim, sec, PrecisionFactor(7.0), GPU));
+
+    printf("Ampere force: %.15g | %.15g\n",
+           Coil::computeAmpereForce(prim, sec, PrecisionFactor(7.0), CPU_MT).first.z,
+           Coil::computeAmpereForce(prim, sec, PrecisionFactor(7.0), GPU).first.z);
+}
+
 void compMInductanceForSpecialCase()
 {
     Coil primary = Coil(0.071335, 0.01397, 0.142748, 1142);

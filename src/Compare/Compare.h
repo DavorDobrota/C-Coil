@@ -22,6 +22,7 @@ void compMInductanceGeneralGraphs();
 void compMInductanceGeneralEdgeCases();
 
 void compMutualInductanceZAxis();
+void compPrecisionCPUvsGPU(); // TODO - implement binding
 void compSelfInductance();
 
 void compCoilGroupMTD(int coilCount = 100, int pointCount = 10'000, int threadCount = g_defaultThreadCount, bool print = true);

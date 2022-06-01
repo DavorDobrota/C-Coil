@@ -3,7 +3,8 @@
 
 #define TYPE float
 
-#define NTHREADS 128
+#define NTHREADS 64
+#define DEBUG_TIMINGS 0
 #define REDUCTIONFACTOR (NTHREADS * 2)
 
 #define MODERATOR (506.25 * 11.25)

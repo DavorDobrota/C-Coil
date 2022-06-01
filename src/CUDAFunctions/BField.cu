@@ -7,8 +7,6 @@
 #include "Timing.h"
 #include "CUDAErrorCheck.h"
 
-#define DEBUG_TIMINGS 1
-
 
 struct ParamB
 {

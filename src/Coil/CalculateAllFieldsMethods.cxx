@@ -35,16 +35,17 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialMT(const std::vector
 
     auto calcThread = [](
             int idx,
-            const Coil coil,
+            const Coil &coil,
+            const PrecisionArguments &usedPrecision,
             const std::vector<vec3::CoordVector3> &pointVectors,
-            const PrecisionArguments usedPrecision,
-            std::vector<vec3::FieldVector3> computedPotentials,
+            std::vector<vec3::FieldVector3> &computedPotentials,
             size_t startIdx, size_t stopIdx
     ) -> void
     {
         for(size_t i = startIdx; i < stopIdx; i++)
         {
             auto result = coil.computeAPotentialVector(pointVectors[i], usedPrecision);
+            computedPotentials[i] = result;
 
             g_threadPool.getCompletedTasks().fetch_add(1ull);
         }
@@ -55,8 +56,8 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialMT(const std::vector
         g_threadPool.push(
                 calcThread,
                 std::ref(*this),
-                std::ref(pointVectors),
                 std::ref(usedPrecision),
+                std::ref(pointVectors),
                 std::ref(computedPotentials),
                 i * chunkSize, std::min((i + 1) * chunkSize, pointVectors.size())
         );
@@ -79,16 +80,17 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldMT(const std::vector<vec
 
     auto calcThread = [](
             int idx,
-            const Coil coil,
-            const PrecisionArguments usedPrecision,
+            const Coil &coil,
+            const PrecisionArguments &usedPrecision,
             const std::vector<vec3::CoordVector3> &pointVectors,
-            std::vector<vec3::FieldVector3> computedFields,
+            std::vector<vec3::FieldVector3> &computedFields,
             size_t startIdx, size_t stopIdx
     ) -> void
     {
         for(size_t i = startIdx; i < stopIdx; i++)
         {
             auto result = coil.computeBFieldVector(pointVectors[i], usedPrecision);
+            computedFields[i] = result;
 
             g_threadPool.getCompletedTasks().fetch_add(1ull);
         }
@@ -122,16 +124,17 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientMT(const std::vector<vec3:
 
     auto calcThread = [](
             int idx,
-            const Coil coil,
+            const Coil &coil,
+            const PrecisionArguments &usedPrecision,
             const std::vector<vec3::CoordVector3> &pointVectors,
-            const PrecisionArguments usedPrecision,
-            std::vector<vec3::Matrix3> computedGradients,
+            std::vector<vec3::Matrix3> &computedGradients,
             size_t startIdx, size_t stopIdx
     ) -> void
     {
         for(size_t i = startIdx; i < stopIdx; i++)
         {
             auto result = coil.computeBGradientTensor(pointVectors[i], usedPrecision);
+            computedGradients[i] = result;
 
             g_threadPool.getCompletedTasks().fetch_add(1ull);
         }
@@ -142,14 +145,15 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientMT(const std::vector<vec3:
         g_threadPool.push(
                 calcThread,
                 std::ref(*this),
-                std::ref(pointVectors),
                 std::ref(usedPrecision),
+                std::ref(pointVectors),
                 std::ref(computedGradients),
                 i * chunkSize, std::min((i + 1) * chunkSize, pointVectors.size())
         );
     }
     g_threadPool.synchronizeThreads();
 
+    printf("1\n");
     return computedGradients;
 }
 
@@ -308,6 +312,7 @@ int Coil::calculateChunkSize(int numOps) const
                 chunkFitness = fitnessArray[i];
             }
         }
+//        printf("%d\n", chunkSize);
         return chunkSize;
     }
 }

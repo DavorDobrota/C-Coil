@@ -6,7 +6,6 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include <algorithm>
 #include <numeric>
 
 
@@ -153,7 +152,6 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientMT(const std::vector<vec3:
     }
     g_threadPool.synchronizeThreads();
 
-    printf("1\n");
     return computedGradients;
 }
 
@@ -312,7 +310,6 @@ int Coil::calculateChunkSize(int numOps) const
                 chunkFitness = fitnessArray[i];
             }
         }
-//        printf("%d\n", chunkSize);
         return chunkSize;
     }
 }

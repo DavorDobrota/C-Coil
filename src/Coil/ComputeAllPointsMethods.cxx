@@ -16,7 +16,8 @@ namespace
 void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &pointVectors,
                                          std::vector<double> &cylindricalZArr,
                                          std::vector<double> &cylindricalRArr,
-                                         std::vector<double> &cylindricalPhiArr) const
+                                         std::vector<double> &cylindricalPhiArr,
+                                         ComputeMethod computeMethod) const
 {
     cylindricalZArr.resize(pointVectors.size());
     cylindricalRArr.resize(pointVectors.size());
@@ -24,7 +25,7 @@ void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &
 
     const int chunkSize = pointVectors.size() / (2 * threadCount);
 
-    if (pointVectors.size() > pointMultiplier * threadCount)
+    if (pointVectors.size() > pointMultiplier * threadCount && computeMethod == GPU)
     {
 //        printf("Made it here\n");
         g_threadPool.setTaskCount(cylindricalZArr.size());
@@ -97,19 +98,38 @@ std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vect
                                                                  const PrecisionArguments &usedPrecision,
                                                                  ComputeMethod computeMethod) const
 {
-    std::vector<double> cylindricalZArr, cylindricalRArr, cylindricalPhiArr;
-    std::vector<double> fieldH, fieldZ;
-    std::vector<vec3::FieldVector3> computedFieldArr(pointVectors.size());
+    if (computeMethod == GPU) {
 
-    adaptInputVectorsForAllPoints(pointVectors, cylindricalZArr, cylindricalRArr, cylindricalPhiArr);
-    calculateAllBFieldSwitch(cylindricalZArr, cylindricalRArr, fieldH, fieldZ, usedPrecision, computeMethod);
+        std::vector<double> cylindricalZArr, cylindricalRArr, cylindricalPhiArr;
+        std::vector<double> fieldH(pointVectors.size());
+        std::vector<double> fieldZ(pointVectors.size());
 
-    for (int i = 0; i < pointVectors.size(); ++i)
-        computedFieldArr[i] = vec3::FieldVector3(fieldH[i] * std::cos(cylindricalPhiArr[i]),
-                                                 fieldH[i] * std::sin(cylindricalPhiArr[i]),
-                                                 fieldZ[i]);
+        std::vector<vec3::FieldVector3> computedFieldArr(pointVectors.size());
 
-    return adaptOutputVectorsForAllPoints(computedFieldArr);
+        adaptInputVectorsForAllPoints(pointVectors, cylindricalZArr, cylindricalRArr, cylindricalPhiArr, GPU);
+
+        calculateAllBFieldGPU(cylindricalZArr, cylindricalRArr, fieldH, fieldZ, usedPrecision);
+
+        for (int i = 0; i < pointVectors.size(); ++i)
+            computedFieldArr[i] = vec3::FieldVector3(fieldH[i] * std::cos(cylindricalPhiArr[i]),
+                                                     fieldH[i] * std::sin(cylindricalPhiArr[i]),
+                                                     fieldZ[i]);
+
+        return adaptOutputVectorsForAllPoints(computedFieldArr);
+    }
+    else if (computeMethod == CPU_MT) {
+
+        return calculateAllBFieldMT(pointVectors, usedPrecision);
+    }
+    else
+    {
+        std::vector<vec3::FieldVector3> computedFieldArr(pointVectors.size());
+
+        for (int i = 0; i < pointVectors.size(); ++i)
+            computedFieldArr[i] = computeBFieldVector(pointVectors[i], usedPrecision);
+
+        return computedFieldArr;
+    }
 }
 
 std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
@@ -197,19 +217,35 @@ std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::
                                                                      const PrecisionArguments &usedPrecision,
                                                                      ComputeMethod computeMethod) const
 {
-    std::vector<double> cylindricalZArr, cylindricalRArr, cylindricalPhiArr;
-    std::vector<double> potentialArr;
-    std::vector<vec3::FieldVector3> computedFieldArr(pointVectors.size());
+    if (computeMethod == GPU)
+    {
+        std::vector<double> cylindricalZArr, cylindricalRArr, cylindricalPhiArr;
+        std::vector<double> potentialArr;
+        std::vector<vec3::FieldVector3> computedPotentialArr(pointVectors.size());
 
-    adaptInputVectorsForAllPoints(pointVectors, cylindricalZArr, cylindricalRArr, cylindricalPhiArr);
-    calculateAllAPotentialSwitch(cylindricalZArr, cylindricalRArr, potentialArr, usedPrecision, computeMethod);
+        adaptInputVectorsForAllPoints(pointVectors, cylindricalZArr, cylindricalRArr, cylindricalPhiArr, GPU);
+        calculateAllAPotentialGPU(cylindricalZArr, cylindricalRArr, potentialArr, usedPrecision);
 
-    for (int i = 0; i < pointVectors.size(); ++i)
-        computedFieldArr[i] = vec3::FieldVector3(potentialArr[i] * (-1) * std::sin(cylindricalPhiArr[i]),
+        for (int i = 0; i < pointVectors.size(); ++i)
+            computedPotentialArr[i] = vec3::FieldVector3(potentialArr[i] * (-1) * std::sin(cylindricalPhiArr[i]),
                                                  potentialArr[i] * std::cos(cylindricalPhiArr[i]),
                                                  0.0);
 
-    return adaptOutputVectorsForAllPoints(computedFieldArr);
+        return adaptOutputVectorsForAllPoints(computedPotentialArr);
+    }
+    else if (computeMethod == CPU_MT)
+    {
+        return calculateAllAPotentialMT(pointVectors, usedPrecision);
+    }
+    else
+    {
+        std::vector<vec3::FieldVector3> computedPotentialArr(pointVectors.size());
+
+        for (int i = 0; i < pointVectors.size(); ++i)
+            computedPotentialArr[i] = computeAPotentialVector(pointVectors[i], usedPrecision);
+
+        return computedPotentialArr;
+    }
 }
 
 std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectors,
@@ -385,50 +421,65 @@ std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vect
 
 
 std::vector<vec3::Matrix3> Coil::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
+                                                            const PrecisionArguments &usedPrecision,
+                                                            ComputeMethod computeMethod) const
 {
-    std::vector<double> cylindricalZArr, cylindricalRArr, cylindricalPhiArr;
-
-    adaptInputVectorsForAllPoints(pointVectors, cylindricalZArr, cylindricalRArr, cylindricalPhiArr);
-
-    std::vector<double> gradientRPhi;
-    std::vector<double> gradientRR;
-    std::vector<double> gradientRZ;
-    std::vector<double> gradientZZ;
-
-    calculateAllBGradientSwitch(cylindricalZArr, cylindricalRArr,
-                                gradientRPhi, gradientRR, gradientRZ, gradientZZ, usedPrecision, computeMethod);
-
-    std::vector<vec3::Matrix3> computedGradientMatrix(gradientRPhi.size());
-
-    for (int i = 0; i < gradientRPhi.size(); ++i)
+    if (computeMethod == GPU)
     {
-        if (cylindricalRArr[i] / innerRadius < g_zAxisApproximationRatio)
-        {
-            computedGradientMatrix[i] = vec3::Matrix3(gradientRR[i], 0.0, 0.0,
-                                                      0.0, gradientRR[i], 0.0,
-                                                      0.0, 0.0, gradientZZ[i]);
-        }
-        else
-        {
-            double cosPhi = cos(cylindricalPhiArr[i]);
-            double sinPhi = sin(cylindricalPhiArr[i]);
+        std::vector<double> cylindricalZArr, cylindricalRArr, cylindricalPhiArr;
 
-            double xx = gradientRZ[i] * cosPhi * cosPhi + gradientRPhi[i] * sinPhi * sinPhi;
-            double yy = gradientRZ[i] * sinPhi * sinPhi + gradientRPhi[i] * cosPhi * cosPhi;
-            double zz = gradientZZ[i];
+        adaptInputVectorsForAllPoints(pointVectors, cylindricalZArr, cylindricalRArr, cylindricalPhiArr, GPU);
 
-            double xy = 0.5 * sin(2 * cylindricalPhiArr[i]) * (gradientRR[i] - gradientRPhi[i]);
-            double xz = gradientRZ[i] * cosPhi;
-            double yz = gradientRZ[i] * sinPhi;
-            // the matrix is symmetric
-            vec3::Matrix3 baseMatrix = vec3::Matrix3(xx, xy, xz,
-                                                     xy, yy, yz,
-                                                     xz, yz, zz);
-            computedGradientMatrix[i] = transformationMatrix * baseMatrix;
+        std::vector<double> gradientRPhi;
+        std::vector<double> gradientRR;
+        std::vector<double> gradientRZ;
+        std::vector<double> gradientZZ;
+
+        std::vector<vec3::Matrix3> computedGradientMatrix(cylindricalZArr.size());
+        calculateAllBGradientGPU(cylindricalZArr, cylindricalRArr, gradientRPhi, gradientRR, gradientRZ, gradientZZ, usedPrecision);
+
+        for (int i = 0; i < gradientRPhi.size(); ++i)
+        {
+            if (cylindricalRArr[i] / innerRadius < g_zAxisApproximationRatio)
+            {
+                computedGradientMatrix[i] = vec3::Matrix3(gradientRR[i], 0.0, 0.0,
+                                                          0.0, gradientRR[i], 0.0,
+                                                          0.0, 0.0, gradientZZ[i]);
+            }
+            else
+            {
+                double cosPhi = cos(cylindricalPhiArr[i]);
+                double sinPhi = sin(cylindricalPhiArr[i]);
+
+                double xx = gradientRZ[i] * cosPhi * cosPhi + gradientRPhi[i] * sinPhi * sinPhi;
+                double yy = gradientRZ[i] * sinPhi * sinPhi + gradientRPhi[i] * cosPhi * cosPhi;
+                double zz = gradientZZ[i];
+
+                double xy = 0.5 * sin(2 * cylindricalPhiArr[i]) * (gradientRR[i] - gradientRPhi[i]);
+                double xz = gradientRZ[i] * cosPhi;
+                double yz = gradientRZ[i] * sinPhi;
+                // the matrix is symmetric
+                vec3::Matrix3 baseMatrix = vec3::Matrix3(xx, xy, xz,
+                                                         xy, yy, yz,
+                                                         xz, yz, zz);
+                computedGradientMatrix[i] = transformationMatrix * baseMatrix;
+            }
         }
+        return computedGradientMatrix;
     }
-    return computedGradientMatrix;
+    else if (computeMethod == CPU_MT)
+    {
+        return calculateAllBGradientMT(pointVectors, usedPrecision);
+    }
+    else
+    {
+        std::vector<vec3::Matrix3> computedGradientArr(pointVectors.size());
+
+        for (int i = 0; i < pointVectors.size(); ++i)
+            computedGradientArr[i] = computeBGradientTensor(pointVectors[i], usedPrecision);
+
+        return computedGradientArr;
+    }
 }
 
 std::vector<vec3::Matrix3> Coil::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &pointVectors,

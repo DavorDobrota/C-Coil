@@ -417,51 +417,20 @@ class Coil
         void adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &pointVectors,
                                            std::vector<double> &cylindricalZArr,
                                            std::vector<double> &cylindricalRArr,
-                                           std::vector<double> &cylindricalPhiArr) const;
+                                           std::vector<double> &cylindricalPhiArr,
+                                           ComputeMethod computeMethod = CPU_ST) const;
 
         [[nodiscard]] std::vector<vec3::FieldVector3>
         adaptOutputVectorsForAllPoints(const std::vector<vec3::FieldVector3> &computedVectorArr) const;
 
-        void calculateAllBFieldST(const std::vector<double> &cylindricalZArr,
-                                  const std::vector<double> &cylindricalRArr,
-                                  std::vector<double> &computedFieldHArr,
-                                  std::vector<double> &computedFieldZArr,
-                                  const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] std::vector<vec3::FieldVector3> calculateAllBFieldMT(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                           const PrecisionArguments &usedPrecision) const;
 
-        void calculateAllAPotentialST(const std::vector<double> &cylindricalZArr,
-                                      const std::vector<double> &cylindricalRArr,
-                                      std::vector<double> &computedPotentialArr,
-                                      const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] std::vector<vec3::FieldVector3> calculateAllAPotentialMT(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                               const PrecisionArguments &usedPrecision) const;
 
-        void calculateAllBGradientST(const std::vector<double> &cylindricalZArr,
-                                     const std::vector<double> &cylindricalRArr,
-                                     std::vector<double> &computedGradientRPhi,
-                                     std::vector<double> &computedGradientRR,
-                                     std::vector<double> &computedGradientRZ,
-                                     std::vector<double> &computedGradientZZ,
-                                     const PrecisionArguments &usedPrecision) const;
-
-        void calculateAllBFieldMT(const std::vector<double> &cylindricalZArr,
-                                  const std::vector<double> &cylindricalRArr,
-                                  std::vector<double> &computedFieldHArr,
-                                  std::vector<double> &computedFieldZArr,
-                                  const PrecisionArguments &usedPrecision,
-                                  int chunkSize = g_defaultChunkSize, bool async = false) const;
-
-        void calculateAllAPotentialMT(const std::vector<double> &cylindricalZArr,
-                                      const std::vector<double> &cylindricalRArr,
-                                      std::vector<double> &computedPotentialArr,
-                                      const PrecisionArguments &usedPrecision,
-                                      int chunkSize = g_defaultChunkSize, bool async = false) const;
-
-        void calculateAllBGradientMT(const std::vector<double> &cylindricalZArr,
-                                     const std::vector<double> &cylindricalRArr,
-                                     std::vector<double> &computedGradientRPhi,
-                                     std::vector<double> &computedGradientRR,
-                                     std::vector<double> &computedGradientRZ,
-                                     std::vector<double> &computedGradientZZ,
-                                     const PrecisionArguments &usedPrecision,
-                                     int chunkSize = g_defaultChunkSize, bool async = false) const;
+        [[nodiscard]] std::vector<vec3::Matrix3> calculateAllBGradientMT(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                         const PrecisionArguments &usedPrecision) const;
 
         void calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
                                    const std::vector<double> &cylindricalRArr,
@@ -481,28 +450,6 @@ class Coil
                                       std::vector<double> &computedGradientRZ,
                                       std::vector<double> &computedGradientZZ,
                                       const PrecisionArguments &usedPrecision) const;
-
-        void calculateAllBFieldSwitch(const std::vector<double> &cylindricalZArr,
-                                      const std::vector<double> &cylindricalRArr,
-                                      std::vector<double> &computedFieldHArr,
-                                      std::vector<double> &computedFieldZArr,
-                                      const PrecisionArguments &usedPrecision,
-                                      ComputeMethod computeMethod) const;
-
-        void calculateAllAPotentialSwitch(const std::vector<double> &cylindricalZArr,
-                                          const std::vector<double> &cylindricalRArr,
-                                          std::vector<double> &computedPotentialArr,
-                                          const PrecisionArguments &usedPrecision,
-                                          ComputeMethod computeMethod) const;
-
-        void calculateAllBGradientSwitch(const std::vector<double> &cylindricalZArr,
-                                         const std::vector<double> &cylindricalRArr,
-                                         std::vector<double> &computedGradientRPhi,
-                                         std::vector<double> &computedGradientRR,
-                                         std::vector<double> &computedGradientRZ,
-                                         std::vector<double> &computedGradientZZ,
-                                         const PrecisionArguments &usedPrecision,
-                                         ComputeMethod computeMethod) const;
 
         static std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
         calculateRingIncrementPosition(int angularBlocks, int angularIncrements,

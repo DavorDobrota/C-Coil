@@ -23,11 +23,22 @@ void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &
     cylindricalRArr.resize(pointVectors.size());
     cylindricalPhiArr.resize(pointVectors.size());
 
-    const int chunkSize = pointVectors.size() / (2 * threadCount);
+    int numOps = pointVectors.size();
+    int average = std::floor((double)numOps / (double)threadCount);
+    std::vector<int> ends(threadCount + 1);
+    int remaining = numOps;
+    ends[0] = 0;
+
+    for(int i = 0; i < threadCount; i++)
+    {
+        int temp = (remaining % (threadCount - i) == 0 ? average : average + 1);
+        ends[i+1] = (numOps - remaining) + temp;
+        remaining -= temp;
+    }
 
     if (pointVectors.size() > pointMultiplier * threadCount && computeMethod == GPU)
     {
-//        printf("Made it here\n");
+
         g_threadPool.setTaskCount(cylindricalZArr.size());
         g_threadPool.getCompletedTasks().store(0ull);
 
@@ -53,17 +64,16 @@ void Coil::adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &
             }
         };
 
-        for(size_t i = 0; i < (size_t)std::ceil((double)cylindricalZArr.size() / (double)chunkSize); i++)
+        for(size_t i = 0; i < threadCount; i++)
         {
             g_threadPool.push(
                     calcThread,
                     std::ref(*this),
                     std::ref(pointVectors),
                     std::ref(cylindricalZArr), std::ref(cylindricalRArr), std::ref(cylindricalPhiArr),
-                    i * chunkSize, std::min((i + 1) * chunkSize, cylindricalZArr.size())
+                    ends[i], ends[i + 1]
             );
         }
-
         g_threadPool.synchronizeThreads();
     }
     else {

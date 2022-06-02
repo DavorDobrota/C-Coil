@@ -25,7 +25,18 @@ void Coil::setThreadCount(int threadCount)
 std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialMT(const std::vector<vec3::CoordVector3> &pointVectors,
                                                                const PrecisionArguments &usedPrecision) const
 {
-    int chunkSize = calculateChunkSize(pointVectors.size());
+    int numOps = pointVectors.size();
+    int average = std::floor((double)numOps / (double)threadCount);
+    std::vector<int> ends(threadCount + 1);
+    int remaining = numOps;
+    ends[0] = 0;
+
+    for(int i = 0; i < threadCount; i++)
+    {
+        int temp = (remaining % (threadCount - i) == 0 ? average : average + 1);
+        ends[i+1] = (numOps - remaining) + temp;
+        remaining -= temp;
+    }
 
     std::vector<vec3::FieldVector3> computedPotentials(pointVectors.size());
 
@@ -50,7 +61,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialMT(const std::vector
         }
     };
 
-    for(size_t i = 0; i < (size_t)std::ceil((double)pointVectors.size() / (double)chunkSize); i++)
+    for(size_t i = 0; i < threadCount; i++)
     {
         g_threadPool.push(
                 calcThread,
@@ -58,7 +69,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialMT(const std::vector
                 std::ref(usedPrecision),
                 std::ref(pointVectors),
                 std::ref(computedPotentials),
-                i * chunkSize, std::min((i + 1) * chunkSize, pointVectors.size())
+                ends[i], ends[i + 1]
         );
     }
 
@@ -70,7 +81,18 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialMT(const std::vector
 std::vector<vec3::FieldVector3> Coil::calculateAllBFieldMT(const std::vector<vec3::CoordVector3> &pointVectors,
                                                            const PrecisionArguments &usedPrecision) const
 {
-    int chunkSize = calculateChunkSize(pointVectors.size());
+    int numOps = pointVectors.size();
+    int average = std::floor((double)numOps / (double)threadCount);
+    std::vector<int> ends(threadCount + 1);
+    int remaining = numOps;
+    ends[0] = 0;
+
+    for(int i = 0; i < threadCount; i++)
+    {
+        int temp = (remaining % (threadCount - i) == 0 ? average : average + 1);
+        ends[i+1] = (numOps - remaining) + temp;
+        remaining -= temp;
+    }
 
     std::vector<vec3::FieldVector3> computedFields(pointVectors.size());
 
@@ -95,7 +117,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldMT(const std::vector<vec
         }
     };
 
-    for(size_t i = 0; i < (size_t)std::ceil((double)pointVectors.size() / (double)chunkSize); i++)
+    for(size_t i = 0; i < threadCount; i++)
     {
         g_threadPool.push(
             calcThread,
@@ -103,7 +125,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldMT(const std::vector<vec
             std::ref(usedPrecision),
             std::ref(pointVectors),
             std::ref(computedFields),
-            i * chunkSize, std::min((i + 1) * chunkSize, pointVectors.size())
+            ends[i], ends[i + 1]
         );
     }
     g_threadPool.synchronizeThreads();
@@ -114,7 +136,18 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldMT(const std::vector<vec
 std::vector<vec3::Matrix3> Coil::calculateAllBGradientMT(const std::vector<vec3::CoordVector3> &pointVectors,
                                                          const PrecisionArguments &usedPrecision) const
 {
-    int chunkSize = calculateChunkSize(pointVectors.size());
+    int numOps = pointVectors.size();
+    int average = std::floor((double)numOps / (double)threadCount);
+    std::vector<int> ends(threadCount + 1);
+    int remaining = numOps;
+    ends[0] = 0;
+
+    for(int i = 0; i < threadCount; i++)
+    {
+        int temp = (remaining % (threadCount - i) == 0 ? average : average + 1);
+        ends[i+1] = (numOps - remaining) + temp;
+        remaining -= temp;
+    }
 
     std::vector<vec3::Matrix3> computedGradients(pointVectors.size());
 
@@ -139,7 +172,7 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientMT(const std::vector<vec3:
         }
     };
 
-    for(size_t i = 0; i < (size_t)std::ceil((double)pointVectors.size() / (double)chunkSize); i++)
+    for(size_t i = 0; i < threadCount; i++)
     {
         g_threadPool.push(
                 calcThread,
@@ -147,7 +180,7 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientMT(const std::vector<vec3:
                 std::ref(usedPrecision),
                 std::ref(pointVectors),
                 std::ref(computedGradients),
-                i * chunkSize, std::min((i + 1) * chunkSize, pointVectors.size())
+                ends[i], ends[i + 1]
         );
     }
     g_threadPool.synchronizeThreads();

@@ -16,15 +16,17 @@ int main()
 //    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 16, 24);
 //    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 24);
 //    testRawGPUPerformance();
-    benchComputeAllFields();
+//    benchComputeAllFields();
 
-    benchComputeAllFieldsEveryCoilType(200003, 8);
+//    benchComputeAllFieldsEveryCoilType(200003, 8);
 
 //    benchMInductanceZAxisMTScaling(16);
 //    benchMInductanceGeneralMTScaling(16);
 //    benchSelfInductance();
 //    benchForceZAxisMTScaling(16);
 //    benchForceGeneralMTScaling(16);
+
+    compMInductanceGeneralCase();
 
 
     return 0;

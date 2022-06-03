@@ -3,21 +3,29 @@
 #include <sstream>
 
 
-CoilData::CoilData(const Coil &coil)
-{
-    numOfTurns = coil.getNumOfTurns();
-    currentDensity = coil.getCurrentDensity();
+//CoilData::CoilData()
+//{
+//    numOfTurns = 0;
+//    currentDensity = 0.0;
+//
+//    innerRadius = 0.0;
+//    thickness = 0.0;
+//    length = 0.0;
+//
+//    angularIterations = 0;
+//    lengthIterations = 0;
+//    thicknessIncrements = 0;
+//
+//    for (int i = 0; i < GPU_INCREMENTS; ++i)
+//    {
+//        positionArray[i] = Legendre::positionMatrix[GPU_INCREMENTS - 1][i];
+//        weightArray[i] = Legendre::weightsMatrix[GPU_INCREMENTS - 1][i];
+//    }
+//
+//    positionVector{0.0, 0.0, 0.0};
 
-    innerRadius = coil.getInnerRadius();
-    thickness = coil.getThickness();
-    length = coil.getLength();
 
-    PrecisionArguments arguments = coil.getPrecisionSettings();
-
-    angularIterations = arguments.angularBlockCount * arguments.angularIncrementCount;
-    lengthIterations = arguments.lengthBlockCount * arguments.lengthIncrementCount;
-    thicknessIncrements = arguments.thicknessBlockCount * arguments.thicknessIncrementCount;
-}
+//}
 
 CoilData::operator std::string() const
 {
@@ -42,13 +50,12 @@ CoilData::operator std::string() const
     };
 
     output << "CoilData("
-        << "num_of_turns" << numOfTurns
-        << ", current_density=" << currentDensity
+        << "const_factor=" << constFactor
         << ", inner_radius=" << innerRadius
         << ", thickness=" << thickness
         << ", length=" << length
-        << ", angular_iterations=" << angularIterations
-        << ", length_iterations=" << lengthIterations
+        << ", angular_iterations=" << angularIncrements
+        << ", length_iterations=" << lengthIncrements
         << ", thickness_increments=" << thicknessIncrements
         << ", position_array=" << stringifyArray(positionArray, arrSize)
         << ", weight_array=" << stringifyArray(weightArray, arrSize)

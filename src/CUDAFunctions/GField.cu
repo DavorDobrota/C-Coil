@@ -1,10 +1,11 @@
 #include "hardware_acceleration.h"
 
-#include <cstdio>
-
 #include "CUDAConstants.h"
 #include "Timing.h"
 #include "CUDAErrorCheck.h"
+#include "CoilData.h"
+
+#include <cstdio>
 
 
 struct ParamG
@@ -214,9 +215,9 @@ void Calculate_hardware_accelerated_g
 
 	ParamG par;
 
-    par.lengthIncrements = INCREMENTCOUNT;
-    par.thicknessIncrements = INCREMENTCOUNT;
-    par.angularIncrements = INCREMENTCOUNT;
+    par.lengthIncrements = GPU_INCREMENTS;
+    par.thicknessIncrements = GPU_INCREMENTS;
+    par.angularIncrements = GPU_INCREMENTS;
 
     par.length = length;
     par.thickness = thickness;

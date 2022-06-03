@@ -2,7 +2,7 @@
 #define COPPER_HARDWARE_ACCELERATED_FUNCTIONS
 
 #include "CUDAConstants.h"
-
+#include "CoilData.h"
 
 void Calculate_hardware_accelerated_a
 (

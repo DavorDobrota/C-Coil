@@ -1,7 +1,6 @@
 #ifndef COPPER_CONSTANTS
 #define COPPER_CONSTANTS
 
-#define TYPE float
 
 #define NTHREADS 64
 #define DEBUG_TIMINGS 0
@@ -10,7 +9,5 @@
 #define MODERATOR (506.25 * 11.25)
 #define PI 3.14159265357989323
 #define MI 0.0000001
-
-#define INCREMENTCOUNT 16
 
 #endif // COPPER_CONSTANTS

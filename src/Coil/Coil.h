@@ -5,6 +5,7 @@
 #include "CoilType.h"
 #include "Tensor.h"
 #include "PrecisionGlobalVars.h"
+#include "CoilData.h"
 
 #include <vector>
 #include <string>
@@ -432,6 +433,8 @@ class Coil
         [[nodiscard]] std::vector<vec3::Matrix3> calculateAllBGradientMT(const std::vector<vec3::CoordVector3> &pointVectors,
                                                                          const PrecisionArguments &usedPrecision) const;
 
+        void generateCoilData(CoilData &coilData) const;
+
         void calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
                                    const std::vector<double> &cylindricalRArr,
                                    std::vector<double> &computedFieldHArr,
@@ -478,7 +481,7 @@ class Coil
 
         [[nodiscard]] double calculateSelfInductance(CoilPairArguments inductanceArguments, ComputeMethod computeMethod) const;
 
-        [[nodiscard]] int calculateChunkSize(int numOps) const;
+        [[nodiscard]] std::vector<int> calculateChunkSize(int numOps) const;
 };
 
 #endif //GENERAL_COIL_PROGRAM_COIL_H

@@ -1,6 +1,7 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
 #include "ctpl_stl.h"
+#include "CoilData.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -380,6 +381,56 @@ bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
         return true;
     }
     return false;
+}
+
+void Coil::generateCoilData(CoilData &coilData) const
+{
+    coilData.constFactor = g_MiReduced * currentDensity * thickness * M_PI * 0.5;
+
+    coilData.innerRadius = innerRadius;
+    coilData.thickness = thickness;
+    coilData.length = length;
+
+    coilData.lengthIncrements = GPU_INCREMENTS;
+    coilData.angularIncrements = GPU_INCREMENTS;
+    coilData.thicknessIncrements = GPU_INCREMENTS;
+
+    coilData.lengthBlocks = 1;
+    coilData.angularBlocks = 1;
+    coilData.thicknessBlocks = 1;
+
+    for (int i = 0; i < GPU_INCREMENTS; ++i)
+    {
+        coilData.positionArray[i] = Legendre::positionMatrix[GPU_INCREMENTS - 1][i];
+        coilData.weightArray[i] = Legendre::weightsMatrix[GPU_INCREMENTS - 1][i];
+    }
+
+    vec3::FieldVector3 tempVec = vec3::CoordVector3::convertToFieldVector(positionVector);
+
+    coilData.positionVector[0] = tempVec.x;
+    coilData.positionVector[1] = tempVec.y;
+    coilData.positionVector[2] = tempVec.z;
+
+    coilData.transformArray[0] = transformationMatrix.xx;
+    coilData.transformArray[1] = transformationMatrix.xy;
+    coilData.transformArray[2] = transformationMatrix.xz;
+    coilData.transformArray[3] = transformationMatrix.yx;
+    coilData.transformArray[4] = transformationMatrix.yy;
+    coilData.transformArray[5] = transformationMatrix.yz;
+    coilData.transformArray[6] = transformationMatrix.zx;
+    coilData.transformArray[7] = transformationMatrix.zy;
+    coilData.transformArray[8] = transformationMatrix.zz;
+
+    coilData.invTransformArray[0] = inverseTransformationMatrix.xx;
+    coilData.invTransformArray[1] = inverseTransformationMatrix.xy;
+    coilData.invTransformArray[2] = inverseTransformationMatrix.xz;
+    coilData.invTransformArray[3] = inverseTransformationMatrix.yx;
+    coilData.invTransformArray[4] = inverseTransformationMatrix.yy;
+    coilData.invTransformArray[5] = inverseTransformationMatrix.yz;
+    coilData.invTransformArray[6] = inverseTransformationMatrix.zx;
+    coilData.invTransformArray[7] = inverseTransformationMatrix.zy;
+    coilData.invTransformArray[8] = inverseTransformationMatrix.zz;
+
 }
 
 Coil::operator std::string() const

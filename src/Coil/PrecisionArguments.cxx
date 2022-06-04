@@ -137,9 +137,9 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
 
 PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &coil, PrecisionFactor precisionFactor)
 {
-    const int lengthIncrements = arrSize;
-    const int thicknessIncrements = arrSize;
-    const int angularIncrements = arrSize;
+    const int lengthIncrements = GPU_INCREMENTS;
+    const int thicknessIncrements = GPU_INCREMENTS;
+    const int angularIncrements = GPU_INCREMENTS;
 
     int lengthBlocks = 1;
     int thicknessBlocks = 1;
@@ -149,7 +149,7 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
     double thicknessRoot = std::sqrt(coil.getThickness());
     double lengthRoot = std::sqrt(coil.getLength());
 
-    int totalIncrements = (int) (arrSize * arrSize * arrSize * pow(2, precisionFactor.relativePrecision));
+    int totalIncrements = (int) (GPU_INCREMENTS * GPU_INCREMENTS * GPU_INCREMENTS * pow(2, precisionFactor.relativePrecision));
     int currentIncrements;
 
     double angularStep, thicknessStep, lengthStep;

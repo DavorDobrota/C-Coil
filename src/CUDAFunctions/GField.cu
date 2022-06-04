@@ -155,7 +155,6 @@ void calculateG(long long numOps, ParamG par)
 namespace 
 {
     long long g_last_num_ops = 0;
-//    long long g_last_blocks = 0;
 
     TYPE *g_zCoordArr = nullptr;
     TYPE *g_rCoordArr = nullptr;
@@ -211,6 +210,7 @@ void Calculate_hardware_accelerated_g
 {
     #if DEBUG_TIMINGS
         recordStartPoint();
+        recordStartPoint();
     #endif
 
 	ParamG par;
@@ -230,7 +230,6 @@ void Calculate_hardware_accelerated_g
     if (num_ops > g_last_num_ops)
     {
         resourceStartupG(num_ops);
-//        g_last_blocks = blocks;
     }
 
     par.z = g_zCoordArr;
@@ -284,5 +283,7 @@ void Calculate_hardware_accelerated_g
         printf("\tPrecision:                %dx%d\n", par.thicknessIncrements, par.angularIncrements);
         printf("\tTotal calculations:       %lli\n", num_ops);
         printf("\tTotal MegaIncrements:     %.f\n", 1e-6 * double(num_ops * par.thicknessIncrements * par.angularIncrements));
+        g_duration = getIntervalDuration();
+        printf("Performance: %.1f kPoints/s\n\n", double(num_ops / g_duration));
     #endif
 }

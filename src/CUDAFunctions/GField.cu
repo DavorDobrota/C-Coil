@@ -284,6 +284,6 @@ void Calculate_hardware_accelerated_g
         printf("\tTotal calculations:       %lli\n", num_ops);
         printf("\tTotal MegaIncrements:     %.f\n", 1e-6 * double(num_ops * par.thicknessIncrements * par.angularIncrements));
         g_duration = getIntervalDuration();
-        printf("Performance: %.1f kPoints/s\n\n", double(num_ops / g_duration));
+        printf("Performance: %.1f kPoints/s\n\n", double(0.001 * num_ops / g_duration));
     #endif
 }

@@ -200,6 +200,6 @@ void Calculate_hardware_accelerated_b(long long numOps, CoilData coil,
         printf("\tTotal calculations        %lli\n", numOps);
         printf("\tTotal MegaIncrements      %.f\n", 1e-6 * double(numOps * coil.thicknessIncrements * coil.angularIncrements));
         g_duration = getIntervalDuration();
-        printf("Performance: %.1f kPoints/s\n\n", double(numOps / g_duration));
+        printf("Performance: %.1f kPoints/s\n\n", double(0.001 * numOps / g_duration));
     #endif
 }

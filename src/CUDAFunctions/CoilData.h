@@ -1,13 +1,8 @@
 #ifndef GENERAL_COIL_PROGRAM_COILDATA_H
 #define GENERAL_COIL_PROGRAM_COILDATA_H
 
-#include <string>
-
 #define TYPE float
 #define GPU_INCREMENTS 20
-
-// TODO - complete module, it is not supposed to be part of this project
-const int arrSize = 8;
 
 
 struct CoilData
@@ -58,8 +53,6 @@ struct CoilData
     TYPE positionVector[3];
     TYPE transformArray[9];
     TYPE invTransformArray[9];
-
-    explicit operator std::string() const;
 };
 
 #endif //GENERAL_COIL_PROGRAM_COILDATA_H

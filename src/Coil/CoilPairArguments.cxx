@@ -209,9 +209,9 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
     // TODO - implement GPU increment balancing properly
     return calculateCoilPairArgumentsCPU(primary, secondary, precisionFactor, zAxisCase);
 
-    const int primLengthIncrements = arrSize;
-    const int primThicknessIncrements = arrSize;
-    const int primAngularIncrements = arrSize;
+    const int primLengthIncrements = GPU_INCREMENTS;
+    const int primThicknessIncrements = GPU_INCREMENTS;
+    const int primAngularIncrements = GPU_INCREMENTS;
 
     int primLengthBlocks = 1;
     int primThicknessBlocks = 1;
@@ -219,7 +219,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
 
     int secLengthArrayIndex, secThicknessArrayIndex, secAngularArrayIndex;
 
-    int totalIncrements = arrSize * arrSize * arrSize;
+    int totalIncrements = GPU_INCREMENTS * GPU_INCREMENTS * GPU_INCREMENTS;
     int currentIncrements;
 
     double primAngularRoot = std::sqrt(M_PI * (primary.getInnerRadius() + 0.5 * primary.getThickness()));

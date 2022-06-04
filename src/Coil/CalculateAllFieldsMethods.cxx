@@ -222,7 +222,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<ve
     CoilData coilData;
     generateCoilData(coilData);
 
-    Calculate_hardware_accelerated_a(size, coilData,
+    Calculate_hardware_accelerated_b(size, coilData,
                                      &xCoordinateArr[0], &yCoordinateArr[0], &zCoordinateArr[0],
                                      &xResultArr[0], &yResultArr[0], &zResultArr[0]);
 

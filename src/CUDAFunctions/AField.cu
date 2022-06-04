@@ -36,7 +36,6 @@ void calculateA(long long numOps, CoilData coil,
     TYPE phiCord = atan2(y, x);
 
     TYPE potential = 0.0f;
-    TYPE constant = coil.constFactor;
 
     TYPE topEdge = zCoord + 0.5f * coil.length;
     TYPE bottomEdge = zCoord - 0.5f * coil.length;
@@ -60,7 +59,7 @@ void calculateA(long long numOps, CoilData coil,
 
             TYPE tempConstF = log((tempConstE1 + tempConstD1) / (tempConstE2 + tempConstD2));
 
-            potential += constant *
+            potential += coil.constFactor *
                     coil.weightArray[incT] * coil.weightArray[incF] *
                     incrementPositionT * cosinePhi * tempConstF;
         }
@@ -134,6 +133,7 @@ void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
 {
     #if DEBUG_TIMINGS
         recordStartPoint();
+        recordStartPoint();
     #endif
 
     long long blocks = ceil(double(numOps) / NTHREADS);
@@ -194,5 +194,7 @@ void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
         printf("\tPrecision:                %dx%d\n", coil.thicknessIncrements, coil.angularIncrements);
         printf("\tTotal calculations:       %lli\n", numOps);
         printf("\tTotal MegaIncrements:     %.f\n", 1e-6 * double(numOps * coil.thicknessIncrements * coil.angularIncrements));
+        g_duration = getIntervalDuration();
+        printf("Performance: %.1f kPoints/s\n\n", double(numOps / g_duration));
     #endif
 }

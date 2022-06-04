@@ -37,35 +37,31 @@ void calculateB(long long numOps, CoilData coil,
 
     TYPE fieldH = 0.0f;
     TYPE fieldZ = 0.0f;
-    TYPE constant = coil.constFactor;
 
     TYPE topEdge = zCoord + 0.5f * coil.length;
     TYPE bottomEdge = zCoord - 0.5f * coil.length;
 
-    TYPE incrementPositionT, cosinePhi;
-    TYPE tempConstA, tempConstB, tempConstC, tempConstD1, tempConstD2, tempConstE, tempConstF1, tempConstF2, tempConstG;
-
     for (int incT = 0; incT < coil.thicknessIncrements; ++incT)
     {
-        incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.positionArray[incT]);
+        TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.positionArray[incT]);
 
-        tempConstA = incrementPositionT * incrementPositionT;
-        tempConstB = 2.0f * incrementPositionT * rCoord;
-        tempConstC = tempConstA + rCoord * rCoord;
+        TYPE tempConstA = incrementPositionT * incrementPositionT;
+        TYPE tempConstB = 2.0f * incrementPositionT * rCoord;
+        TYPE tempConstC = tempConstA + rCoord * rCoord;
 
-        tempConstD1 = topEdge * topEdge + tempConstC;
-        tempConstD2 = bottomEdge * bottomEdge + tempConstC;
+        TYPE tempConstD1 = topEdge * topEdge + tempConstC;
+        TYPE tempConstD2 = bottomEdge * bottomEdge + tempConstC;
 
         for (int incF = 0; incF < coil.angularIncrements; ++incF)
         {
-            cosinePhi = coil.cosPrecomputeArray[incF];
+            TYPE cosinePhi = coil.cosPrecomputeArray[incF];
 
-            tempConstE = tempConstB * cosinePhi;
+            TYPE tempConstE = tempConstB * cosinePhi;
 
-            tempConstF1 = rsqrtf(tempConstD1 - tempConstE);
-            tempConstF2 = rsqrtf(tempConstD2 - tempConstE);
+            TYPE tempConstF1 = rsqrt(tempConstD1 - tempConstE);
+            TYPE tempConstF2 = rsqrt(tempConstD2 - tempConstE);
 
-            tempConstG = constant * coil.weightArray[incT] * coil.weightArray[incF];
+            TYPE tempConstG = coil.constFactor * coil.weightArray[incT] * coil.weightArray[incF];
 
             fieldH += tempConstG * incrementPositionT * cosinePhi * (tempConstF2 - tempConstF1);
             fieldZ += tempConstG *
@@ -142,6 +138,7 @@ void Calculate_hardware_accelerated_b(long long numOps, CoilData coil,
 {
     #if DEBUG_TIMINGS
         recordStartPoint();
+        recordStartPoint();
     #endif
 
     long long blocks = ceil(double(numOps) / NTHREADS);
@@ -202,5 +199,7 @@ void Calculate_hardware_accelerated_b(long long numOps, CoilData coil,
         printf("\tPrecision:                %dx%d\n", coil.thicknessIncrements, coil.angularIncrements);
         printf("\tTotal calculations        %lli\n", numOps);
         printf("\tTotal MegaIncrements      %.f\n", 1e-6 * double(numOps * coil.thicknessIncrements * coil.angularIncrements));
+        g_duration = getIntervalDuration();
+        printf("Performance: %.1f kPoints/s\n\n", double(numOps / g_duration));
     #endif
 }

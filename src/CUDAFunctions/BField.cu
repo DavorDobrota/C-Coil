@@ -173,7 +173,7 @@ void Calculate_hardware_accelerated_b(long long numOps, CoilData coil,
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
-        printf("\t\tCalculations: %.15g s\n", g_duration);
+        printf("\tCalculations:             %.9g s\n", g_duration);
         printf("\t\tEstimated TFLOPS: %.2f\n",
                1e-12 * double(90 * numOps * coil.thicknessIncrements * coil.angularIncrements) / g_duration);
 
@@ -200,6 +200,7 @@ void Calculate_hardware_accelerated_b(long long numOps, CoilData coil,
         printf("\tTotal calculations        %lli\n", numOps);
         printf("\tTotal MegaIncrements      %.f\n", 1e-6 * double(numOps * coil.thicknessIncrements * coil.angularIncrements));
         g_duration = getIntervalDuration();
-        printf("Performance: %.1f kPoints/s\n\n", double(0.001 * numOps / g_duration));
+        printf("\n\tPerformance: %.1f kPoints/s\n", double(0.001 * numOps / g_duration));
+        printf("-----------------------------------------------\n\n");
     #endif
 }

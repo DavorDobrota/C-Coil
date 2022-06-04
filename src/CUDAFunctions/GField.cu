@@ -255,7 +255,7 @@ void Calculate_hardware_accelerated_g
 
 	#if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
-        printf("\t\tCalculations:     %.9g s\n", g_duration);
+        printf("\tCalculations:             %.9g s\n", g_duration);
         printf("\t\tEstimated TFLOPS: %.2f\n",
                1e-12 * double(120 * num_ops * par.thicknessIncrements * par.angularIncrements) / g_duration);
 
@@ -284,6 +284,7 @@ void Calculate_hardware_accelerated_g
         printf("\tTotal calculations:       %lli\n", num_ops);
         printf("\tTotal MegaIncrements:     %.f\n", 1e-6 * double(num_ops * par.thicknessIncrements * par.angularIncrements));
         g_duration = getIntervalDuration();
-        printf("Performance: %.1f kPoints/s\n\n", double(0.001 * num_ops / g_duration));
+        printf("\n\tPerformance: %.1f kPoints/s\n", double(0.001 * num_ops / g_duration));
+        printf("-----------------------------------------------\n\n");
     #endif
 }

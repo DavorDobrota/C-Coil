@@ -3,7 +3,7 @@
 
 
 #define NTHREADS 64
-#define DEBUG_TIMINGS 0
+#define DEBUG_TIMINGS 1
 #define REDUCTIONFACTOR (NTHREADS * 2)
 
 #define MODERATOR (506.25 * 11.25)

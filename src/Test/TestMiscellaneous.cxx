@@ -134,12 +134,18 @@ void testRawGPUPerformance()
     double interval;
     double pointsPerSec;
 
-    int maxPointsLog2 = 28;
+    int maxPointsLog2 = 27;
+
+    std::vector<float> xPositions;
+    std::vector<float> yPositions;
+    std::vector<float> zPositions;
 
     std::vector<float> zCoords;
     std::vector<float> rCoords;
 
-    std::vector<float> potentialArr;
+    std::vector<float> xPotentialArr;
+    std::vector<float> yPotentialArr;
+    std::vector<float> zPotentialArr;
 
     std::vector<float> fieldHArr;
     std::vector<float> fieldZArr;
@@ -155,30 +161,39 @@ void testRawGPUPerformance()
     {
         int numPoints = int(std::pow(2, i));
 
-        zCoords.resize(numPoints);
-        rCoords.resize(numPoints);
-        potentialArr.resize(numPoints);
+        xPositions.resize(numPoints);
+        yPositions.resize(numPoints);
+        zPositions.resize(numPoints);
+
+        xPotentialArr.resize(numPoints);
+        yPotentialArr.resize(numPoints);
+        zPotentialArr.resize(numPoints);
 
         for (int j = 0; j < numPoints; ++j)
         {
-            zCoords[j] = j / 1000.0;
-            rCoords[j] = 0.1 + j / 1000000.0;
+            xPotentialArr[j] = 0.1 + j / 1000.0;
+            yPotentialArr[j] = 0.1 + j / 10000.0;
+            zPotentialArr[j] = 0.1 + j / 1000000.0;
         }
 
         beginTime = high_resolution_clock::now();
-        Calculate_hardware_accelerated_a(rCoords.size(), &zCoords[0], &rCoords[0],
-                                         1000000, 0.03, 0.12, 0.03,
-                                         16, 16, 16,
-                                         &potentialArr[0]);
+//        Calculate_hardware_accelerated_a(rCoords.size(), &zCoords[0], &rCoords[0],
+//                                         1000000, 0.03, 0.12, 0.03,
+//                                         16, 16, 16,
+//                                         &potentialArr[0]);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
         pointsPerSec = numPoints / interval;
 
         printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
         fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
 
-        rCoords.clear();
-        zCoords.clear();
-        potentialArr.clear();
+        xPositions.clear();
+        yPositions.clear();
+        zPositions.clear();
+
+        xPotentialArr.clear();
+        yPotentialArr.clear();
+        zPotentialArr.clear();
     }
     printf("\n");
     fprintf(output, "\n");
@@ -201,10 +216,10 @@ void testRawGPUPerformance()
         }
 
         beginTime = high_resolution_clock::now();
-        Calculate_hardware_accelerated_b(rCoords.size(), &zCoords[0], &rCoords[0],
-                                         1000000, 0.03, 0.12, 0.03,
-                                         16, 16, 16,
-                                         &fieldHArr[0], &fieldZArr[0]);
+//        Calculate_hardware_accelerated_b(rCoords.size(), &zCoords[0], &rCoords[0],
+//                                         1000000, 0.03, 0.12, 0.03,
+//                                         16, 16, 16,
+//                                         &fieldHArr[0], &fieldZArr[0]);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
         pointsPerSec = numPoints / interval;
 

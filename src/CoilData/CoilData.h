@@ -4,7 +4,7 @@
 #include <string>
 
 #define TYPE float
-#define GPU_INCREMENTS 16
+#define GPU_INCREMENTS 20
 
 // TODO - complete module, it is not supposed to be part of this project
 const int arrSize = 8;
@@ -30,6 +30,7 @@ struct CoilData
 
         positionArray{},
         weightArray{},
+        cosPrecomputeArray{},
 
         positionVector{},
         transformArray{},
@@ -52,6 +53,7 @@ struct CoilData
 
     TYPE positionArray[GPU_INCREMENTS];
     TYPE weightArray[GPU_INCREMENTS];
+    TYPE cosPrecomputeArray[GPU_INCREMENTS];
 
     TYPE positionVector[3];
     TYPE transformArray[9];

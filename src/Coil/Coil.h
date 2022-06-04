@@ -418,8 +418,7 @@ class Coil
         void adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &pointVectors,
                                            std::vector<double> &cylindricalZArr,
                                            std::vector<double> &cylindricalRArr,
-                                           std::vector<double> &cylindricalPhiArr,
-                                           ComputeMethod computeMethod = CPU_ST) const;
+                                           std::vector<double> &cylindricalPhiArr) const;
 
         [[nodiscard]] std::vector<vec3::FieldVector3>
         adaptOutputVectorsForAllPoints(const std::vector<vec3::FieldVector3> &computedVectorArr) const;
@@ -435,16 +434,11 @@ class Coil
 
         void generateCoilData(CoilData &coilData) const;
 
-        void calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
-                                   const std::vector<double> &cylindricalRArr,
-                                   std::vector<double> &computedFieldHArr,
-                                   std::vector<double> &computedFieldZArr,
-                                   const PrecisionArguments &usedPrecision) const;
+        std::vector<vec3::FieldVector3> calculateAllAPotentialGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
 
-        void calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
-                                       const std::vector<double> &cylindricalRArr,
-                                       std::vector<double> &computedPotentialArr,
-                                       const PrecisionArguments &usedPrecision) const;
+        std::vector<vec3::FieldVector3> calculateAllBFieldGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
+
+
 
         void calculateAllBGradientGPU(const std::vector<double> &cylindricalZArr,
                                       const std::vector<double> &cylindricalRArr,

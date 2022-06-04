@@ -157,73 +157,79 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientMT(const std::vector<vec3:
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-void Coil::calculateAllAPotentialGPU(const std::vector<double> &cylindricalZArr,
-                                     const std::vector<double> &cylindricalRArr,
-                                     std::vector<double> &computedPotentialArr,
-                                     const PrecisionArguments &usedPrecision) const
+std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
 {
-    computedPotentialArr.resize(cylindricalZArr.size());
+    long long size = pointVectors.size();
 
-    std::vector<float> z_arr(cylindricalZArr.size());
-    std::vector<float> r_arr(cylindricalZArr.size());
-    std::vector<float> potential_arr(cylindricalZArr.size());
+    std::vector<float> xCoordinateArr(size);
+    std::vector<float> yCoordinateArr(size);
+    std::vector<float> zCoordinateArr(size);
 
-    for (int i = 0; i < cylindricalZArr.size(); ++i)
+    std::vector<float> xResultArr(size);
+    std::vector<float> yResultArr(size);
+    std::vector<float> zResultArr(size);
+
+    std::vector<vec3::FieldVector3> computedFieldArr(size);
+
+    for (int i = 0; i < size; ++i)
     {
-        z_arr[i] = cylindricalZArr[i];
-        r_arr[i] = cylindricalRArr[i];
+        vec3::CoordVector3 vector = pointVectors[i];
+        vector.convertToCartesian();
+        xCoordinateArr[i] = vector.comp1;
+        yCoordinateArr[i] = vector.comp2;
+        zCoordinateArr[i] = vector.comp3;
     }
 
-    #if USE_GPU == 1
-        Calculate_hardware_accelerated_a(z_arr.size(), &z_arr[0], &r_arr[0],
-                                         currentDensity, innerRadius, length, thickness,
-                                         16, 16, 16,
-                                         &potential_arr[0]);
-    #else
-        throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
-    #endif // USE_GPU
+    CoilData coilData;
+    generateCoilData(coilData);
 
-    for (int i = 0; i < potential_arr.size(); ++i)
-        computedPotentialArr[i] = potential_arr[i];
+    Calculate_hardware_accelerated_a(size, coilData,
+                                     &xCoordinateArr[0], &yCoordinateArr[0], &zCoordinateArr[0],
+                                     &xResultArr[0], &yResultArr[0], &zResultArr[0]);
+
+    for (int i = 0; i < pointVectors.size(); ++i)
+        computedFieldArr[i] = vec3::FieldVector3(xResultArr[i], yResultArr[i], zResultArr[i]);
+
+    return computedFieldArr;
 }
 #pragma clang diagnostic pop
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-void Coil::calculateAllBFieldGPU(const std::vector<double> &cylindricalZArr,
-                                 const std::vector<double> &cylindricalRArr,
-                                 std::vector<double> &computedFieldHArr,
-                                 std::vector<double> &computedFieldZArr,
-                                 const PrecisionArguments &usedPrecision) const
+std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
 {
-    computedFieldHArr.resize(cylindricalZArr.size());
-    computedFieldZArr.resize(cylindricalZArr.size());
+    long long size = pointVectors.size();
 
-    std::vector<float> z_arr(cylindricalZArr.size());
-    std::vector<float> r_arr(cylindricalZArr.size());
-    std::vector<float> fieldH_arr(cylindricalZArr.size());
-    std::vector<float> fieldZ_arr(cylindricalZArr.size());
+    std::vector<float> xCoordinateArr(size);
+    std::vector<float> yCoordinateArr(size);
+    std::vector<float> zCoordinateArr(size);
 
-    for (int i = 0; i < cylindricalZArr.size(); ++i)
+    std::vector<float> xResultArr(size);
+    std::vector<float> yResultArr(size);
+    std::vector<float> zResultArr(size);
+
+    std::vector<vec3::FieldVector3> computedFieldArr(size);
+
+    for (int i = 0; i < size; ++i)
     {
-        z_arr[i] = cylindricalZArr[i];
-        r_arr[i] = cylindricalRArr[i];
+        vec3::CoordVector3 vector = pointVectors[i];
+        vector.convertToCartesian();
+        xCoordinateArr[i] = vector.comp1;
+        yCoordinateArr[i] = vector.comp2;
+        zCoordinateArr[i] = vector.comp3;
     }
 
-    #if USE_GPU == 1
-        Calculate_hardware_accelerated_b(z_arr.size(), &z_arr[0], &r_arr[0],
-                                         currentDensity, innerRadius, length, thickness,
-                                         thickness/16, length/16, M_PI/48,
-                                         &fieldH_arr[0], &fieldZ_arr[0]);
-    #else
-        throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
-    #endif // USE_GPU
+    CoilData coilData;
+    generateCoilData(coilData);
 
-    for (int i = 0; i < fieldH_arr.size(); ++i)
-    {
-        computedFieldHArr[i] = fieldH_arr[i];
-        computedFieldZArr[i] = fieldZ_arr[i];
-    }
+    Calculate_hardware_accelerated_a(size, coilData,
+                                     &xCoordinateArr[0], &yCoordinateArr[0], &zCoordinateArr[0],
+                                     &xResultArr[0], &yResultArr[0], &zResultArr[0]);
+
+    for (int i = 0; i < pointVectors.size(); ++i)
+        computedFieldArr[i] = vec3::FieldVector3(xResultArr[i], yResultArr[i], zResultArr[i]);
+
+    return computedFieldArr;
 }
 #pragma clang diagnostic pop
 

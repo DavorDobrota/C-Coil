@@ -47,6 +47,8 @@ void compPrecisionCPUvsGPU()
 
     Coil prim = Coil(0.03, 0.03, 0.12, 3600);
     Coil sec = Coil(0.03, 0.03, 0.12, 3600);
+
+    prim.setPositionAndOrientation(vec3::CoordVector3(), 0.2, 0.2);
     sec.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.2));
 
     printf("M inductance: %.15g | %.15g\n",

@@ -8,69 +8,10 @@
 #include <cstdio>
 
 
-struct ParamB
-{
-    ParamB() :
-
-        lengthIncrements{0},
-        thicknessIncrements{0},
-        angularIncrements{0},
-
-        constantTerm(0.f),
-
-        length(0.f),
-        thickness(0.f),
-        innerRadius(0.f),
-        z{nullptr},
-        r{nullptr},
-
-        positions{-0.98940093499164993259615417, -0.94457502307323257607798842, -0.8656312023878317438804679,
-                  -0.7554044083550030338951012, -0.61787624440264374844667176, -0.4580167776572273863424194,
-                  -0.2816035507792589132304605, -0.09501250983763744018531934, 0.09501250983763744018531934,
-                  0.2816035507792589132304605, 0.4580167776572273863424194, 0.61787624440264374844667176,
-                  0.7554044083550030338951012, 0.8656312023878317438804679, 0.94457502307323257607798842,
-                  0.98940093499164993259615417},
-
-        weights{0.02715245941175409485178057, 0.062253523938647892862843837, 0.09515851168249278480992511,
-                0.12462897125553387205247628, 0.1495959888165767320815017, 0.16915651939500253818931208,
-                0.18260341504492358886676367, 0.18945061045506849628539672, 0.1894506104550684962853967,
-                0.1826034150449235888667637, 0.1691565193950025381893121, 0.14959598881657673208150173,
-                0.1246289712555338720524763, 0.0951585116824927848099251, 0.06225352393864789286284384,
-                0.027152459411754094851780572},
-
-        cosPrecompute{0.999861409060662, 0.996212553862336, 0.977808137941974, 0.927094888788312,
-                      0.825200872426836, 0.658971885399085, 0.428057063588869, 0.148691865890404,
-                      -0.148691865890404, -0.428057063588869, -0.658971885399085, -0.825200872426836,
-                      -0.927094888788312, -0.977808137941974, -0.996212553862336, -0.999861409060662},
-
-        resH{nullptr},
-        resZ{nullptr}
-    {}
-
-    int lengthIncrements;
-    int thicknessIncrements;
-    int angularIncrements;
-
-    TYPE constantTerm;
-
-    TYPE length;
-    TYPE thickness;
-    TYPE innerRadius;
-
-    TYPE *z;
-    TYPE *r;
-
-    TYPE positions[16];
-    TYPE weights[16];
-    TYPE cosPrecompute[16];
-
-    TYPE *resH;
-    TYPE *resZ;
-};
-
-
 __global__
-void calculateB(long long numOps, ParamB par)
+void calculateB(long long numOps, CoilData coil,
+                const TYPE *xPosArr, const TYPE *yPosArr, const TYPE *zPosArr,
+                TYPE *xResArr, TYPE *yResArr, TYPE *zResArr)
 {
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
@@ -78,22 +19,35 @@ void calculateB(long long numOps, ParamB par)
     if(global_index >= numOps)
         return;
 
-    TYPE zCoord = par.z[global_index];
-    TYPE rCoord = par.r[global_index];
+    TYPE x1 = xPosArr[global_index];
+    TYPE y1 = yPosArr[global_index];
+    TYPE z1 = zPosArr[global_index];
+
+    x1 -= coil.positionVector[0];
+    y1 -= coil.positionVector[1];
+    z1 -= coil.positionVector[2];
+
+    TYPE x = x1 * coil.invTransformArray[0] + y1 * coil.invTransformArray[1] + z1 * coil.invTransformArray[2];
+    TYPE y = x1 * coil.invTransformArray[3] + y1 * coil.invTransformArray[4] + z1 * coil.invTransformArray[5];
+    TYPE z = x1 * coil.invTransformArray[6] + y1 * coil.invTransformArray[7] + z1 * coil.invTransformArray[8];
+
+    TYPE zCoord = z;
+    TYPE rCoord = sqrt(x * x + y * y);
+    TYPE phiCord = atan2(y, x);
 
     TYPE fieldH = 0.0f;
     TYPE fieldZ = 0.0f;
-    TYPE constant = par.constantTerm;
+    TYPE constant = coil.constFactor;
 
-    TYPE topEdge = zCoord + 0.5f * par.length;
-    TYPE bottomEdge = zCoord - 0.5f * par.length;
+    TYPE topEdge = zCoord + 0.5f * coil.length;
+    TYPE bottomEdge = zCoord - 0.5f * coil.length;
 
     TYPE incrementPositionT, cosinePhi;
     TYPE tempConstA, tempConstB, tempConstC, tempConstD1, tempConstD2, tempConstE, tempConstF1, tempConstF2, tempConstG;
 
-    for (int incT = 0; incT < par.thicknessIncrements; ++incT)
+    for (int incT = 0; incT < coil.thicknessIncrements; ++incT)
     {
-        incrementPositionT = par.innerRadius + 0.5f * par.thickness * (1.0f + par.positions[incT]);
+        incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.positionArray[incT]);
 
         tempConstA = incrementPositionT * incrementPositionT;
         tempConstB = 2.0f * incrementPositionT * rCoord;
@@ -102,16 +56,16 @@ void calculateB(long long numOps, ParamB par)
         tempConstD1 = topEdge * topEdge + tempConstC;
         tempConstD2 = bottomEdge * bottomEdge + tempConstC;
 
-        for (int incF = 0; incF < par.angularIncrements; ++incF)
+        for (int incF = 0; incF < coil.angularIncrements; ++incF)
         {
-            cosinePhi = par.cosPrecompute[incF];
+            cosinePhi = coil.cosPrecomputeArray[incF];
 
             tempConstE = tempConstB * cosinePhi;
 
             tempConstF1 = rsqrtf(tempConstD1 - tempConstE);
             tempConstF2 = rsqrtf(tempConstD2 - tempConstE);
 
-            tempConstG = constant * par.weights[incT] * par.weights[incF];
+            tempConstG = constant * coil.weightArray[incT] * coil.weightArray[incF];
 
             fieldH += tempConstG * incrementPositionT * cosinePhi * (tempConstF2 - tempConstF1);
             fieldZ += tempConstG *
@@ -119,19 +73,30 @@ void calculateB(long long numOps, ParamB par)
                     (topEdge * tempConstF1 - bottomEdge * tempConstF2);
         }
     }
-    par.resH[global_index] = fieldH;
-    par.resZ[global_index] = fieldZ;
+    TYPE xField = fieldH * cos(phiCord);
+    TYPE yField = fieldH * sin(phiCord);
+    TYPE zField = fieldZ;
+
+    TYPE xRes = xField * coil.transformArray[0] + yField * coil.transformArray[1] + zField * coil.transformArray[2];
+    TYPE yRes = xField * coil.transformArray[3] + yField * coil.transformArray[4] + zField * coil.transformArray[5];
+    TYPE zRes = xField * coil.transformArray[6] + yField * coil.transformArray[7] + zField * coil.transformArray[8];
+
+    xResArr[global_index] = xRes;
+    yResArr[global_index] = yRes;
+    zResArr[global_index] = zRes;
 }
 
 namespace
 {
     long long g_last_num_ops = 0;
-//    long long g_last_blocks = 0;
 
-    TYPE *g_fieldBhArr = nullptr;
-    TYPE *g_fieldBzArr = nullptr;
-    TYPE *g_zCoordArr = nullptr;
-    TYPE *g_rCoordArr = nullptr;
+    TYPE *g_xPosArr = nullptr;
+    TYPE *g_yPosArr = nullptr;
+    TYPE *g_zPosArr = nullptr;
+
+    TYPE *g_xResArr = nullptr;
+    TYPE *g_yResArr = nullptr;
+    TYPE *g_zResArr = nullptr;
 
 #if DEBUG_TIMINGS
     double g_duration;
@@ -140,98 +105,90 @@ namespace
 
 void resourceCleanupB()
 {
+    gpuErrchk(cudaFree(g_xPosArr));
+    gpuErrchk(cudaFree(g_yPosArr));
+    gpuErrchk(cudaFree(g_zPosArr));
 
-    gpuErrchk(cudaFree(g_zCoordArr));
-    gpuErrchk(cudaFree(g_rCoordArr));
-    gpuErrchk(cudaFree(g_fieldBhArr));
-    gpuErrchk(cudaFree(g_fieldBzArr));
+    gpuErrchk(cudaFree(g_xResArr));
+    gpuErrchk(cudaFree(g_yResArr));
+    gpuErrchk(cudaFree(g_zResArr));
 
-    g_zCoordArr = nullptr;
-    g_rCoordArr = nullptr;
-    g_fieldBhArr = nullptr;
-    g_fieldBzArr = nullptr;
+    g_xPosArr = nullptr;
+    g_yPosArr = nullptr;
+    g_zPosArr = nullptr;
+
+    g_xResArr = nullptr;
+    g_yResArr = nullptr;
+    g_zResArr = nullptr;
 }
 
-void resourceStartupB(long long num_ops)
+void resourceStartupB(long long numOps)
 {
     resourceCleanupB();
 
-    gpuErrchk(cudaMalloc(&g_zCoordArr, num_ops * sizeof(TYPE)));
-    gpuErrchk(cudaMalloc(&g_rCoordArr, num_ops * sizeof(TYPE)));
-    gpuErrchk(cudaMalloc(&g_fieldBhArr, num_ops * sizeof(TYPE)));
-    gpuErrchk(cudaMalloc(&g_fieldBzArr, num_ops * sizeof(TYPE)));
+    gpuErrchk(cudaMalloc(&g_xPosArr, numOps * sizeof(TYPE)));
+    gpuErrchk(cudaMalloc(&g_yPosArr, numOps * sizeof(TYPE)));
+    gpuErrchk(cudaMalloc(&g_zPosArr, numOps * sizeof(TYPE)));
+
+    gpuErrchk(cudaMalloc(&g_xResArr, numOps * sizeof(TYPE)));
+    gpuErrchk(cudaMalloc(&g_yResArr, numOps * sizeof(TYPE)));
+    gpuErrchk(cudaMalloc(&g_zResArr, numOps * sizeof(TYPE)));
 }
 
 
-void Calculate_hardware_accelerated_b
-        (long long num_ops, const TYPE *z_ar, const TYPE *r_ar, TYPE current_density,
-         TYPE innerRadius, TYPE length, TYPE thickness, int lengthIncrements,
-         int thicknessIncrements, int angularIncrements, TYPE *fieldHArray, TYPE *fieldZArray)
+void Calculate_hardware_accelerated_b(long long numOps, CoilData coil,
+                                      const TYPE *xPosArr, const TYPE *yPosArr, const TYPE *zPosArr,
+                                      TYPE *xResArr, TYPE *yResArr, TYPE *zResArr)
 {
-    // setting the basic parameters
-    ParamB par;
-
-    par.lengthIncrements = GPU_INCREMENTS;
-    par.thicknessIncrements = GPU_INCREMENTS;
-    par.angularIncrements = GPU_INCREMENTS;
-
-    par.length = length;
-    par.thickness = thickness;
-    par.innerRadius = innerRadius;
-
-    par.constantTerm = MI * current_density * par.thickness * PI * 2 * 0.25;
-
-    long long blocks = ceil(double(num_ops) / NTHREADS);
-
-    if(g_last_num_ops < num_ops)
-    {
-        resourceStartupB(num_ops);
-        g_last_num_ops = num_ops;
-//        g_last_blocks = blocks;
-    }
-
     #if DEBUG_TIMINGS
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemcpy(g_zCoordArr,z_ar,num_ops * sizeof(TYPE),cudaMemcpyHostToDevice));
-    gpuErrchk(cudaMemcpy(g_rCoordArr,r_ar,num_ops * sizeof(TYPE),cudaMemcpyHostToDevice));
+    long long blocks = ceil(double(numOps) / NTHREADS);
 
-    par.z = g_zCoordArr;
-    par.r = g_rCoordArr;
+    if (numOps > g_last_num_ops)
+    {
+        resourceStartupB(numOps);
+        g_last_num_ops = numOps;
+    }
+    #if DEBUG_TIMINGS
+        g_duration = getIntervalDuration();
+        printf("\tResource startup:         %.9g s\n", g_duration);
 
-    gpuErrchk(cudaMemset(g_fieldBhArr, 0, num_ops * sizeof(TYPE)));
-    gpuErrchk(cudaMemset(g_fieldBzArr, 0, num_ops * sizeof(TYPE)));
+        recordStartPoint();
+    #endif
 
-    par.resH = g_fieldBhArr;
-    par.resZ = g_fieldBzArr;
+    gpuErrchk(cudaMemcpy(g_xPosArr, xPosArr, numOps * sizeof(TYPE), cudaMemcpyHostToDevice));
+    gpuErrchk(cudaMemcpy(g_yPosArr, yPosArr, numOps * sizeof(TYPE), cudaMemcpyHostToDevice));
+    gpuErrchk(cudaMemcpy(g_zPosArr, zPosArr, numOps * sizeof(TYPE), cudaMemcpyHostToDevice));
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
-        printf("\tMemory initialization: %.9g s\n", g_duration);
+            printf("\tMemory initialization:    %.9g s\n", g_duration);
 
-        recordStartPoint();
+            recordStartPoint();
     #endif
 
-    calculateB<<<blocks, NTHREADS>>>(num_ops, par);
-
+    calculateB<<<blocks, NTHREADS>>>(numOps, coil,
+                                     g_xPosArr, g_yPosArr, g_zPosArr,
+                                     g_xResArr, g_yResArr, g_zResArr);
     gpuErrchk(cudaDeviceSynchronize());
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
         printf("\t\tCalculations: %.15g s\n", g_duration);
         printf("\t\tEstimated TFLOPS: %.2f\n",
-               1e-12 * double(60 * num_ops * par.thicknessIncrements * par.angularIncrements) / g_duration);
+               1e-12 * double(90 * numOps * coil.thicknessIncrements * coil.angularIncrements) / g_duration);
 
         recordStartPoint();
     #endif
 
-    if(fieldHArray != nullptr && fieldZArray != nullptr)
+    if(xResArr != nullptr)
     {
-        gpuErrchk(cudaMemcpy(fieldHArray, g_fieldBhArr, num_ops * sizeof(TYPE), cudaMemcpyDeviceToHost));
-        gpuErrchk(cudaMemcpy(fieldZArray, g_fieldBzArr, num_ops * sizeof(TYPE), cudaMemcpyDeviceToHost));
+        gpuErrchk(cudaMemcpy(xResArr, g_xResArr, numOps * sizeof(TYPE), cudaMemcpyDeviceToHost));
+        gpuErrchk(cudaMemcpy(yResArr, g_yResArr, numOps * sizeof(TYPE), cudaMemcpyDeviceToHost));
+        gpuErrchk(cudaMemcpy(zResArr, g_zResArr, numOps * sizeof(TYPE), cudaMemcpyDeviceToHost));
     }
-
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -239,11 +196,11 @@ void Calculate_hardware_accelerated_b
     #endif
 
     #if DEBUG_TIMINGS
-        printf("\tDevice buffer size:       %.3lf MB\n", (4.0 * double(num_ops * sizeof(TYPE)) / 1.0e6));
+        printf("\tDevice buffer size:       %.3lf MB\n", (4.0 * double(numOps * sizeof(TYPE)) / 1.0e6));
         printf("\tTotal blocks:             %lli\n", blocks);
         printf("\tThreads per calculation:  %i\n", NTHREADS);
-        printf("\tPrecision:                %dx%d\n", par.thicknessIncrements, par.angularIncrements);
-        printf("\tTotal calculations        %lli\n", num_ops);
-        printf("\tTotal MegaIncrements      %.f\n", 1e-6 * double(num_ops * par.thicknessIncrements * par.angularIncrements));
+        printf("\tPrecision:                %dx%d\n", coil.thicknessIncrements, coil.angularIncrements);
+        printf("\tTotal calculations        %lli\n", numOps);
+        printf("\tTotal MegaIncrements      %.f\n", 1e-6 * double(numOps * coil.thicknessIncrements * coil.angularIncrements));
     #endif
 }

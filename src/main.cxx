@@ -14,7 +14,7 @@
 int main()
 {
 //    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 16, 24);
-//    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 24);
+    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 25);
 //    testRawGPUPerformance();
 //    benchComputeAllFields();
 
@@ -26,8 +26,9 @@ int main()
 //    benchForceZAxisMTScaling(16);
 //    benchForceGeneralMTScaling(16);
 
-    compMInductanceGeneralCase();
+//    compMInductanceGeneralCase();
 
+    compPrecisionCPUvsGPU();
 
     return 0;
 }

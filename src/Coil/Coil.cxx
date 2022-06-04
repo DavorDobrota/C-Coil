@@ -401,8 +401,12 @@ void Coil::generateCoilData(CoilData &coilData) const
 
     for (int i = 0; i < GPU_INCREMENTS; ++i)
     {
+
+        double phiPosition = M_PI_2 * (1.0 + Legendre::positionMatrix[GPU_INCREMENTS - 1][i]);
+
         coilData.positionArray[i] = Legendre::positionMatrix[GPU_INCREMENTS - 1][i];
         coilData.weightArray[i] = Legendre::weightsMatrix[GPU_INCREMENTS - 1][i];
+        coilData.cosPrecomputeArray[i] = cos(phiPosition);
     }
 
     vec3::FieldVector3 tempVec = vec3::CoordVector3::convertToFieldVector(positionVector);

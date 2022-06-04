@@ -8,7 +8,6 @@ from pybind11.setup_helpers import Pybind11Extension
 
 
 use_GPU = int(os.environ.get("USE_GPU", 0))
-print(f"Using GPU: {use_GPU}")
 
 if os.name == "nt":
     os.environ["CL"] = "/std:c++17 /O2 /arch:AVX2 /fp:fast"

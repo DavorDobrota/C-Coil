@@ -26,6 +26,10 @@ void initBenchmark(py::module_ &mainModule)
             "bench_compute_all_fields_workload_scaling_MT", benchComputeAllFieldsWorkloadScalingMT,
             py::arg("precision_factor") = PrecisionFactor(),
             py::arg("thread_count") = g_defaultThreadCount,
+            py::arg("max_points_log2") = g_maxPot)
+        .def(
+            "bench_compute_all_fields_workload_scaling_GPU", benchComputeAllFieldsWorkloadScalingGPU,
+            py::arg("precision_factor") = PrecisionFactor(),
             py::arg("max_points_log2") = g_maxPot);
 
     benchmarkModule.def(

@@ -41,7 +41,6 @@ list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Test")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Benchmark")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil")
-list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilData")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Compare")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CUDAFunctions")
@@ -65,9 +64,6 @@ list(APPEND LIBS "$<TARGET_OBJECTS:Test>")
 
 add_subdirectory(src/Coil)
 list(APPEND LIBS "$<TARGET_OBJECTS:Coil>")
-
-add_subdirectory(src/CoilData)
-list(APPEND LIBS "$<TARGET_OBJECTS:CoilData>")
 
 add_subdirectory(src/CoilGroup)
 list(APPEND LIBS "$<TARGET_OBJECTS:CoilGroup>")

@@ -13,8 +13,8 @@
 #pragma ide diagnostic ignored "Simplify"
 int main()
 {
-//    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 16, 24);
-    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 25);
+//    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 1, 26);
+//    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 27);
 //    testRawGPUPerformance();
 //    benchComputeAllFields();
 
@@ -28,7 +28,6 @@ int main()
 
 //    compMInductanceGeneralCase();
 
-    compPrecisionCPUvsGPU();
 
     return 0;
 }

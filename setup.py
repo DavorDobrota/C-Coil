@@ -84,6 +84,7 @@ extra_kwargs = {}
 
 if use_GPU:
     CUDA = locate_CUDA()
+    print(f"Using CUDA installation: {CUDA}")
     sources = sorted(sources + [*glob("src/CUDAFunctions/*.cu")])
     header_include_dirs += CUDA['include']
     extra_kwargs = {

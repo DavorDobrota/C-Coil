@@ -178,7 +178,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
     generateCoilData(coilData);
 
     #if USE_GPU == 1
-        Calculate_hardware_accelerated_a(size, coilData, &coordinateArr[0], &resultArr[0]);
+        Calculate_hardware_accelerated_a(size, coilData, coordinateArr, resultArr);
     #else
         free(coordinateArr);
         free(resultArr);
@@ -220,7 +220,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<ve
     generateCoilData(coilData);
 
     #if USE_GPU == 1
-        Calculate_hardware_accelerated_b(size, coilData, &coordinateArr[0], &resultArr[0]);
+        Calculate_hardware_accelerated_b(size, coilData, coordinateArr, resultArr);
     #else
         free(coordinateArr);
         free(resultArr);

@@ -56,12 +56,13 @@ sources = sorted([
     *glob("src/Utils/*.cxx"),
 ])
 
-def find_in_path(name, path):
+def find_in_path(names, path):
     for dir in path.split(os.pathsep):
         print(f"Looking for NVCC in: {dir}")
-        binpath = join(dir, name)
-        if os.path.exists(binpath):
-            return os.path.abspath(binpath)
+        for name in names:
+            binpath = join(dir, name)
+            if os.path.exists(binpath):
+                return os.path.abspath(binpath)
     return None
 
 def locate_CUDA():
@@ -69,7 +70,7 @@ def locate_CUDA():
         home = os.environ['CUDAHOME']
         nvcc = join(home, 'bin', 'nvcc')
     else:
-        nvcc = find_in_path('nvcc', os.environ['PATH'])
+        nvcc = find_in_path(['nvcc', 'nvcc.exe'], os.environ['PATH'])
         if nvcc is None:
             raise EnvironmentError('The nvcc binary could not be located in your $PATH. Either add it to your path, or set $CUDAHOME')
         home = os.path.dirname(os.path.dirname(nvcc))

@@ -177,7 +177,11 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
     CoilData coilData;
     generateCoilData(coilData);
 
-    Calculate_hardware_accelerated_a(size, coilData, &coordinateArr[0], &resultArr[0]);
+    #if USE_GPU == 1
+        Calculate_hardware_accelerated_a(size, coilData, &coordinateArr[0], &resultArr[0]);
+    #else
+        throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
+    #endif // USE_GPU
 
     std::vector<vec3::FieldVector3> computedFieldArr(size);
 
@@ -210,7 +214,11 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<ve
     CoilData coilData;
     generateCoilData(coilData);
 
-    Calculate_hardware_accelerated_b(size, coilData, &coordinateArr[0], &resultArr[0]);
+    #if USE_GPU == 1
+        Calculate_hardware_accelerated_b(size, coilData, &coordinateArr[0], &resultArr[0]);
+    #else
+        throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
+    #endif // USE_GPU
 
     std::vector<vec3::FieldVector3> computedFieldArr(size);
 

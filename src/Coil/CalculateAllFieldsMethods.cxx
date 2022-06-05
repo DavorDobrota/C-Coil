@@ -161,8 +161,8 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
 {
     long long size = pointVectors.size();
 
-    std::vector<DataVector> coordinateArr(size);
-    std::vector<DataVector> resultArr(size);
+    DataVector *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    DataVector *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
 
     for (int i = 0; i < size; ++i)
     {
@@ -180,13 +180,18 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
     #if USE_GPU == 1
         Calculate_hardware_accelerated_a(size, coilData, &coordinateArr[0], &resultArr[0]);
     #else
+        free(coordinateArr);
+        free(resultArr);
         throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
     #endif // USE_GPU
 
+    free(coordinateArr);
     std::vector<vec3::FieldVector3> computedFieldArr(size);
 
     for (int i = 0; i < pointVectors.size(); ++i)
         computedFieldArr[i] = vec3::FieldVector3(resultArr[i].x, resultArr[i].y, resultArr[i].z);
+
+    free(resultArr);
 
     return computedFieldArr;
 }
@@ -198,8 +203,8 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<ve
 {
     long long size = pointVectors.size();
 
-    std::vector<DataVector> coordinateArr(size);
-    std::vector<DataVector> resultArr(size);
+    DataVector *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    DataVector *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
 
     for (int i = 0; i < size; ++i)
     {
@@ -217,13 +222,18 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<ve
     #if USE_GPU == 1
         Calculate_hardware_accelerated_b(size, coilData, &coordinateArr[0], &resultArr[0]);
     #else
+        free(coordinateArr);
+        free(resultArr);
         throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
     #endif // USE_GPU
 
+    free(coordinateArr);
     std::vector<vec3::FieldVector3> computedFieldArr(size);
 
     for (int i = 0; i < pointVectors.size(); ++i)
         computedFieldArr[i] = vec3::FieldVector3(resultArr[i].x, resultArr[i].y, resultArr[i].z);
+
+    free(resultArr);
 
     return computedFieldArr;
 }

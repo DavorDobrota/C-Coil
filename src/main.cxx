@@ -13,15 +13,14 @@
 #pragma ide diagnostic ignored "Simplify"
 int main()
 {
-//    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 1, 26);
-    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 26);
-//    testRawGPUPerformance();
+//    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 8, 22);
+//    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 26);
 //    benchComputeAllFields();
 
 //    benchComputeAllFieldsEveryCoilType(200003, 8);
 
 //    benchMInductanceZAxisMTScaling(16);
-//    benchMInductanceGeneralMTScaling(16);
+    benchMInductanceGeneralMTScaling(16);
 //    benchSelfInductance();
 //    benchForceZAxisMTScaling(16);
 //    benchForceGeneralMTScaling(16);

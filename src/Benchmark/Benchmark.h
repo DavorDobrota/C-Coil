@@ -5,7 +5,7 @@
 
 
 const int g_defaultThreadCount = 8;
-const int g_maxPot = 25;
+const int g_maxPot = 22;
 
 void benchMathFunctions();
 

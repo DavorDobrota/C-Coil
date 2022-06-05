@@ -9,9 +9,7 @@
 
 
 __global__
-void calculateA(long long numOps, CoilData coil,
-                const TYPE *xPosArr, const TYPE *yPosArr, const TYPE *zPosArr,
-                TYPE *xResArr, TYPE *yResArr, TYPE *zResArr)
+void calculateA(long long numOps, CoilData coil, const DataVector *posArr, DataVector *resArr)
 {
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
@@ -19,9 +17,9 @@ void calculateA(long long numOps, CoilData coil,
     if(global_index >= numOps)
         return;
 
-    TYPE x1 = xPosArr[global_index];
-    TYPE y1 = yPosArr[global_index];
-    TYPE z1 = zPosArr[global_index];
+    TYPE x1 = posArr[global_index].x;
+    TYPE y1 = posArr[global_index].y;
+    TYPE z1 = posArr[global_index].z;
 
     x1 -= coil.positionVector[0];
     y1 -= coil.positionVector[1];
@@ -72,22 +70,17 @@ void calculateA(long long numOps, CoilData coil,
     TYPE yRes = xPot * coil.transformArray[3] + yPot * coil.transformArray[4] + zPot * coil.transformArray[5];
     TYPE zRes = xPot * coil.transformArray[6] + yPot * coil.transformArray[7] + zPot * coil.transformArray[8];
 
-    xResArr[global_index] = xRes;
-    yResArr[global_index] = yRes;
-    zResArr[global_index] = zRes;
+    resArr[global_index].x = xRes;
+    resArr[global_index].y = yRes;
+    resArr[global_index].z = zRes;
 }
 	
 namespace 
 {
     long long g_last_num_ops = 0;
 
-    TYPE *g_xPosArr = nullptr;
-    TYPE *g_yPosArr = nullptr;
-    TYPE *g_zPosArr = nullptr;
-
-    TYPE *g_xResArr = nullptr;
-    TYPE *g_yResArr = nullptr;
-    TYPE *g_zResArr = nullptr;
+    DataVector *g_posArr = nullptr;
+    DataVector *g_resArr = nullptr;
     
     #if DEBUG_TIMINGS
         double g_duration;
@@ -96,40 +89,25 @@ namespace
 
 void resourceCleanupA()
 {
-	gpuErrchk(cudaFree(g_xPosArr));
-    gpuErrchk(cudaFree(g_yPosArr));
-    gpuErrchk(cudaFree(g_zPosArr));
+	gpuErrchk(cudaFree(g_posArr));
+    gpuErrchk(cudaFree(g_resArr));
 
-    gpuErrchk(cudaFree(g_xResArr));
-    gpuErrchk(cudaFree(g_yResArr));
-    gpuErrchk(cudaFree(g_zResArr));
-
-    g_xPosArr = nullptr;
-    g_yPosArr = nullptr;
-    g_zPosArr = nullptr;
-
-    g_xResArr = nullptr;
-    g_yResArr = nullptr;
-    g_zResArr = nullptr;
+    g_posArr = nullptr;
+    g_resArr = nullptr;
 }
 
 void resourceStartupA(long long numOps)
 {
     resourceCleanupA();
     
-	gpuErrchk(cudaMalloc(&g_xPosArr, numOps * sizeof(TYPE)));
-    gpuErrchk(cudaMalloc(&g_yPosArr, numOps * sizeof(TYPE)));
-    gpuErrchk(cudaMalloc(&g_zPosArr, numOps * sizeof(TYPE)));
-
-    gpuErrchk(cudaMalloc(&g_xResArr, numOps * sizeof(TYPE)));
-    gpuErrchk(cudaMalloc(&g_yResArr, numOps * sizeof(TYPE)));
-    gpuErrchk(cudaMalloc(&g_zResArr, numOps * sizeof(TYPE)));
+	gpuErrchk(cudaMalloc(&g_posArr, numOps * sizeof(DataVector)));
+    gpuErrchk(cudaMalloc(&g_resArr, numOps * sizeof(DataVector)));
 }
 
 
 void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
-                                       const TYPE *xPosArr, const TYPE *yPosArr, const TYPE *zPosArr,
-                                       TYPE *xResArr, TYPE *yResArr, TYPE *zResArr)
+                                       const DataVector *posArr,
+                                       DataVector *resArr)
 {
     #if DEBUG_TIMINGS
         recordStartPoint();
@@ -150,9 +128,7 @@ void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemcpy(g_xPosArr, xPosArr, numOps * sizeof(TYPE), cudaMemcpyHostToDevice));
-    gpuErrchk(cudaMemcpy(g_yPosArr, yPosArr, numOps * sizeof(TYPE), cudaMemcpyHostToDevice));
-    gpuErrchk(cudaMemcpy(g_zPosArr, zPosArr, numOps * sizeof(TYPE), cudaMemcpyHostToDevice));
+    gpuErrchk(cudaMemcpy(g_posArr, posArr, numOps * sizeof(DataVector), cudaMemcpyHostToDevice));
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -161,9 +137,7 @@ void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
         recordStartPoint();
     #endif
 
-    calculateA<<<blocks, NTHREADS>>>(numOps, coil,
-                                     g_xPosArr, g_yPosArr, g_zPosArr,
-                                     g_xResArr, g_yResArr, g_zResArr);
+    calculateA<<<blocks, NTHREADS>>>(numOps, coil, g_posArr, g_resArr);
 	gpuErrchk(cudaDeviceSynchronize());
 
 	#if DEBUG_TIMINGS
@@ -175,12 +149,9 @@ void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
         recordStartPoint();
     #endif
 
-	if(xResArr != nullptr)
-    {
-        gpuErrchk(cudaMemcpy(xResArr, g_xResArr, numOps * sizeof(TYPE), cudaMemcpyDeviceToHost));
-        gpuErrchk(cudaMemcpy(yResArr, g_yResArr, numOps * sizeof(TYPE), cudaMemcpyDeviceToHost));
-        gpuErrchk(cudaMemcpy(zResArr, g_zResArr, numOps * sizeof(TYPE), cudaMemcpyDeviceToHost));
-    }
+	if(resArr != nullptr)
+        gpuErrchk(cudaMemcpy(resArr, g_resArr, numOps * sizeof(DataVector), cudaMemcpyDeviceToHost));
+
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();

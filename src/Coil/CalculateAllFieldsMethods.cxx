@@ -161,34 +161,28 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
 {
     long long size = pointVectors.size();
 
-    std::vector<float> xCoordinateArr(size);
-    std::vector<float> yCoordinateArr(size);
-    std::vector<float> zCoordinateArr(size);
-
-    std::vector<float> xResultArr(size);
-    std::vector<float> yResultArr(size);
-    std::vector<float> zResultArr(size);
-
-    std::vector<vec3::FieldVector3> computedFieldArr(size);
+    std::vector<DataVector> coordinateArr(size);
+    std::vector<DataVector> resultArr(size);
 
     for (int i = 0; i < size; ++i)
     {
         vec3::CoordVector3 vector = pointVectors[i];
         vector.convertToCartesian();
-        xCoordinateArr[i] = vector.comp1;
-        yCoordinateArr[i] = vector.comp2;
-        zCoordinateArr[i] = vector.comp3;
+
+        coordinateArr[i].x = vector.comp1;
+        coordinateArr[i].y = vector.comp2;
+        coordinateArr[i].z = vector.comp3;
     }
 
     CoilData coilData;
     generateCoilData(coilData);
 
-    Calculate_hardware_accelerated_a(size, coilData,
-                                     &xCoordinateArr[0], &yCoordinateArr[0], &zCoordinateArr[0],
-                                     &xResultArr[0], &yResultArr[0], &zResultArr[0]);
+    Calculate_hardware_accelerated_a(size, coilData, &coordinateArr[0], &resultArr[0]);
+
+    std::vector<vec3::FieldVector3> computedFieldArr(size);
 
     for (int i = 0; i < pointVectors.size(); ++i)
-        computedFieldArr[i] = vec3::FieldVector3(xResultArr[i], yResultArr[i], zResultArr[i]);
+        computedFieldArr[i] = vec3::FieldVector3(resultArr[i].x, resultArr[i].y, resultArr[i].z);
 
     return computedFieldArr;
 }
@@ -200,34 +194,28 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<ve
 {
     long long size = pointVectors.size();
 
-    std::vector<float> xCoordinateArr(size);
-    std::vector<float> yCoordinateArr(size);
-    std::vector<float> zCoordinateArr(size);
-
-    std::vector<float> xResultArr(size);
-    std::vector<float> yResultArr(size);
-    std::vector<float> zResultArr(size);
-
-    std::vector<vec3::FieldVector3> computedFieldArr(size);
+    std::vector<DataVector> coordinateArr(size);
+    std::vector<DataVector> resultArr(size);
 
     for (int i = 0; i < size; ++i)
     {
         vec3::CoordVector3 vector = pointVectors[i];
         vector.convertToCartesian();
-        xCoordinateArr[i] = vector.comp1;
-        yCoordinateArr[i] = vector.comp2;
-        zCoordinateArr[i] = vector.comp3;
+
+        coordinateArr[i].x = vector.comp1;
+        coordinateArr[i].y = vector.comp2;
+        coordinateArr[i].z = vector.comp3;
     }
 
     CoilData coilData;
     generateCoilData(coilData);
 
-    Calculate_hardware_accelerated_b(size, coilData,
-                                     &xCoordinateArr[0], &yCoordinateArr[0], &zCoordinateArr[0],
-                                     &xResultArr[0], &yResultArr[0], &zResultArr[0]);
+    Calculate_hardware_accelerated_b(size, coilData, &coordinateArr[0], &resultArr[0]);
+
+    std::vector<vec3::FieldVector3> computedFieldArr(size);
 
     for (int i = 0; i < pointVectors.size(); ++i)
-        computedFieldArr[i] = vec3::FieldVector3(xResultArr[i], yResultArr[i], zResultArr[i]);
+        computedFieldArr[i] = vec3::FieldVector3(resultArr[i].x, resultArr[i].y, resultArr[i].z);
 
     return computedFieldArr;
 }

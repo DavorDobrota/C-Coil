@@ -14,7 +14,7 @@
 int main()
 {
 //    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 1, 26);
-//    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 27);
+    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 26);
 //    testRawGPUPerformance();
 //    benchComputeAllFields();
 
@@ -27,6 +27,8 @@ int main()
 //    benchForceGeneralMTScaling(16);
 
 //    compMInductanceGeneralCase();
+
+    compPrecisionCPUvsGPU();
 
 
     return 0;

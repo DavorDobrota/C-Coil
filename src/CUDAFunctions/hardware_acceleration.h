@@ -5,20 +5,12 @@
 #include "CoilData.h"
 
 void Calculate_hardware_accelerated_a(long long numOps, CoilData coil,
-                                      const TYPE *xPosArr,
-                                      const TYPE *yPosArr,
-                                      const TYPE *zPosArr,
-                                      TYPE *xResArr = nullptr,
-                                      TYPE *yResArr = nullptr,
-                                      TYPE *zResArr = nullptr);
+                                      const DataVector *posArr,
+                                      DataVector *resArr = nullptr);
 
 void Calculate_hardware_accelerated_b(long long numOps, CoilData coil,
-                                      const TYPE *xPosArr,
-                                      const TYPE *yPosArr,
-                                      const TYPE *zPosArr,
-                                      TYPE *xResArr = nullptr,
-                                      TYPE *yResArr = nullptr,
-                                      TYPE *zResArr = nullptr);
+                                      const DataVector *posArr,
+                                      DataVector *resArr = nullptr);
 
 void Calculate_hardware_accelerated_g(long long num_ops,
                                       const TYPE *z_ar,

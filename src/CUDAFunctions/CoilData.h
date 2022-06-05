@@ -55,4 +55,17 @@ struct CoilData
     TYPE invTransformArray[9];
 };
 
+struct DataVector
+{
+    DataVector() :
+        x{0.0},
+        y{0.0},
+        z{0.0}
+    {}
+
+    TYPE x;
+    TYPE y;
+    TYPE z;
+};
+
 #endif //GENERAL_COIL_PROGRAM_COILDATA_H

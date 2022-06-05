@@ -58,6 +58,7 @@ sources = sorted([
 
 def find_in_path(name, path):
     for dir in path.split(os.pathsep):
+        print(f"Looking for NVCC in: {dir}")
         binpath = join(dir, name)
         if os.path.exists(binpath):
             return os.path.abspath(binpath)

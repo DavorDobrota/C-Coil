@@ -148,8 +148,6 @@ void Calculate_hardware_accelerated_b(long long numOps, CoilData coil,
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
         printf("\tCalculations:             %.9g s\n", g_duration);
-        printf("\t\tEstimated TFLOPS: %.2f\n",
-               1e-12 * double(90 * numOps * coil.thicknessIncrements * coil.angularIncrements) / g_duration);
 
         recordStartPoint();
     #endif

@@ -241,7 +241,7 @@ class Coil
 
 
         [[nodiscard]] std::vector<double> computeAllBFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
-                                              ComputeMethod computeMethod = CPU_ST) const;
+                                                            ComputeMethod computeMethod = CPU_ST) const;
         [[nodiscard]] std::vector<double> computeAllBFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
                                                             const PrecisionArguments &usedPrecision, ComputeMethod computeMethod = CPU_ST) const;
 
@@ -251,7 +251,7 @@ class Coil
                                                             const PrecisionArguments &usedPrecision, ComputeMethod computeMethod = CPU_ST) const;
 
         [[nodiscard]] std::vector<double> computeAllBFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
-                                              ComputeMethod computeMethod = CPU_ST) const;
+                                                            ComputeMethod computeMethod = CPU_ST) const;
         [[nodiscard]] std::vector<double> computeAllBFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
                                                             const PrecisionArguments &usedPrecision, ComputeMethod computeMethod = CPU_ST) const;
 
@@ -356,23 +356,27 @@ class Coil
         computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment,
                                    const PrecisionArguments &usedPrecision) const;
 
-        static std::vector<double> computeAllMutualInductanceArrangements(Coil primary, Coil secondary,
-                                                                          const std::vector<vec3::CoordVector3> &primaryPositions,
-                                                                          const std::vector<vec3::CoordVector3> &secondaryPositions,
-                                                                          const std::vector<double> &primaryYAngles,
-                                                                          const std::vector<double> &primaryZAngles,
-                                                                          const std::vector<double> &secondaryYAngles,
-                                                                          const std::vector<double> &secondaryZAngles,
-                                                                          PrecisionFactor precisionFactor = PrecisionFactor(),
-                                                                          ComputeMethod computeMethod = CPU_ST);
+        static std::vector<double>
+        computeAllMutualInductanceArrangements(Coil primary, Coil secondary,
+                                               const std::vector<vec3::CoordVector3> &primaryPositions,
+                                               const std::vector<vec3::CoordVector3> &secondaryPositions,
+                                               const std::vector<double> &primaryYAngles,
+                                               const std::vector<double> &primaryZAngles,
+                                               const std::vector<double> &secondaryYAngles,
+                                               const std::vector<double> &secondaryZAngles,
+                                               PrecisionFactor precisionFactor = PrecisionFactor(),
+                                               ComputeMethod computeMethod = CPU_ST);
 
         static std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
         computeAllAmpereForceArrangements(Coil primary, Coil secondary,
                                           const std::vector<vec3::CoordVector3> &primaryPositions,
                                           const std::vector<vec3::CoordVector3> &secondaryPositions,
-                                          const std::vector<double> &primaryYAngles, const std::vector<double> &primaryZAngles,
-                                          const std::vector<double> &secondaryYAngles, const std::vector<double> &secondaryZAngles,
-                                          PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod computeMethod = CPU_ST);
+                                          const std::vector<double> &primaryYAngles,
+                                          const std::vector<double> &primaryZAngles,
+                                          const std::vector<double> &secondaryYAngles,
+                                          const std::vector<double> &secondaryZAngles,
+                                          PrecisionFactor precisionFactor = PrecisionFactor(),
+                                          ComputeMethod computeMethod = CPU_ST);
 
         explicit operator std::string() const;
 
@@ -415,14 +419,6 @@ class Coil
         [[nodiscard]] vec3::CoordVector3 adaptInputVectorForPoint(const vec3::CoordVector3 &pointVector) const;
         [[nodiscard]] vec3::FieldVector3 adaptOutputVectorForPoint(const vec3::FieldVector3 &computedVector) const;
 
-        void adaptInputVectorsForAllPoints(const std::vector<vec3::CoordVector3> &pointVectors,
-                                           std::vector<double> &cylindricalZArr,
-                                           std::vector<double> &cylindricalRArr,
-                                           std::vector<double> &cylindricalPhiArr) const;
-
-        [[nodiscard]] std::vector<vec3::FieldVector3>
-        adaptOutputVectorsForAllPoints(const std::vector<vec3::FieldVector3> &computedVectorArr) const;
-
         [[nodiscard]] std::vector<vec3::FieldVector3> calculateAllBFieldMT(const std::vector<vec3::CoordVector3> &pointVectors,
                                                                            const PrecisionArguments &usedPrecision) const;
 
@@ -434,19 +430,11 @@ class Coil
 
         void generateCoilData(CoilData &coilData) const;
 
-        std::vector<vec3::FieldVector3> calculateAllAPotentialGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
+        [[nodiscard]] std::vector<vec3::FieldVector3> calculateAllAPotentialGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
 
-        std::vector<vec3::FieldVector3> calculateAllBFieldGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
+        [[nodiscard]] std::vector<vec3::FieldVector3> calculateAllBFieldGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
 
-
-
-        void calculateAllBGradientGPU(const std::vector<double> &cylindricalZArr,
-                                      const std::vector<double> &cylindricalRArr,
-                                      std::vector<double> &computedGradientRPhi,
-                                      std::vector<double> &computedGradientRR,
-                                      std::vector<double> &computedGradientRZ,
-                                      std::vector<double> &computedGradientZZ,
-                                      const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] std::vector<vec3::Matrix3> calculateAllBGradientGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
 
         static std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
         calculateRingIncrementPosition(int angularBlocks, int angularIncrements,

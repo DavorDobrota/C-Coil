@@ -58,6 +58,16 @@ void compPrecisionCPUvsGPU()
     printf("Ampere force: %.15g | %.15g\n",
            Coil::computeAmpereForce(prim, sec, PrecisionFactor(7.0), CPU_MT).first.z,
            Coil::computeAmpereForce(prim, sec, PrecisionFactor(7.0), GPU).first.z);
+
+    std::vector<vec3::CoordVector3> coordArr;
+    coordArr.emplace_back();
+    coordArr.emplace_back();
+
+    std::vector<vec3::Matrix3> gradientArr = prim.computeAllBGradientTensors(coordArr, GPU);
+
+    printf("Gradient xx : %.15g | %.15g\n", prim.computeBGradientTensor(vec3::CoordVector3()).xx, gradientArr[0].xx);
+    printf("Gradient yy : %.15g | %.15g\n", prim.computeBGradientTensor(vec3::CoordVector3()).yy, gradientArr[0].yy);
+    printf("Gradient zz : %.15g | %.15g\n", prim.computeBGradientTensor(vec3::CoordVector3()).zz, gradientArr[0].zz);
 }
 
 void compMInductanceForSpecialCase()

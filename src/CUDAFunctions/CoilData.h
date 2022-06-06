@@ -68,4 +68,33 @@ struct DataVector
     TYPE z;
 };
 
+struct DataMatrix
+{
+    DataMatrix() :
+        xx{0.0},
+        xy{0.0},
+        xz{0.0},
+
+        yx{0.0},
+        yy{0.0},
+        yz{0.0},
+
+        zx{0.0},
+        zy{0.0},
+        zz{0.0}
+    {}
+
+    TYPE xx;
+    TYPE xy;
+    TYPE xz;
+
+    TYPE yx;
+    TYPE yy;
+    TYPE yz;
+
+    TYPE zx;
+    TYPE zy;
+    TYPE zz;
+};
+
 #endif //GENERAL_COIL_PROGRAM_COILDATA_H

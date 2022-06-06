@@ -8,73 +8,8 @@
 #include <cstdio>
 
 
-struct ParamG
-{
-    ParamG() :
-
-        lengthIncrements{0},
-        thicknessIncrements{0},
-        angularIncrements{0},
-
-        constantTerm(0.f),
-
-        length(0.f),
-        thickness(0.f),
-        innerRadius(0.f),
-        z{nullptr},
-        r{nullptr},
-
-        positions{-0.98940093499164993259615417, -0.94457502307323257607798842, -0.8656312023878317438804679,
-              -0.7554044083550030338951012, -0.61787624440264374844667176, -0.4580167776572273863424194,
-              -0.2816035507792589132304605, -0.09501250983763744018531934, 0.09501250983763744018531934,
-              0.2816035507792589132304605, 0.4580167776572273863424194, 0.61787624440264374844667176,
-              0.7554044083550030338951012, 0.8656312023878317438804679, 0.94457502307323257607798842,
-              0.98940093499164993259615417},
-
-        weights{0.02715245941175409485178057, 0.062253523938647892862843837, 0.09515851168249278480992511,
-            0.12462897125553387205247628, 0.1495959888165767320815017, 0.16915651939500253818931208,
-            0.18260341504492358886676367, 0.18945061045506849628539672, 0.1894506104550684962853967,
-            0.1826034150449235888667637, 0.1691565193950025381893121, 0.14959598881657673208150173,
-            0.1246289712555338720524763, 0.0951585116824927848099251, 0.06225352393864789286284384,
-            0.027152459411754094851780572},
-
-        cosPrecompute{0.999861409060662, 0.996212553862336, 0.977808137941974, 0.927094888788312,
-                  0.825200872426836, 0.658971885399085, 0.428057063588869, 0.148691865890404,
-                  -0.148691865890404, -0.428057063588869, -0.658971885399085, -0.825200872426836,
-                  -0.927094888788312, -0.977808137941974, -0.996212553862336, -0.999861409060662},
-
-        resG1{nullptr},
-        resG2{nullptr},
-        resG3{nullptr},
-        resG4{nullptr}
-    {}
-
-    int lengthIncrements;
-    int thicknessIncrements;
-    int angularIncrements;
-
-    TYPE constantTerm;
-
-    TYPE length;
-    TYPE thickness;
-    TYPE innerRadius;
-
-    TYPE *z;
-    TYPE *r;
-
-    TYPE positions[16];
-    TYPE weights[16];
-    TYPE cosPrecompute[16];
-
-    TYPE *resG1;
-    TYPE *resG2;
-    TYPE *resG3;
-    TYPE *resG4;
-};
-
-
 __global__
-void calculateG(long long numOps, ParamG par)
+void calculateG(long long numOps, CoilData coil, const DataVector *posArr, DataMatrix *resArr)
 {
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
@@ -82,61 +17,67 @@ void calculateG(long long numOps, ParamG par)
     if(global_index >= numOps)
         return;
 
-    TYPE zCoord = par.z[global_index];
-    TYPE rCoord = par.r[global_index];
+    TYPE x1 = posArr[global_index].x;
+    TYPE y1 = posArr[global_index].y;
+    TYPE z1 = posArr[global_index].z;
+
+    x1 -= coil.positionVector[0];
+    y1 -= coil.positionVector[1];
+    z1 -= coil.positionVector[2];
+
+    TYPE x = x1 * coil.invTransformArray[0] + y1 * coil.invTransformArray[1] + z1 * coil.invTransformArray[2];
+    TYPE y = x1 * coil.invTransformArray[3] + y1 * coil.invTransformArray[4] + z1 * coil.invTransformArray[5];
+    TYPE z = x1 * coil.invTransformArray[6] + y1 * coil.invTransformArray[7] + z1 * coil.invTransformArray[8];
+
+    TYPE zCoord = z;
+    TYPE rCoord = sqrt(x * x + y * y);
+    TYPE phiCord = atan2(y, x);
 
     TYPE bufferValueRP = 0.f;
     TYPE bufferValueRR = 0.f;
     TYPE bufferValueRZ = 0.f;
     TYPE bufferValueZZ = 0.f;
 
-    TYPE constant = par.constantTerm;
+    TYPE topEdge = zCoord + 0.5f * coil.length;
+    TYPE bottomEdge = zCoord - 0.5f * coil.length;
 
-    TYPE topEdge = zCoord + 0.5f * par.length;
-    TYPE bottomEdge = zCoord - 0.5f * par.length;
-
-    TYPE incrementPositionT, cosinePhi, cosinePhi2, phiExpression;
-    TYPE tempConstA, tempConstB, tempConstC, tempConstD, tempConstE, tempConstF;
-    TYPE tempConstG1, tempConstG2, tempConstI, tempConstJ1, tempConstJ2, tempConstK1, tempConstK2;
-    TYPE tempConstL1, tempConstL2, tempConstM, tempConstN, tempConstO;
-
-    for (int incT = 0; incT < par.thicknessIncrements; ++incT)
+    for (int incT = 0; incT < coil.thicknessIncrements; ++incT)
     {
-        incrementPositionT = par.innerRadius + 0.5f * par.thickness * (1.0f + par.positions[incT]);
+        TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.positionArray[incT]);
 
-        tempConstA = incrementPositionT * incrementPositionT;
-        tempConstB = rCoord * rCoord;
-        tempConstC = incrementPositionT * rCoord;
+        TYPE tempConstA = incrementPositionT * incrementPositionT;
+        TYPE tempConstB = rCoord * rCoord;
+        TYPE tempConstC = incrementPositionT * rCoord;
 
-        tempConstD = tempConstA + tempConstB;
-        tempConstE = tempConstA * tempConstA + tempConstB * tempConstB;
-        tempConstF = tempConstC * tempConstC;
+        TYPE tempConstD = tempConstA + tempConstB;
+        TYPE tempConstE = tempConstA * tempConstA + tempConstB * tempConstB;
+        TYPE tempConstF = tempConstC * tempConstC;
 
-        tempConstG1 = tempConstD + topEdge * topEdge;
-        tempConstG2 = tempConstD + bottomEdge * bottomEdge;
+        TYPE tempConstG1 = tempConstD + topEdge * topEdge;
+        TYPE tempConstG2 = tempConstD + bottomEdge * bottomEdge;
 
-        for (int incF = 0; incF < par.angularIncrements; ++incF)
+        for (int incF = 0; incF < coil.angularIncrements; ++incF)
         {
-            cosinePhi = par.cosPrecompute[incF];
-            cosinePhi2 = cosinePhi * cosinePhi;
-            phiExpression = 2.f * tempConstC * cosinePhi;
+            TYPE cosinePhi = coil.cosPrecomputeArray[incF];
+            TYPE cosinePhi2 = cosinePhi * cosinePhi;
+            TYPE phiExpression = 2.f * tempConstC * cosinePhi;
 
-            tempConstI = constant * par.weights[incT] * par.weights[incF];
+            TYPE tempConstI = coil.constFactor * coil.weightArray[incT] * coil.weightArray[incF];
 
-            tempConstJ1 = tempConstG1 - phiExpression;
-            tempConstJ2 = tempConstG2 - phiExpression;
+            TYPE tempConstJ1 = tempConstG1 - phiExpression;
+            TYPE tempConstJ2 = tempConstG2 - phiExpression;
 
-            tempConstK1 = rsqrtf(tempConstJ1);
-            tempConstK2 = rsqrtf(tempConstJ2);
+            TYPE tempConstK1 = rsqrtf(tempConstJ1);
+            TYPE tempConstK2 = rsqrtf(tempConstJ2);
 
-            tempConstL1 = tempConstK1 / (tempConstJ1);
-            tempConstL2 = tempConstK2 / (tempConstJ2);
+            TYPE tempConstL1 = tempConstK1 / (tempConstJ1);
+            TYPE tempConstL2 = tempConstK2 / (tempConstJ2);
 
-            tempConstM = tempConstD - phiExpression;
-            tempConstN =
+            TYPE tempConstM = tempConstD - phiExpression;
+            TYPE tempConstN =
                     2.f * tempConstF * cosinePhi * (cosinePhi2 + 2.f) -
                     tempConstC * (3.f * cosinePhi2 + 1.f) * tempConstD + cosinePhi * tempConstE;
-            tempConstO = cosinePhi * tempConstD - 2.f * tempConstC;
+            TYPE tempConstO = cosinePhi * tempConstD - 2.f * tempConstC;
 
             bufferValueRP += tempConstI * (incrementPositionT * cosinePhi / rCoord) * (tempConstK2 - tempConstK1);
             bufferValueRR += tempConstI * (tempConstC - tempConstA * cosinePhi) * cosinePhi * (tempConstL1 - tempConstL2);
@@ -146,23 +87,67 @@ void calculateG(long long numOps, ParamG par)
                               bottomEdge * tempConstL2 * (tempConstO * tempConstJ2 + tempConstN));
         }
     }
-    par.resG1[global_index] = bufferValueRP;
-    par.resG2[global_index] = bufferValueRR;
-    par.resG3[global_index] = bufferValueRZ;
-    par.resG4[global_index] = bufferValueZZ;
+
+    TYPE xxGrad, xyGrad, xzGrad, yxGrad, yyGrad, yzGrad, zxGrad, zyGrad, zzGrad;
+
+    if (rCoord / coil.innerRadius > 1e-5)
+    {
+        TYPE sinPhi = sin(phiCord);
+        TYPE cosPhi = cos(phiCord);
+
+        xxGrad = bufferValueRR * cosPhi * cosPhi + bufferValueRP * sinPhi * sinPhi;
+        yyGrad = bufferValueRR * sinPhi * sinPhi + bufferValueRP * cosPhi * cosPhi;
+        zzGrad = bufferValueZZ;
+
+        xyGrad = 0.5 * sin(2 * phiCord) * (bufferValueRR - bufferValueRP);
+        xzGrad = bufferValueRZ * cosPhi;
+        yzGrad = bufferValueRZ * sinPhi;
+
+        yxGrad = xyGrad;
+        zxGrad = xzGrad;
+        zyGrad = yzGrad;
+    }
+    else
+    {
+        xxGrad = bufferValueRR;
+        yyGrad = bufferValueRR;
+        zzGrad = bufferValueZZ;
+
+        xyGrad = 0.f;
+        xzGrad = 0.f;
+        yxGrad = 0.f;
+        yzGrad = 0.f;
+        zxGrad = 0.f;
+        zyGrad = 0.f;
+    }
+
+    TYPE xxRes = coil.transformArray[0] * xxGrad + coil.transformArray[1] * yxGrad + coil.transformArray[2] * zxGrad;
+    TYPE xyRes = coil.transformArray[0] * xyGrad + coil.transformArray[1] * yyGrad + coil.transformArray[2] * zyGrad;
+    TYPE xzRes = coil.transformArray[0] * xzGrad + coil.transformArray[1] * yzGrad + coil.transformArray[2] * zzGrad;
+    TYPE yxRes = coil.transformArray[3] * xxGrad + coil.transformArray[4] * yxGrad + coil.transformArray[5] * zxGrad;
+    TYPE yyRes = coil.transformArray[3] * xyGrad + coil.transformArray[4] * yyGrad + coil.transformArray[5] * zyGrad;
+    TYPE yzRes = coil.transformArray[3] * xzGrad + coil.transformArray[4] * yzGrad + coil.transformArray[5] * zzGrad;
+    TYPE zxRes = coil.transformArray[6] * xxGrad + coil.transformArray[7] * yxGrad + coil.transformArray[8] * zxGrad;
+    TYPE zyRes = coil.transformArray[6] * xyGrad + coil.transformArray[7] * yyGrad + coil.transformArray[8] * zyGrad;
+    TYPE zzRes = coil.transformArray[6] * xzGrad + coil.transformArray[7] * yzGrad + coil.transformArray[8] * zzGrad;
+
+    resArr[global_index].xx = xxRes;
+    resArr[global_index].xy = xyRes;
+    resArr[global_index].xz = xzRes;
+    resArr[global_index].yx = yxRes;
+    resArr[global_index].yy = yyRes;
+    resArr[global_index].yz = yzRes;
+    resArr[global_index].zx = zxRes;
+    resArr[global_index].zy = zyRes;
+    resArr[global_index].zz = zzRes;
 }
 	
 namespace 
 {
     long long g_last_num_ops = 0;
 
-    TYPE *g_zCoordArr = nullptr;
-    TYPE *g_rCoordArr = nullptr;
-
-    TYPE *g_tensorG1Arr = nullptr;
-    TYPE *g_tensorG2Arr = nullptr;
-    TYPE *g_tensorG3Arr = nullptr;
-    TYPE *g_tensorG4Arr = nullptr;
+    DataVector *g_posArr = nullptr;
+    DataMatrix *g_resArr = nullptr;
     
     #if DEBUG_TIMINGS
         double g_duration;
@@ -171,77 +156,44 @@ namespace
 
 void resourceCleanupG()
 {
-	gpuErrchk(cudaFree(g_zCoordArr));
-    gpuErrchk(cudaFree(g_rCoordArr));
+    gpuErrchk(cudaFree(g_posArr));
+    gpuErrchk(cudaFree(g_resArr));
 
-    gpuErrchk(cudaFree(g_tensorG1Arr));
-    gpuErrchk(cudaFree(g_tensorG2Arr));
-    gpuErrchk(cudaFree(g_tensorG3Arr));
-    gpuErrchk(cudaFree(g_tensorG4Arr));
-
-    g_zCoordArr = nullptr;
-    g_rCoordArr = nullptr;
-
-    g_tensorG1Arr = nullptr;
-    g_tensorG2Arr = nullptr;
-    g_tensorG3Arr = nullptr;
-    g_tensorG4Arr = nullptr;
+    g_posArr = nullptr;
+    g_resArr = nullptr;
 }
 
-void resourceStartupG(long long num_ops)
+void resourceStartupG(long long numOps)
 {
     resourceCleanupG();
-    
-	gpuErrchk(cudaMalloc(&g_zCoordArr, num_ops * sizeof(TYPE)));
-    gpuErrchk(cudaMalloc(&g_rCoordArr, num_ops * sizeof(TYPE)));
 
-    gpuErrchk(cudaMalloc(&g_tensorG1Arr, num_ops * sizeof(TYPE)));
-    gpuErrchk(cudaMalloc(&g_tensorG2Arr, num_ops * sizeof(TYPE)));
-    gpuErrchk(cudaMalloc(&g_tensorG3Arr, num_ops * sizeof(TYPE)));
-    gpuErrchk(cudaMalloc(&g_tensorG4Arr, num_ops * sizeof(TYPE)));
+    gpuErrchk(cudaMalloc(&g_posArr, numOps * sizeof(DataVector)));
+    gpuErrchk(cudaMalloc(&g_resArr, numOps * sizeof(DataMatrix)));
 }
 
 
-void Calculate_hardware_accelerated_g
-        (long long num_ops, const TYPE *z_ar, const TYPE *r_ar, TYPE current_density,
-         TYPE innerRadius, TYPE length, TYPE thickness, int lengthIncrements,
-         int thicknessIncrements, int angularIncrements, TYPE *gradientRPArr,
-         TYPE *gradientRRArr, TYPE *gradientRZArr, TYPE *gradientZZArr)
+void Calculate_hardware_accelerated_g(long long numOps, CoilData coil, const DataVector *posArr, DataMatrix *resArr)
 {
     #if DEBUG_TIMINGS
         recordStartPoint();
         recordStartPoint();
     #endif
 
-	ParamG par;
+    long long blocks = ceil(double(numOps) / NTHREADS);
 
-    par.lengthIncrements = GPU_INCREMENTS;
-    par.thicknessIncrements = GPU_INCREMENTS;
-    par.angularIncrements = GPU_INCREMENTS;
-
-    par.length = length;
-    par.thickness = thickness;
-    par.innerRadius = innerRadius;
-
-    par.constantTerm = MI * current_density * par.thickness * PI * 2 * 0.25;
-
-    long long blocks = ceil(double(num_ops) / NTHREADS);
-
-    if (num_ops > g_last_num_ops)
+    if (numOps > g_last_num_ops)
     {
-        resourceStartupG(num_ops);
+        resourceStartupG(numOps);
+        g_last_num_ops = numOps;
     }
+    #if DEBUG_TIMINGS
+        g_duration = getIntervalDuration();
+        printf("\tResource startup:         %.9g s\n", g_duration);
 
-    par.z = g_zCoordArr;
-    par.r = g_rCoordArr;
+        recordStartPoint();
+    #endif
 
-    par.resG1 = g_tensorG1Arr;
-    par.resG2 = g_tensorG2Arr;
-    par.resG3 = g_tensorG3Arr;
-    par.resG4 = g_tensorG4Arr;
-
-    gpuErrchk(cudaMemcpy(g_zCoordArr,z_ar,num_ops * sizeof(TYPE),cudaMemcpyHostToDevice));
-    gpuErrchk(cudaMemcpy(g_rCoordArr,r_ar,num_ops * sizeof(TYPE),cudaMemcpyHostToDevice));
+    gpuErrchk(cudaMemcpy(g_posArr, posArr, numOps * sizeof(DataVector), cudaMemcpyHostToDevice));
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -250,26 +202,18 @@ void Calculate_hardware_accelerated_g
         recordStartPoint();
     #endif
 
-    calculateG<<<blocks, NTHREADS>>>(num_ops, par);
+    calculateG<<<blocks, NTHREADS>>>(numOps, coil, g_posArr, g_resArr);
 	gpuErrchk(cudaDeviceSynchronize());
 
 	#if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
         printf("\tCalculations:             %.9g s\n", g_duration);
-        printf("\t\tEstimated TFLOPS: %.2f\n",
-               1e-12 * double(120 * num_ops * par.thicknessIncrements * par.angularIncrements) / g_duration);
 
         recordStartPoint();
     #endif
 
-	if(gradientRPArr != nullptr)
-    {
-        gpuErrchk(cudaMemcpy(gradientRPArr, g_tensorG1Arr, num_ops * sizeof(TYPE), cudaMemcpyDeviceToHost));
-        gpuErrchk(cudaMemcpy(gradientRRArr, g_tensorG2Arr, num_ops * sizeof(TYPE), cudaMemcpyDeviceToHost));
-        gpuErrchk(cudaMemcpy(gradientRZArr, g_tensorG3Arr, num_ops * sizeof(TYPE), cudaMemcpyDeviceToHost));
-        gpuErrchk(cudaMemcpy(gradientZZArr, g_tensorG4Arr, num_ops * sizeof(TYPE), cudaMemcpyDeviceToHost));
-    }
-
+    if(resArr != nullptr)
+        gpuErrchk(cudaMemcpy(resArr, g_resArr, numOps * sizeof(DataMatrix), cudaMemcpyDeviceToHost));
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -277,14 +221,14 @@ void Calculate_hardware_accelerated_g
     #endif
 
 	#if DEBUG_TIMINGS
-        printf("\tDevice buffer size:       %.3lf MB\n", (6.0 * double(num_ops * sizeof(TYPE)) / 1.0e6));
+        printf("\tDevice buffer size:       %.3lf MB\n", (12.0 * double(numOps * sizeof(TYPE)) / 1.0e6));
         printf("\tTotal blocks:             %lli\n", blocks);
         printf("\tThreads per calculation:  %i\n", NTHREADS);
-        printf("\tPrecision:                %dx%d\n", par.thicknessIncrements, par.angularIncrements);
-        printf("\tTotal calculations:       %lli\n", num_ops);
-        printf("\tTotal MegaIncrements:     %.f\n", 1e-6 * double(num_ops * par.thicknessIncrements * par.angularIncrements));
+        printf("\tPrecision:                %dx%d\n", coil.thicknessIncrements, coil.angularIncrements);
+        printf("\tTotal calculations:       %lli\n", numOps);
+        printf("\tTotal MegaIncrements:     %.f\n", 1e-6 * double(numOps * coil.thicknessIncrements * coil.angularIncrements));
         g_duration = getIntervalDuration();
-        printf("\n\tPerformance: %.1f kPoints/s\n", double(0.001 * num_ops / g_duration));
+        printf("\n\tPerformance: %.1f kPoints/s\n", double(0.001 * numOps / g_duration));
         printf("-----------------------------------------------\n\n");
     #endif
 }

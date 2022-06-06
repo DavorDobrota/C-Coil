@@ -145,35 +145,6 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
     int thicknessBlocks = 1;
     int angularBlocks = 1;
 
-    double angularRoot = std::sqrt(M_PI * (coil.getInnerRadius() + 0.5 * coil.getThickness()));
-    double thicknessRoot = std::sqrt(coil.getThickness());
-    double lengthRoot = std::sqrt(coil.getLength());
-
-    int totalIncrements = (int) (GPU_INCREMENTS * GPU_INCREMENTS * GPU_INCREMENTS * pow(2, precisionFactor.relativePrecision));
-    int currentIncrements;
-
-    double angularStep, thicknessStep, lengthStep;
-
-    do
-    {
-        lengthStep = lengthRoot / (lengthIncrements * lengthBlocks);
-        thicknessStep = thicknessRoot / (thicknessIncrements * thicknessBlocks);
-        angularStep = angularRoot / (angularIncrements * angularBlocks);
-
-        if (angularStep >= 0.5 * (thicknessStep + lengthStep))
-            angularBlocks++;
-        else
-        {
-            if (thicknessStep >= lengthStep)
-                lengthBlocks++;
-            else
-                thicknessBlocks++;
-        }
-
-        currentIncrements = lengthBlocks*lengthIncrements * thicknessIncrements*thicknessBlocks * angularBlocks*angularIncrements;
-    }
-    while(currentIncrements < totalIncrements);
-
     #if PRINT_ENABLED
         printf("%d : %d %d %d\n", currentIncrements,
                lengthBlocks * lengthIncrements, thicknessIncrements * thicknessBlocks, angularBlocks*angularIncrements);

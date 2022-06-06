@@ -206,9 +206,6 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
 CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &primary, const Coil &secondary,
                                                                    PrecisionFactor precisionFactor, bool zAxisCase)
 {
-    // TODO - implement GPU increment balancing properly
-    return calculateCoilPairArgumentsCPU(primary, secondary, precisionFactor, zAxisCase);
-
     const int primLengthIncrements = GPU_INCREMENTS;
     const int primThicknessIncrements = GPU_INCREMENTS;
     const int primAngularIncrements = GPU_INCREMENTS;
@@ -217,14 +214,11 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
     int primThicknessBlocks = 1;
     int primAngularBlocks = 1;
 
+    // primary precision is fixed, tuning only the secondary precision remains
     int secLengthArrayIndex, secThicknessArrayIndex, secAngularArrayIndex;
 
-    int totalIncrements = GPU_INCREMENTS * GPU_INCREMENTS * GPU_INCREMENTS;
+    int totalIncrements = 1;
     int currentIncrements;
-
-    double primAngularRoot = std::sqrt(M_PI * (primary.getInnerRadius() + 0.5 * primary.getThickness()));
-    double primThicknessRoot = std::sqrt(primary.getThickness());
-    double primLengthRoot = std::sqrt(primary.getLength());
 
     double secAngularRoot = std::sqrt(2 * M_PI * (secondary.getInnerRadius() + 0.5 * secondary.getThickness()));
     double secThicknessRoot = std::sqrt(secondary.getThickness());
@@ -266,17 +260,12 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
     }
     secAngularArrayIndex = g_minSecAngularIncrements - 1;
 
-    totalIncrements *= std::pow(2, precisionFactor.relativePrecision);
+    totalIncrements *= std::pow(2, precisionFactor.relativePrecision - 1.0);
 
-    double primAngularStep, primThicknessStep, primLengthStep, primLinearStep;
     double secAngularStep, secLengthStep, secThicknessStep, secLinearStep;
 
     do
     {
-        primLengthStep = g_primAngularWeightModifier * primLengthRoot / (primLengthIncrements * primLengthBlocks);
-        primThicknessStep = primThicknessRoot / (primThicknessIncrements * primThicknessBlocks);
-        primAngularStep = primAngularRoot / (primAngularIncrements * primAngularBlocks);
-
         secLengthStep = secLengthRoot /
                 (blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex]);
 
@@ -286,38 +275,20 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
         secAngularStep = g_secAngularWeightModifier * secAngularRoot /
                 (blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
-        primLinearStep = 0.5 * (primLengthStep + primThicknessStep);
         secLinearStep = 0.5 * (secLengthStep + secThicknessStep);
 
-        if (primAngularStep + primLinearStep >= secAngularStep + secLinearStep)
-        {
-            if (primAngularStep >= primLinearStep)
-                primAngularBlocks++;
-            else
-            {
-                if (primLengthStep >= primThicknessStep)
-                    primLengthBlocks++;
-                else
-                    primThicknessBlocks++;
-            }
-        }
+        if (secAngularStep >= secLinearStep)
+            secAngularArrayIndex++;
         else
         {
-            if (secAngularStep >= secLinearStep)
-                secAngularArrayIndex++;
+            if (secLengthStep >= secThicknessStep)
+                secLengthArrayIndex++;
             else
-            {
-                if (secLengthStep >= secThicknessStep)
-                    secLengthArrayIndex++;
-                else
-                    secThicknessArrayIndex++;
-            }
+                secThicknessArrayIndex++;
         }
 
-        currentIncrements = primAngularBlocks * primAngularIncrements *
-                primLengthBlocks * primLengthIncrements * primThicknessBlocks * primThicknessIncrements *
-                blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex] *
-                blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex];
+        currentIncrements = blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex] *
+                            blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex];
 
         if (!zAxisCase)
             currentIncrements *= blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex];

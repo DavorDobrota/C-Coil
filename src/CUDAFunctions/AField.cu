@@ -151,20 +151,18 @@ void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
         gpuErrchk(cudaMemcpy(resArr, g_resArr, numOps * sizeof(DataVector), cudaMemcpyDeviceToHost));
 
 
-    #if DEBUG_TIMINGS
-        g_duration = getIntervalDuration();
-        printf("\tWriting to output array:  %.9g s\n\n", g_duration);
-    #endif
+#if DEBUG_TIMINGS
+    g_duration = getIntervalDuration();
+    printf("\tWriting to output array:  %.9g s\n\n", g_duration);
 
-	#if DEBUG_TIMINGS
-        printf("\tDevice buffer size:       %.3lf MB\n", (6.0 * double(numOps * sizeof(TYPE)) / 1.0e6));
-        printf("\tTotal blocks:             %lli\n", blocks);
-        printf("\tThreads per calculation:  %i\n", NTHREADS);
-        printf("\tPrecision:                %dx%d\n", coil.thicknessIncrements, coil.angularIncrements);
-        printf("\tTotal calculations:       %lli\n", numOps);
-        printf("\tTotal MegaIncrements:     %.f\n", 1e-6 * double(numOps * coil.thicknessIncrements * coil.angularIncrements));
-        g_duration = getIntervalDuration();
-        printf("\n\tPerformance: %.1f kPoints/s\n", double(0.001 * numOps / g_duration));
-        printf("-----------------------------------------------\n\n");
-    #endif
+    g_duration = getIntervalDuration();
+    printf("\tDevice buffer size:       %.3lf MB\n", (12.0 * double(numOps * sizeof(TYPE)) / 1.0e6));
+    printf("\tTotal blocks:             %lli\n", blocks);
+    printf("\tThreads per calculation:  %i\n", NTHREADS);
+    printf("\tPrecision:                %dx%d\n", coil.thicknessIncrements, coil.angularIncrements);
+    printf("\tTotal calculations:       %lli\n", numOps);
+    printf("\tTotal MegaIncrements:     %.f\n", 1e-6 * double(numOps * coil.thicknessIncrements * coil.angularIncrements));
+    printf("\n\tPerformance:              %.1f kPoints/s\n", double(0.001 * numOps / g_duration));
+    printf("---------------------------------------------------\n\n");
+#endif
 }

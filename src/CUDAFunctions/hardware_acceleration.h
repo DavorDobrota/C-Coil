@@ -4,6 +4,7 @@
 #include "CUDAConstants.h"
 #include "CoilData.h"
 
+
 void Calculate_hardware_accelerated_a(long long numOps, CoilData coil,
                                       const DataVector *posArr,
                                       DataVector *resArr = nullptr);

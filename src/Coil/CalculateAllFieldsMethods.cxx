@@ -190,7 +190,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
     computedFieldArr.reserve(size);
 
     for (int i = 0; i < pointVectors.size(); ++i)
-        computedFieldArr.push_back(vec3::FieldVector3(resultArr[i].x, resultArr[i].y, resultArr[i].z));
+        computedFieldArr.emplace_back(resultArr[i].x, resultArr[i].y, resultArr[i].z);
 
     free(resultArr);
 
@@ -233,7 +233,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<ve
     computedFieldArr.reserve(size);
 
     for (int i = 0; i < pointVectors.size(); ++i)
-        computedFieldArr.push_back(vec3::FieldVector3(resultArr[i].x, resultArr[i].y, resultArr[i].z));
+        computedFieldArr.emplace_back(resultArr[i].x, resultArr[i].y, resultArr[i].z);
 
     free(resultArr);
 
@@ -276,9 +276,9 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientGPU(const std::vector<vec3
     computedFieldArr.reserve(size);
 
     for (int i = 0; i < pointVectors.size(); ++i)
-        computedFieldArr.push_back(vec3::Matrix3(resultArr[i].xx, resultArr[i].xy, resultArr[i].xz,
-                                                 resultArr[i].yx, resultArr[i].yy, resultArr[i].yz,
-                                                 resultArr[i].zx, resultArr[i].zy, resultArr[i].zz));
+        computedFieldArr.emplace_back(resultArr[i].xx, resultArr[i].xy, resultArr[i].xz,
+                                      resultArr[i].yx, resultArr[i].yy, resultArr[i].yz,
+                                      resultArr[i].zx, resultArr[i].zy, resultArr[i].zz);
 
     free(resultArr);
 

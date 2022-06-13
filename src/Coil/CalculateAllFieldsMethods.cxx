@@ -164,7 +164,10 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
     DataVector *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
     DataVector *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
 
-    for (int i = 0; i < size; ++i)
+    if(!coordinateArr || !resultArr)
+        throw std::bad_alloc();
+
+    for (long long i = 0; i < size; ++i)
     {
         vec3::CoordVector3 vector = pointVectors[i];
         vector.convertToCartesian();
@@ -189,7 +192,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
     std::vector<vec3::FieldVector3> computedFieldArr;
     computedFieldArr.reserve(size);
 
-    for (int i = 0; i < pointVectors.size(); ++i)
+    for (long long i = 0; i < pointVectors.size(); ++i)
         computedFieldArr.emplace_back(resultArr[i].x, resultArr[i].y, resultArr[i].z);
 
     free(resultArr);
@@ -207,7 +210,10 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<ve
     DataVector *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
     DataVector *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
 
-    for (int i = 0; i < size; ++i)
+    if(!coordinateArr || !resultArr)
+        throw std::bad_alloc();
+
+    for (long long i = 0; i < size; ++i)
     {
         vec3::CoordVector3 vector = pointVectors[i];
         vector.convertToCartesian();
@@ -232,7 +238,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<ve
     std::vector<vec3::FieldVector3> computedFieldArr;
     computedFieldArr.reserve(size);
 
-    for (int i = 0; i < pointVectors.size(); ++i)
+    for (long long i = 0; i < pointVectors.size(); ++i)
         computedFieldArr.emplace_back(resultArr[i].x, resultArr[i].y, resultArr[i].z);
 
     free(resultArr);
@@ -250,7 +256,10 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientGPU(const std::vector<vec3
     DataVector *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
     DataMatrix *resultArr = static_cast<DataMatrix *>(calloc(size, sizeof(DataMatrix)));
 
-    for (int i = 0; i < size; ++i)
+    if(!coordinateArr || !resultArr)
+        throw std::bad_alloc();
+
+    for (long long i = 0; i < size; ++i)
     {
         vec3::CoordVector3 vector = pointVectors[i];
         vector.convertToCartesian();
@@ -275,7 +284,7 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientGPU(const std::vector<vec3
     std::vector<vec3::Matrix3> computedFieldArr;
     computedFieldArr.reserve(size);
 
-    for (int i = 0; i < pointVectors.size(); ++i)
+    for (long long i = 0; i < pointVectors.size(); ++i)
         computedFieldArr.emplace_back(resultArr[i].xx, resultArr[i].xy, resultArr[i].xz,
                                       resultArr[i].yx, resultArr[i].yy, resultArr[i].yz,
                                       resultArr[i].zx, resultArr[i].zy, resultArr[i].zz);

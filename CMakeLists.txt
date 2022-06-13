@@ -68,8 +68,10 @@ list(APPEND LIBS "$<TARGET_OBJECTS:Coil>")
 add_subdirectory(src/CoilGroup)
 list(APPEND LIBS "$<TARGET_OBJECTS:CoilGroup>")
 
-add_subdirectory(src/CUDAFunctions)
-list(APPEND LIBS "$<TARGET_OBJECTS:CUDAFunctions>")
+if(USE_GPU)
+    add_subdirectory(src/CUDAFunctions)
+    list(APPEND LIBS "$<TARGET_OBJECTS:CUDAFunctions>")
+endif()
 
 add_subdirectory(src/LegendreMatrix)
 list(APPEND LIBS "$<TARGET_OBJECTS:LegendreMatrix>")

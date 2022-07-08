@@ -18,7 +18,16 @@ Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, CoilPairArg
     if (isZAxisCase(primary, secondary))
     {
         vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
-        double zForce = calculateAmpereForceZAxis(primary, secondary, secPositionVec.z, forceArguments, computeMethod);
+        double zForce = 0.0;
+
+        if ((primary.coilType == CoilType::THIN || primary.coilType == CoilType::RECTANGULAR) &&
+            (secondary.coilType == CoilType::THIN || secondary.coilType == CoilType::RECTANGULAR))
+        {
+            zForce = calculateAmpereForceZAxisFast(primary, secondary, secPositionVec.z, forceArguments, computeMethod);
+        } else
+        {
+            zForce = calculateAmpereForceZAxisSlow(primary, secondary, secPositionVec.z, forceArguments, computeMethod);
+        }
 
         return {vec3::FieldVector3(0.0, 0.0, zForce), vec3::FieldVector3()};
     }

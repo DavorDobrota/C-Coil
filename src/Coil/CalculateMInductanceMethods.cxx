@@ -1,6 +1,6 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
-#include "ThreadPool/ThreadPool.h"
+#include "ThreadPool.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -12,8 +12,9 @@ namespace
     threadPool::ThreadPoolControl g_threadPool;
 }
 
+
 double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                            CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
+                                                CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
 {
     PrecisionArguments primaryPrecisionArguments = inductanceArguments.primaryPrecision;
 
@@ -83,7 +84,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
 
     double thicknessBlock = primary.thickness / inductanceArguments.primaryPrecision.thicknessBlockCount;
     double angularBlock = M_PI / inductanceArguments.primaryPrecision.angularBlockCount;
-    double radialBlock = 1.0 / inductanceArguments.secondaryPrecision.thicknessBlockCount;
+    double radialBlock = secondary.thickness / inductanceArguments.secondaryPrecision.thicknessBlockCount;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int thicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrementCount - 1;
@@ -91,7 +92,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
     int radialIncrements = inductanceArguments.secondaryPrecision.thicknessIncrementCount - 1;
 
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
-    double constant = g_MiReduced * primary.currentDensity * thicknessBlock * angularBlock * radialBlock * 0.125;
+    double constant = g_MiReduced * primary.currentDensity * secondary.currentDensity * thicknessBlock * angularBlock * radialBlock * 0.125;
 
     std::vector<std::vector<double>> cosPhiPrecomputeMat(inductanceArguments.primaryPrecision.angularBlockCount);
 
@@ -124,12 +125,12 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
     {
         for (int indBlockR = 0; indBlockR < inductanceArguments.secondaryPrecision.thicknessBlockCount; ++indBlockR)
         {
-            double blockPositionR = secondary.innerRadius + radialBlock * secondary.thickness * (indBlockR + 0.5);
+            double blockPositionR = secondary.innerRadius + radialBlock * (indBlockR + 0.5);
 
             for (int incR = startIndex; incR < endIndex; ++incR)
             {
                 double incrementPositionR = blockPositionR +
-                                            (radialBlock * secondary.thickness * 0.5) * Legendre::positionMatrix[radialIncrements][incR];
+                                            (radialBlock * 0.5) * Legendre::positionMatrix[radialIncrements][incR];
 
                 double incrementWeightR = Legendre::weightsMatrix[radialIncrements][incR];
 
@@ -239,7 +240,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
         mutualInductance = std::accumulate(results.begin(), results.end(), 0.0);
     }
 
-    return mutualInductance * 2*M_PI * secondary.numOfTurns / (primary.current * secondary.length);
+    return mutualInductance * 2*M_PI / primary.current;
 }
 
 double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,

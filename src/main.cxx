@@ -14,7 +14,7 @@
 int main()
 {
 //    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 8, 22);
-    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 26);
+//    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 26);
 //    benchComputeAllFields();
 
 //    benchComputeAllFieldsEveryCoilType(200003, 8);
@@ -30,6 +30,15 @@ int main()
 //    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(5.0), 16);
 
 //    compPrecisionCPUvsGPU();
+
+//    compMInductanceGeneralGraphs();
+
+    compMutualInductanceZAxis();
+
+//    testAmpereForceGeneralForZAxis();
+//
+//    compAmpereForceZAxis();
+//    compAmpereForceThinCoilsZAxis();
 
 
     return 0;

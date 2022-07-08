@@ -453,9 +453,13 @@ class Coil
         static double calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
                                                        CoilPairArguments inductanceArguments, ComputeMethod computeMethod = CPU_ST);
 
-        static double calculateAmpereForceZAxis(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                                CoilPairArguments forceArguments,
-                                                ComputeMethod computeMethod = CPU_ST);
+        static double calculateAmpereForceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                                    CoilPairArguments forceArguments,
+                                                    ComputeMethod computeMethod = CPU_ST);
+
+        static double calculateAmpereForceZAxisFast(const Coil &primary, const Coil &secondary, double zDisplacement,
+                                                    CoilPairArguments forceArguments,
+                                                    ComputeMethod computeMethod = CPU_ST);
 
         static std::pair<vec3::FieldVector3, vec3::FieldVector3>
         calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,

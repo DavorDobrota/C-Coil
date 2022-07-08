@@ -4,7 +4,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cstdio>
-
 #include <sstream>
 
 
@@ -45,9 +44,13 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
     double secThicknessRoot = std::sqrt(secondary.getThickness());
     double secLengthRoot = std::sqrt(secondary.getLength());
 
-    // multiplying for secondary angular increments, if present
+    // multiplying for primary and secondary angular increments in case they are present
     if (!zAxisCase)
         totalIncrements *= g_baseLayerIncrements * g_baseLayerIncrements;
+
+    // if the slow methods are used in the z-axis case one extra layer is required
+    else if (secondary.getCoilType() == CoilType::FILAMENT || secondary.getCoilType() == CoilType::FLAT)
+        totalIncrements *= g_baseLayerIncrements;
 
     switch (primary.getCoilType())
     {
@@ -66,9 +69,9 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
         }
         case CoilType::FLAT:
         {
+            totalIncrements *= g_baseLayerIncrements;
             primThicknessArrayIndex = g_minPrimThicknessIncrements - 1;
             primLengthArrayIndex = 0;
-            totalIncrements *= g_baseLayerIncrements;
             break;
         }
         case CoilType::FILAMENT:
@@ -173,6 +176,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
         if (!zAxisCase)
             currentIncrements *= blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex] *
                                  blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex];
+
     }
     while (currentIncrements < totalIncrements);
 
@@ -198,6 +202,9 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
            blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
            blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex],
            blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
+
+    printf("%.6g %.6g %.6g | %.6g %.6g %.6g\n",
+           primLengthStep, primThicknessStep, primAngularStep, secLengthStep, secThicknessStep, secAngularStep);
     #endif // PRINT_ENABLED
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);

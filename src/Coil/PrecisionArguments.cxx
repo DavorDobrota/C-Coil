@@ -145,6 +145,8 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
     int thicknessBlocks = 1;
     int angularBlocks = 1;
 
+    int currentIncrements = lengthBlocks * thicknessBlocks * angularBlocks * lengthIncrements * thicknessIncrements * angularIncrements;
+
     #if PRINT_ENABLED
         printf("%d : %d %d %d\n", currentIncrements,
                lengthBlocks * lengthIncrements, thicknessIncrements * thicknessBlocks, angularBlocks*angularIncrements);

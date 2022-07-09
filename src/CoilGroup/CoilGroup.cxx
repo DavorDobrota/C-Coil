@@ -36,11 +36,13 @@ void CoilGroup::setDefaultPrecisionFactor(PrecisionFactor precisionFactor, Compu
     if (computeMethod == GPU)
     {
         for (auto & memberCoil : memberCoils)
-            memberCoil.setDefaultPrecision(PrecisionArguments::getCoilPrecisionArgumentsGPU(memberCoil, precisionFactor));
+            memberCoil.setDefaultPrecisionCPU(
+                    PrecisionArguments::getCoilPrecisionArgumentsGPU(memberCoil, precisionFactor));
     }
     else
         for (auto & memberCoil : memberCoils)
-            memberCoil.setDefaultPrecision(PrecisionArguments::getCoilPrecisionArgumentsCPU(memberCoil, precisionFactor));
+            memberCoil.setDefaultPrecisionCPU(
+                    PrecisionArguments::getCoilPrecisionArgumentsCPU(memberCoil, precisionFactor));
 }
 
 void CoilGroup::setThreadCount(int threadCount)

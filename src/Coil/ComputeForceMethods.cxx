@@ -61,7 +61,7 @@ Coil::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVect
 std::pair<vec3::FieldVector3, vec3::FieldVector3>
 Coil::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment) const
 {
-    return computeForceOnDipoleMoment(pointVector, dipoleMoment, defaultPrecision);
+    return computeForceOnDipoleMoment(pointVector, dipoleMoment, defaultPrecisionCPU);
 }
 
 std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>

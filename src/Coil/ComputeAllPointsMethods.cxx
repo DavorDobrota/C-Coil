@@ -14,7 +14,7 @@ std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vect
     }
     else if (computeMethod == GPU) {
 
-        return calculateAllBFieldGPU(pointVectors);
+        return calculateAllBFieldGPU(pointVectors, usedPrecision);
     }
     else
     {
@@ -30,7 +30,10 @@ std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vect
 std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
                                                                  ComputeMethod computeMethod) const
 {
-    return computeAllBFieldComponents(pointVectors, defaultPrecision, computeMethod);
+    if (computeMethod == GPU)
+        return computeAllBFieldComponents(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllBFieldComponents(pointVectors, defaultPrecisionCPU, computeMethod);
 }
 
 std::vector<double>Coil::computeAllBFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
@@ -48,7 +51,10 @@ std::vector<double>Coil::computeAllBFieldX(const std::vector<vec3::CoordVector3>
 std::vector<double> Coil::computeAllBFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
                                             ComputeMethod computeMethod) const
 {
-    return computeAllBFieldX(pointVectors, defaultPrecision, computeMethod);
+    if (computeMethod == GPU)
+        return computeAllBFieldX(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllBFieldX(pointVectors, defaultPrecisionCPU, computeMethod);
 }
 
 std::vector<double>Coil::computeAllBFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
@@ -66,7 +72,10 @@ std::vector<double>Coil::computeAllBFieldY(const std::vector<vec3::CoordVector3>
 std::vector<double> Coil::computeAllBFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
                                            ComputeMethod computeMethod) const
 {
-    return computeAllBFieldY(pointVectors, defaultPrecision, computeMethod);
+    if (computeMethod == GPU)
+        return computeAllBFieldY(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllBFieldY(pointVectors, defaultPrecisionCPU, computeMethod);
 }
 
 std::vector<double>Coil::computeAllBFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
@@ -84,7 +93,10 @@ std::vector<double>Coil::computeAllBFieldZ(const std::vector<vec3::CoordVector3>
 std::vector<double> Coil::computeAllBFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
                                             ComputeMethod computeMethod) const
 {
-    return computeAllBFieldZ(pointVectors, defaultPrecision, computeMethod);
+    if (computeMethod == GPU)
+        return computeAllBFieldZ(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllBFieldZ(pointVectors, defaultPrecisionCPU, computeMethod);
 }
 
 std::vector<double>Coil::computeAllBFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
@@ -104,7 +116,10 @@ std::vector<double>Coil::computeAllBFieldAbs(const std::vector<vec3::CoordVector
 std::vector<double> Coil::computeAllBFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
                                               ComputeMethod computeMethod) const
 {
-    return computeAllBFieldAbs(pointVectors, defaultPrecision, computeMethod);
+    if (computeMethod == GPU)
+        return computeAllBFieldAbs(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllBFieldAbs(pointVectors, defaultPrecisionCPU, computeMethod);
 }
 
 
@@ -118,7 +133,7 @@ std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::
     }
     else if (computeMethod == GPU)
     {
-        return calculateAllAPotentialGPU(pointVectors);
+        return calculateAllAPotentialGPU(pointVectors, usedPrecision);
     }
     else
     {
@@ -134,7 +149,10 @@ std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::
 std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectors,
                                                                      ComputeMethod computeMethod) const
 {
-    return computeAllAPotentialComponents(pointVectors, defaultPrecision, computeMethod);
+    if (computeMethod == GPU)
+        return computeAllAPotentialComponents(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllAPotentialComponents(pointVectors, defaultPrecisionCPU, computeMethod);
 }
 
 std::vector<double> Coil::computeAllAPotentialX(const std::vector<vec3::CoordVector3> &pointVectors,
@@ -152,7 +170,10 @@ std::vector<double> Coil::computeAllAPotentialX(const std::vector<vec3::CoordVec
 std::vector<double> Coil::computeAllAPotentialX(const std::vector<vec3::CoordVector3> &pointVectors,
                                                 ComputeMethod computeMethod) const
 {
-    return computeAllAPotentialX(pointVectors, defaultPrecision, computeMethod);
+    if (computeMethod == GPU)
+        return computeAllAPotentialX(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllAPotentialX(pointVectors, defaultPrecisionCPU, computeMethod);
 }
 
 std::vector<double> Coil::computeAllAPotentialY(const std::vector<vec3::CoordVector3> &pointVectors,
@@ -170,7 +191,10 @@ std::vector<double> Coil::computeAllAPotentialY(const std::vector<vec3::CoordVec
 std::vector<double> Coil::computeAllAPotentialY(const std::vector<vec3::CoordVector3> &pointVectors,
                                                 ComputeMethod computeMethod) const
 {
-    return computeAllAPotentialY(pointVectors, defaultPrecision, computeMethod);
+    if (computeMethod == GPU)
+        return computeAllAPotentialY(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllAPotentialY(pointVectors, defaultPrecisionCPU, computeMethod);
 }
 
 std::vector<double> Coil::computeAllAPotentialZ(const std::vector<vec3::CoordVector3> &pointVectors,
@@ -188,7 +212,10 @@ std::vector<double> Coil::computeAllAPotentialZ(const std::vector<vec3::CoordVec
 std::vector<double> Coil::computeAllAPotentialZ(const std::vector<vec3::CoordVector3> &pointVectors,
                                                 ComputeMethod computeMethod) const
 {
-    return computeAllAPotentialZ(pointVectors, defaultPrecision, computeMethod);
+    if (computeMethod == GPU)
+        return computeAllAPotentialZ(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllAPotentialZ(pointVectors, defaultPrecisionCPU, computeMethod);
 }
 
 std::vector<double> Coil::computeAllAPotentialAbs(const std::vector<vec3::CoordVector3> &pointVectors,
@@ -208,80 +235,12 @@ std::vector<double> Coil::computeAllAPotentialAbs(const std::vector<vec3::CoordV
 std::vector<double> Coil::computeAllAPotentialAbs(const std::vector<vec3::CoordVector3> &pointVectors,
                                                   ComputeMethod computeMethod) const
 {
-    return computeAllAPotentialAbs(pointVectors, defaultPrecision, computeMethod);
+    if (computeMethod == GPU)
+        return computeAllAPotentialAbs(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllAPotentialAbs(pointVectors, defaultPrecisionCPU, computeMethod);
 }
 
-
-std::vector<double> Coil::computeAllEFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
-                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
-{
-    std::vector<double> output = computeAllAPotentialX(pointVectors, usedPrecision, computeMethod);
-
-    for (double & i : output)
-        i *= (2 * M_PI * sineFrequency);
-
-    return output;
-}
-
-std::vector<double> Coil::computeAllEFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
-                                            ComputeMethod computeMethod) const
-{
-    return computeAllEFieldX(pointVectors, defaultPrecision, computeMethod);
-}
-
-std::vector<double> Coil::computeAllEFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
-                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
-{
-    std::vector<double> output = computeAllAPotentialY(pointVectors, usedPrecision, computeMethod);
-    double frequencyFactor = 2 * M_PI * sineFrequency;
-
-    for (double & i : output)
-        i *= frequencyFactor;
-
-    return output;
-}
-
-std::vector<double> Coil::computeAllEFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
-                                            ComputeMethod computeMethod) const
-{
-    return computeAllEFieldY(pointVectors, defaultPrecision, computeMethod);
-}
-
-std::vector<double> Coil::computeAllEFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
-                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
-{
-    std::vector<double> output = computeAllAPotentialZ(pointVectors, usedPrecision, computeMethod);
-    double frequencyFactor = 2 * M_PI * sineFrequency;
-
-    for (double & i : output)
-        i *= frequencyFactor;
-
-    return output;
-}
-
-std::vector<double> Coil::computeAllEFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
-                                            ComputeMethod computeMethod) const
-{
-    return computeAllEFieldZ(pointVectors, defaultPrecision, computeMethod);
-}
-
-std::vector<double> Coil::computeAllEFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
-                                              const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
-{
-    std::vector<double> output = computeAllAPotentialAbs(pointVectors, usedPrecision, computeMethod);
-    double frequencyFactor = 2 * M_PI * sineFrequency;
-
-    for (double & i : output)
-        i *= frequencyFactor;
-
-    return output;
-}
-
-std::vector<double> Coil::computeAllEFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
-                                              ComputeMethod computeMethod) const
-{
-    return computeAllEFieldAbs(pointVectors, defaultPrecision, computeMethod);
-}
 
 std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
                                                                  const PrecisionArguments &usedPrecision,
@@ -299,7 +258,93 @@ std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vect
 std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
                                                                  ComputeMethod computeMethod) const
 {
-    return computeAllEFieldComponents(pointVectors, defaultPrecision, computeMethod);
+    if (computeMethod == GPU)
+        return computeAllEFieldComponents(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllEFieldComponents(pointVectors, defaultPrecisionCPU, computeMethod);
+}
+
+std::vector<double> Coil::computeAllEFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
+{
+    std::vector<double> output = computeAllAPotentialX(pointVectors, usedPrecision, computeMethod);
+
+    for (double & i : output)
+        i *= (2 * M_PI * sineFrequency);
+
+    return output;
+}
+
+std::vector<double> Coil::computeAllEFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            ComputeMethod computeMethod) const
+{
+    if (computeMethod == GPU)
+        return computeAllEFieldX(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllEFieldX(pointVectors, defaultPrecisionCPU, computeMethod);
+}
+
+std::vector<double> Coil::computeAllEFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
+{
+    std::vector<double> output = computeAllAPotentialY(pointVectors, usedPrecision, computeMethod);
+    double frequencyFactor = 2 * M_PI * sineFrequency;
+
+    for (double & i : output)
+        i *= frequencyFactor;
+
+    return output;
+}
+
+std::vector<double> Coil::computeAllEFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            ComputeMethod computeMethod) const
+{
+    if (computeMethod == GPU)
+        return computeAllEFieldY(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllEFieldY(pointVectors, defaultPrecisionCPU, computeMethod);
+}
+
+std::vector<double> Coil::computeAllEFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
+{
+    std::vector<double> output = computeAllAPotentialZ(pointVectors, usedPrecision, computeMethod);
+    double frequencyFactor = 2 * M_PI * sineFrequency;
+
+    for (double & i : output)
+        i *= frequencyFactor;
+
+    return output;
+}
+
+std::vector<double> Coil::computeAllEFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
+                                            ComputeMethod computeMethod) const
+{
+    if (computeMethod == GPU)
+        return computeAllEFieldZ(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllEFieldZ(pointVectors, defaultPrecisionCPU, computeMethod);
+}
+
+std::vector<double> Coil::computeAllEFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
+                                              const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
+{
+    std::vector<double> output = computeAllAPotentialAbs(pointVectors, usedPrecision, computeMethod);
+    double frequencyFactor = 2 * M_PI * sineFrequency;
+
+    for (double & i : output)
+        i *= frequencyFactor;
+
+    return output;
+}
+
+std::vector<double> Coil::computeAllEFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
+                                              ComputeMethod computeMethod) const
+{
+    if (computeMethod == GPU)
+        return computeAllEFieldAbs(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllEFieldAbs(pointVectors, defaultPrecisionCPU, computeMethod);
 }
 
 
@@ -313,7 +358,7 @@ std::vector<vec3::Matrix3> Coil::computeAllBGradientTensors(const std::vector<ve
     }
     else if (computeMethod == GPU)
     {
-        return calculateAllBGradientGPU(pointVectors);
+        return calculateAllBGradientGPU(pointVectors, usedPrecision);
     }
     else
     {
@@ -329,5 +374,8 @@ std::vector<vec3::Matrix3> Coil::computeAllBGradientTensors(const std::vector<ve
 std::vector<vec3::Matrix3> Coil::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &pointVectors,
                                                             ComputeMethod computeMethod) const
 {
-    return computeAllBGradientTensors(pointVectors, defaultPrecision, computeMethod);
+    if (computeMethod == GPU)
+        return computeAllBGradientTensors(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllBGradientTensors(pointVectors, defaultPrecisionCPU, computeMethod);
 }

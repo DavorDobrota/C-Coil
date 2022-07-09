@@ -35,7 +35,7 @@ vec3::FieldVector3 Coil::computeBFieldVector(vec3::CoordVector3 pointVector, con
 
 vec3::FieldVector3 Coil::computeBFieldVector(vec3::CoordVector3 pointVector) const
 {
-    return computeBFieldVector(pointVector, defaultPrecision);
+    return computeBFieldVector(pointVector, defaultPrecisionCPU);
 }
 
 double Coil::computeBFieldX(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
@@ -45,7 +45,7 @@ double Coil::computeBFieldX(vec3::CoordVector3 pointVector, const PrecisionArgum
 
 double Coil::computeBFieldX(vec3::CoordVector3 pointVector) const
 {
-    return computeBFieldX(pointVector, defaultPrecision);
+    return computeBFieldX(pointVector, defaultPrecisionCPU);
 }
 
 double Coil::computeBFieldY(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
@@ -56,7 +56,7 @@ double Coil::computeBFieldY(vec3::CoordVector3 pointVector, const PrecisionArgum
 
 double Coil::computeBFieldY(vec3::CoordVector3 pointVector) const
 {
-    return computeBFieldY(pointVector, defaultPrecision);
+    return computeBFieldY(pointVector, defaultPrecisionCPU);
 }
 
 double Coil::computeBFieldZ(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
@@ -66,7 +66,7 @@ double Coil::computeBFieldZ(vec3::CoordVector3 pointVector, const PrecisionArgum
 
 double Coil::computeBFieldZ(vec3::CoordVector3 pointVector) const
 {
-    return computeBFieldZ(pointVector, defaultPrecision);
+    return computeBFieldZ(pointVector, defaultPrecisionCPU);
 }
 
 double Coil::computeBFieldAbs(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
@@ -79,7 +79,7 @@ double Coil::computeBFieldAbs(vec3::CoordVector3 pointVector, const PrecisionArg
 
 double Coil::computeBFieldAbs(vec3::CoordVector3 pointVector) const
 {
-    return computeBFieldAbs(pointVector, defaultPrecision);
+    return computeBFieldAbs(pointVector, defaultPrecisionCPU);
 }
 
 
@@ -96,7 +96,7 @@ vec3::FieldVector3 Coil::computeAPotentialVector(vec3::CoordVector3 pointVector,
 
 vec3::FieldVector3 Coil::computeAPotentialVector(vec3::CoordVector3 pointVector) const
 {
-    return computeAPotentialVector(pointVector, defaultPrecision);
+    return computeAPotentialVector(pointVector, defaultPrecisionCPU);
 }
 
 double Coil::computeAPotentialX(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
@@ -106,7 +106,7 @@ double Coil::computeAPotentialX(vec3::CoordVector3 pointVector, const PrecisionA
 
 double Coil::computeAPotentialX(vec3::CoordVector3 pointVector) const
 {
-    return computeAPotentialX(pointVector, defaultPrecision);
+    return computeAPotentialX(pointVector, defaultPrecisionCPU);
 }
 
 double Coil::computeAPotentialY(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
@@ -116,7 +116,7 @@ double Coil::computeAPotentialY(vec3::CoordVector3 pointVector, const PrecisionA
 
 double Coil::computeAPotentialY(vec3::CoordVector3 pointVector) const
 {
-    return computeAPotentialY(pointVector, defaultPrecision);
+    return computeAPotentialY(pointVector, defaultPrecisionCPU);
 }
 
 double Coil::computeAPotentialZ(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
@@ -126,7 +126,7 @@ double Coil::computeAPotentialZ(vec3::CoordVector3 pointVector, const PrecisionA
 
 double Coil::computeAPotentialZ(vec3::CoordVector3 pointVector) const
 {
-    return computeAPotentialZ(pointVector, defaultPrecision);
+    return computeAPotentialZ(pointVector, defaultPrecisionCPU);
 }
 
 double Coil::computeAPotentialAbs(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
@@ -139,7 +139,7 @@ double Coil::computeAPotentialAbs(vec3::CoordVector3 pointVector, const Precisio
 
 double Coil::computeAPotentialAbs(vec3::CoordVector3 pointVector) const
 {
-    return computeAPotentialAbs(pointVector, defaultPrecision);
+    return computeAPotentialAbs(pointVector, defaultPrecisionCPU);
 }
 
 
@@ -150,7 +150,7 @@ double Coil::computeEFieldX(vec3::CoordVector3 pointVector, const PrecisionArgum
 
 double Coil::computeEFieldX(vec3::CoordVector3 pointVector) const
 {
-    return computeEFieldX(pointVector, defaultPrecision);
+    return computeEFieldX(pointVector, defaultPrecisionCPU);
 }
 
 double Coil::computeEFieldY(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
@@ -160,7 +160,7 @@ double Coil::computeEFieldY(vec3::CoordVector3 pointVector, const PrecisionArgum
 
 double Coil::computeEFieldY(vec3::CoordVector3 pointVector) const
 {
-    return computeEFieldY(pointVector, defaultPrecision);
+    return computeEFieldY(pointVector, defaultPrecisionCPU);
 }
 
 double Coil::computeEFieldZ(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
@@ -170,7 +170,7 @@ double Coil::computeEFieldZ(vec3::CoordVector3 pointVector, const PrecisionArgum
 
 double Coil::computeEFieldZ(vec3::CoordVector3 pointVector) const
 {
-    return computeEFieldZ(pointVector, defaultPrecision);
+    return computeEFieldZ(pointVector, defaultPrecisionCPU);
 }
 
 double Coil::computeEFieldAbs(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
@@ -180,7 +180,7 @@ double Coil::computeEFieldAbs(vec3::CoordVector3 pointVector, const PrecisionArg
 
 double Coil::computeEFieldAbs(vec3::CoordVector3 pointVector) const
 {
-    return computeEFieldAbs(pointVector, defaultPrecision);
+    return computeEFieldAbs(pointVector, defaultPrecisionCPU);
 }
 
 vec3::FieldVector3 Coil::computeEFieldVector(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
@@ -192,7 +192,7 @@ vec3::FieldVector3 Coil::computeEFieldVector(vec3::CoordVector3 pointVector, con
 
 vec3::FieldVector3 Coil::computeEFieldVector(vec3::CoordVector3 pointVector) const
 {
-    return computeEFieldVector(pointVector, defaultPrecision);
+    return computeEFieldVector(pointVector, defaultPrecisionCPU);
 }
 
 
@@ -239,5 +239,5 @@ vec3::Matrix3 Coil::computeBGradientTensor(vec3::CoordVector3 pointVector, const
 
 vec3::Matrix3 Coil::computeBGradientTensor(vec3::CoordVector3 pointVector) const
 {
-    return computeBGradientTensor(pointVector, defaultPrecision);
+    return computeBGradientTensor(pointVector, defaultPrecisionCPU);
 }

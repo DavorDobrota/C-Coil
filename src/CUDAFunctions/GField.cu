@@ -33,17 +33,17 @@ void calculateG(long long numOps, CoilData coil, const DataVector *posArr, DataM
     TYPE rCoord = sqrt(x * x + y * y);
     TYPE phiCord = atan2(y, x);
 
-    TYPE bufferValueRP = 0.f;
-    TYPE bufferValueRR = 0.f;
-    TYPE bufferValueRZ = 0.f;
-    TYPE bufferValueZZ = 0.f;
+    TYPE bufferValueRP = 0.0f;
+    TYPE bufferValueRR = 0.0f;
+    TYPE bufferValueRZ = 0.0f;
+    TYPE bufferValueZZ = 0.0f;
 
     TYPE topEdge = zCoord + 0.5f * coil.length;
     TYPE bottomEdge = zCoord - 0.5f * coil.length;
 
     for (int incT = 0; incT < coil.thicknessIncrements; ++incT)
     {
-        TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.positionArray[incT]);
+        TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.thicknessPositionArray[incT]);
 
         TYPE tempConstA = incrementPositionT * incrementPositionT;
         TYPE tempConstB = rCoord * rCoord;
@@ -60,24 +60,24 @@ void calculateG(long long numOps, CoilData coil, const DataVector *posArr, DataM
         {
             TYPE cosinePhi = coil.cosPrecomputeArray[incF];
             TYPE cosinePhi2 = cosinePhi * cosinePhi;
-            TYPE phiExpression = 2.f * tempConstC * cosinePhi;
+            TYPE phiExpression = 2.0f * tempConstC * cosinePhi;
 
-            TYPE tempConstI = coil.constFactor * coil.weightArray[incT] * coil.weightArray[incF];
+            TYPE tempConstI = coil.constFactor * coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF];
 
             TYPE tempConstJ1 = tempConstG1 - phiExpression;
             TYPE tempConstJ2 = tempConstG2 - phiExpression;
 
-            TYPE tempConstK1 = rsqrtf(tempConstJ1);
-            TYPE tempConstK2 = rsqrtf(tempConstJ2);
+            TYPE tempConstK1 = rsqrt(tempConstJ1);
+            TYPE tempConstK2 = rsqrt(tempConstJ2);
 
             TYPE tempConstL1 = tempConstK1 / (tempConstJ1);
             TYPE tempConstL2 = tempConstK2 / (tempConstJ2);
 
             TYPE tempConstM = tempConstD - phiExpression;
             TYPE tempConstN =
-                    2.f * tempConstF * cosinePhi * (cosinePhi2 + 2.f) -
-                    tempConstC * (3.f * cosinePhi2 + 1.f) * tempConstD + cosinePhi * tempConstE;
-            TYPE tempConstO = cosinePhi * tempConstD - 2.f * tempConstC;
+                    2.0f * tempConstF * cosinePhi * (cosinePhi2 + 2.0f) -
+                    tempConstC * (3.0f * cosinePhi2 + 1.0f) * tempConstD + cosinePhi * tempConstE;
+            TYPE tempConstO = cosinePhi * tempConstD - 2.0f * tempConstC;
 
             bufferValueRP += tempConstI * (incrementPositionT * cosinePhi / rCoord) * (tempConstK2 - tempConstK1);
             bufferValueRR += tempConstI * (tempConstC - tempConstA * cosinePhi) * cosinePhi * (tempConstL1 - tempConstL2);
@@ -99,7 +99,7 @@ void calculateG(long long numOps, CoilData coil, const DataVector *posArr, DataM
         yyGrad = bufferValueRR * sinPhi * sinPhi + bufferValueRP * cosPhi * cosPhi;
         zzGrad = bufferValueZZ;
 
-        xyGrad = 0.5 * sin(2 * phiCord) * (bufferValueRR - bufferValueRP);
+        xyGrad = 0.5f * sin(2.0f * phiCord) * (bufferValueRR - bufferValueRP);
         xzGrad = bufferValueRZ * cosPhi;
         yzGrad = bufferValueRZ * sinPhi;
 

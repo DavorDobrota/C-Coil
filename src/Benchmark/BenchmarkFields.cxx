@@ -19,7 +19,7 @@ void benchComputeFieldsST(int opCount)
 
     Coil testCoil = Coil(0.03, 0.03, 0.12, 3600);
 
-    PrecisionArguments precision = testCoil.getPrecisionSettings();
+    PrecisionArguments precision = testCoil.getPrecisionSettingsCPU();
 
     int numOperations = opCount *
                         precision.thicknessBlockCount * precision.thicknessIncrementCount *
@@ -59,8 +59,8 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
 
     const double radius = 0.1;
 
-    PrecisionArguments precisionSlow = testCoilSlow.getPrecisionSettings();
-    PrecisionArguments precisionFast = testCoilFast.getPrecisionSettings();
+    PrecisionArguments precisionSlow = testCoilSlow.getPrecisionSettingsCPU();
+    PrecisionArguments precisionFast = testCoilFast.getPrecisionSettingsCPU();
 
     const long long numOperationsSlow = (long long) opCount *
                                         precisionSlow.thicknessBlockCount * precisionSlow.thicknessIncrementCount *
@@ -216,8 +216,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     Coil thin = Coil(0.1, 0.0, 0.1, 100);
     Coil thick = Coil(0.1, 0.4, 0.4, 1600);
 
-    PrecisionArguments thinPrecision = pancake.getPrecisionSettings();
-    PrecisionArguments thickPrecision = pancake.getPrecisionSettings();
+    PrecisionArguments thinPrecision = pancake.getPrecisionSettingsCPU();
+    PrecisionArguments thickPrecision = pancake.getPrecisionSettingsCPU();
 
     int thinNumIterations = thinPrecision.angularBlockCount * thinPrecision.angularIncrementCount;
     int thickNumIterations = thickPrecision.angularBlockCount * thickPrecision.angularIncrementCount

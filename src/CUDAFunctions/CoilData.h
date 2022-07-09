@@ -23,9 +23,11 @@ struct CoilData
         lengthBlocks{0},
         thicknessBlocks{0},
 
-        positionArray{},
-        weightArray{},
+        thicknessPositionArray{},
+        thicknessWeightArray{},
+
         cosPrecomputeArray{},
+        angularWeightArray{},
 
         positionVector{},
         transformArray{},
@@ -46,9 +48,11 @@ struct CoilData
     int lengthBlocks;
     int thicknessBlocks;
 
-    TYPE positionArray[GPU_INCREMENTS];
-    TYPE weightArray[GPU_INCREMENTS];
+    TYPE thicknessPositionArray[GPU_INCREMENTS];
+    TYPE thicknessWeightArray[GPU_INCREMENTS];
+
     TYPE cosPrecomputeArray[GPU_INCREMENTS];
+    TYPE angularWeightArray[GPU_INCREMENTS];
 
     TYPE positionVector[3];
     TYPE transformArray[9];

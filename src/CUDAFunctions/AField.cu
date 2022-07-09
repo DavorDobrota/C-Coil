@@ -40,7 +40,7 @@ void calculateA(long long numOps, CoilData coil, const DataVector *posArr, DataV
 
     for (int incT = 0; incT < coil.thicknessIncrements; ++incT)
     {
-        TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.positionArray[incT]);
+        TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.thicknessPositionArray[incT]);
 
         for (int incF = 0; incF < coil.angularIncrements; ++incF)
         {
@@ -58,10 +58,11 @@ void calculateA(long long numOps, CoilData coil, const DataVector *posArr, DataV
             TYPE tempConstF = log((tempConstE1 + tempConstD1) / (tempConstE2 + tempConstD2));
 
             potential += coil.constFactor *
-                    coil.weightArray[incT] * coil.weightArray[incF] *
+                    coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF] *
                     incrementPositionT * cosinePhi * tempConstF;
         }
     }
+
     TYPE xPot = (-1.f) * sin(phiCord) * potential;
     TYPE yPot = potential * cos(phiCord);
     TYPE zPot = 0.f;

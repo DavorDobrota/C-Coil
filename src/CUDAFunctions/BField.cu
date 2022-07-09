@@ -41,7 +41,7 @@ void calculateB(long long numOps, CoilData coil, const DataVector *posArr, DataV
 
     for (int incT = 0; incT < coil.thicknessIncrements; ++incT)
     {
-        TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.positionArray[incT]);
+        TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.thicknessPositionArray[incT]);
 
         TYPE tempConstA = incrementPositionT * incrementPositionT;
         TYPE tempConstB = 2.0f * incrementPositionT * rCoord;
@@ -59,7 +59,7 @@ void calculateB(long long numOps, CoilData coil, const DataVector *posArr, DataV
             TYPE tempConstF1 = rsqrt(tempConstD1 - tempConstE);
             TYPE tempConstF2 = rsqrt(tempConstD2 - tempConstE);
 
-            TYPE tempConstG = coil.constFactor * coil.weightArray[incT] * coil.weightArray[incF];
+            TYPE tempConstG = coil.constFactor * coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF];
 
             fieldH += tempConstG * incrementPositionT * cosinePhi * (tempConstF2 - tempConstF1);
             fieldZ += tempConstG *
@@ -67,6 +67,7 @@ void calculateB(long long numOps, CoilData coil, const DataVector *posArr, DataV
                     (topEdge * tempConstF1 - bottomEdge * tempConstF2);
         }
     }
+
     TYPE xField = fieldH * cos(phiCord);
     TYPE yField = fieldH * sin(phiCord);
     TYPE zField = fieldZ;

@@ -157,7 +157,8 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientMT(const std::vector<vec3:
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
+std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                const PrecisionArguments &usedPrecision) const
 {
     long long size = pointVectors.size();
 
@@ -178,7 +179,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
     }
 
     CoilData coilData;
-    generateCoilData(coilData);
+    generateCoilData(coilData, usedPrecision);
 
     #if USE_GPU == 1
         Calculate_hardware_accelerated_a(size, coilData, coordinateArr, resultArr);
@@ -203,7 +204,8 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
+std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                            const PrecisionArguments &usedPrecision) const
 {
     long long size = pointVectors.size();
 
@@ -224,7 +226,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<ve
     }
 
     CoilData coilData;
-    generateCoilData(coilData);
+    generateCoilData(coilData, usedPrecision);
 
     #if USE_GPU == 1
         Calculate_hardware_accelerated_b(size, coilData, coordinateArr, resultArr);
@@ -249,7 +251,8 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<ve
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-std::vector<vec3::Matrix3> Coil::calculateAllBGradientGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
+std::vector<vec3::Matrix3> Coil::calculateAllBGradientGPU(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                          const PrecisionArguments &usedPrecision) const
 {
     long long size = pointVectors.size();
 
@@ -270,7 +273,7 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientGPU(const std::vector<vec3
     }
 
     CoilData coilData;
-    generateCoilData(coilData);
+    generateCoilData(coilData, usedPrecision);
 
     #if USE_GPU == 1
         Calculate_hardware_accelerated_g(size, coilData, coordinateArr, resultArr);

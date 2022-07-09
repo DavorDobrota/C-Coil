@@ -23,15 +23,17 @@ namespace
 
 Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0) {}
 
-Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-           double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings,
-           int threadCount, vec3::CoordVector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
+Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double wireResistivity,
+           double sineFrequency, const PrecisionArguments &precisionSettingsCPU,
+           const PrecisionArguments &precisionSettingsGPU, int threadCount, vec3::CoordVector3 coordinatePosition,
+           double yAxisAngle, double zAxisAngle) :
         innerRadius(innerRadius),
         thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 1e-18 * innerRadius * g_thinCoilApproximationRatio : thickness),
         length(length / innerRadius < g_thinCoilApproximationRatio ? 1e-18 * innerRadius * g_thinCoilApproximationRatio : length),
         numOfTurns(numOfTurns),
         id(++g_currentId),
-        defaultPrecision(precisionSettings),
+        defaultPrecisionCPU(precisionSettingsCPU),
+        defaultPrecisionGPU(precisionSettingsGPU),
         useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio),
         positionVector(coordinatePosition),
         yAxisAngle(yAxisAngle), zAxisAngle(zAxisAngle)
@@ -63,7 +65,8 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
     calculateAverageWireThickness();
     setWireResistivity(wireResistivity);
     setSineFrequency(sineFrequency);
-    setDefaultPrecision(PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor));
+    setDefaultPrecisionCPU(PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor));
+    setDefaultPrecisionGPU(PrecisionArguments::getCoilPrecisionArgumentsGPU(*this, precisionFactor));
     setThreadCount(threadCount);
 }
 
@@ -73,9 +76,9 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
                 precisionFactor, threadCount) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
-           const PrecisionArguments &precisionSettings, int threadCount) :
-           Coil(innerRadius, thickness, length, numOfTurns, current,
-                g_defaultResistivity, sineFrequency, precisionSettings, threadCount) {}
+           const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU, int threadCount) :
+        Coil(innerRadius, thickness, length, numOfTurns, current,
+             g_defaultResistivity, sineFrequency, precisionSettingsCPU, precisionSettingsGPU, threadCount) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            PrecisionFactor precisionFactor, int threadCount)  :
@@ -83,9 +86,9 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
                 g_defaultSineFrequency, precisionFactor, threadCount) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-           const PrecisionArguments &precisionSettings, int threadCount) :
-           Coil(innerRadius, thickness, length, numOfTurns, current, g_defaultResistivity,
-                g_defaultSineFrequency, precisionSettings, threadCount) {}
+           const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU, int threadCount) :
+        Coil(innerRadius, thickness, length, numOfTurns, current, g_defaultResistivity,
+             g_defaultSineFrequency, precisionSettingsCPU, precisionSettingsGPU, threadCount) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, PrecisionFactor precisionFactor,
            int threadCount) :
@@ -93,9 +96,9 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
                 g_defaultSineFrequency, precisionFactor, threadCount){}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns,
-           const PrecisionArguments &precisionSettings, int threadCount) :
-           Coil(innerRadius, thickness, length, numOfTurns, g_defaultCurrent, g_defaultResistivity,
-                g_defaultSineFrequency, precisionSettings, threadCount) {}
+           const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU, int threadCount) :
+        Coil(innerRadius, thickness, length, numOfTurns, g_defaultCurrent, g_defaultResistivity,
+             g_defaultSineFrequency, precisionSettingsCPU, precisionSettingsGPU, threadCount) {}
 
 
 double Coil::getCurrentDensity() const { return currentDensity; }
@@ -152,7 +155,9 @@ double Coil::getImpedance()
     return impedance;
 }
 
-const PrecisionArguments &Coil::getPrecisionSettings() const { return defaultPrecision; }
+const PrecisionArguments &Coil::getPrecisionSettingsCPU() const { return defaultPrecisionCPU; }
+
+const PrecisionArguments &Coil::getPrecisionSettingsGPU() const { return defaultPrecisionGPU; }
 
 int Coil::getThreadCount() const { return threadCount; }
 
@@ -197,18 +202,22 @@ void Coil::setSineFrequency(double sineFrequency)
     calculateImpedance();
 }
 
-void Coil::setDefaultPrecision(const PrecisionArguments &precisionSettings)
+void Coil::setDefaultPrecisionCPU(const PrecisionArguments &precisionSettings)
 {
-    this->defaultPrecision = precisionSettings;
+    this->defaultPrecisionCPU = precisionSettings;
 }
 
-void Coil::setDefaultPrecision(PrecisionFactor precisionFactor, ComputeMethod computeMethod)
+void Coil::setDefaultPrecisionGPU(const PrecisionArguments &precisionSettings)
 {
-    if (computeMethod == GPU)
-        this->defaultPrecision = PrecisionArguments::getCoilPrecisionArgumentsGPU(*this, precisionFactor);
-    else
-        this->defaultPrecision = PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor);
+    this->defaultPrecisionGPU = precisionSettings;
 }
+
+void Coil::setDefaultPrecision(PrecisionFactor precisionFactor)
+{
+    this->defaultPrecisionCPU = PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor);
+    this->defaultPrecisionGPU = PrecisionArguments::getCoilPrecisionArgumentsGPU(*this, precisionFactor);
+}
+
 
 void Coil::setSelfInductance(double selfInductance)
 {
@@ -366,6 +375,7 @@ Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
     return unitRingVector;
 }
 
+
 bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
 {
     vec3::FieldVector3 primPositionVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
@@ -383,7 +393,9 @@ bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
     return false;
 }
 
-void Coil::generateCoilData(CoilData &coilData) const
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
+void Coil::generateCoilData(CoilData &coilData, const PrecisionArguments &usedPrecision) const
 {
     coilData.constFactor = g_MiReduced * currentDensity * thickness * M_PI * 0.5;
 
@@ -391,22 +403,26 @@ void Coil::generateCoilData(CoilData &coilData) const
     coilData.thickness = thickness;
     coilData.length = length;
 
-    coilData.lengthIncrements = GPU_INCREMENTS;
-    coilData.angularIncrements = GPU_INCREMENTS;
-    coilData.thicknessIncrements = GPU_INCREMENTS;
+    coilData.lengthIncrements = usedPrecision.lengthIncrementCount;
+    coilData.thicknessIncrements = usedPrecision.thicknessIncrementCount;
+    coilData.angularIncrements = usedPrecision.angularIncrementCount;
 
-    coilData.lengthBlocks = 1;
-    coilData.angularBlocks = 1;
-    coilData.thicknessBlocks = 1;
+    coilData.lengthBlocks = usedPrecision.lengthBlockCount;
+    coilData.thicknessBlocks = usedPrecision.thicknessBlockCount;
+    coilData.angularBlocks = usedPrecision.angularBlockCount;
 
-    for (int i = 0; i < GPU_INCREMENTS; ++i)
+    for (int i = 0; i < coilData.angularIncrements; ++i)
     {
+        double phiPosition = M_PI_2 * (1.0 + Legendre::positionMatrix[coilData.angularIncrements - 1][i]);
 
-        double phiPosition = M_PI_2 * (1.0 + Legendre::positionMatrix[GPU_INCREMENTS - 1][i]);
+        coilData.cosPrecomputeArray[i] = std::cos(phiPosition);
+        coilData.angularWeightArray[i] = Legendre::weightsMatrix[coilData.angularIncrements - 1][i];
+    }
 
-        coilData.positionArray[i] = Legendre::positionMatrix[GPU_INCREMENTS - 1][i];
-        coilData.weightArray[i] = Legendre::weightsMatrix[GPU_INCREMENTS - 1][i];
-        coilData.cosPrecomputeArray[i] = cos(phiPosition);
+    for (int i = 0; i < coilData.thicknessIncrements; ++i)
+    {
+        coilData.thicknessPositionArray[i] = Legendre::positionMatrix[coilData.thicknessIncrements - 1][i];
+        coilData.thicknessWeightArray[i] = Legendre::weightsMatrix[coilData.thicknessIncrements - 1][i];
     }
 
     vec3::FieldVector3 tempVec = vec3::CoordVector3::convertToFieldVector(positionVector);
@@ -436,6 +452,7 @@ void Coil::generateCoilData(CoilData &coilData) const
     coilData.invTransformArray[8] = inverseTransformationMatrix.zz;
 
 }
+#pragma clang diagnostic pop
 
 Coil::operator std::string() const
 {
@@ -460,7 +477,7 @@ Coil::operator std::string() const
         << ", impedance=" << impedance
         << ", use_fast_method=" << useFastMethod
         << ", thread_count=" << threadCount
-        << ", default_precision=" << std::string(defaultPrecision)
+        << ", default_precision=" << std::string(defaultPrecisionCPU)
         << ", position_vector=" << std::string(positionVector)
         << ", y_axis_angle=" << yAxisAngle
         << ", z_axis_angle=" << zAxisAngle

@@ -140,8 +140,8 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
         secThicknessStep = g_secLinearWeightModifier * secThicknessRoot /
                 (blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
 
-        primLinearStep = 0.5 * (primLengthStep + primThicknessStep);
-        secLinearStep = 0.5 * (secLengthStep + secThicknessStep);
+        primLinearStep = std::max(primLengthStep, primThicknessStep);
+        secLinearStep = std::max(secLengthStep, secThicknessStep);
 
         if (primAngularStep + primLinearStep >= secAngularStep + secLinearStep)
         {
@@ -282,7 +282,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
         secAngularStep = g_secAngularWeightModifier * secAngularRoot /
                 (blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
-        secLinearStep = 0.5 * (secLengthStep + secThicknessStep);
+        secLinearStep = std::max(secLengthStep, secThicknessStep);
 
         if (secAngularStep >= secLinearStep)
             secAngularArrayIndex++;

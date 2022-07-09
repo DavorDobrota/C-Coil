@@ -104,7 +104,7 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
                 (blockPrecisionCPUArray[thicknessArrayIndex] * incrementPrecisionCPUArray[thicknessArrayIndex]);
 
 
-        if (angularStep >= 0.5 * (thicknessStep + lengthStep))
+        if (angularStep >= std::max(lengthStep, thicknessStep))
             angularArrayIndex++;
         else
         {

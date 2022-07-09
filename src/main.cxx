@@ -33,12 +33,13 @@ int main()
 
 //    compMInductanceGeneralGraphs();
 
-    compMutualInductanceZAxis();
+//    compMutualInductanceZAxis();
 
 //    testAmpereForceGeneralForZAxis();
 //
 //    compAmpereForceZAxis();
-//    compAmpereForceThinCoilsZAxis();
+    compAmpereForceThinCoilsZAxis();
+
 
 
     return 0;

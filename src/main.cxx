@@ -33,6 +33,8 @@ int main()
 
 //    compMInductanceGeneralGraphs();
 
+    benchComputeAllFields();
+
 //    compMutualInductanceZAxis();
 
 //    testAmpereForceGeneralForZAxis();
@@ -40,9 +42,9 @@ int main()
 //    compAmpereForceZAxis();
 //    compAmpereForceThinCoilsZAxis();
 
-//    compPrecisionCPUvsGPU();
+    compPrecisionCPUvsGPU();
 
-    benchComputeAllFields();
+//    compMInductanceGeneralMisalignedCoils();
 
     return 0;
 }

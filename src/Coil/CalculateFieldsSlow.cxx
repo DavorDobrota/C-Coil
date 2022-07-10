@@ -10,7 +10,7 @@ namespace
     const double g_MiReduced = 0.0000001;
 }
 
-double Coil::calculateAPotentialSlow(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
+double Coil::calculateAPotentialSlow(double zCoord, double rCoord, const PrecisionArguments &usedPrecision) const
 {
     double magneticPotential = 0.0;
 
@@ -61,10 +61,9 @@ double Coil::calculateAPotentialSlow(double zAxis, double rPolar, const Precisio
                             Legendre::weightsMatrix[lengthIncrements][incL] *
                             Legendre::weightsMatrix[thicknessIncrements][incT];
 
-                    double tempConstA = incrementPositionT;
-                    double tempConstB = incrementPositionT * rPolar;
-                    double tempConstC = incrementPositionT * incrementPositionT + rPolar * rPolar +
-                            (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
+                    double tempConstA = 2.0 * incrementPositionT * rCoord;
+                    double tempConstB = incrementPositionT * incrementPositionT + rCoord * rCoord +
+                                        (incrementPositionL + zCoord) * (incrementPositionL + zCoord);
 
                     for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlockCount; ++indBlockFi)
                     {
@@ -74,7 +73,7 @@ double Coil::calculateAPotentialSlow(double zAxis, double rPolar, const Precisio
                             double cosinePhi = cosPhiPrecomputeMat[indBlockFi][incFi];
 
                             magneticPotential += constant * incrementWeightS * incrementWeightFi *
-                                    (tempConstA * cosinePhi) / std::sqrt(tempConstC - 2*tempConstB * cosinePhi);
+                                    (incrementPositionT * cosinePhi) / std::sqrt(tempConstB - tempConstA * cosinePhi);
                         }
                     }
                 }
@@ -84,7 +83,7 @@ double Coil::calculateAPotentialSlow(double zAxis, double rPolar, const Precisio
     return magneticPotential;
 }
 
-std::pair<double, double> Coil::calculateBFieldSlow(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
+std::pair<double, double> Coil::calculateBFieldSlow(double zCoord, double rCoord, const PrecisionArguments &usedPrecision) const
 {
     double magneticFieldZ = 0.0;
     double magneticFieldH = 0.0;
@@ -137,10 +136,10 @@ std::pair<double, double> Coil::calculateBFieldSlow(double zAxis, double rPolar,
                             Legendre::weightsMatrix[thicknessIncrements][incT];
 
                     double tempConstA = incrementPositionT * incrementPositionT;
-                    double tempConstB = incrementPositionT * (incrementPositionL + zAxis);
-                    double tempConstC = incrementPositionT * rPolar;
-                    double tempConstD = tempConstA + rPolar * rPolar +
-                            (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
+                    double tempConstB = incrementPositionT * (incrementPositionL + zCoord);
+                    double tempConstC = incrementPositionT * rCoord;
+                    double tempConstD = tempConstA + rCoord * rCoord +
+                                        (incrementPositionL + zCoord) * (incrementPositionL + zCoord);
                     double tempConstE = constant * incrementWeightS;
 
                     for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlockCount; ++indBlockPhi)
@@ -165,7 +164,7 @@ std::pair<double, double> Coil::calculateBFieldSlow(double zAxis, double rPolar,
     return {magneticFieldH, magneticFieldZ};
 }
 
-std::vector<double> Coil::calculateBGradientSlow(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
+std::vector<double> Coil::calculateBGradientSlow(double zCoord, double rCoord, const PrecisionArguments &usedPrecision) const
 {
     double bufferValueRPhi = 0.0;
     double bufferValueRR = 0.0;
@@ -220,11 +219,11 @@ std::vector<double> Coil::calculateBGradientSlow(double zAxis, double rPolar, co
                             Legendre::weightsMatrix[thicknessIncrements][incT];
 
                     double tempConstA = incrementPositionT * incrementPositionT;
-                    double tempConstB = rPolar * rPolar;
-                    double tempConstC = (incrementPositionL + zAxis) * (incrementPositionL + zAxis);
-                    double tempConstD = rPolar * incrementPositionT;
-                    double tempConstE = incrementPositionT * (incrementPositionL + zAxis);
-                    double tempConstF = 1.0 / rPolar;
+                    double tempConstB = rCoord * rCoord;
+                    double tempConstC = (incrementPositionL + zCoord) * (incrementPositionL + zCoord);
+                    double tempConstD = rCoord * incrementPositionT;
+                    double tempConstE = incrementPositionT * (incrementPositionL + zCoord);
+                    double tempConstF = 1.0 / rCoord;
 
                     double tempConstG = 2.0 * tempConstA + 2.0 * tempConstB - tempConstC;
                     double tempConstH = tempConstA + tempConstB + tempConstC;
@@ -238,17 +237,17 @@ std::vector<double> Coil::calculateBGradientSlow(double zAxis, double rPolar, co
 
                             double cosinePhi = cosPhiPrecomputeMat[indBlockPhi][incPhi];
 
-                            double tempConstJ = tempConstH - 2 * tempConstD * cosinePhi;
+                            double tempConstJ = tempConstH - 2.0 * tempConstD * cosinePhi;
                             double tempConstK = tempConstJ * tempConstJ * std::sqrt(tempConstJ);
 
                             double tempConstX = tempConstI * incrementWeightFi / (tempConstJ * std::sqrt(tempConstJ));
                             double tempConstY = tempConstI * incrementWeightFi / tempConstK;
 
                             bufferValueRPhi += tempConstX * (tempConstF * tempConstE * cosinePhi);
-                            bufferValueRR += tempConstY * (-3.0 * tempConstE * (rPolar - incrementPositionT * cosinePhi)) * cosinePhi;
-                            bufferValueZZ += tempConstY * (-3.0 * tempConstE * (incrementPositionT - rPolar * cosinePhi));
+                            bufferValueRR += tempConstY * (-3.0 * tempConstE * (rCoord - incrementPositionT * cosinePhi)) * cosinePhi;
+                            bufferValueZZ += tempConstY * (-3.0 * tempConstE * (incrementPositionT - rCoord * cosinePhi));
                             bufferValueRZ += tempConstY *
-                                    (incrementPositionT * (tempConstG - tempConstD * cosinePhi) * cosinePhi -3 * tempConstA * rPolar);
+                                    (incrementPositionT * (tempConstG - tempConstD * cosinePhi) * cosinePhi - 3.0 * tempConstA * rCoord);
                         }
                     }
                 }

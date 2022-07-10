@@ -407,13 +407,13 @@ class Coil
         [[nodiscard]] std::vector<double> calculateBGradient(double zAxis, double rPolar,
                                                              const PrecisionArguments &usedPrecision) const;
 
-        [[nodiscard]] std::pair<double, double> calculateBFieldSlow(double zAxis, double rPolar,
+        [[nodiscard]] std::pair<double, double> calculateBFieldSlow(double zCoord, double rCoord,
                                                                     const PrecisionArguments &usedPrecision) const;
 
-        [[nodiscard]] double calculateAPotentialSlow(double zAxis, double rPolar,
+        [[nodiscard]] double calculateAPotentialSlow(double zCoord, double rCoord,
                                                      const PrecisionArguments &usedPrecision) const;
 
-        [[nodiscard]] std::vector<double> calculateBGradientSlow(double zAxis, double rPolar,
+        [[nodiscard]] std::vector<double> calculateBGradientSlow(double zCoord, double rCoord,
                                                                  const PrecisionArguments &usedPrecision) const;
 
         [[nodiscard]] std::pair<double, double> calculateBFieldFast(double zAxis, double rPolar,

@@ -43,31 +43,54 @@ void compMethodPrecisionCPUvsGPU()
 
 void compPrecisionCPUvsGPU()
 {
-    printf("Comparing calculation precision in GPU and CPU cases (CPU | GPU)\n\n");
+    printf("Comparing calculation precision in GPU and CPU cases (CPU | GPU) fast\n\n");
 
-    Coil prim = Coil(0.03, 0.03, 0.12, 3600);
-    Coil sec = Coil(0.03, 0.03, 0.12, 3600);
+    Coil prim1 = Coil(0.03, 0.03, 0.12, 3600);
+    Coil sec1 = Coil(0.03, 0.03, 0.12, 3600);
 
-    prim.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, -0.1, -0.1, -0.1), 0.2, 0.2);
-    sec.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.2));
+    prim1.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, -0.1, -0.1, -0.1), 0.2, 0.2);
+    sec1.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.2));
 
     printf("M inductance: %.15g | %.15g\n",
-           Coil::computeMutualInductance(prim, sec, PrecisionFactor(7.0), CPU_MT),
-           Coil::computeMutualInductance(prim, sec, PrecisionFactor(7.0), GPU));
+           Coil::computeMutualInductance(prim1, sec1, PrecisionFactor(7.0), CPU_MT),
+           Coil::computeMutualInductance(prim1, sec1, PrecisionFactor(7.0), GPU));
 
     printf("Ampere force: %.15g | %.15g\n",
-           Coil::computeAmpereForce(prim, sec, PrecisionFactor(7.0), CPU_MT).first.z,
-           Coil::computeAmpereForce(prim, sec, PrecisionFactor(7.0), GPU).first.z);
+           Coil::computeAmpereForce(prim1, sec1, PrecisionFactor(7.0), CPU_MT).first.z,
+           Coil::computeAmpereForce(prim1, sec1, PrecisionFactor(7.0), GPU).first.z);
 
     std::vector<vec3::CoordVector3> coordArr;
     coordArr.emplace_back();
     coordArr.emplace_back();
 
-    std::vector<vec3::Matrix3> gradientArr = prim.computeAllBGradientTensors(coordArr, GPU);
+    std::vector<vec3::Matrix3> gradientArr = prim1.computeAllBGradientTensors(coordArr, GPU);
 
-    printf("Gradient xx : %.15g | %.15g\n", prim.computeBGradientTensor(vec3::CoordVector3()).xx, gradientArr[0].xx);
-    printf("Gradient yy : %.15g | %.15g\n", prim.computeBGradientTensor(vec3::CoordVector3()).yy, gradientArr[0].yy);
-    printf("Gradient zz : %.15g | %.15g\n", prim.computeBGradientTensor(vec3::CoordVector3()).zz, gradientArr[0].zz);
+    printf("Gradient xx : %.15g | %.15g\n", prim1.computeBGradientTensor(vec3::CoordVector3()).xx, gradientArr[0].xx);
+    printf("Gradient yy : %.15g | %.15g\n", prim1.computeBGradientTensor(vec3::CoordVector3()).yy, gradientArr[0].yy);
+    printf("Gradient zz : %.15g | %.15g\n", prim1.computeBGradientTensor(vec3::CoordVector3()).zz, gradientArr[0].zz);
+
+    printf("\n");
+    printf("Comparing calculation precision in GPU and CPU cases (CPU | GPU) slow\n\n");
+
+    Coil prim2 = Coil(0.03, 0.06, 0.0, 3600);
+    Coil sec2 = Coil(0.03, 0.03, 0.0, 3600);
+
+    prim2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, -0.1, -0.1, -0.1), 0.2, 0.2);
+    sec2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.2));
+
+    printf("M inductance: %.15g | %.15g\n",
+           Coil::computeMutualInductance(prim2, sec2, PrecisionFactor(7.0), CPU_MT),
+           Coil::computeMutualInductance(prim2, sec2, PrecisionFactor(7.0), GPU));
+
+    printf("Ampere force: %.15g | %.15g\n",
+           Coil::computeAmpereForce(prim2, sec2, PrecisionFactor(7.0), CPU_MT).first.z,
+           Coil::computeAmpereForce(prim2, sec2, PrecisionFactor(7.0), GPU).first.z);
+
+    gradientArr = prim2.computeAllBGradientTensors(coordArr, GPU);
+
+    printf("Gradient xx : %.15g | %.15g\n", prim2.computeBGradientTensor(vec3::CoordVector3()).xx, gradientArr[0].xx);
+    printf("Gradient yy : %.15g | %.15g\n", prim2.computeBGradientTensor(vec3::CoordVector3()).yy, gradientArr[0].yy);
+    printf("Gradient zz : %.15g | %.15g\n", prim2.computeBGradientTensor(vec3::CoordVector3()).zz, gradientArr[0].zz);
 }
 
 void compMInductanceForSpecialCase()

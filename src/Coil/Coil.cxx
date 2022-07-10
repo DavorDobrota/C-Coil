@@ -397,7 +397,12 @@ bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 void Coil::generateCoilData(CoilData &coilData, const PrecisionArguments &usedPrecision) const
 {
-    coilData.constFactor = g_MiReduced * currentDensity * thickness * M_PI * 0.5;
+    if (useFastMethod)
+        coilData.constFactor = g_MiReduced * currentDensity * thickness * M_PI * 0.5;
+    else
+        coilData.constFactor = g_MiReduced * currentDensity * thickness * length * M_PI * 0.5;
+
+    coilData.useFastMethod = useFastMethod;
 
     coilData.innerRadius = innerRadius;
     coilData.thickness = thickness;

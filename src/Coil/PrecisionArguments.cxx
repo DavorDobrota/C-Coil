@@ -146,7 +146,9 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
     int totalIncrements = g_baseLayerIncrementsGPU;
     int currentIncrements;
 
-    switch (coil.getCoilType())
+    auto coilType = coil.getCoilType();
+
+    switch (coilType)
     {
         case CoilType::RECTANGULAR:
         {
@@ -157,7 +159,7 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
         }
         case CoilType::THIN:
         {
-            thicknessIncrements = 0;
+            thicknessIncrements = 1;
             lengthIncrements = g_minPrimLengthIncrements;
             break;
         }
@@ -165,13 +167,13 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
         {
             totalIncrements *= g_baseLayerIncrementsGPU;
             thicknessIncrements = g_minPrimThicknessIncrements;
-            lengthIncrements = 0;
+            lengthIncrements = 1;
             break;
         }
         case CoilType::FILAMENT:
         {
-            thicknessIncrements = 0;
-            lengthIncrements = 0;
+            thicknessIncrements = 1;
+            lengthIncrements = 1;
             break;
         }
     }
@@ -180,12 +182,10 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
     totalIncrements *= std::pow(2, precisionFactor.relativePrecision - 1.0);
 
     double angularStep, lengthStep, thicknessStep;
+    bool exitLoop = false;
 
     do
     {
-        if (angularIncrements >= GPU_INCREMENTS && thicknessIncrements >= GPU_INCREMENTS)
-            break;
-
         lengthStep = lengthRoot / lengthIncrements;
 
         if (angularIncrements >= GPU_INCREMENTS)
@@ -210,8 +210,38 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
         }
 
         currentIncrements = angularIncrements * thicknessIncrements;
+
+        if (currentIncrements > totalIncrements)
+            exitLoop = true;
+
+        switch (coilType) {
+            case CoilType::RECTANGULAR:
+            {
+                if (angularIncrements >= GPU_INCREMENTS && thicknessIncrements >= GPU_INCREMENTS)
+                    exitLoop = true;
+                break;
+            }
+            case CoilType::THIN:
+            {
+                if (angularIncrements >= GPU_INCREMENTS)
+                    exitLoop = true;
+                break;
+            }
+            case CoilType::FLAT:
+            {
+                if (angularIncrements >= GPU_INCREMENTS && thicknessIncrements >= GPU_INCREMENTS)
+                    exitLoop = true;
+                break;
+            }
+            case CoilType::FILAMENT:
+            {
+                if (angularIncrements >= GPU_INCREMENTS)
+                    exitLoop = true;
+                break;
+            }
+        }
     }
-    while (currentIncrements <= totalIncrements);
+    while (!exitLoop);
 
     #if PRINT_ENABLED
         printf("%d : %d %d %d\n", currentIncrements, lengthIncrements, thicknessIncrements, angularIncrements);

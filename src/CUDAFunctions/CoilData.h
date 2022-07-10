@@ -10,6 +10,7 @@ struct CoilData
     CoilData() :
 
         constFactor{0.0},
+        useFastMethod{false},
 
         innerRadius{0.0},
         thickness{0.0},
@@ -31,6 +32,7 @@ struct CoilData
     {}
 
     TYPE constFactor;
+    bool useFastMethod;
 
     TYPE innerRadius;
     TYPE thickness;

@@ -9,7 +9,66 @@
 
 
 __global__
-void calculateA(long long numOps, CoilData coil, const DataVector *posArr, DataVector *resArr)
+void calculatePotentialSlow(long long numOps, CoilData coil, const DataVector *posArr, DataVector *resArr)
+{
+    unsigned int index = threadIdx.x;
+    long long global_index = blockIdx.x * blockDim.x + index;
+
+    if(global_index >= numOps)
+        return;
+
+    TYPE x1 = posArr[global_index].x;
+    TYPE y1 = posArr[global_index].y;
+    TYPE z1 = posArr[global_index].z;
+
+    x1 -= coil.positionVector[0];
+    y1 -= coil.positionVector[1];
+    z1 -= coil.positionVector[2];
+
+    TYPE x = x1 * coil.invTransformArray[0] + y1 * coil.invTransformArray[1] + z1 * coil.invTransformArray[2];
+    TYPE y = x1 * coil.invTransformArray[3] + y1 * coil.invTransformArray[4] + z1 * coil.invTransformArray[5];
+    TYPE z = x1 * coil.invTransformArray[6] + y1 * coil.invTransformArray[7] + z1 * coil.invTransformArray[8];
+
+    TYPE zCoord = z;
+    TYPE rCoord = sqrt(x * x + y * y);
+    TYPE phiCord = atan2(y, x);
+
+    TYPE potential = 0.0f;
+
+    for (int incT = 0; incT < coil.thicknessIncrements; ++incT)
+    {
+        TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.thicknessPositionArray[incT]);
+
+        TYPE tempConstA = incrementPositionT * incrementPositionT + rCoord * rCoord + zCoord * zCoord;
+        TYPE tempConstB = 2.0f * incrementPositionT * rCoord;
+
+        for (int incF = 0; incF < coil.angularIncrements; ++incF)
+        {
+            TYPE cosinePhi = coil.cosPrecomputeArray[incF];
+
+            TYPE tempConstC = rsqrt(tempConstA - tempConstB * cosinePhi);
+
+            potential += coil.constFactor *
+                         coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF] *
+                         incrementPositionT * cosinePhi * tempConstC;
+        }
+    }
+
+    TYPE xPot = (-1.f) * sin(phiCord) * potential;
+    TYPE yPot = potential * cos(phiCord);
+    TYPE zPot = 0.f;
+
+    TYPE xRes = xPot * coil.transformArray[0] + yPot * coil.transformArray[1] + zPot * coil.transformArray[2];
+    TYPE yRes = xPot * coil.transformArray[3] + yPot * coil.transformArray[4] + zPot * coil.transformArray[5];
+    TYPE zRes = xPot * coil.transformArray[6] + yPot * coil.transformArray[7] + zPot * coil.transformArray[8];
+
+    resArr[global_index].x = xRes;
+    resArr[global_index].y = yRes;
+    resArr[global_index].z = zRes;
+}
+
+__global__
+void calculatePotentialFast(long long numOps, CoilData coil, const DataVector *posArr, DataVector *resArr)
 {
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
@@ -42,12 +101,14 @@ void calculateA(long long numOps, CoilData coil, const DataVector *posArr, DataV
     {
         TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.thicknessPositionArray[incT]);
 
+        TYPE tempConstA = incrementPositionT * incrementPositionT + rCoord * rCoord;
+        TYPE tempConstB = 2.0f * incrementPositionT * rCoord;
+
         for (int incF = 0; incF < coil.angularIncrements; ++incF)
         {
             TYPE cosinePhi = coil.cosPrecomputeArray[incF];
 
-            TYPE tempConstC = rsqrt(incrementPositionT * incrementPositionT + rCoord * rCoord -
-                                     2.0f * incrementPositionT * rCoord * cosinePhi);
+            TYPE tempConstC = rsqrt(tempConstA - tempConstB * cosinePhi);
 
             TYPE tempConstD1 = topEdge * tempConstC;
             TYPE tempConstD2 = bottomEdge * tempConstC;
@@ -138,7 +199,11 @@ void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
         recordStartPoint();
     #endif
 
-    calculateA<<<blocks, NTHREADS>>>(numOps, coil, g_posArr, g_resArr);
+    if (coil.useFastMethod)
+        calculatePotentialFast<<<blocks, NTHREADS>>>(numOps, coil, g_posArr, g_resArr);
+    else
+        calculatePotentialSlow<<<blocks, NTHREADS>>>(numOps, coil, g_posArr, g_resArr);
+
 	gpuErrchk(cudaDeviceSynchronize());
 
 	#if DEBUG_TIMINGS

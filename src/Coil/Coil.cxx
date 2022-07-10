@@ -407,10 +407,6 @@ void Coil::generateCoilData(CoilData &coilData, const PrecisionArguments &usedPr
     coilData.thicknessIncrements = usedPrecision.thicknessIncrementCount;
     coilData.angularIncrements = usedPrecision.angularIncrementCount;
 
-    coilData.lengthBlocks = usedPrecision.lengthBlockCount;
-    coilData.thicknessBlocks = usedPrecision.thicknessBlockCount;
-    coilData.angularBlocks = usedPrecision.angularBlockCount;
-
     for (int i = 0; i < coilData.angularIncrements; ++i)
     {
         double phiPosition = M_PI_2 * (1.0 + Legendre::positionMatrix[coilData.angularIncrements - 1][i]);

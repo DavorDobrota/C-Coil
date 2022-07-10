@@ -54,14 +54,14 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
     double thicknessRoot = std::sqrt(coil.getThickness());
     double lengthRoot = std::sqrt(coil.getLength());
 
-    int totalIncrements = g_baseLayerIncrements;
+    int totalIncrements = g_baseLayerIncrementsCPU;
     int currentIncrements;
 
     switch (coil.getCoilType())
     {
         case CoilType::RECTANGULAR:
         {
-            totalIncrements *= g_baseLayerIncrements;
+            totalIncrements *= g_baseLayerIncrementsCPU;
             thicknessArrayIndex = g_minPrimThicknessIncrements - 1;
             lengthArrayIndex = g_minPrimLengthIncrements - 1;
             break;
@@ -74,7 +74,7 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
         }
         case CoilType::FLAT:
         {
-            totalIncrements *= g_baseLayerIncrements;
+            totalIncrements *= g_baseLayerIncrementsCPU;
             thicknessArrayIndex = g_minPrimThicknessIncrements - 1;
             lengthArrayIndex = 0;
             break;
@@ -137,21 +137,87 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
 
 PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &coil, PrecisionFactor precisionFactor)
 {
-    const int lengthIncrements = GPU_INCREMENTS;
-    const int thicknessIncrements = GPU_INCREMENTS;
-    const int angularIncrements = GPU_INCREMENTS;
+    int lengthIncrements, thicknessIncrements, angularIncrements;
 
-    int lengthBlocks = 1;
-    int thicknessBlocks = 1;
-    int angularBlocks = 1;
+    double angularRoot = std::sqrt(M_PI * (coil.getInnerRadius() + 0.5 * coil.getThickness()));
+    double thicknessRoot = std::sqrt(coil.getThickness());
+    double lengthRoot = std::sqrt(coil.getLength());
 
-    int currentIncrements = lengthBlocks * thicknessBlocks * angularBlocks * lengthIncrements * thicknessIncrements * angularIncrements;
+    int totalIncrements = g_baseLayerIncrementsGPU;
+    int currentIncrements;
+
+    switch (coil.getCoilType())
+    {
+        case CoilType::RECTANGULAR:
+        {
+            totalIncrements *= g_baseLayerIncrementsGPU;
+            thicknessIncrements = g_minPrimThicknessIncrements;
+            lengthIncrements = g_minPrimLengthIncrements;
+            break;
+        }
+        case CoilType::THIN:
+        {
+            thicknessIncrements = 0;
+            lengthIncrements = g_minPrimLengthIncrements;
+            break;
+        }
+        case CoilType::FLAT:
+        {
+            totalIncrements *= g_baseLayerIncrementsGPU;
+            thicknessIncrements = g_minPrimThicknessIncrements;
+            lengthIncrements = 0;
+            break;
+        }
+        case CoilType::FILAMENT:
+        {
+            thicknessIncrements = 0;
+            lengthIncrements = 0;
+            break;
+        }
+    }
+    angularIncrements = g_minPrimAngularIncrements;
+
+    totalIncrements *= std::pow(2, precisionFactor.relativePrecision - 1.0);
+
+    double angularStep, lengthStep, thicknessStep;
+
+    do
+    {
+        if (angularIncrements >= GPU_INCREMENTS && thicknessIncrements >= GPU_INCREMENTS)
+            break;
+
+        lengthStep = lengthRoot / lengthIncrements;
+
+        if (angularIncrements >= GPU_INCREMENTS)
+            angularStep = 0.0;
+        else
+            angularStep = angularRoot / angularIncrements;
+
+        if (thicknessIncrements >= GPU_INCREMENTS)
+            thicknessStep = 0.0;
+        else
+            thicknessStep = thicknessRoot / thicknessIncrements;
+
+
+        if (angularStep >= std::max(lengthStep, thicknessStep))
+            angularIncrements++;
+        else
+        {
+            if (thicknessStep >= lengthStep)
+                thicknessIncrements++;
+            else
+                lengthIncrements++;
+        }
+
+        currentIncrements = angularIncrements * thicknessIncrements;
+    }
+    while (currentIncrements <= totalIncrements);
 
     #if PRINT_ENABLED
-        printf("%d : %d %d %d\n", currentIncrements,
-               lengthBlocks * lengthIncrements, thicknessIncrements * thicknessBlocks, angularBlocks*angularIncrements);
-    #endif //PRINT_ENABLED
-    return PrecisionArguments(angularBlocks, thicknessBlocks, lengthBlocks, angularIncrements, thicknessIncrements, lengthIncrements);
+        printf("%d : %d %d %d\n", currentIncrements, lengthIncrements, thicknessIncrements, angularIncrements);
+    #endif // PRINT_ENABLED
+
+    return PrecisionArguments(1,1,1, angularIncrements, thicknessIncrements, lengthIncrements);
 }
 
 PrecisionArguments::operator std::string() const

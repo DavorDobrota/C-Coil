@@ -2,7 +2,7 @@
 #define GENERAL_COIL_PROGRAM_COILDATA_H
 
 #define TYPE float
-#define GPU_INCREMENTS 20
+#define GPU_INCREMENTS 100
 
 
 struct CoilData
@@ -18,10 +18,6 @@ struct CoilData
         angularIncrements{0},
         lengthIncrements{0},
         thicknessIncrements{0},
-
-        angularBlocks{0},
-        lengthBlocks{0},
-        thicknessBlocks{0},
 
         thicknessPositionArray{},
         thicknessWeightArray{},
@@ -43,10 +39,6 @@ struct CoilData
     int angularIncrements;
     int lengthIncrements;
     int thicknessIncrements;
-
-    int angularBlocks;
-    int lengthBlocks;
-    int thicknessBlocks;
 
     TYPE thicknessPositionArray[GPU_INCREMENTS];
     TYPE thicknessWeightArray[GPU_INCREMENTS];

@@ -46,17 +46,17 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
 
     // multiplying for primary and secondary angular increments in case they are present
     if (!zAxisCase)
-        totalIncrements *= g_baseLayerIncrements * g_baseLayerIncrements;
+        totalIncrements *= g_baseLayerIncrementsCPU * g_baseLayerIncrementsCPU;
 
     // if the slow methods are used in the z-axis case one extra layer is required
     else if (secondary.getCoilType() == CoilType::FILAMENT || secondary.getCoilType() == CoilType::FLAT)
-        totalIncrements *= g_baseLayerIncrements;
+        totalIncrements *= g_baseLayerIncrementsCPU;
 
     switch (primary.getCoilType())
     {
         case CoilType::RECTANGULAR:
         {
-            totalIncrements *= g_baseLayerIncrements;
+            totalIncrements *= g_baseLayerIncrementsCPU;
             primThicknessArrayIndex = g_minPrimThicknessIncrements - 1;
             primLengthArrayIndex = g_minPrimLengthIncrements - 1;
             break;
@@ -69,7 +69,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
         }
         case CoilType::FLAT:
         {
-            totalIncrements *= g_baseLayerIncrements;
+            totalIncrements *= g_baseLayerIncrementsCPU;
             primThicknessArrayIndex = g_minPrimThicknessIncrements - 1;
             primLengthArrayIndex = 0;
             break;
@@ -87,21 +87,21 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
     {
         case CoilType::RECTANGULAR:
         {
-            totalIncrements *= g_baseLayerIncrements * g_baseLayerIncrements;
+            totalIncrements *= g_baseLayerIncrementsCPU * g_baseLayerIncrementsCPU;
             secLengthArrayIndex = g_minSecLengthIncrements - 1;
             secThicknessArrayIndex = g_minSecThicknessIncrements - 1;
             break;
         }
         case CoilType::THIN:
         {
-            totalIncrements *= g_baseLayerIncrements;
+            totalIncrements *= g_baseLayerIncrementsCPU;
             secThicknessArrayIndex = 0;
             secLengthArrayIndex = g_minSecLengthIncrements - 1;
             break;
         }
         case CoilType::FLAT:
         {
-            totalIncrements *= g_baseLayerIncrements;
+            totalIncrements *= g_baseLayerIncrementsCPU;
             secLengthArrayIndex = 0;
             secThicknessArrayIndex = g_minSecAngularIncrements - 1;
             break;
@@ -213,47 +213,78 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
 CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &primary, const Coil &secondary,
                                                                    PrecisionFactor precisionFactor, bool zAxisCase)
 {
-    const int primLengthIncrements = GPU_INCREMENTS;
-    const int primThicknessIncrements = GPU_INCREMENTS;
-    const int primAngularIncrements = GPU_INCREMENTS;
-
-    int primLengthBlocks = 1;
-    int primThicknessBlocks = 1;
-    int primAngularBlocks = 1;
-
-    // primary precision is fixed, tuning only the secondary precision remains
+    int primLengthIncrements, primThicknessIncrements, primAngularIncrements;
     int secLengthArrayIndex, secThicknessArrayIndex, secAngularArrayIndex;
 
     int totalIncrements = 1;
     int currentIncrements;
 
+    double primAngularRoot = std::sqrt(M_PI * (primary.getInnerRadius() + 0.5 * primary.getThickness()));
+    double primThicknessRoot = std::sqrt(primary.getThickness());
+    double primLengthRoot = std::sqrt(primary.getLength());
+
     double secAngularRoot = std::sqrt(2 * M_PI * (secondary.getInnerRadius() + 0.5 * secondary.getThickness()));
     double secThicknessRoot = std::sqrt(secondary.getThickness());
     double secLengthRoot = std::sqrt(secondary.getLength());
 
-    // multiplying for secondary angular increments, if present
+    // multiplying for primary and secondary angular increments in case they are present
     if (!zAxisCase)
-        totalIncrements *= g_baseLayerIncrements;
+        totalIncrements *= g_baseLayerIncrementsCPU * g_baseLayerIncrementsCPU;
+
+        // if the slow methods are used in the z-axis case one extra layer is required
+    else if (secondary.getCoilType() == CoilType::FILAMENT || secondary.getCoilType() == CoilType::FLAT)
+        totalIncrements *= g_baseLayerIncrementsCPU;
+
+    switch (primary.getCoilType())
+    {
+        case CoilType::RECTANGULAR:
+        {
+            totalIncrements *= g_baseLayerIncrementsCPU;
+            primThicknessIncrements = g_minPrimThicknessIncrements - 1;
+            primLengthIncrements = g_minPrimLengthIncrements - 1;
+            break;
+        }
+        case CoilType::THIN:
+        {
+            primThicknessIncrements = 0;
+            primLengthIncrements = g_minPrimThicknessIncrements - 1;
+            break;
+        }
+        case CoilType::FLAT:
+        {
+            totalIncrements *= g_baseLayerIncrementsCPU;
+            primThicknessIncrements = g_minPrimThicknessIncrements - 1;
+            primLengthIncrements = 0;
+            break;
+        }
+        case CoilType::FILAMENT:
+        {
+            primThicknessIncrements = 0;
+            primLengthIncrements = 0;
+            break;
+        }
+    }
+    primAngularIncrements = g_minPrimAngularIncrements - 1;
 
     switch (secondary.getCoilType())
     {
         case CoilType::RECTANGULAR:
         {
-            totalIncrements *= g_baseLayerIncrements * g_baseLayerIncrements;
+            totalIncrements *= g_baseLayerIncrementsCPU * g_baseLayerIncrementsCPU;
             secLengthArrayIndex = g_minSecLengthIncrements - 1;
             secThicknessArrayIndex = g_minSecThicknessIncrements - 1;
             break;
         }
         case CoilType::THIN:
         {
-            totalIncrements *= g_baseLayerIncrements;
+            totalIncrements *= g_baseLayerIncrementsCPU;
             secThicknessArrayIndex = 0;
             secLengthArrayIndex = g_minSecLengthIncrements - 1;
             break;
         }
         case CoilType::FLAT:
         {
-            totalIncrements *= g_baseLayerIncrements;
+            totalIncrements *= g_baseLayerIncrementsCPU;
             secLengthArrayIndex = 0;
             secThicknessArrayIndex = g_minSecAngularIncrements - 1;
             break;
@@ -269,41 +300,78 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
 
     totalIncrements *= std::pow(2, precisionFactor.relativePrecision - 1.0);
 
+    double primAngularStep, primLengthStep, primThicknessStep, primLinearStep;
     double secAngularStep, secLengthStep, secThicknessStep, secLinearStep;
 
     do
     {
-        secLengthStep = secLengthRoot /
-                (blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex]);
+        primLengthStep = g_primLinearWeightModifier * primLengthRoot / primLengthIncrements;
 
-        secThicknessStep = secThicknessRoot /
-                (blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
+        if (primAngularIncrements >= GPU_INCREMENTS)
+            primAngularStep = 0.0;
+        else
+            primAngularStep = g_primAngularWeightModifier * primAngularRoot / primAngularIncrements;
+
+        if (primThicknessIncrements >= GPU_INCREMENTS)
+            primThicknessStep = 0.0;
+        else
+            primThicknessStep = g_primLinearWeightModifier * primThicknessRoot / primThicknessIncrements;
 
         secAngularStep = g_secAngularWeightModifier * secAngularRoot /
-                (blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
+                         (blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
 
+        secLengthStep = g_secLinearWeightModifier * secLengthRoot /
+                        (blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex]);
+
+        secThicknessStep = g_secLinearWeightModifier * secThicknessRoot /
+                           (blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex]);
+
+        primLinearStep = std::max(primLengthStep, primThicknessStep);
         secLinearStep = std::max(secLengthStep, secThicknessStep);
 
-        if (secAngularStep >= secLinearStep)
-            secAngularArrayIndex++;
+        if (primAngularStep + primLinearStep >= secAngularStep + secLinearStep)
+        {
+            if (primAngularStep >= primLinearStep)
+                primAngularIncrements++;
+            else
+            {
+                if (primLengthStep >= primThicknessStep)
+                    primLengthIncrements++;
+                else
+                    primThicknessIncrements++;
+            }
+        }
         else
         {
-            if (secLengthStep >= secThicknessStep)
-                secLengthArrayIndex++;
+            if (secAngularStep >= secLinearStep)
+                secAngularArrayIndex++;
             else
-                secThicknessArrayIndex++;
+            {
+                if (secLengthStep >= secThicknessStep)
+                    secLengthArrayIndex++;
+                else
+                    secThicknessArrayIndex++;
+            }
         }
 
-        currentIncrements = blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex] *
-                            blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex];
+        currentIncrements =
+                primThicknessIncrements *
+                primAngularIncrements *
+                blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex];
 
         if (!zAxisCase)
-            currentIncrements *= blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex];
+            currentIncrements *= blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex] *
+                                 blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex];
+
     }
     while (currentIncrements < totalIncrements);
 
-    auto primaryPrecision = PrecisionArguments(primAngularBlocks, primThicknessBlocks, primLengthBlocks,
-                                               primAngularIncrements, primThicknessIncrements, primLengthIncrements);
+    auto primaryPrecision = PrecisionArguments(1,
+                                               1,
+                                               1,
+                                               primAngularIncrements,
+                                               primThicknessIncrements,
+                                               primLengthIncrements);
 
     auto secondaryPrecision = PrecisionArguments(blockPrecisionCPUArray[secAngularArrayIndex],
                                                  blockPrecisionCPUArray[secThicknessArrayIndex],
@@ -311,15 +379,19 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
                                                  incrementPrecisionCPUArray[secAngularArrayIndex],
                                                  incrementPrecisionCPUArray[secThicknessArrayIndex],
                                                  incrementPrecisionCPUArray[secLengthArrayIndex]);
-    #if PRINT_ENABLED
+
+#if PRINT_ENABLED
     printf("%d : %d %d %d | %d %d %d\n", currentIncrements,
-           primLengthBlocks * primLengthIncrements,
-           primThicknessBlocks * primThicknessIncrements,
-           primAngularBlocks * primAngularIncrements,
+           primLengthIncrements,
+           primThicknessIncrements,
+           primAngularIncrements,
            blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex],
            blockPrecisionCPUArray[secThicknessArrayIndex] * incrementPrecisionCPUArray[secThicknessArrayIndex],
            blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex]);
-    #endif // PRINT_ENABLED
+
+    printf("%.6g %.6g %.6g | %.6g %.6g %.6g\n",
+           primLengthStep, primThicknessStep, primAngularStep, secLengthStep, secThicknessStep, secAngularStep);
+#endif // PRINT_ENABLED
 
     return CoilPairArguments(primaryPrecision, secondaryPrecision);
 }

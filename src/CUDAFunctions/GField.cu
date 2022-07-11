@@ -113,15 +113,15 @@ void calculateGradientSlow(long long numOps, CoilData coil, const DataVector *po
     TYPE zyRes = coil.transformArray[6] * xyGrad + coil.transformArray[7] * yyGrad + coil.transformArray[8] * zyGrad;
     TYPE zzRes = coil.transformArray[6] * xzGrad + coil.transformArray[7] * yzGrad + coil.transformArray[8] * zzGrad;
 
-    resArr[global_index].xx = xxRes;
-    resArr[global_index].xy = xyRes;
-    resArr[global_index].xz = xzRes;
-    resArr[global_index].yx = yxRes;
-    resArr[global_index].yy = yyRes;
-    resArr[global_index].yz = yzRes;
-    resArr[global_index].zx = zxRes;
-    resArr[global_index].zy = zyRes;
-    resArr[global_index].zz = zzRes;
+    resArr[global_index].xx += xxRes;
+    resArr[global_index].xy += xyRes;
+    resArr[global_index].xz += xzRes;
+    resArr[global_index].yx += yxRes;
+    resArr[global_index].yy += yyRes;
+    resArr[global_index].yz += yzRes;
+    resArr[global_index].zx += zxRes;
+    resArr[global_index].zy += zyRes;
+    resArr[global_index].zz += zzRes;
 }
 
 __global__
@@ -247,15 +247,15 @@ void calculateGradientFast(long long numOps, CoilData coil, const DataVector *po
     TYPE zyRes = coil.transformArray[6] * xyGrad + coil.transformArray[7] * yyGrad + coil.transformArray[8] * zyGrad;
     TYPE zzRes = coil.transformArray[6] * xzGrad + coil.transformArray[7] * yzGrad + coil.transformArray[8] * zzGrad;
 
-    resArr[global_index].xx = xxRes;
-    resArr[global_index].xy = xyRes;
-    resArr[global_index].xz = xzRes;
-    resArr[global_index].yx = yxRes;
-    resArr[global_index].yy = yyRes;
-    resArr[global_index].yz = yzRes;
-    resArr[global_index].zx = zxRes;
-    resArr[global_index].zy = zyRes;
-    resArr[global_index].zz = zzRes;
+    resArr[global_index].xx += xxRes;
+    resArr[global_index].xy += xyRes;
+    resArr[global_index].xz += xzRes;
+    resArr[global_index].yx += yxRes;
+    resArr[global_index].yy += yyRes;
+    resArr[global_index].yz += yzRes;
+    resArr[global_index].zx += zxRes;
+    resArr[global_index].zy += zyRes;
+    resArr[global_index].zz += zzRes;
 }
 	
 namespace 
@@ -317,6 +317,8 @@ void Calculate_hardware_accelerated_g(long long numOps, CoilData coil, const Dat
 
         recordStartPoint();
     #endif
+
+    gpuErrchk(cudaMemset(g_resArr, 0, numOps * sizeof(DataMatrix)));
 
     if (coil.useFastMethod)
         calculateGradientFast<<<blocks, NTHREADS>>>(numOps, coil, g_posArr, g_resArr);

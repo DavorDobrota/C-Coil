@@ -183,7 +183,9 @@ class Coil
         void setSineFrequency(double sineFrequency);
 
         void setDefaultPrecisionCPU(const PrecisionArguments &precisionSettings);
+        void setDefaultPrecisionCPU(PrecisionFactor precisionFactor = PrecisionFactor());
         void setDefaultPrecisionGPU(const PrecisionArguments &precisionSettings);
+        void setDefaultPrecisionGPU(PrecisionFactor precisionFactor = PrecisionFactor());
         void setDefaultPrecision(PrecisionFactor precisionFactor = PrecisionFactor());
 
         void setThreadCount(int threadCount);

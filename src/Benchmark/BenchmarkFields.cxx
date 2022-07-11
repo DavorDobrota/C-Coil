@@ -852,6 +852,10 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
     coil.setThreadCount(threadCount);
     coil.setDefaultPrecision(precisionFactor);
 
+    Coil flat = Coil(0.1, 0.1, 0, 100);
+    flat.setThreadCount(threadCount);
+    flat.setDefaultPrecision(precisionFactor);
+
     high_resolution_clock::time_point beginTime;
     double interval;
     double pointsPerSec;
@@ -862,7 +866,85 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
     std::vector<vec3::FieldVector3> fieldArr;
     std::vector<vec3::Matrix3> gradientArr;
 
-    printf("Vector potential performance for precision factor %.1f and %d threads\n",
+    printf("Vector potential performance slow for precision factor %.1f and %d threads\n",
+           precisionFactor.relativePrecision, threadCount);
+
+    for (int i = 0; i <= maxPointsLog2; ++i)
+    {
+        int numPoints = int(std::pow(2, i));
+
+        positions.resize(numPoints);
+        potentialArr.resize(numPoints);
+        for (int j = 0; j < numPoints; ++j)
+            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+
+        beginTime = high_resolution_clock::now();
+        potentialArr = flat.computeAllAPotentialComponents(positions, CPU_MT);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
+        pointsPerSec = numPoints / interval;
+
+        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+
+        positions.clear();
+        potentialArr.clear();
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    printf("Magnetic field performance slow for precision factor %.1f and %d threads\n",
+           precisionFactor.relativePrecision, threadCount);
+
+    for (int i = 0; i <= maxPointsLog2; ++i)
+    {
+        int numPoints = int(std::pow(2, i));
+
+        positions.resize(numPoints);
+        potentialArr.resize(numPoints);
+        for (int j = 0; j < numPoints; ++j)
+            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+
+        beginTime = high_resolution_clock::now();
+        fieldArr = flat.computeAllBFieldComponents(positions, CPU_MT);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
+        pointsPerSec = numPoints / interval;
+
+        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+
+        positions.clear();
+        fieldArr.clear();
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    printf("Magnetic gradient performance slow for precision factor %.1f and %d threads\n",
+           precisionFactor.relativePrecision, threadCount);
+
+    for (int i = 0; i <= maxPointsLog2; ++i)
+    {
+        int numPoints = int(std::pow(2, i));
+
+        positions.resize(numPoints);
+        potentialArr.resize(numPoints);
+        for (int j = 0; j < numPoints; ++j)
+            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+
+        beginTime = high_resolution_clock::now();
+        gradientArr = flat.computeAllBGradientTensors(positions, CPU_MT);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
+        pointsPerSec = numPoints / interval;
+
+        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+
+        positions.clear();
+        gradientArr.clear();
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    printf("Vector potential performance fast for precision factor %.1f and %d threads\n",
            precisionFactor.relativePrecision, threadCount);
 
     for (int i = 0; i <= maxPointsLog2; ++i)
@@ -888,7 +970,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
     printf("\n");
     fprintf(output, "\n");
 
-    printf("Magnetic field performance for precision factor %.1f and %d threads\n",
+    printf("Magnetic field performance fast for precision factor %.1f and %d threads\n",
            precisionFactor.relativePrecision, threadCount);
 
     for (int i = 0; i <= maxPointsLog2; ++i)
@@ -914,7 +996,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
     printf("\n");
     fprintf(output, "\n");
 
-    printf("Magnetic gradient performance for precision factor %.1f and %d threads\n",
+    printf("Magnetic gradient performance fast for precision factor %.1f and %d threads\n",
            precisionFactor.relativePrecision, threadCount);
 
     for (int i = 0; i <= maxPointsLog2; ++i)
@@ -953,6 +1035,9 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
     Coil coil = Coil(0.1, 0.1, 0.1, 10000);
     coil.setDefaultPrecision(precisionFactor);
 
+    Coil flat = Coil(0.1, 0.1, 0, 100);
+    flat.setDefaultPrecision(precisionFactor);
+
     high_resolution_clock::time_point beginTime;
     double interval;
     double pointsPerSec;
@@ -963,7 +1048,85 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
     std::vector<vec3::FieldVector3> fieldArr;
     std::vector<vec3::Matrix3> gradientArr;
 
-    printf("Vector potential performance for precision factor %.1f\n",
+    printf("Vector potential performance slow for precision factor %.1f\n",
+           precisionFactor.relativePrecision);
+
+    for (int i = 0; i <= maxPointsLog2; ++i)
+    {
+        int numPoints = int(std::pow(2, i));
+
+        positions.resize(numPoints);
+        potentialArr.resize(numPoints);
+        for (int j = 0; j < numPoints; ++j)
+            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+
+        beginTime = high_resolution_clock::now();
+        potentialArr = flat.computeAllAPotentialComponents(positions, GPU);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
+        pointsPerSec = numPoints / interval;
+
+        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+
+        positions.clear();
+        potentialArr.clear();
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    printf("Magnetic field performance slow for precision factor %.1f\n",
+           precisionFactor.relativePrecision);
+
+    for (int i = 0; i <= maxPointsLog2; ++i)
+    {
+        int numPoints = int(std::pow(2, i));
+
+        positions.resize(numPoints);
+        potentialArr.resize(numPoints);
+        for (int j = 0; j < numPoints; ++j)
+            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+
+        beginTime = high_resolution_clock::now();
+        fieldArr = flat.computeAllBFieldComponents(positions, GPU);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
+        pointsPerSec = numPoints / interval;
+
+        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+
+        positions.clear();
+        fieldArr.clear();
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    printf("Magnetic gradient performance slow for precision factor %.1f\n",
+           precisionFactor.relativePrecision);
+
+    for (int i = 0; i <= maxPointsLog2; ++i)
+    {
+        int numPoints = int(std::pow(2, i));
+
+        positions.resize(numPoints);
+        potentialArr.resize(numPoints);
+        for (int j = 0; j < numPoints; ++j)
+            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+
+        beginTime = high_resolution_clock::now();
+        gradientArr = flat.computeAllBGradientTensors(positions, GPU);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
+        pointsPerSec = numPoints / interval;
+
+        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+
+        positions.clear();
+        gradientArr.clear();
+    }
+    printf("\n");
+    fprintf(output, "\n");
+
+    printf("Vector potential performance fast for precision factor %.1f\n",
            precisionFactor.relativePrecision);
 
     for (int i = 0; i <= maxPointsLog2; ++i)
@@ -989,7 +1152,7 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
     printf("\n");
     fprintf(output, "\n");
 
-    printf("Magnetic field performance for precision factor %.1f\n",
+    printf("Magnetic field performance fast for precision factor %.1f\n",
            precisionFactor.relativePrecision);
 
     for (int i = 0; i <= maxPointsLog2; ++i)
@@ -1015,7 +1178,7 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
     printf("\n");
     fprintf(output, "\n");
 
-    printf("Magnetic gradient performance for precision factor %.1f\n",
+    printf("Magnetic gradient performance fast for precision factor %.1f\n",
            precisionFactor.relativePrecision);
 
     for (int i = 0; i <= maxPointsLog2; ++i)

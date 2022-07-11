@@ -207,9 +207,19 @@ void Coil::setDefaultPrecisionCPU(const PrecisionArguments &precisionSettings)
     this->defaultPrecisionCPU = precisionSettings;
 }
 
+void Coil::setDefaultPrecisionCPU(PrecisionFactor precisionFactor)
+{
+    this->defaultPrecisionCPU = PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor);
+}
+
 void Coil::setDefaultPrecisionGPU(const PrecisionArguments &precisionSettings)
 {
     this->defaultPrecisionGPU = precisionSettings;
+}
+
+void Coil::setDefaultPrecisionGPU(PrecisionFactor precisionFactor)
+{
+    this->defaultPrecisionGPU = PrecisionArguments::getCoilPrecisionArgumentsGPU(*this, precisionFactor);
 }
 
 void Coil::setDefaultPrecision(PrecisionFactor precisionFactor)

@@ -13,8 +13,8 @@
 #pragma ide diagnostic ignored "Simplify"
 int main()
 {
-//    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 8, 22);
-//    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 26);
+    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 8, 22);
+    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 25);
 //    benchComputeAllFields();
 
 //    benchComputeAllFieldsEveryCoilType(200003, 8);
@@ -33,7 +33,7 @@ int main()
 
 //    compMInductanceGeneralGraphs();
 
-    benchComputeAllFields();
+//    benchComputeAllFields();
 
 //    compMutualInductanceZAxis();
 

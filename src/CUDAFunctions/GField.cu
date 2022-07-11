@@ -4,6 +4,7 @@
 #include "Timing.h"
 #include "CUDAErrorCheck.h"
 #include "CoilData.h"
+#include "GPUMemoryManagement.h"
 
 #include <cstdio>
 
@@ -260,31 +261,22 @@ void calculateGradientFast(long long numOps, CoilData coil, const DataVector *po
 	
 namespace 
 {
-    long long g_last_num_ops = 0;
-
     DataVector *g_posArr = nullptr;
     DataMatrix *g_resArr = nullptr;
+
+    void getBuffers(long long numOps)
+    {
+        std::vector<void*> buffers = GPUMem::getBuffers(
+            {numOps * (long long)sizeof(DataVector), numOps * (long long)sizeof(DataMatrix)}
+        );
+
+        g_posArr = static_cast<DataVector*>(buffers[0]);
+        g_resArr = static_cast<DataMatrix*>(buffers[1]);
+    }
     
     #if DEBUG_TIMINGS
         double g_duration;
     #endif
-}
-
-void resourceCleanupG()
-{
-    gpuErrchk(cudaFree(g_posArr));
-    gpuErrchk(cudaFree(g_resArr));
-
-    g_posArr = nullptr;
-    g_resArr = nullptr;
-}
-
-void resourceStartupG(long long numOps)
-{
-    resourceCleanupG();
-
-    gpuErrchk(cudaMalloc(&g_posArr, numOps * sizeof(DataVector)));
-    gpuErrchk(cudaMalloc(&g_resArr, numOps * sizeof(DataMatrix)));
 }
 
 
@@ -297,11 +289,8 @@ void Calculate_hardware_accelerated_g(long long numOps, CoilData coil, const Dat
 
     long long blocks = ceil(double(numOps) / NTHREADS);
 
-    if (numOps > g_last_num_ops)
-    {
-        resourceStartupG(numOps);
-        g_last_num_ops = numOps;
-    }
+    getBuffers(numOps);
+
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
         printf("\tResource startup:         %.9g s\n", g_duration);

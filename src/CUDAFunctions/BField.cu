@@ -4,6 +4,7 @@
 #include "Timing.h"
 #include "CUDAErrorCheck.h"
 #include "CoilData.h"
+#include "GPUMemoryManagement.h"
 
 #include <cstdio>
 
@@ -146,33 +147,21 @@ void calculateFieldFast(long long numOps, CoilData coil, const DataVector *posAr
 
 namespace
 {
-    long long g_last_num_ops = 0;
-
     DataVector *g_posArr = nullptr;
     DataVector *g_resArr = nullptr;
+
+    void getBuffers(long long numOps)
+    {
+        std::vector<DataVector*> buffers = GPUMem::getBuffers<DataVector>({numOps, numOps});
+
+        g_posArr = buffers[0];
+        g_resArr = buffers[1];
+    }
 
 #if DEBUG_TIMINGS
     double g_duration;
 #endif
 }
-
-void resourceCleanupB()
-{
-    gpuErrchk(cudaFree(g_posArr));
-    gpuErrchk(cudaFree(g_resArr));
-
-    g_posArr = nullptr;
-    g_resArr = nullptr;
-}
-
-void resourceStartupB(long long numOps)
-{
-    resourceCleanupB();
-
-    gpuErrchk(cudaMalloc(&g_posArr, numOps * sizeof(DataVector)));
-    gpuErrchk(cudaMalloc(&g_resArr, numOps * sizeof(DataVector)));
-}
-
 
 void Calculate_hardware_accelerated_b(long long numOps, CoilData coil,
                                       const DataVector *posArr,
@@ -185,11 +174,8 @@ void Calculate_hardware_accelerated_b(long long numOps, CoilData coil,
 
     long long blocks = ceil(double(numOps) / NTHREADS);
 
-    if (numOps > g_last_num_ops)
-    {
-        resourceStartupB(numOps);
-        g_last_num_ops = numOps;
-    }
+    getBuffers(numOps);
+
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
         printf("\tResource startup:         %.9g s\n", g_duration);

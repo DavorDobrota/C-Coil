@@ -63,9 +63,9 @@ void calculatePotentialSlow(long long numOps, CoilData coil, const DataVector *p
     TYPE yRes = xPot * coil.transformArray[3] + yPot * coil.transformArray[4] + zPot * coil.transformArray[5];
     TYPE zRes = xPot * coil.transformArray[6] + yPot * coil.transformArray[7] + zPot * coil.transformArray[8];
 
-    resArr[global_index].x = xRes;
-    resArr[global_index].y = yRes;
-    resArr[global_index].z = zRes;
+    resArr[global_index].x += xRes;
+    resArr[global_index].y += yRes;
+    resArr[global_index].z += zRes;
 }
 
 __global__
@@ -133,9 +133,9 @@ void calculatePotentialFast(long long numOps, CoilData coil, const DataVector *p
     TYPE yRes = xPot * coil.transformArray[3] + yPot * coil.transformArray[4] + zPot * coil.transformArray[5];
     TYPE zRes = xPot * coil.transformArray[6] + yPot * coil.transformArray[7] + zPot * coil.transformArray[8];
 
-    resArr[global_index].x = xRes;
-    resArr[global_index].y = yRes;
-    resArr[global_index].z = zRes;
+    resArr[global_index].x += xRes;
+    resArr[global_index].y += yRes;
+    resArr[global_index].z += zRes;
 }
 	
 namespace 
@@ -185,6 +185,8 @@ void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
 
         recordStartPoint();
     #endif
+
+    gpuErrchk(cudaMemset(g_resArr, 0, numOps * sizeof(DataVector)));
 
     if (coil.useFastMethod)
         calculatePotentialFast<<<blocks, NTHREADS>>>(numOps, coil, g_posArr, g_resArr);

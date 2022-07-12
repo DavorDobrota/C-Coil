@@ -20,7 +20,7 @@ void generateNewBuffers(std::vector<long long> bufferSizes, long long elementSiz
 
     for(long long i = 0; i < buffers.size(); i++) {
         gpuErrchk(cudaMalloc(&buffers[i].buffer, bufferSizes[i] * elementSize));
-        buffers[i].size = bufferSizes[i];
+        buffers[i].size = bufferSizes[i] * elementSize;
     }
 }
 
@@ -43,7 +43,7 @@ namespace GPUMem
             generateNewBuffers(bufferSizes, elementSize);
         } else {
             for(long long i = 0; i < buffers.size(); i++) {
-                if(buffers[i].size < bufferSizes[i]) {
+                if(buffers[i].size < bufferSizes[i] * elementSize) {
                     generateNewBuffers(bufferSizes, elementSize);
                     break;
                 }

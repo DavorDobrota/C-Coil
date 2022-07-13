@@ -391,10 +391,10 @@ void Calculate_hardware_accelerated_g_group(long long numCoils, long long numOps
 
     for (int i = 0; i < numCoils; ++i)
     {
-        if (g_coilArr[i].useFastMethod)
-            calculateGradientFast<<<blocks, NTHREADS>>>(numOps, g_coilArr[i], g_posArr, g_resArr);
+        if (coilArr[i].useFastMethod)
+            calculateGradientFast<<<blocks, NTHREADS>>>(numOps, coilArr[i], g_posArr, g_resArr);
         else
-            calculateGradientSlow<<<blocks, NTHREADS>>>(numOps, g_coilArr[i], g_posArr, g_resArr);
+            calculateGradientSlow<<<blocks, NTHREADS>>>(numOps, coilArr[i], g_posArr, g_resArr);
 
         gpuErrchk(cudaDeviceSynchronize());
     }

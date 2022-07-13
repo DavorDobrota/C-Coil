@@ -151,19 +151,6 @@ namespace
         g_posArr = buffers[0];
         g_resArr = buffers[1];
     }
-
-    void getBuffersGroup(long long numCoils, long long numOps)
-    {
-        std::vector<void*> buffers = GPUMem::getBuffers(
-                { numCoils * (long long)sizeof(CoilData),
-                  numOps * (long long)sizeof(DataVector),
-                  numOps * (long long)sizeof(DataVector)}
-        );
-
-        g_coilArr = static_cast<CoilData*>(buffers[0]);
-        g_posArr = static_cast<DataVector*>(buffers[1]);
-        g_resArr = static_cast<DataVector*>(buffers[2]);
-    }
     
     #if DEBUG_TIMINGS
         double g_duration;
@@ -250,7 +237,7 @@ void Calculate_hardware_accelerated_a_group(long long numCoils, long long numOps
 
     long long blocks = ceil(double(numOps) / NTHREADS);
 
-    getBuffersGroup(numCoils, numOps);
+    getBuffers(numOps);
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -259,7 +246,6 @@ void Calculate_hardware_accelerated_a_group(long long numCoils, long long numOps
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemcpy(g_coilArr, coilArr, numCoils * sizeof(CoilData), cudaMemcpyHostToDevice));
     gpuErrchk(cudaMemcpy(g_posArr, posArr, numOps * sizeof(DataVector), cudaMemcpyHostToDevice));
 
     #if DEBUG_TIMINGS
@@ -273,10 +259,10 @@ void Calculate_hardware_accelerated_a_group(long long numCoils, long long numOps
 
     for (int i = 0; i < numCoils; ++i)
     {
-        if (g_coilArr[i].useFastMethod)
-            calculatePotentialFast<<<blocks, NTHREADS>>>(numOps, g_coilArr[i], g_posArr, g_resArr);
+        if (coilArr[i].useFastMethod)
+            calculatePotentialFast<<<blocks, NTHREADS>>>(numOps, coilArr[i], g_posArr, g_resArr);
         else
-            calculatePotentialSlow<<<blocks, NTHREADS>>>(numOps, g_coilArr[i], g_posArr, g_resArr);
+            calculatePotentialSlow<<<blocks, NTHREADS>>>(numOps, coilArr[i], g_posArr, g_resArr);
 
         gpuErrchk(cudaDeviceSynchronize());
     }

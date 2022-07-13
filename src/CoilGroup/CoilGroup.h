@@ -62,10 +62,10 @@ class CoilGroup
     private:
         // MTD stands for Multithreading Distributed - useful when there are many coils, each is given its own thread
         [[nodiscard]] std::vector<vec3::FieldVector3>
-        calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
+        calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
 
         [[nodiscard]] std::vector<vec3::FieldVector3>
-        calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
+        calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
 
         [[nodiscard]] std::vector<vec3::FieldVector3>
         calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
@@ -73,11 +73,24 @@ class CoilGroup
         [[nodiscard]] std::vector<vec3::Matrix3>
         calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
 
+        void generateCoilDataArray(CoilData *coilDataArr) const;
+
+        [[nodiscard]] std::vector<vec3::FieldVector3>
+        calculateAllAPotentialComponentsGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
+
+        [[nodiscard]] std::vector<vec3::FieldVector3>
+        calculateAllBFieldComponentsGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
+
+        [[nodiscard]] std::vector<vec3::Matrix3>
+        calculateAllBGradientTensorsGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
+
         [[nodiscard]] double computeMutualInductanceMTD(const Coil &secondary,
                                                         PrecisionFactor precisionFactor = PrecisionFactor()) const;
 
         [[nodiscard]] std::pair<vec3::FieldVector3, vec3::FieldVector3>
         computeAmpereForceMTD(const Coil &secondary, PrecisionFactor precisionFactor = PrecisionFactor()) const;
+
+
 };
 
 #endif //GENERAL_COIL_PROGRAM_COILGROUP_H

@@ -162,8 +162,8 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
 {
     long long size = pointVectors.size();
 
-    DataVector *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
-    DataVector *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    auto *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    auto *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
 
     if(!coordinateArr || !resultArr)
         throw std::bad_alloc();
@@ -190,15 +190,15 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
     #endif // USE_GPU
 
     free(coordinateArr);
-    std::vector<vec3::FieldVector3> computedFieldArr;
-    computedFieldArr.reserve(size);
+    std::vector<vec3::FieldVector3> computedPotentialArr;
+    computedPotentialArr.reserve(size);
 
     for (long long i = 0; i < pointVectors.size(); ++i)
-        computedFieldArr.emplace_back(resultArr[i].x, resultArr[i].y, resultArr[i].z);
+        computedPotentialArr.emplace_back(resultArr[i].x, resultArr[i].y, resultArr[i].z);
 
     free(resultArr);
 
-    return computedFieldArr;
+    return computedPotentialArr;
 }
 #pragma clang diagnostic pop
 
@@ -209,8 +209,8 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<ve
 {
     long long size = pointVectors.size();
 
-    DataVector *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
-    DataVector *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    auto *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    auto *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
 
     if(!coordinateArr || !resultArr)
         throw std::bad_alloc();
@@ -256,8 +256,8 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientGPU(const std::vector<vec3
 {
     long long size = pointVectors.size();
 
-    DataVector *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
-    DataMatrix *resultArr = static_cast<DataMatrix *>(calloc(size, sizeof(DataMatrix)));
+    auto *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    auto *resultArr = static_cast<DataMatrix *>(calloc(size, sizeof(DataMatrix)));
 
     if(!coordinateArr || !resultArr)
         throw std::bad_alloc();
@@ -284,17 +284,17 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientGPU(const std::vector<vec3
     #endif // USE_GPU
 
     free(coordinateArr);
-    std::vector<vec3::Matrix3> computedFieldArr;
-    computedFieldArr.reserve(size);
+    std::vector<vec3::Matrix3> computedGradientArr;
+    computedGradientArr.reserve(size);
 
     for (long long i = 0; i < pointVectors.size(); ++i)
-        computedFieldArr.emplace_back(resultArr[i].xx, resultArr[i].xy, resultArr[i].xz,
-                                      resultArr[i].yx, resultArr[i].yy, resultArr[i].yz,
-                                      resultArr[i].zx, resultArr[i].zy, resultArr[i].zz);
+        computedGradientArr.emplace_back(resultArr[i].xx, resultArr[i].xy, resultArr[i].xz,
+                                         resultArr[i].yx, resultArr[i].yy, resultArr[i].yz,
+                                         resultArr[i].zx, resultArr[i].zy, resultArr[i].zz);
 
     free(resultArr);
 
-    return computedFieldArr;
+    return computedGradientArr;
 }
 #pragma clang diagnostic pop
 

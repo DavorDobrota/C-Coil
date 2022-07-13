@@ -103,7 +103,10 @@ std::vector<vec3::FieldVector3>
 CoilGroup::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
                                     ComputeMethod computeMethod) const
 {
-    if (memberCoils.size() < 4 * threadCount || computeMethod != CPU_MT)
+    if (computeMethod == GPU)
+        return calculateAllBFieldComponentsGPU(pointVectors);
+
+    else if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
     {
         std::vector<vec3::FieldVector3> tempArr(pointVectors.size());
         std::vector<vec3::FieldVector3> outputArr(pointVectors.size());
@@ -124,7 +127,10 @@ std::vector<vec3::FieldVector3>
 CoilGroup::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectors,
                                           ComputeMethod computeMethod) const
 {
-    if (memberCoils.size() < 4 * threadCount || computeMethod != CPU_MT)
+    if (computeMethod == GPU)
+        return calculateAllAPotentialComponentsGPU(pointVectors);
+
+    else if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
     {
         std::vector<vec3::FieldVector3> tempArr(pointVectors.size());
         std::vector<vec3::FieldVector3> outputArr(pointVectors.size());
@@ -145,7 +151,7 @@ std::vector<vec3::FieldVector3>
 CoilGroup::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
                                       ComputeMethod computeMethod) const
 {
-    if (memberCoils.size() < 4 * threadCount || computeMethod != CPU_MT)
+    if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
     {
         std::vector<vec3::FieldVector3> tempArr(pointVectors.size());
         std::vector<vec3::FieldVector3> outputArr(pointVectors.size());
@@ -165,7 +171,10 @@ CoilGroup::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &poi
 std::vector<vec3::Matrix3> CoilGroup::computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &pointVectors,
                                                                  ComputeMethod computeMethod) const
 {
-    if (memberCoils.size() < 4 * threadCount || computeMethod != CPU_MT)
+    if (computeMethod == GPU)
+        return calculateAllBGradientTensorsGPU(pointVectors);
+
+    else if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
     {
         std::vector<vec3::Matrix3> tempArr(pointVectors.size());
         std::vector<vec3::Matrix3> outputArr(pointVectors.size());

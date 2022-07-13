@@ -169,6 +169,10 @@ vec3::CoordVector3 Coil::getPositionVector() const { return positionVector; }
 
 std::pair<double, double> Coil::getRotationAngles() const { return {yAxisAngle, zAxisAngle}; }
 
+vec3::Matrix3 Coil::getTransformationMatrix() const { return transformationMatrix; }
+
+vec3::Matrix3 Coil::getInverseTransformationMatrix() const { return inverseTransformationMatrix; }
+
 
 void Coil::setCurrentDensity(double currentDensity)
 {

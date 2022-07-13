@@ -177,6 +177,9 @@ class Coil
         [[nodiscard]] vec3::CoordVector3 getPositionVector() const;
         [[nodiscard]] std::pair<double, double> getRotationAngles() const;
 
+        [[nodiscard]] vec3::Matrix3 getTransformationMatrix() const;
+        [[nodiscard]] vec3::Matrix3 getInverseTransformationMatrix() const;
+
         void setCurrentDensity(double currentDensity);
         void setCurrent(double current);
         void setWireResistivity(double wireResistivity);

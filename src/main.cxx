@@ -44,10 +44,13 @@ int main()
 
 //    compPrecisionCPUvsGPU();
 
-    compCoilGroupMTD(1, 10000, 16, false);
-    compCoilGroupMTD(10, 10000, 16, false);
-    compCoilGroupMTD(100, 10000, 16, false);
-    compCoilGroupMTD(100, 100000, 16, false);
+    benchCoilGroupMInductanceAndForceMTD(16);
+
+//    compCoilGroupMTD(1, 10000, 16, false);
+//    compCoilGroupMTD(10, 10000, 16, false);
+//    compCoilGroupMTD(100, 10000, 16, false);
+//    compCoilGroupMTD(100, 100000, 16, false);
+//    compCoilGroupMTD(1000, 100000, 16, false);
 
 //    compMInductanceGeneralMisalignedCoils();
 

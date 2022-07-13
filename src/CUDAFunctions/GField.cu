@@ -414,7 +414,7 @@ void Calculate_hardware_accelerated_g_group(long long numCoils, long long numOps
         printf("\tWriting to output array:  %.9g s\n\n", g_duration);
 
         g_duration = getIntervalDuration();
-        printf("\tDevice buffer size:       %.3lf MB\n", (12.0 * double(numOps * sizeof(TYPE) + double(numCoils * sizeof(CoilData))) / 1.0e6));
+        printf("\tDevice buffer size:       %.3lf MB\n", (12.0 * double(numOps * sizeof(TYPE)) / 1.0e6));
         printf("\tTotal blocks:             %lli\n", blocks);
         printf("\tThreads per calculation:  %i\n", NTHREADS);
         printf("\tTotal coils:              %lli\n", numCoils);

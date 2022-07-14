@@ -547,7 +547,7 @@ void Calculate_hardware_accelerated_g_group(long long numCoils, long long numOps
 
     long long blocks = ceil(double(numOps) / NTHREADS);
 
-    getBuffers(numOps);
+    getBuffersGroup(numCoils, numOps);
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -556,8 +556,8 @@ void Calculate_hardware_accelerated_g_group(long long numCoils, long long numOps
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemcpy(g_posArr, posArr, numOps * sizeof(DataVector), cudaMemcpyHostToDevice));
-    gpuErrchk(cudaMemcpy(g_coilArr, coilArr, numCoils * sizeof(CoilData), cudaMemcpyHostToDevice));
+    gpuErrchk(cudaMemcpy(g_coilArr, coilArr, numCoils * sizeof(CoilData), cudaMemcpyHostToDevice))
+    gpuErrchk(cudaMemcpy(g_posArr, posArr, numOps * sizeof(DataVector), cudaMemcpyHostToDevice))
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -566,7 +566,7 @@ void Calculate_hardware_accelerated_g_group(long long numCoils, long long numOps
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemset(g_resArr, 0, numOps * sizeof(DataVector)));
+    gpuErrchk(cudaMemset(g_resArr, 0, numOps * sizeof(DataMatrix)))
 
     for (int i = 0; i < numCoils; ++i)
     {

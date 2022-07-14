@@ -14,7 +14,7 @@
 int main()
 {
 //    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 16, 22);
-    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 26);
+//    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 26);
 //    benchComputeAllFields();
 
 //    benchComputeAllFieldsEveryCoilType(200003, 8);
@@ -46,11 +46,6 @@ int main()
 
 //    benchCoilGroupMInductanceAndForceMTD(16);
 
-//    compCoilGroupMTD(1, 10000, 16, false);
-//    compCoilGroupMTD(10, 10000, 16, false);
-//    compCoilGroupMTD(100, 10000, 16, false);
-//    compCoilGroupMTD(100, 100000, 16, false);
-//    compCoilGroupMTD(1000, 1000000, 16, false);
 
 //    compMInductanceGeneralMisalignedCoils();
 

@@ -42,11 +42,4 @@ void compCoilGroupMTD(int coilCount, int pointCount, int threadCount, bool print
                              computedBField[i].y * computedBField[i].y));
 
     printf("\n");
-    computedBField = torusGroup.computeAllBFieldComponents(fieldPoints, GPU);
-
-    if (print)
-        for (int i = 0; i < pointCount; ++i)
-            printf("%.15g\n",
-                   std::sqrt(computedBField[i].x * computedBField[i].x +
-                             computedBField[i].y * computedBField[i].y));
 }

@@ -71,34 +71,42 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
 }
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
-           PrecisionFactor precisionFactor, int threadCount) :
+           PrecisionFactor precisionFactor, int threadCount, vec3::CoordVector3 coordinatePosition,
+           double yAxisAngle, double zAxisAngle) :
            Coil(innerRadius, thickness, length, numOfTurns, current, g_defaultResistivity, sineFrequency,
-                precisionFactor, threadCount) {}
+                precisionFactor, threadCount, coordinatePosition, yAxisAngle, zAxisAngle) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
-           const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU, int threadCount) :
-        Coil(innerRadius, thickness, length, numOfTurns, current,
-             g_defaultResistivity, sineFrequency, precisionSettingsCPU, precisionSettingsGPU, threadCount) {}
+           const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU, int threadCount,
+           vec3::CoordVector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
+           Coil(innerRadius, thickness, length, numOfTurns, current,
+                g_defaultResistivity, sineFrequency, precisionSettingsCPU, precisionSettingsGPU, threadCount,
+                coordinatePosition, yAxisAngle, zAxisAngle) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-           PrecisionFactor precisionFactor, int threadCount)  :
+           PrecisionFactor precisionFactor, int threadCount, vec3::CoordVector3 coordinatePosition,
+           double yAxisAngle, double zAxisAngle)  :
            Coil(innerRadius, thickness, length, numOfTurns, current, g_defaultResistivity,
                 g_defaultSineFrequency, precisionFactor, threadCount) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-           const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU, int threadCount) :
-        Coil(innerRadius, thickness, length, numOfTurns, current, g_defaultResistivity,
-             g_defaultSineFrequency, precisionSettingsCPU, precisionSettingsGPU, threadCount) {}
+           const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU, int threadCount,
+           vec3::CoordVector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
+           Coil(innerRadius, thickness, length, numOfTurns, current, g_defaultResistivity,
+                g_defaultSineFrequency, precisionSettingsCPU, precisionSettingsGPU, threadCount,
+                coordinatePosition, yAxisAngle, zAxisAngle) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, PrecisionFactor precisionFactor,
-           int threadCount) :
+           int threadCount, vec3::CoordVector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
            Coil(innerRadius, thickness, length, numOfTurns, g_defaultCurrent, g_defaultResistivity,
-                g_defaultSineFrequency, precisionFactor, threadCount){}
+                g_defaultSineFrequency, precisionFactor, threadCount, coordinatePosition, yAxisAngle, zAxisAngle){}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns,
-           const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU, int threadCount) :
-        Coil(innerRadius, thickness, length, numOfTurns, g_defaultCurrent, g_defaultResistivity,
-             g_defaultSineFrequency, precisionSettingsCPU, precisionSettingsGPU, threadCount) {}
+           const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU, int threadCount,
+           vec3::CoordVector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
+           Coil(innerRadius, thickness, length, numOfTurns, g_defaultCurrent, g_defaultResistivity,
+                g_defaultSineFrequency, precisionSettingsCPU, precisionSettingsGPU, threadCount,
+                coordinatePosition, yAxisAngle, zAxisAngle) {}
 
 
 double Coil::getCurrentDensity() const { return currentDensity; }
@@ -492,7 +500,8 @@ Coil::operator std::string() const
         << ", impedance=" << impedance
         << ", use_fast_method=" << useFastMethod
         << ", thread_count=" << threadCount
-        << ", default_precision=" << std::string(defaultPrecisionCPU)
+        << ", default_precision_CPU=" << std::string(defaultPrecisionCPU)
+        << ", default_precision_GPU=" << std::string(defaultPrecisionGPU)
         << ", position_vector=" << std::string(positionVector)
         << ", y_axis_angle=" << yAxisAngle
         << ", z_axis_angle=" << zAxisAngle

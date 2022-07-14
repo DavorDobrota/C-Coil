@@ -128,24 +128,30 @@ class Coil
              const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU,
              int threadCount = defaultThreadCount, vec3::CoordVector3 coordinatePosition = vec3::CoordVector3(),
              double yAxisAngle = 0.0, double zAxisAngle = 0.0);
-
+10
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
-             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount);
+             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount,
+             vec3::CoordVector3 coordinatePosition = vec3::CoordVector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
              const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU,
-             int threadCount = defaultThreadCount);
+             int threadCount = defaultThreadCount, vec3::CoordVector3 coordinatePosition = vec3::CoordVector3(),
+             double yAxisAngle = 0.0, double zAxisAngle = 0.0);
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount);
+             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount,
+             vec3::CoordVector3 coordinatePosition = vec3::CoordVector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
              const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU,
-             int threadCount = defaultThreadCount);
+             int threadCount = defaultThreadCount, vec3::CoordVector3 coordinatePosition = vec3::CoordVector3(),
+             double yAxisAngle = 0.0, double zAxisAngle = 0.0);
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
-             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount);
+             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount,
+             vec3::CoordVector3 coordinatePosition = vec3::CoordVector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
              const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU,
-             int threadCount = defaultThreadCount);
+             int threadCount = defaultThreadCount, vec3::CoordVector3 coordinatePosition = vec3::CoordVector3(),
+             double yAxisAngle = 0.0, double zAxisAngle = 0.0);
 
         [[nodiscard]] unsigned long long getId() const;
         [[nodiscard]] double getInnerRadius() const;

@@ -13,8 +13,8 @@
 #pragma ide diagnostic ignored "Simplify"
 int main()
 {
-//    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 32, 22);
-//    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 25);
+//    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 16, 22);
+    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 25);
 //    benchComputeAllFields();
 
 //    benchComputeAllFieldsEveryCoilType(200003, 8);
@@ -44,13 +44,13 @@ int main()
 
 //    compPrecisionCPUvsGPU();
 
-    benchCoilGroupMInductanceAndForceMTD(16);
+//    benchCoilGroupMInductanceAndForceMTD(16);
 
 //    compCoilGroupMTD(1, 10000, 16, false);
 //    compCoilGroupMTD(10, 10000, 16, false);
 //    compCoilGroupMTD(100, 10000, 16, false);
 //    compCoilGroupMTD(100, 100000, 16, false);
-//    compCoilGroupMTD(1000, 100000, 16, false);
+//    compCoilGroupMTD(1000, 1000000, 16, false);
 
 //    compMInductanceGeneralMisalignedCoils();
 

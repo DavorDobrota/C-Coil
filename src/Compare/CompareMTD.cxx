@@ -40,6 +40,4 @@ void compCoilGroupMTD(int coilCount, int pointCount, int threadCount, bool print
             printf("%.15g\n",
                    std::sqrt(computedBField[i].x * computedBField[i].x +
                              computedBField[i].y * computedBField[i].y));
-
-    printf("\n");
 }

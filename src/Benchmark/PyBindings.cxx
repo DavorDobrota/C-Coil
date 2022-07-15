@@ -62,6 +62,10 @@ void initBenchmark(py::module_ &mainModule)
             py::arg("max_thread_count") = g_defaultThreadCount);
 
     benchmarkModule.def(
+            "bench_coil_group_compute_all_fields", benchCoilGroupComputeAllFields,
+            py::arg("precision_factor") = PrecisionFactor(), py::arg("num_coils") = 50,
+            py::arg("op_count") = 100'000, py::arg("thread_count") = g_defaultThreadCount)
+        .def(
             "bench_coil_group_MT_vs_MTD", benchCoilGroupMTvsMTD,
             py::arg("thread_count") = g_defaultThreadCount, py::arg("point_count") = 20'000)
         .def(

@@ -261,10 +261,8 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
 
     int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements * angularBlocks * angularIncrements;
 
-    double ringIntervalSize = 2 * M_PI;
-
     std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> unitRingValues =
-            calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle, ringIntervalSize);
+            calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle);
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int maxLengthIndex = lengthIncrements - 1;

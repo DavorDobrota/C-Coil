@@ -247,17 +247,12 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
                                               CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
 {
     vec3::FieldVector3 displacementVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
-    vec3::FieldVector3 offsetVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
 
     double xDisplacement = displacementVec.x;
     double yDisplacement = displacementVec.y;
     double zDisplacement = displacementVec.z;
     double alphaAngle = secondary.yAxisAngle;
     double betaAngle = secondary.zAxisAngle;
-
-    vec3::FieldVector3 relativeVec = primary.inverseTransformationMatrix * (displacementVec - offsetVec);
-    double relativeAlpha = primary.yAxisAngle - secondary.yAxisAngle;
-    double relativeBeta = primary.zAxisAngle - secondary.zAxisAngle;
 
     PrecisionArguments primaryPrecisionArguments = inductanceArguments.primaryPrecision;
 
@@ -272,20 +267,8 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
 
     int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements * angularBlocks * angularIncrements;
 
-    // sometimes the function is even so a shortcut can be used to improve performance and efficiency
-    double ringIntervalSize;
-
-    if (relativeVec.x / primary.innerRadius < g_zAxisApproximationRatio &&
-        relativeVec.y / primary.innerRadius < g_zAxisApproximationRatio ||
-        relativeAlpha < g_zAxisApproximationRatio || relativeBeta < g_zAxisApproximationRatio)
-    {
-        ringIntervalSize = M_PI;
-    }
-    else
-        ringIntervalSize = 2 * M_PI;
-
     std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> unitRingValues =
-            calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle, ringIntervalSize);
+            calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle);
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int maxLengthIndex = lengthIncrements - 1;

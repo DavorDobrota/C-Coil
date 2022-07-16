@@ -352,8 +352,7 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, Comput
 
 
 std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
-Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
-                                     double alpha, double beta, double ringIntervalSize)
+Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements, double alpha, double beta)
 {
     int numElements = angularBlocks * angularIncrements;
 
@@ -363,7 +362,7 @@ Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
     vec3::FieldVector3 ringPosition;
     vec3::FieldVector3 ringTangent;
 
-    double angularBlock = ringIntervalSize / angularBlocks;
+    double angularBlock = 2*M_PI / angularBlocks;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     angularBlocks--;
@@ -403,12 +402,12 @@ bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
     vec3::FieldVector3 primPositionVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
     vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
 
-    if (primPositionVec.x / primary.innerRadius < g_zAxisApproximationRatio &&
-        primPositionVec.y / primary.innerRadius < g_zAxisApproximationRatio &&
-        secPositionVec.x / primary.innerRadius < g_zAxisApproximationRatio &&
-        secPositionVec.y / primary.innerRadius < g_zAxisApproximationRatio &&
-        primary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio &&
-        secondary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio)
+    if (std::abs(primPositionVec.x / primary.innerRadius) < g_zAxisApproximationRatio &&
+        std::abs(primPositionVec.y / primary.innerRadius) < g_zAxisApproximationRatio &&
+        std::abs(secPositionVec.x / primary.innerRadius) < g_zAxisApproximationRatio &&
+        std::abs(secPositionVec.y / primary.innerRadius) < g_zAxisApproximationRatio &&
+        std::abs(primary.yAxisAngle / (2 * M_PI)) < g_zAxisApproximationRatio &&
+        std::abs(secondary.yAxisAngle / (2 * M_PI)) < g_zAxisApproximationRatio)
     {
         return true;
     }

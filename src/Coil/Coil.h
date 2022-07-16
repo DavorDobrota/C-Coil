@@ -460,8 +460,7 @@ class Coil
                                                                           const PrecisionArguments &usedPrecision) const;
 
         static std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
-        calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
-                                       double alpha, double beta, double ringIntervalSize);
+        calculateRingIncrementPosition(int angularBlocks, int angularIncrements, double alpha, double beta);
 
         static bool isZAxisCase(const Coil &primary, const Coil &secondary);
 

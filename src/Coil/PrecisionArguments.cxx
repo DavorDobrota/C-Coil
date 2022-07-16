@@ -29,10 +29,10 @@ PrecisionArguments::PrecisionArguments(
     if (angularIncrements > Legendre::maxLegendreOrder || angularIncrements < 1)
         PrecisionArguments::angularIncrementCount = g_defaultLegendreOrder;
 
-    if (thicknessIncrements >= Legendre::maxLegendreOrder || thicknessIncrements < 1)
+    if (thicknessIncrements > Legendre::maxLegendreOrder || thicknessIncrements < 1)
         PrecisionArguments::thicknessIncrementCount = g_defaultLegendreOrder;
 
-    if (lengthIncrements >= Legendre::maxLegendreOrder || lengthIncrements < 1)
+    if (lengthIncrements > Legendre::maxLegendreOrder || lengthIncrements < 1)
         PrecisionArguments::lengthIncrementCount = g_defaultLegendreOrder;
 
 

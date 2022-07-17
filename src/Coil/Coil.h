@@ -10,7 +10,7 @@
 #include <vector>
 #include <string>
 
-#define PRINT_ENABLED 1
+#define PRINT_ENABLED 0
 
 
 const int precisionArraySize = 864;

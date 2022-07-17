@@ -32,6 +32,7 @@ void benchForceGeneralMTScaling(int maxThreadCount = g_defaultThreadCount);
 
 void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor = PrecisionFactor(),
                                     int numCoils = 50, int opCount = 100'000, int threadCount = g_defaultThreadCount);
+void benchCoilGroupComputeAllFieldsGPU(int numCoils = 100, int opCount = 131'072);
 
 void benchCoilGroupMTvsMTD(int threadCount = g_defaultThreadCount, int pointCount = 20'000);
 void benchCoilGroupComputeAllFieldsMTD(int threadCount = g_defaultThreadCount);

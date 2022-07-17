@@ -29,20 +29,12 @@ int CoilGroup::getThreadCount() const { return threadCount; }
 const std::vector<Coil> &CoilGroup::getMemberCoils() const { return memberCoils; }
 
 
-void CoilGroup::setDefaultPrecisionFactor(PrecisionFactor precisionFactor, ComputeMethod computeMethod)
+void CoilGroup::setDefaultPrecisionFactor(PrecisionFactor precisionFactor)
 {
     defaultPrecisionFactor = precisionFactor;
 
-    if (computeMethod == GPU)
-    {
-        for (auto & memberCoil : memberCoils)
-            memberCoil.setDefaultPrecisionCPU(
-                    PrecisionArguments::getCoilPrecisionArgumentsGPU(memberCoil, precisionFactor));
-    }
-    else
-        for (auto & memberCoil : memberCoils)
-            memberCoil.setDefaultPrecisionCPU(
-                    PrecisionArguments::getCoilPrecisionArgumentsCPU(memberCoil, precisionFactor));
+    for (auto & memberCoil : memberCoils)
+        memberCoil.setDefaultPrecision(precisionFactor);
 }
 
 void CoilGroup::setThreadCount(int threadCount)
@@ -392,7 +384,7 @@ double CoilGroup::computeMutualInductance(const Coil &secondary, PrecisionFactor
 {
     double totalMutualInductance = 0.0;
 
-    if (memberCoils.size() < 4 * threadCount || computeMethod != CPU_MT)
+    if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
     {
         for (const auto &memberCoil: memberCoils) {
             if (memberCoil.getId() != secondary.getId())
@@ -411,7 +403,7 @@ CoilGroup::computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFa
     vec3::FieldVector3 totalTorque{};
     std::pair<vec3::FieldVector3, vec3::FieldVector3> tempPair;
 
-    if (memberCoils.size() < 4 * threadCount || computeMethod != CPU_MT)
+    if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
     {
         for (const auto &memberCoil: memberCoils) {
             if (memberCoil.getId() != secondary.getId()) {

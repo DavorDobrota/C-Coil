@@ -21,7 +21,7 @@ class CoilGroup
         [[nodiscard]] int getThreadCount() const;
         [[nodiscard]] const std::vector<Coil> &getMemberCoils() const;
 
-        void setDefaultPrecisionFactor(PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod computeMethod = CPU_ST);
+        void setDefaultPrecisionFactor(PrecisionFactor precisionFactor = PrecisionFactor());
         void setThreadCount(int threadCount);
         void addCoil(Coil coil);
 

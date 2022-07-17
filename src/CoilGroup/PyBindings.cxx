@@ -31,8 +31,7 @@ void initCoilGroup(py::module_ &mainModule)
 
     coilGroup.def(
             "set_default_precision_factor", &CoilGroup::setDefaultPrecisionFactor,
-            py::arg("precision_factor") = PrecisionFactor(),
-            py::arg("compute_method") = CPU_ST)
+            py::arg("precision_factor") = PrecisionFactor())
         .def("set_thread_count", &CoilGroup::setThreadCount, py::arg("thread_count"))
         .def("add_coil", &CoilGroup::addCoil, py::arg("coil"));
 

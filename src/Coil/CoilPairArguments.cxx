@@ -143,7 +143,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsCPU(const Coil &p
         primLinearStep = std::max(primLengthStep, primThicknessStep);
         secLinearStep = std::max(secLengthStep, secThicknessStep);
 
-        if (primAngularStep + primLinearStep >= secAngularStep + secLinearStep)
+        if (std::max(primAngularStep, primLinearStep) >= std::max(secAngularStep, secLinearStep))
         {
             if (primAngularStep >= primLinearStep)
                 primAngularArrayIndex++;
@@ -235,7 +235,10 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
     else if (secondary.getCoilType() == CoilType::FILAMENT || secondary.getCoilType() == CoilType::FLAT)
         totalIncrements *= g_baseLayerIncrementsCPU;
 
-    switch (primary.getCoilType())
+    CoilType primType = primary.getCoilType();
+    CoilType secType = secondary.getCoilType();
+
+    switch (primType)
     {
         case CoilType::RECTANGULAR:
         {
@@ -266,7 +269,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
     }
     primAngularIncrements = g_minPrimAngularIncrements - 1;
 
-    switch (secondary.getCoilType())
+    switch (secType)
     {
         case CoilType::RECTANGULAR:
         {
@@ -303,6 +306,8 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
     double primAngularStep, primLengthStep, primThicknessStep, primLinearStep;
     double secAngularStep, secLengthStep, secThicknessStep, secLinearStep;
 
+    bool exitLoop = false;
+
     do
     {
         primLengthStep = g_primLinearWeightModifier * primLengthRoot / primLengthIncrements;
@@ -329,7 +334,7 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
         primLinearStep = std::max(primLengthStep, primThicknessStep);
         secLinearStep = std::max(secLengthStep, secThicknessStep);
 
-        if (primAngularStep + primLinearStep >= secAngularStep + secLinearStep)
+        if (std::max(primAngularStep, primLinearStep) >= std::max(secAngularStep, secLinearStep))
         {
             if (primAngularStep >= primLinearStep)
                 primAngularIncrements++;
@@ -362,9 +367,43 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPU(const Coil &p
         if (!zAxisCase)
             currentIncrements *= blockPrecisionCPUArray[secAngularArrayIndex] * incrementPrecisionCPUArray[secAngularArrayIndex] *
                                  blockPrecisionCPUArray[secLengthArrayIndex] * incrementPrecisionCPUArray[secLengthArrayIndex];
+        else
+        {
+            if ((secType == CoilType::THIN || secType == CoilType::FILAMENT))
+            {
+                switch (primType) {
+                    case CoilType::RECTANGULAR:
+                    {
+                        if (primAngularIncrements >= GPU_INCREMENTS && primThicknessIncrements >= GPU_INCREMENTS)
+                            exitLoop = true;
+                        break;
+                    }
+                    case CoilType::THIN:
+                    {
+                        if (primAngularIncrements >= GPU_INCREMENTS)
+                            exitLoop = true;
+                        break;
+                    }
+                    case CoilType::FLAT:
+                    {
+                        if (primAngularIncrements >= GPU_INCREMENTS && primThicknessIncrements >= GPU_INCREMENTS)
+                            exitLoop = true;
+                        break;
+                    }
+                    case CoilType::FILAMENT:
+                    {
+                        if (primAngularIncrements >= GPU_INCREMENTS)
+                            exitLoop = true;
+                        break;
+                    }
+                }
+            }
+        }
 
+        if (currentIncrements > totalIncrements)
+            exitLoop = true;
     }
-    while (currentIncrements < totalIncrements);
+    while (!exitLoop);
 
     auto primaryPrecision = PrecisionArguments(1,
                                                1,

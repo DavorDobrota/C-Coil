@@ -10,7 +10,7 @@
 #include <vector>
 #include <string>
 
-#define PRINT_ENABLED 0
+#define PRINT_ENABLED 1
 
 
 const int precisionArraySize = 864;
@@ -66,7 +66,7 @@ struct CoilPairArguments
 
     static CoilPairArguments getAppropriateCoilPairArguments(const Coil &primary, const Coil &secondary,
                                                              PrecisionFactor precisionFactor,
-                                                             ComputeMethod computeMethod = CPU_ST, bool zAxisCase = true);
+                                                             ComputeMethod computeMethod = CPU_ST, bool zAxisCase = false);
 
     explicit operator std::string() const;
 

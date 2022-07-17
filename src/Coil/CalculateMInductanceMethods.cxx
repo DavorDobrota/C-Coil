@@ -79,7 +79,7 @@ double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil 
 double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                 CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
 {
-
+    printf("1\n");
     double mutualInductance = 0.0;
 
     double thicknessBlock = primary.thickness / inductanceArguments.primaryPrecision.thicknessBlockCount;

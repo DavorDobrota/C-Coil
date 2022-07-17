@@ -54,29 +54,41 @@ void testMutualInductanceGeneralForZAxis(ComputeMethod computeMethod, int thread
 void testMInductanceGeneralArgumentGeneration()
 {
     Coil coil1 = Coil(0.05, 0.1, 0.1, 100);
-    Coil coil2 = Coil(0.05, 0.1, 0.0, 10);
-    Coil coil3 = Coil(0.05, 0.0, 0.1, 10);
-    Coil coil4 = Coil(0.05, 0.0, 0.0, 1);
+    Coil coil2 = Coil(0.05, 0.1, 0.1, 100);
+    Coil coil3 = Coil(0.05, 0.1, 0.0, 10);
+    Coil coil4 = Coil(0.05, 0.0, 0.1, 10);
+    Coil coil5 = Coil(0.05, 0.0, 0.0, 1);
+
+    vec3::CoordVector3 defaultVec = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.2);
+
+    coil2.setPositionAndOrientation(defaultVec);
+    coil3.setPositionAndOrientation(defaultVec);
+    coil4.setPositionAndOrientation(defaultVec);
+    coil5.setPositionAndOrientation(defaultVec);
 
     CoilPairArguments args;
 
+    printf("Testing mutual inductance general argument generation\n\n");
+
     printf("CPU general\n");
-    for (double i = 1.0; i <= 8.0; i += 1.0)
+    for (double i = 1.0; i <= 9.0; i += 1.0)
     {
         printf("precision = %.1f\n", i);
         args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil2, PrecisionFactor(i));
         args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil3, PrecisionFactor(i));
         args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil4, PrecisionFactor(i));
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil5, PrecisionFactor(i));
         printf("\n");
     }
 
     printf("GPU general\n");
-    for (double i = 1.0; i <= 8.0; i += 1.0)
+    for (double i = 1.0; i <= 9.0; i += 1.0)
     {
         printf("precision = %.1f\n", i);
         args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil2, PrecisionFactor(i), GPU);
         args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil3, PrecisionFactor(i), GPU);
         args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil4, PrecisionFactor(i), GPU);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil5, PrecisionFactor(i), GPU);
         printf("\n");
     }
 }

@@ -8,6 +8,7 @@ from pybind11.setup_helpers import Pybind11Extension
 
 
 use_GPU = int(os.environ.get("USE_GPU", 0))
+GPU_increments = int(os.environ.get("GPU_INCREMENTS", 100))
 
 if os.name == "nt":
     os.environ["CL"] = "/std:c++17 /O2 /arch:AVX2 /fp:fast"
@@ -16,10 +17,13 @@ else:
 
 macros = []
 
+if GPU_increments < 1 or GPU_increments > 100:
+    raise ValueError("GPU_INCREMENTS must be set to an integer in the range [1, 100]!")
+
 if os.name == "nt":
-    os.environ["CL"] += f" /DUSE_GPU#{use_GPU}"
+    os.environ["CL"] += f" /DUSE_GPU#{use_GPU} /DGPU_INCREMENTS#{GPU_increments}"
 else:
-    macros += [("USE_GPU", use_GPU)]
+    macros += [("USE_GPU", use_GPU), ("GPU_INCREMENTS", GPU_increments)]
 
 if use_GPU:
     cuda_compile_args = ["--use_fast_math", "-O3"]

@@ -2,7 +2,6 @@
 #define GENERAL_COIL_PROGRAM_COILDATA_H
 
 #define TYPE float
-#define GPU_INCREMENTS 100
 
 
 struct CoilData

@@ -41,15 +41,54 @@ void initCoilGroup(py::module_ &mainModule)
         .def("compute_B_gradient_tensor", &CoilGroup::computeBGradientTensor, py::arg("point_vector"));
 
     coilGroup.def(
-            "compute_all_B_field_components", &CoilGroup::computeAllBFieldComponents,
-            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-        .def(
             "compute_all_A_potential_components", &CoilGroup::computeAllAPotentialComponents,
             py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
         .def(
+            "compute_all_A_potential_x", &CoilGroup::computeAllAPotentialX,
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
+        .def(
+            "compute_all_A_potential_y", &CoilGroup::computeAllAPotentialY,
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
+        .def(
+            "compute_all_A_potential_z", &CoilGroup::computeAllAPotentialZ,
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
+        .def(
+            "compute_all_A_potential_abs", &CoilGroup::computeAllAPotentialAbs,
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST);
+
+    coilGroup.def(
+            "compute_all_B_field_components", &CoilGroup::computeAllBFieldComponents,
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
+        .def(
+            "compute_all_B_field_x", &CoilGroup::computeAllBFieldX,
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
+        .def(
+            "compute_all_B_field_y", &CoilGroup::computeAllBFieldY,
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
+        .def(
+            "compute_all_B_field_z", &CoilGroup::computeAllBFieldZ,
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
+        .def(
+            "compute_all_B_field_abs", &CoilGroup::computeAllBFieldAbs,
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST);
+
+    coilGroup.def(
             "compute_all_E_field_components", &CoilGroup::computeAllEFieldComponents,
             py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
         .def(
+            "compute_all_E_field_x", &CoilGroup::computeAllEFieldX,
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
+        .def(
+            "compute_all_E_field_y", &CoilGroup::computeAllEFieldY,
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
+        .def(
+            "compute_all_E_field_z", &CoilGroup::computeAllEFieldZ,
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
+        .def(
+            "compute_all_E_field_abs", &CoilGroup::computeAllEFieldAbs,
+            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST);
+
+    coilGroup.def(
             "compute_all_B_gradient_tensors", &CoilGroup::computeAllBGradientTensors,
             py::arg("point_vectors"), py::arg("compute_method") = CPU_ST);
 

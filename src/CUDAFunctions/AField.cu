@@ -55,9 +55,9 @@ void calculatePotentialSlow(long long numOps, CoilData coil, const DataVector *p
         }
     }
 
-    TYPE xPot = (-1.f) * sin(phiCord) * potential;
+    TYPE xPot = (-1.0f) * sin(phiCord) * potential;
     TYPE yPot = potential * cos(phiCord);
-    TYPE zPot = 0.f;
+    TYPE zPot = 0.0f;
 
     TYPE xRes = xPot * coil.transformArray[0] + yPot * coil.transformArray[1] + zPot * coil.transformArray[2];
     TYPE yRes = xPot * coil.transformArray[3] + yPot * coil.transformArray[4] + zPot * coil.transformArray[5];
@@ -103,19 +103,19 @@ void calculatePotentialFast(long long numOps, CoilData coil, const DataVector *p
         TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.thicknessPositionArray[incT]);
 
         TYPE tempConstA = incrementPositionT * incrementPositionT + rCoord * rCoord;
-        TYPE tempConstB = 2.0f * incrementPositionT * rCoord;
+        TYPE tempConstB = (-2.0f) * incrementPositionT * rCoord;
 
         for (int incF = 0; incF < coil.angularIncrements; ++incF)
         {
             TYPE cosinePhi = coil.cosPrecomputeArray[incF];
 
-            TYPE tempConstC = rsqrt(tempConstA - tempConstB * cosinePhi);
+            TYPE tempConstC = rsqrt(fma(tempConstB, cosinePhi, tempConstA));
 
             TYPE tempConstD1 = topEdge * tempConstC;
             TYPE tempConstD2 = bottomEdge * tempConstC;
 
-            TYPE tempConstE1 = sqrt(tempConstD1 * tempConstD1 + 1.0f);
-            TYPE tempConstE2 = sqrt(tempConstD2 * tempConstD2 + 1.0f);
+            TYPE tempConstE1 = sqrt(fma(tempConstD1, tempConstD1, 1.0f));
+            TYPE tempConstE2 = sqrt(fma(tempConstD2, tempConstD2, 1.0f));
 
             TYPE tempConstF = log((tempConstE1 + tempConstD1) / (tempConstE2 + tempConstD2));
 
@@ -125,9 +125,9 @@ void calculatePotentialFast(long long numOps, CoilData coil, const DataVector *p
         }
     }
 
-    TYPE xPot = (-1.f) * sin(phiCord) * potential;
+    TYPE xPot = (-1.0f) * sin(phiCord) * potential;
     TYPE yPot = potential * cos(phiCord);
-    TYPE zPot = 0.f;
+    TYPE zPot = 0.0f;
 
     TYPE xRes = xPot * coil.transformArray[0] + yPot * coil.transformArray[1] + zPot * coil.transformArray[2];
     TYPE yRes = xPot * coil.transformArray[3] + yPot * coil.transformArray[4] + zPot * coil.transformArray[5];
@@ -225,9 +225,9 @@ void calculatePotentialGroup(long long numOps, long long coilIndex,
         }
     }
 
-    TYPE xPot = (-1.f) * sin(phiCord) * potential;
+    TYPE xPot = (-1.0f) * sin(phiCord) * potential;
     TYPE yPot = potential * cos(phiCord);
-    TYPE zPot = 0.f;
+    TYPE zPot = 0.0f;
 
     TYPE xRes = xPot * coil.transformArray[0] + yPot * coil.transformArray[1] + zPot * coil.transformArray[2];
     TYPE yRes = xPot * coil.transformArray[3] + yPot * coil.transformArray[4] + zPot * coil.transformArray[5];

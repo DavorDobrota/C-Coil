@@ -108,7 +108,7 @@ void calculateFieldFast(long long numOps, CoilData coil, const DataVector *posAr
         TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.thicknessPositionArray[incT]);
 
         TYPE tempConstA = incrementPositionT * incrementPositionT;
-        TYPE tempConstB = 2.0f * incrementPositionT * rCoord;
+        TYPE tempConstB = (-2.0f) * incrementPositionT * rCoord;
         TYPE tempConstC = tempConstA + rCoord * rCoord;
 
         TYPE tempConstD1 = topEdge * topEdge + tempConstC;
@@ -120,14 +120,14 @@ void calculateFieldFast(long long numOps, CoilData coil, const DataVector *posAr
 
             TYPE tempConstE = tempConstB * cosinePhi;
 
-            TYPE tempConstF1 = rsqrt(tempConstD1 - tempConstE);
-            TYPE tempConstF2 = rsqrt(tempConstD2 - tempConstE);
+            TYPE tempConstF1 = rsqrt(tempConstD1 + tempConstE);
+            TYPE tempConstF2 = rsqrt(tempConstD2 + tempConstE);
 
             TYPE tempConstG = coil.constFactor * coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF];
 
             fieldH += tempConstG * incrementPositionT * cosinePhi * (tempConstF2 - tempConstF1);
             fieldZ += tempConstG *
-                    ((tempConstA - 0.5f * tempConstE) / (tempConstC - tempConstE)) *
+                    ((fma(0.5f, tempConstE, tempConstA)) / (tempConstC + tempConstE)) *
                     (topEdge * tempConstF1 - bottomEdge * tempConstF2);
         }
     }

@@ -96,12 +96,12 @@ void calculateGradientSlow(long long numOps, CoilData coil, const DataVector *po
         yyGrad = bufferValueRR;
         zzGrad = bufferValueZZ;
 
-        xyGrad = 0.f;
-        xzGrad = 0.f;
-        yxGrad = 0.f;
-        yzGrad = 0.f;
-        zxGrad = 0.f;
-        zyGrad = 0.f;
+        xyGrad = 0.0f;
+        xzGrad = 0.0f;
+        yxGrad = 0.0f;
+        yzGrad = 0.0f;
+        zxGrad = 0.0f;
+        zyGrad = 0.0f;
     }
 
     TYPE xxRes = coil.transformArray[0] * xxGrad + coil.transformArray[1] * yxGrad + coil.transformArray[2] * zxGrad;
@@ -230,12 +230,12 @@ void calculateGradientFast(long long numOps, CoilData coil, const DataVector *po
         yyGrad = bufferValueRR;
         zzGrad = bufferValueZZ;
 
-        xyGrad = 0.f;
-        xzGrad = 0.f;
-        yxGrad = 0.f;
-        yzGrad = 0.f;
-        zxGrad = 0.f;
-        zyGrad = 0.f;
+        xyGrad = 0.0f;
+        xzGrad = 0.0f;
+        yxGrad = 0.0f;
+        yzGrad = 0.0f;
+        zxGrad = 0.0f;
+        zyGrad = 0.0f;
     }
 
     TYPE xxRes = coil.transformArray[0] * xxGrad + coil.transformArray[1] * yxGrad + coil.transformArray[2] * zxGrad;
@@ -407,12 +407,12 @@ void calculateGradientGroup(long long numOps, long long coilIndex,
         yyGrad = bufferValueRR;
         zzGrad = bufferValueZZ;
 
-        xyGrad = 0.f;
-        xzGrad = 0.f;
-        yxGrad = 0.f;
-        yzGrad = 0.f;
-        zxGrad = 0.f;
-        zyGrad = 0.f;
+        xyGrad = 0.0f;
+        xzGrad = 0.0f;
+        yxGrad = 0.0f;
+        yzGrad = 0.0f;
+        zxGrad = 0.0f;
+        zyGrad = 0.0f;
     }
 
     TYPE xxRes = coil.transformArray[0] * xxGrad + coil.transformArray[1] * yxGrad + coil.transformArray[2] * zxGrad;

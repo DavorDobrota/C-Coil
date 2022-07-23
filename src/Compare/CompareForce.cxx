@@ -43,7 +43,7 @@ void compAmpereForceThickCoilsGeneral()
            Coil::computeMutualInductance(coil1, coil3) * coil1.getCurrent() * coil3.getCurrent()
            ));
 
-    std::pair<vec3::FieldVector3, vec3::FieldVector3> forcePair;
+    std::pair<vec3::Vector3, vec3::Vector3> forcePair;
     auto precision = PrecisionFactor(8.0);
 
     printf("Force and Torque in displacement\n");
@@ -102,7 +102,7 @@ void compAmpereForceThickCoilsGeneral()
 void compAmpereForceThinCoilsZAxis()
 {
     ComputeMethod computeMethod = CPU_ST;
-    std::pair<vec3::FieldVector3, vec3::FieldVector3> tempForce;
+    std::pair<vec3::Vector3, vec3::Vector3> tempForce;
 
     Coil coil1 = Coil(0.5, 0.0, 0.3, 200);
     Coil coil2 = Coil(0.5, 0.0, 0.2, 100);
@@ -177,7 +177,7 @@ void compAmpereForceThinCoilsZAxis()
 
 void compAmpereForceFilamentsGeneral()
 {
-    std::pair<vec3::FieldVector3, vec3::FieldVector3> tempForce;
+    std::pair<vec3::Vector3, vec3::Vector3> tempForce;
     double a, b, c;
     printf("Singular cases (different precisions):\n\n");
 

@@ -4,9 +4,9 @@
 #include <math.h>
 
 
-std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                                 const PrecisionArguments &usedPrecision,
-                                                                 ComputeMethod computeMethod) const
+std::vector<vec3::Vector3> Coil::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                            const PrecisionArguments &usedPrecision,
+                                                            ComputeMethod computeMethod) const
 {
     if (computeMethod == CPU_MT) {
 
@@ -18,7 +18,7 @@ std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vect
     }
     else
     {
-        std::vector<vec3::FieldVector3> computedFieldArr(pointVectors.size());
+        std::vector<vec3::Vector3> computedFieldArr(pointVectors.size());
 
         for (int i = 0; i < pointVectors.size(); ++i)
             computedFieldArr[i] = computeBFieldVector(pointVectors[i], usedPrecision);
@@ -27,8 +27,8 @@ std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vect
     }
 }
 
-std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                                 ComputeMethod computeMethod) const
+std::vector<vec3::Vector3> Coil::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                            ComputeMethod computeMethod) const
 {
     if (computeMethod == GPU)
         return computeAllBFieldComponents(pointVectors, defaultPrecisionGPU, computeMethod);
@@ -39,7 +39,7 @@ std::vector<vec3::FieldVector3> Coil::computeAllBFieldComponents(const std::vect
 std::vector<double>Coil::computeAllBFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectors, usedPrecision, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllBFieldComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -60,7 +60,7 @@ std::vector<double> Coil::computeAllBFieldX(const std::vector<vec3::CoordVector3
 std::vector<double>Coil::computeAllBFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectors, usedPrecision, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllBFieldComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -81,7 +81,7 @@ std::vector<double> Coil::computeAllBFieldY(const std::vector<vec3::CoordVector3
 std::vector<double>Coil::computeAllBFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
                                            const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectors, usedPrecision, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllBFieldComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -102,7 +102,7 @@ std::vector<double> Coil::computeAllBFieldZ(const std::vector<vec3::CoordVector3
 std::vector<double>Coil::computeAllBFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
                                              const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectors, usedPrecision, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllBFieldComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -123,9 +123,9 @@ std::vector<double> Coil::computeAllBFieldAbs(const std::vector<vec3::CoordVecto
 }
 
 
-std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                                     const PrecisionArguments &usedPrecision,
-                                                                     ComputeMethod computeMethod) const
+std::vector<vec3::Vector3> Coil::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                const PrecisionArguments &usedPrecision,
+                                                                ComputeMethod computeMethod) const
 {
     if (computeMethod == CPU_MT)
     {
@@ -137,7 +137,7 @@ std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::
     }
     else
     {
-        std::vector<vec3::FieldVector3> computedPotentialArr(pointVectors.size());
+        std::vector<vec3::Vector3> computedPotentialArr(pointVectors.size());
 
         for (int i = 0; i < pointVectors.size(); ++i)
             computedPotentialArr[i] = computeAPotentialVector(pointVectors[i], usedPrecision);
@@ -146,8 +146,8 @@ std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::
     }
 }
 
-std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                                     ComputeMethod computeMethod) const
+std::vector<vec3::Vector3> Coil::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                ComputeMethod computeMethod) const
 {
     if (computeMethod == GPU)
         return computeAllAPotentialComponents(pointVectors, defaultPrecisionGPU, computeMethod);
@@ -158,7 +158,7 @@ std::vector<vec3::FieldVector3> Coil::computeAllAPotentialComponents(const std::
 std::vector<double> Coil::computeAllAPotentialX(const std::vector<vec3::CoordVector3> &pointVectors,
                                                 const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -179,7 +179,7 @@ std::vector<double> Coil::computeAllAPotentialX(const std::vector<vec3::CoordVec
 std::vector<double> Coil::computeAllAPotentialY(const std::vector<vec3::CoordVector3> &pointVectors,
                                                 const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -200,7 +200,7 @@ std::vector<double> Coil::computeAllAPotentialY(const std::vector<vec3::CoordVec
 std::vector<double> Coil::computeAllAPotentialZ(const std::vector<vec3::CoordVector3> &pointVectors,
                                                 const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -221,7 +221,7 @@ std::vector<double> Coil::computeAllAPotentialZ(const std::vector<vec3::CoordVec
 std::vector<double> Coil::computeAllAPotentialAbs(const std::vector<vec3::CoordVector3> &pointVectors,
                                                   const PrecisionArguments &usedPrecision, ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -242,11 +242,11 @@ std::vector<double> Coil::computeAllAPotentialAbs(const std::vector<vec3::CoordV
 }
 
 
-std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                                 const PrecisionArguments &usedPrecision,
-                                                                 ComputeMethod computeMethod) const
+std::vector<vec3::Vector3> Coil::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                            const PrecisionArguments &usedPrecision,
+                                                            ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> output = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
+    std::vector<vec3::Vector3> output = computeAllAPotentialComponents(pointVectors, usedPrecision, computeMethod);
     double frequencyFactor = 2 * M_PI * sineFrequency;
 
     for (auto & i : output)
@@ -255,8 +255,8 @@ std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vect
     return output;
 }
 
-std::vector<vec3::FieldVector3> Coil::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                                 ComputeMethod computeMethod) const
+std::vector<vec3::Vector3> Coil::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                            ComputeMethod computeMethod) const
 {
     if (computeMethod == GPU)
         return computeAllEFieldComponents(pointVectors, defaultPrecisionGPU, computeMethod);

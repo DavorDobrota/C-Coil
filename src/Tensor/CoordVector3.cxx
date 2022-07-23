@@ -202,14 +202,14 @@ void vec3::CoordVector3::convertSphericalToCylindrical()
     coordinateSystem = CYLINDRICAL;
 }
 
-vec3::FieldVector3 vec3::CoordVector3::convertToFieldVector(const CoordVector3 &vector)
+vec3::Vector3 vec3::CoordVector3::convertToFieldVector(const CoordVector3 &vector)
 {
     CoordVector3 vectorCopy = vector;
     vectorCopy.convertToCartesian();
-    return vec3::FieldVector3(vectorCopy.comp1, vectorCopy.comp2, vectorCopy.comp3);
+    return vec3::Vector3(vectorCopy.comp1, vectorCopy.comp2, vectorCopy.comp3);
 }
 
-vec3::CoordVector3 vec3::CoordVector3::convertToCoordVector(const FieldVector3 &vector)
+vec3::CoordVector3 vec3::CoordVector3::convertToCoordVector(const Vector3 &vector)
 {
     return vec3::CoordVector3(CARTESIAN, vector.x, vector.y, vector.z);
 }

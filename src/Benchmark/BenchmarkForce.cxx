@@ -46,7 +46,7 @@ void benchForceGeneral(ComputeMethod computeMethod, int threadCount)
     secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.2));
 
     int opCount = 1024;
-    std::pair<vec3::FieldVector3, vec3::FieldVector3> temp;
+    std::pair<vec3::Vector3, vec3::Vector3> temp;
 
     printf("Expected execution time for one Ampere force general case calculation of specified precision\n");
 

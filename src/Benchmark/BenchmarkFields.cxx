@@ -11,7 +11,7 @@ void benchComputeFieldsST(int opCount)
     using namespace std::chrono;
 
     double temp1;
-    vec3::FieldVector3 temp2;
+    vec3::Vector3 temp2;
     vec3::Matrix3 temp3;
 
     high_resolution_clock::time_point begin_time;
@@ -87,8 +87,8 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
     std::vector<double> cpuPotential;
     std::vector<double> gpuPotential;
 
-    std::vector<vec3::FieldVector3> cpuFieldVectors;
-    std::vector<vec3::FieldVector3> gpuFieldVectors;
+    std::vector<vec3::Vector3> cpuFieldVectors;
+    std::vector<vec3::Vector3> gpuFieldVectors;
 
     std::vector<vec3::Matrix3> cpuGradientMatrices;
     std::vector<vec3::Matrix3> gpuGradientMatrices;
@@ -280,8 +280,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     for (int i = 0; i < opCount; ++i)
         positionValues[i] = vec3::CoordVector3(vec3::SPHERICAL, 1.0, M_PI * i / opCount, 0.0);
 
-    std::vector<vec3::FieldVector3> potentialArr;
-    std::vector<vec3::FieldVector3> fieldArr;
+    std::vector<vec3::Vector3> potentialArr;
+    std::vector<vec3::Vector3> fieldArr;
     std::vector<vec3::Matrix3> gradientArr;
 
     printf("This test is created for the purpose of generating performance charts\n\n");
@@ -862,8 +862,8 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
 
     std::vector<vec3::CoordVector3> positions;
 
-    std::vector<vec3::FieldVector3> potentialArr;
-    std::vector<vec3::FieldVector3> fieldArr;
+    std::vector<vec3::Vector3> potentialArr;
+    std::vector<vec3::Vector3> fieldArr;
     std::vector<vec3::Matrix3> gradientArr;
 
     printf("Vector potential performance slow for precision factor %.1f and %d threads\n",
@@ -1044,8 +1044,8 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
 
     std::vector<vec3::CoordVector3> positions;
 
-    std::vector<vec3::FieldVector3> potentialArr;
-    std::vector<vec3::FieldVector3> fieldArr;
+    std::vector<vec3::Vector3> potentialArr;
+    std::vector<vec3::Vector3> fieldArr;
     std::vector<vec3::Matrix3> gradientArr;
 
     printf("Vector potential performance slow for precision factor %.1f\n",

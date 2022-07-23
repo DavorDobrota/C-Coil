@@ -50,9 +50,9 @@ void CoilGroup::addCoil(Coil coil)
 }
 
 
-vec3::FieldVector3 CoilGroup::computeAPotentialVector(vec3::CoordVector3 pointVector) const
+vec3::Vector3 CoilGroup::computeAPotentialVector(vec3::CoordVector3 pointVector) const
 {
-    vec3::FieldVector3 totalField = vec3::FieldVector3();
+    vec3::Vector3 totalField = vec3::Vector3();
 
     for (const auto & memberCoil : memberCoils)
         totalField += memberCoil.computeAPotentialVector(pointVector);
@@ -60,9 +60,9 @@ vec3::FieldVector3 CoilGroup::computeAPotentialVector(vec3::CoordVector3 pointVe
     return totalField;
 }
 
-vec3::FieldVector3 CoilGroup::computeBFieldVector(vec3::CoordVector3 pointVector) const
+vec3::Vector3 CoilGroup::computeBFieldVector(vec3::CoordVector3 pointVector) const
 {
-    vec3::FieldVector3 totalField = vec3::FieldVector3();
+    vec3::Vector3 totalField = vec3::Vector3();
 
     for (const auto & memberCoil : memberCoils)
         totalField += memberCoil.computeBFieldVector(pointVector);
@@ -70,9 +70,9 @@ vec3::FieldVector3 CoilGroup::computeBFieldVector(vec3::CoordVector3 pointVector
     return totalField;
 }
 
-vec3::FieldVector3 CoilGroup::computeEFieldVector(vec3::CoordVector3 pointVector) const
+vec3::Vector3 CoilGroup::computeEFieldVector(vec3::CoordVector3 pointVector) const
 {
-    vec3::FieldVector3 totalField = vec3::FieldVector3();
+    vec3::Vector3 totalField = vec3::Vector3();
 
     for (const auto & memberCoil : memberCoils)
         totalField += memberCoil.computeEFieldVector(pointVector);
@@ -107,12 +107,12 @@ double CoilGroup::computeMutualInductance(const Coil &secondary, PrecisionFactor
         return calculateMutualInductanceMTD(secondary, precisionFactor);
 }
 
-std::pair<vec3::FieldVector3, vec3::FieldVector3>
+std::pair<vec3::Vector3, vec3::Vector3>
 CoilGroup::computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod computeMethod) const
 {
-    vec3::FieldVector3 totalForce{};
-    vec3::FieldVector3 totalTorque{};
-    std::pair<vec3::FieldVector3, vec3::FieldVector3> tempPair;
+    vec3::Vector3 totalForce{};
+    vec3::Vector3 totalTorque{};
+    std::pair<vec3::Vector3, vec3::Vector3> tempPair;
 
     if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
     {
@@ -130,12 +130,12 @@ CoilGroup::computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFa
 }
 
 
-std::pair<vec3::FieldVector3, vec3::FieldVector3>
-CoilGroup::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::FieldVector3 dipoleMoment) const
+std::pair<vec3::Vector3, vec3::Vector3>
+CoilGroup::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::Vector3 dipoleMoment) const
 {
-    vec3::FieldVector3 totalForce = vec3::FieldVector3();
-    vec3::FieldVector3 totalTorque = vec3::FieldVector3();
-    std::pair<vec3::FieldVector3, vec3::FieldVector3> tempPair;
+    vec3::Vector3 totalForce = vec3::Vector3();
+    vec3::Vector3 totalTorque = vec3::Vector3();
+    std::pair<vec3::Vector3, vec3::Vector3> tempPair;
 
     for (const auto & memberCoil : memberCoils)
     {

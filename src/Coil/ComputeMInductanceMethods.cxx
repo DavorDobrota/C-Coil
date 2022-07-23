@@ -19,7 +19,7 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
 {
     if (isZAxisCase(primary, secondary))
     {
-        vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
+        vec3::Vector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
 
         if ((primary.coilType == CoilType::THIN || primary.coilType == CoilType::RECTANGULAR) &&
             (secondary.coilType == CoilType::THIN || secondary.coilType == CoilType::RECTANGULAR))

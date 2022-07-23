@@ -28,8 +28,8 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
     CoilGroup torusGroupFlat = CoilGroup();
 
     std::vector<vec3::CoordVector3> fieldPoints(opCount);
-    std::vector<vec3::FieldVector3> computedAPotential;
-    std::vector<vec3::FieldVector3> computedBField;
+    std::vector<vec3::Vector3> computedAPotential;
+    std::vector<vec3::Vector3> computedBField;
     std::vector<vec3::Matrix3> computedGradient;
 
     for (int i = 0; i < opCount; ++i)
@@ -160,8 +160,8 @@ void benchCoilGroupComputeAllFieldsGPU(int numCoils, int opCount)
     CoilGroup torusGroupFlat = CoilGroup();
 
     std::vector<vec3::CoordVector3> fieldPoints(opCount);
-    std::vector<vec3::FieldVector3> computedAPotential;
-    std::vector<vec3::FieldVector3> computedBField;
+    std::vector<vec3::Vector3> computedAPotential;
+    std::vector<vec3::Vector3> computedBField;
     std::vector<vec3::Matrix3> computedGradient;
 
     for (int i = 0; i < opCount; ++i)
@@ -280,8 +280,8 @@ void benchCoilGroupComputeAllFieldsMTD(int threadCount)
     }
 
     std::vector<vec3::CoordVector3> referencePoints(pointCount);
-    std::vector<vec3::FieldVector3> computedAPotential;
-    std::vector<vec3::FieldVector3> computedBField;
+    std::vector<vec3::Vector3> computedAPotential;
+    std::vector<vec3::Vector3> computedBField;
     std::vector<vec3::Matrix3> computedBGradient;
 
     for (int i = 0; i < pointCount; ++i)
@@ -371,8 +371,8 @@ void benchMInductanceAndForceComputeAll(PrecisionFactor precisionFactor, int thr
 
     std::vector<double> mutualInductanceMT(numOps);
     std::vector<double> mutualInductanceAll(numOps);
-    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> forceAndTorqueMT(numOps);
-    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> forceAndTorqueAll(numOps);
+    std::vector<std::pair<vec3::Vector3, vec3::Vector3>> forceAndTorqueMT(numOps);
+    std::vector<std::pair<vec3::Vector3, vec3::Vector3>> forceAndTorqueAll(numOps);
 
     for (int i = 0; i < numOps; ++i)
     {

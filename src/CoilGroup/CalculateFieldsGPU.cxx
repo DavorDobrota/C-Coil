@@ -49,7 +49,7 @@ void CoilGroup::generateCoilDataArray(CoilData *coilDataArr) const
             coilDataArr[i].thicknessWeightArray[j] = Legendre::weightsMatrix[coilDataArr[i].thicknessIncrements - 1][j];
         }
 
-        vec3::FieldVector3 tempVec = vec3::CoordVector3::convertToFieldVector(memberCoils[i].getPositionVector());
+        vec3::Vector3 tempVec = vec3::CoordVector3::convertToFieldVector(memberCoils[i].getPositionVector());
 
         coilDataArr[i].positionVector[0] = tempVec.x;
         coilDataArr[i].positionVector[1] = tempVec.y;
@@ -81,7 +81,7 @@ void CoilGroup::generateCoilDataArray(CoilData *coilDataArr) const
     }
 }
 
-std::vector<vec3::FieldVector3>
+std::vector<vec3::Vector3>
 CoilGroup::calculateAllAPotentialComponentsGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
 {
     long long size = pointVectors.size();
@@ -115,7 +115,7 @@ CoilGroup::calculateAllAPotentialComponentsGPU(const std::vector<vec3::CoordVect
     #endif // USE_GPU
 
     free(coordinateArr);
-    std::vector<vec3::FieldVector3> computedPotentialArr;
+    std::vector<vec3::Vector3> computedPotentialArr;
     computedPotentialArr.reserve(size);
 
     for (long long i = 0; i < pointVectors.size(); ++i)
@@ -126,7 +126,7 @@ CoilGroup::calculateAllAPotentialComponentsGPU(const std::vector<vec3::CoordVect
     return computedPotentialArr;
 }
 
-std::vector<vec3::FieldVector3>
+std::vector<vec3::Vector3>
 CoilGroup::calculateAllBFieldComponentsGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
 {
     long long size = pointVectors.size();
@@ -161,7 +161,7 @@ CoilGroup::calculateAllBFieldComponentsGPU(const std::vector<vec3::CoordVector3>
     #endif // USE_GPU
 
     free(coordinateArr);
-    std::vector<vec3::FieldVector3> computedFieldArr;
+    std::vector<vec3::Vector3> computedFieldArr;
     computedFieldArr.reserve(size);
 
     for (long long i = 0; i < pointVectors.size(); ++i)

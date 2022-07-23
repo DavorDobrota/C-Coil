@@ -22,12 +22,12 @@ void Coil::setThreadCount(int threadCount)
 }
 
 
-std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialMT(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                               const PrecisionArguments &usedPrecision) const
+std::vector<vec3::Vector3> Coil::calculateAllAPotentialMT(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                          const PrecisionArguments &usedPrecision) const
 {
     std::vector<int> blockPositions = calculateChunkSize(pointVectors.size());
 
-    std::vector<vec3::FieldVector3> computedPotentials(pointVectors.size());
+    std::vector<vec3::Vector3> computedPotentials(pointVectors.size());
 
     g_threadPool.setTaskCount(pointVectors.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -37,7 +37,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialMT(const std::vector
             const Coil &coil,
             const PrecisionArguments &usedPrecision,
             const std::vector<vec3::CoordVector3> &pointVectors,
-            std::vector<vec3::FieldVector3> &computedPotentials,
+            std::vector<vec3::Vector3> &computedPotentials,
             size_t startIdx, size_t stopIdx
     ) -> void
     {
@@ -67,12 +67,12 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialMT(const std::vector
     return computedPotentials;
 }
 
-std::vector<vec3::FieldVector3> Coil::calculateAllBFieldMT(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                           const PrecisionArguments &usedPrecision) const
+std::vector<vec3::Vector3> Coil::calculateAllBFieldMT(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                      const PrecisionArguments &usedPrecision) const
 {
     std::vector<int> blockPositions = calculateChunkSize(pointVectors.size());
 
-    std::vector<vec3::FieldVector3> computedFields(pointVectors.size());
+    std::vector<vec3::Vector3> computedFields(pointVectors.size());
 
     g_threadPool.setTaskCount(pointVectors.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -82,7 +82,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldMT(const std::vector<vec
             const Coil &coil,
             const PrecisionArguments &usedPrecision,
             const std::vector<vec3::CoordVector3> &pointVectors,
-            std::vector<vec3::FieldVector3> &computedFields,
+            std::vector<vec3::Vector3> &computedFields,
             size_t startIdx, size_t stopIdx
     ) -> void
     {
@@ -157,8 +157,8 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientMT(const std::vector<vec3:
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                                const PrecisionArguments &usedPrecision) const
+std::vector<vec3::Vector3> Coil::calculateAllAPotentialGPU(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                           const PrecisionArguments &usedPrecision) const
 {
     long long size = pointVectors.size();
 
@@ -190,7 +190,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
     #endif // USE_GPU
 
     free(coordinateArr);
-    std::vector<vec3::FieldVector3> computedPotentialArr;
+    std::vector<vec3::Vector3> computedPotentialArr;
     computedPotentialArr.reserve(size);
 
     for (long long i = 0; i < pointVectors.size(); ++i)
@@ -204,8 +204,8 @@ std::vector<vec3::FieldVector3> Coil::calculateAllAPotentialGPU(const std::vecto
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                            const PrecisionArguments &usedPrecision) const
+std::vector<vec3::Vector3> Coil::calculateAllBFieldGPU(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                       const PrecisionArguments &usedPrecision) const
 {
     long long size = pointVectors.size();
 
@@ -237,7 +237,7 @@ std::vector<vec3::FieldVector3> Coil::calculateAllBFieldGPU(const std::vector<ve
     #endif // USE_GPU
 
     free(coordinateArr);
-    std::vector<vec3::FieldVector3> computedFieldArr;
+    std::vector<vec3::Vector3> computedFieldArr;
     computedFieldArr.reserve(size);
 
     for (long long i = 0; i < pointVectors.size(); ++i)

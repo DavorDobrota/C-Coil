@@ -8,13 +8,13 @@ vec3::Vector3Array::Vector3Array()
     this->vectorArray = {};
 }
 
-vec3::Vector3Array::Vector3Array(const std::vector<FieldVector3> &vectorArray)
+vec3::Vector3Array::Vector3Array(const std::vector<Vector3> &vectorArray)
 {
     std::copy(vectorArray.begin(), vectorArray.end(), this->vectorArray.begin());
 }
 
 
-void vec3::Vector3Array::append(const FieldVector3 &appendedVector3)
+void vec3::Vector3Array::append(const Vector3 &appendedVector3)
 {
     this->vectorArray.push_back(appendedVector3);
 }
@@ -39,7 +39,7 @@ size_t vec3::Vector3Array::size() const
     return this->vectorArray.size();
 }
 
-std::vector<vec3::FieldVector3> & vec3::Vector3Array::getStdVectorRef()
+std::vector<vec3::Vector3> & vec3::Vector3Array::getStdVectorRef()
 {
     return this->vectorArray;
 }
@@ -84,17 +84,17 @@ std::vector<double> vec3::Vector3Array::abs() const
     outputArr.reserve(this->vectorArray.size());
 
     for (const auto & i : this->vectorArray)
-        outputArr.emplace_back(i.magnitude());
+        outputArr.emplace_back(i.abs());
 
     return outputArr;
 }
 
-vec3::FieldVector3 vec3::Vector3Array::operator[](int index)
+vec3::Vector3 vec3::Vector3Array::operator[](int index)
 {
     return this->vectorArray[index];
 }
 
-void vec3::Vector3Array::operator+=(const FieldVector3 &appendedVector3)
+void vec3::Vector3Array::operator+=(const Vector3 &appendedVector3)
 {
     this->vectorArray.push_back(appendedVector3);
 }

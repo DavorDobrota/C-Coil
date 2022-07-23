@@ -245,7 +245,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
 double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
                                               CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
 {
-    vec3::FieldVector3 displacementVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
+    vec3::Vector3 displacementVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
 
     double xDisplacement = displacementVec.x;
     double yDisplacement = displacementVec.y;
@@ -266,7 +266,7 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
 
     int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements * angularBlocks * angularIncrements;
 
-    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> unitRingValues =
+    std::vector<std::pair<vec3::Vector3, vec3::Vector3>> unitRingValues =
             calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle);
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
@@ -328,7 +328,7 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
             }
         }
     }
-    std::vector<vec3::FieldVector3> potentialVectors =
+    std::vector<vec3::Vector3> potentialVectors =
             primary.computeAllAPotentialComponents(positionVectors, primaryPrecisionArguments, computeMethod);
 
     double mutualInductance = 0.0;
@@ -336,7 +336,7 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
     for (int i = 0; i < numElements; ++i)
     {
         int p = i % (angularBlocks * angularIncrements);
-        mutualInductance += vec3::FieldVector3::scalarProduct(potentialVectors[i], unitRingValues[p].second) * weights[i];
+        mutualInductance += vec3::Vector3::scalarProduct(potentialVectors[i], unitRingValues[p].second) * weights[i];
     }
 
     mutualInductance /= (lengthBlocks * thicknessBlocks * angularBlocks);

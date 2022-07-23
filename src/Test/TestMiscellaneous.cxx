@@ -17,18 +17,18 @@ void testNewCoilParameters()
 
     printf("%.15f, %.15f, %.15f\n\n", testCoil1.getCurrentDensity(), testCoil1.getWireResistivity(), testCoil1.getSineFrequency());
 
-    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment().magnitude(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
+    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment().abs(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
 
     testCoil1.setSineFrequency(100000);
     testCoil1.setCurrentDensity(500000);
-    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment().magnitude(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
+    printf("%.15f, %.15f, %.15f\n\n", testCoil1.getMagneticMoment().abs(), testCoil1.getAverageWireThickness(), testCoil1.getResistance());
 
     testCoil1.setSineFrequency(0);
     testCoil1.setCurrent(1);
 
     vec3::CoordVector3 positionVector = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0);
 
-    vec3::FieldVector3 vector = testCoil1.computeBFieldVector(positionVector);
+    vec3::Vector3 vector = testCoil1.computeBFieldVector(positionVector);
     printf("%.25f %.25f\n", vector.x, testCoil1.computeBFieldZ(positionVector));
     printf("%.25f %.25f\n", vector.z, testCoil1.computeBFieldX(positionVector));
 }
@@ -97,7 +97,7 @@ void testCoilPositionAndRotation()
     for (int i = 0; i < pointCount; ++i)
         pointPositions1[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.1 + i * 0.001);
 
-    std::vector<vec3::FieldVector3> fieldVectors1, fieldVectors2;
+    std::vector<vec3::Vector3> fieldVectors1, fieldVectors2;
 
     fieldVectors1 = coil1.computeAllBFieldComponents(pointPositions1);
     fieldVectors2 = coil2.computeAllBFieldComponents(pointPositions1);

@@ -14,7 +14,7 @@ void testAmpereForceGeneralForZAxis()
     prim.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.0));
 
 
-    std::pair<vec3::FieldVector3, vec3::FieldVector3> forcePair;
+    std::pair<vec3::Vector3, vec3::Vector3> forcePair;
 
     for (int i = 0; i < 100; ++i)
     {

@@ -10,7 +10,7 @@ namespace vec3
     enum CoordinateSystem {CARTESIAN, CYLINDRICAL, SPHERICAL};
 
     class CoordVector3;
-    class FieldVector3;
+    class Vector3;
     class Matrix3;
 
     class Triplet;
@@ -41,8 +41,8 @@ namespace vec3
             static std::vector<CoordVector3> convertAllToCylindrical(std::vector<CoordVector3> &Vector3Array);
             static std::vector<CoordVector3> convertAllToSpherical(std::vector<CoordVector3> &Vector3Array);
 
-            static FieldVector3 convertToFieldVector(const CoordVector3 &vector);
-            static CoordVector3 convertToCoordVector(const FieldVector3 &vector);
+            static Vector3 convertToFieldVector(const CoordVector3 &vector);
+            static CoordVector3 convertToCoordVector(const Vector3 &vector);
 
             [[nodiscard]] CoordinateSystem getCoordinateSystem() const { return coordinateSystem; }
 
@@ -61,7 +61,7 @@ namespace vec3
 
     };
 
-    class FieldVector3
+    class Vector3
     {
         public:
 
@@ -69,23 +69,23 @@ namespace vec3
             double y;
             double z;
 
-            FieldVector3();
-            explicit FieldVector3(double x, double y, double z);
+            Vector3();
+            explicit Vector3(double x, double y, double z);
 
-            FieldVector3 operator+(const FieldVector3 &otherVec) const;
-            FieldVector3 operator+=(const FieldVector3 &otherVec);
-            FieldVector3 operator-(const FieldVector3 &otherVec) const;
-            FieldVector3 operator-=(const FieldVector3 &otherVec);
-            FieldVector3 operator*(double multiplier) const;
-            FieldVector3 operator*=(double multiplier);
+            Vector3 operator+(const Vector3 &otherVec) const;
+            Vector3 operator+=(const Vector3 &otherVec);
+            Vector3 operator-(const Vector3 &otherVec) const;
+            Vector3 operator-=(const Vector3 &otherVec);
+            Vector3 operator*(double multiplier) const;
+            Vector3 operator*=(double multiplier);
 
-            [[nodiscard]] double magnitude() const;
+            [[nodiscard]] double abs() const;
 
-            static double scalarProduct(FieldVector3 vector1, FieldVector3 vector2);
-            static FieldVector3 crossProduct(FieldVector3 vector1, FieldVector3 vector2);
+            static double scalarProduct(Vector3 vector1, Vector3 vector2);
+            static Vector3 crossProduct(Vector3 vector1, Vector3 vector2);
 
-            static FieldVector3 getFromCylindricalCoords(double z, double r, double phi);
-            static FieldVector3 getFromSphericalCoords(double r, double theta, double phi);
+            static Vector3 getFromCylindricalCoords(double z, double r, double phi);
+            static Vector3 getFromSphericalCoords(double r, double theta, double phi);
 
             [[nodiscard]] Triplet getAsCylindricalCoords() const;
             [[nodiscard]] Triplet getAsSphericalCoords() const;
@@ -120,7 +120,7 @@ namespace vec3
             Matrix3 operator*(double multiplier) const;
             void operator*=(double multiplier);
             Matrix3 operator*(const Matrix3 &mat) const;
-            FieldVector3 operator*(const FieldVector3 &vec) const;
+            Vector3 operator*(const Vector3 &vec) const;
 
             explicit operator std::string() const;
     };
@@ -143,28 +143,28 @@ namespace vec3
     {
         private:
 
-            std::vector<FieldVector3> vectorArray;
+            std::vector<Vector3> vectorArray;
 
         public:
 
             Vector3Array();
-            explicit Vector3Array(const std::vector<FieldVector3> &vectorArray);
+            explicit Vector3Array(const std::vector<Vector3> &vectorArray);
 
-            void append(const FieldVector3 &appendedVector3);
+            void append(const Vector3 &appendedVector3);
             void append(double x, double y, double z);
             void reserve(size_t reserveSize);
             void resize(size_t newSize);
             [[nodiscard]] size_t size() const;
 
-            std::vector<FieldVector3> & getStdVectorRef();
+            std::vector<Vector3> & getStdVectorRef();
 
             [[nodiscard]] std::vector<double> x() const;
             [[nodiscard]] std::vector<double> y() const;
             [[nodiscard]] std::vector<double> z() const;
             [[nodiscard]] std::vector<double> abs() const;
 
-            FieldVector3 operator[](int index);
-            void operator+=(const FieldVector3 &appendedVector3);
+            Vector3 operator[](int index);
+            void operator+=(const Vector3 &appendedVector3);
 
             explicit operator std::string() const;
     };

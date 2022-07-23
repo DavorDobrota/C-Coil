@@ -14,9 +14,12 @@ void initTensor(py::module_ &mainModule)
     
     py::enum_<vec3::CoordinateSystem> coordinateSystem(tensorModule, "CoordinateSystem");
     py::class_<vec3::CoordVector3> coordVector3(tensorModule, "CoordVector3");
-    py::class_<vec3::FieldVector3> fieldVector3(tensorModule, "FieldVector3");
+    py::class_<vec3::Vector3> fieldVector3(tensorModule, "FieldVector3");
     py::class_<vec3::Matrix3> matrix3(tensorModule, "Matrix3");
+    py::class_<vec3::Triplet> triplet(tensorModule, "Triplet");
 
+    py::class_<vec3::Vector3Array> vector3Array(tensorModule, "Vector3Array");
+    py::class_<vec3::Matrix3Array> matrix3Array(tensorModule, "Matrix3Array");
 
     // CoordinateSystem
 
@@ -60,32 +63,52 @@ void initTensor(py::module_ &mainModule)
 
     // FieldVector3
 
-    fieldVector3.def_readwrite("x", &vec3::FieldVector3::x)
-        .def_readwrite("y", &vec3::FieldVector3::y)
-        .def_readwrite("z", &vec3::FieldVector3::z);
+    fieldVector3.def_readwrite("x", &vec3::Vector3::x)
+        .def_readwrite("y", &vec3::Vector3::y)
+        .def_readwrite("z", &vec3::Vector3::z);
 
     fieldVector3.def(py::init<>())
         .def(py::init<double, double, double>(), py::arg("x"), py::arg("y"), py::arg("z"));
 
-    fieldVector3.def("__add__", &vec3::FieldVector3::operator+)
-        .def("__iadd__", &vec3::FieldVector3::operator+=)
-        .def("__sub__", &vec3::FieldVector3::operator-)
-        .def("__isub__", &vec3::FieldVector3::operator-=)
-        .def("__mul__", &vec3::FieldVector3::operator*)
-        .def("__imul__", &vec3::FieldVector3::operator*=);
+    fieldVector3.def("__add__", &vec3::Vector3::operator+)
+        .def("__iadd__", &vec3::Vector3::operator+=)
+        .def("__sub__", &vec3::Vector3::operator-)
+        .def("__isub__", &vec3::Vector3::operator-=)
+        .def("__mul__", &vec3::Vector3::operator*)
+        .def("__imul__", &vec3::Vector3::operator*=);
 
-    fieldVector3.def("magnitude", &vec3::FieldVector3::magnitude);
+    fieldVector3.def("abs", &vec3::Vector3::abs);
 
     fieldVector3.def_static(
-        "scalar_product", &vec3::FieldVector3::scalarProduct,
+        "scalar_product", &vec3::Vector3::scalarProduct,
         py::arg("vector1"), py::arg("vector2"));
 
     fieldVector3.def_static(
-        "cross_product", &vec3::FieldVector3::crossProduct,
+        "cross_product", &vec3::Vector3::crossProduct,
         py::arg("vector1"), py::arg("vector2"));
 
-    fieldVector3.def("__repr__", &vec3::FieldVector3::operator std::string);
+    fieldVector3.def_static(
+        "get_from_cylindrical_coords", &vec3::Vector3::getFromCylindricalCoords,
+        py::arg("z"), py::arg("r"), py::arg("phi"));
 
+    fieldVector3.def_static(
+        "get_from_spherical_coords", &vec3::Vector3::getFromSphericalCoords,
+        py::arg("z"), py::arg("theta"), py::arg("phi"));
+
+    fieldVector3
+        .def("get_as_cylindrical_coords", &vec3::Vector3::getAsCylindricalCoords)
+        .def("get_as_spherical_coords", &vec3::Vector3::getAsSphericalCoords);
+
+    fieldVector3.def("__repr__", &vec3::Vector3::operator std::string);
+
+    // Triplet
+
+    triplet.def_readwrite("first", &vec3::Triplet::first)
+        .def_readwrite("second", &vec3::Triplet::second)
+        .def_readwrite("third", &vec3::Triplet::third);
+
+    triplet.def(py::init<>())
+        .def(py::init<double, double, double>(), py::arg("first"), py::arg("second"), py::arg("third"));
 
     // Matrix3
 
@@ -108,14 +131,26 @@ void initTensor(py::module_ &mainModule)
 
     matrix3.def("__add__", &vec3::Matrix3::operator+)
         .def("__iadd__", &vec3::Matrix3::operator+=)
+        .def("__imul__", &vec3::Matrix3::operator*=)
+        .def(
+            "__mul__",
+            static_cast<vec3::Matrix3 (vec3::Matrix3::*)(double) const>(&vec3::Matrix3::operator*))
         .def(
             "__mul__",
             static_cast<vec3::Matrix3 (vec3::Matrix3::*)(const vec3::Matrix3&) const>(&vec3::Matrix3::operator*)
         )
         .def(
             "__mul__",
-            static_cast<vec3::FieldVector3 (vec3::Matrix3::*)(const vec3::FieldVector3&) const>(&vec3::Matrix3::operator*)
+            static_cast<vec3::Vector3 (vec3::Matrix3::*)(const vec3::Vector3&) const>(&vec3::Matrix3::operator*)
         );
 
     matrix3.def("__repr__", &vec3::Matrix3::operator std::string);
+
+    // Vector3Array
+
+    vector3Array.def(py::init<>());
+    //    .def(py::init<>());
+
+//    vector3Array.def("append", )
+
 }

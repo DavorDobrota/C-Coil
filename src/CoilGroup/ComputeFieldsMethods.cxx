@@ -3,7 +3,7 @@
 #include <math.h>
 
 
-std::vector<vec3::FieldVector3>
+std::vector<vec3::Vector3>
 CoilGroup::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectors,
                                           ComputeMethod computeMethod) const
 {
@@ -12,8 +12,8 @@ CoilGroup::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> 
 
     else if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
     {
-        std::vector<vec3::FieldVector3> tempArr(pointVectors.size());
-        std::vector<vec3::FieldVector3> outputArr(pointVectors.size());
+        std::vector<vec3::Vector3> tempArr(pointVectors.size());
+        std::vector<vec3::Vector3> outputArr(pointVectors.size());
 
         for (const auto & memberCoil : memberCoils)
         {
@@ -30,7 +30,7 @@ CoilGroup::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> 
 std::vector<double> CoilGroup::computeAllAPotentialX(const std::vector<vec3::CoordVector3> &pointVectors,
                                                      ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedPotentialArr = computeAllAPotentialComponents(pointVectors, computeMethod);
+    std::vector<vec3::Vector3> computedPotentialArr = computeAllAPotentialComponents(pointVectors, computeMethod);
     std::vector<double> outputArr(computedPotentialArr.size());
 
     for (int i = 0; i < computedPotentialArr.size(); ++i)
@@ -42,7 +42,7 @@ std::vector<double> CoilGroup::computeAllAPotentialX(const std::vector<vec3::Coo
 std::vector<double> CoilGroup::computeAllAPotentialY(const std::vector<vec3::CoordVector3> &pointVectors,
                                                      ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedPotentialArr = computeAllAPotentialComponents(pointVectors, computeMethod);
+    std::vector<vec3::Vector3> computedPotentialArr = computeAllAPotentialComponents(pointVectors, computeMethod);
     std::vector<double> outputArr(computedPotentialArr.size());
 
     for (int i = 0; i < computedPotentialArr.size(); ++i)
@@ -54,7 +54,7 @@ std::vector<double> CoilGroup::computeAllAPotentialY(const std::vector<vec3::Coo
 std::vector<double> CoilGroup::computeAllAPotentialZ(const std::vector<vec3::CoordVector3> &pointVectors,
                                                      ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedPotentialArr = computeAllAPotentialComponents(pointVectors, computeMethod);
+    std::vector<vec3::Vector3> computedPotentialArr = computeAllAPotentialComponents(pointVectors, computeMethod);
     std::vector<double> outputArr(computedPotentialArr.size());
 
     for (int i = 0; i < computedPotentialArr.size(); ++i)
@@ -66,7 +66,7 @@ std::vector<double> CoilGroup::computeAllAPotentialZ(const std::vector<vec3::Coo
 std::vector<double> CoilGroup::computeAllAPotentialAbs(const std::vector<vec3::CoordVector3> &pointVectors,
                                                        ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedPotentialArr = computeAllAPotentialComponents(pointVectors, computeMethod);
+    std::vector<vec3::Vector3> computedPotentialArr = computeAllAPotentialComponents(pointVectors, computeMethod);
     std::vector<double> outputArr(computedPotentialArr.size());
 
     for (int i = 0; i < computedPotentialArr.size(); ++i)
@@ -78,7 +78,7 @@ std::vector<double> CoilGroup::computeAllAPotentialAbs(const std::vector<vec3::C
 }
 
 
-std::vector<vec3::FieldVector3>
+std::vector<vec3::Vector3>
 CoilGroup::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
                                       ComputeMethod computeMethod) const
 {
@@ -87,8 +87,8 @@ CoilGroup::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &poi
 
     else if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
     {
-        std::vector<vec3::FieldVector3> tempArr(pointVectors.size());
-        std::vector<vec3::FieldVector3> outputArr(pointVectors.size());
+        std::vector<vec3::Vector3> tempArr(pointVectors.size());
+        std::vector<vec3::Vector3> outputArr(pointVectors.size());
 
         for (const auto & memberCoil : memberCoils)
         {
@@ -105,7 +105,7 @@ CoilGroup::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &poi
 std::vector<double> CoilGroup::computeAllBFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
                                                  ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectors, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllBFieldComponents(pointVectors, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -117,7 +117,7 @@ std::vector<double> CoilGroup::computeAllBFieldX(const std::vector<vec3::CoordVe
 std::vector<double> CoilGroup::computeAllBFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
                                                  ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectors, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllBFieldComponents(pointVectors, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -129,7 +129,7 @@ std::vector<double> CoilGroup::computeAllBFieldY(const std::vector<vec3::CoordVe
 std::vector<double> CoilGroup::computeAllBFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
                                                  ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectors, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllBFieldComponents(pointVectors, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -141,7 +141,7 @@ std::vector<double> CoilGroup::computeAllBFieldZ(const std::vector<vec3::CoordVe
 std::vector<double> CoilGroup::computeAllBFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
                                                    ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllBFieldComponents(pointVectors, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllBFieldComponents(pointVectors, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -153,14 +153,14 @@ std::vector<double> CoilGroup::computeAllBFieldAbs(const std::vector<vec3::Coord
 }
 
 
-std::vector<vec3::FieldVector3>
+std::vector<vec3::Vector3>
 CoilGroup::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
                                       ComputeMethod computeMethod) const
 {
     if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
     {
-        std::vector<vec3::FieldVector3> tempArr(pointVectors.size());
-        std::vector<vec3::FieldVector3> outputArr(pointVectors.size());
+        std::vector<vec3::Vector3> tempArr(pointVectors.size());
+        std::vector<vec3::Vector3> outputArr(pointVectors.size());
 
         for (const auto & memberCoil : memberCoils)
         {
@@ -177,7 +177,7 @@ CoilGroup::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &poi
 std::vector<double> CoilGroup::computeAllEFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
                                                  ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllEFieldComponents(pointVectors, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllEFieldComponents(pointVectors, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -189,7 +189,7 @@ std::vector<double> CoilGroup::computeAllEFieldX(const std::vector<vec3::CoordVe
 std::vector<double> CoilGroup::computeAllEFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
                                                  ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllEFieldComponents(pointVectors, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllEFieldComponents(pointVectors, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -201,7 +201,7 @@ std::vector<double> CoilGroup::computeAllEFieldY(const std::vector<vec3::CoordVe
 std::vector<double> CoilGroup::computeAllEFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
                                                  ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllEFieldComponents(pointVectors, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllEFieldComponents(pointVectors, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)
@@ -213,7 +213,7 @@ std::vector<double> CoilGroup::computeAllEFieldZ(const std::vector<vec3::CoordVe
 std::vector<double> CoilGroup::computeAllEFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
                                                    ComputeMethod computeMethod) const
 {
-    std::vector<vec3::FieldVector3> computedFieldArr = computeAllEFieldComponents(pointVectors, computeMethod);
+    std::vector<vec3::Vector3> computedFieldArr = computeAllEFieldComponents(pointVectors, computeMethod);
     std::vector<double> outputArr(computedFieldArr.size());
 
     for (int i = 0; i < computedFieldArr.size(); ++i)

@@ -234,13 +234,13 @@ double Coil::calculateAmpereForceZAxisFast(const Coil &primary, const Coil &seco
 }
 
 
-std::pair<vec3::FieldVector3, vec3::FieldVector3>
+std::pair<vec3::Vector3, vec3::Vector3>
 Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                                   CoilPairArguments forceArguments, ComputeMethod computeMethod)
 {
     std::vector<double> forceAndTorqueComponents(6);
 
-    vec3::FieldVector3 displacementVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
+    vec3::Vector3 displacementVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
 
     double xDisplacement = displacementVec.x;
     double yDisplacement = displacementVec.y;
@@ -261,7 +261,7 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
 
     int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements * angularBlocks * angularIncrements;
 
-    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> unitRingValues =
+    std::vector<std::pair<vec3::Vector3, vec3::Vector3>> unitRingValues =
             calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle);
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
@@ -327,22 +327,22 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
             }
         }
     }
-    std::vector<vec3::FieldVector3> magneticFields = primary.computeAllBFieldComponents(positionVectors,
-                                                                                        primaryPrecisionArguments, computeMethod);
+    std::vector<vec3::Vector3> magneticFields = primary.computeAllBFieldComponents(positionVectors,
+                                                                                   primaryPrecisionArguments, computeMethod);
 
-    vec3::FieldVector3 forceVector;
-    vec3::FieldVector3 torqueVector;
+    vec3::Vector3 forceVector;
+    vec3::Vector3 torqueVector;
 
     for (int i = 0; i < numElements; ++i)
     {
         int p = i % (angularBlocks * angularIncrements);
 
-        vec3::FieldVector3 tempForce = vec3::FieldVector3::crossProduct(unitRingValues[p].second, magneticFields[i]);
+        vec3::Vector3 tempForce = vec3::Vector3::crossProduct(unitRingValues[p].second, magneticFields[i]);
         tempForce *= weights[i];
         forceVector += tempForce;
 
-        vec3::FieldVector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVectors[i]);
-        vec3::FieldVector3 tempTorque = vec3::FieldVector3::crossProduct(positionVec - displacementVec, tempForce);
+        vec3::Vector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVectors[i]);
+        vec3::Vector3 tempTorque = vec3::Vector3::crossProduct(positionVec - displacementVec, tempForce);
         torqueVector += tempTorque;
     }
     double forceFactor = (secondary.current * secondary.numOfTurns) / (lengthBlocks * thicknessBlocks * angularBlocks);

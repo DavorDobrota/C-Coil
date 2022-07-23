@@ -21,8 +21,8 @@ void compMethodPrecisionCPUvsGPU()
     std::vector<double> cpuPotential;
     std::vector<double> gpuPotential;
 
-    std::vector<vec3::FieldVector3> cpuFieldVectors;
-    std::vector<vec3::FieldVector3> gpuFieldVectors;
+    std::vector<vec3::Vector3> cpuFieldVectors;
+    std::vector<vec3::Vector3> gpuFieldVectors;
 
     cpuPotential = testCoil.computeAllAPotentialAbs(positionValues, CPU_ST);
     cpuFieldVectors = testCoil.computeAllBFieldComponents(positionValues, CPU_ST);

@@ -16,7 +16,7 @@ void compCoilGroupMTD(int coilCount, int pointCount, int threadCount, bool print
 
     CoilGroup torusGroup = CoilGroup();
     std::vector<vec3::CoordVector3> fieldPoints(pointCount);
-    std::vector<vec3::FieldVector3> computedBField;
+    std::vector<vec3::Vector3> computedBField;
 
     for (int i = 0; i < pointCount; ++i)
         fieldPoints[i] = vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, torusRadius, 2*M_PI * i / pointCount);

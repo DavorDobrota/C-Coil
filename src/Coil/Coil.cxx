@@ -129,14 +129,14 @@ bool Coil::isSineDriven() const { return sineDriven; }
 
 double Coil::getSineFrequency() const { return sineFrequency; }
 
-vec3::FieldVector3 Coil::getMagneticMoment()
+vec3::Vector3 Coil::getMagneticMoment()
 {
     calculateMagneticMoment();
 
     double sinA = std::sin(yAxisAngle); double cosA = std::cos(yAxisAngle);
     double sinB = std::sin(zAxisAngle); double cosB = std::cos(zAxisAngle);
 
-    return vec3::FieldVector3(magneticMoment * sinA * cosB,
+    return vec3::Vector3(magneticMoment * sinA * cosB,
                               magneticMoment * sinA * sinB,
                               magneticMoment * cosA);
 }
@@ -351,16 +351,16 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, Comput
 }
 
 
-std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
+std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
 Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements, double alpha, double beta)
 {
     int numElements = angularBlocks * angularIncrements;
 
-    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> unitRingVector;
+    std::vector<std::pair<vec3::Vector3, vec3::Vector3>> unitRingVector;
     unitRingVector.reserve(numElements);
 
-    vec3::FieldVector3 ringPosition;
-    vec3::FieldVector3 ringTangent;
+    vec3::Vector3 ringPosition;
+    vec3::Vector3 ringTangent;
 
     double angularBlock = 2*M_PI / angularBlocks;
 
@@ -382,11 +382,11 @@ Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements, d
 
             double sinPhi = std::sin(phi); double cosPhi = std::cos(phi);
 
-            ringPosition = vec3::FieldVector3(cosB * cosA * cosPhi - sinB * sinPhi,
+            ringPosition = vec3::Vector3(cosB * cosA * cosPhi - sinB * sinPhi,
                                               sinB * cosA * cosPhi + cosB * sinPhi,
                                               (-1) * sinA * cosPhi);
 
-            ringTangent = vec3::FieldVector3((-1) * cosB * cosA * sinPhi - sinB * cosPhi,
+            ringTangent = vec3::Vector3((-1) * cosB * cosA * sinPhi - sinB * cosPhi,
                                              (-1) * sinB * cosA * sinPhi + cosB * cosPhi,
                                              sinA * sinPhi);
 
@@ -399,8 +399,8 @@ Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements, d
 
 bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
 {
-    vec3::FieldVector3 primPositionVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
-    vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
+    vec3::Vector3 primPositionVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
+    vec3::Vector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
 
     if (std::abs(primPositionVec.x / primary.innerRadius) < g_zAxisApproximationRatio &&
         std::abs(primPositionVec.y / primary.innerRadius) < g_zAxisApproximationRatio &&
@@ -447,7 +447,7 @@ void Coil::generateCoilData(CoilData &coilData, const PrecisionArguments &usedPr
         coilData.thicknessWeightArray[i] = Legendre::weightsMatrix[coilData.thicknessIncrements - 1][i];
     }
 
-    vec3::FieldVector3 tempVec = vec3::CoordVector3::convertToFieldVector(positionVector);
+    vec3::Vector3 tempVec = vec3::CoordVector3::convertToFieldVector(positionVector);
 
     coilData.positionVector[0] = tempVec.x;
     coilData.positionVector[1] = tempVec.y;

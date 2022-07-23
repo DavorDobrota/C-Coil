@@ -45,9 +45,9 @@ void vec3::Matrix3::operator*=(double multiplier)
     this->zx *= multiplier; this->zy *= multiplier; this->zz *= multiplier;
 }
 
-vec3::FieldVector3 vec3::Matrix3::operator*(const FieldVector3 &vec) const
+vec3::Vector3 vec3::Matrix3::operator*(const Vector3 &vec) const
 {
-    return vec3::FieldVector3(this->xx * vec.x + this->xy * vec.y + this->xz * vec.z,
+    return vec3::Vector3(this->xx * vec.x + this->xy * vec.y + this->xz * vec.z,
                               this->yx * vec.x + this->yy * vec.y + this->yz * vec.z,
                               this->zx * vec.x + this->zy * vec.y + this->zz * vec.z);
 }

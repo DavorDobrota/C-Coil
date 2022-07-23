@@ -54,6 +54,8 @@ int main()
 
     benchCoilGroupComputeAllFieldsGPU();
 
+
+
     return 0;
 }
 #pragma clang diagnostic pop

@@ -29,8 +29,8 @@ void testNewCoilParameters()
     vec3::CoordVector3 positionVector = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0);
 
     vec3::Vector3 vector = testCoil1.computeBFieldVector(positionVector);
-    printf("%.25f %.25f\n", vector.x, testCoil1.computeBFieldZ(positionVector));
-    printf("%.25f %.25f\n", vector.z, testCoil1.computeBFieldX(positionVector));
+    printf("%.25f %.25f\n", vector.x, testCoil1.computeBFieldVector(positionVector).x);
+    printf("%.25f %.25f\n", vector.z, testCoil1.computeBFieldVector(positionVector).z);
 }
 
 void testVector3()
@@ -99,8 +99,8 @@ void testCoilPositionAndRotation()
 
     std::vector<vec3::Vector3> fieldVectors1, fieldVectors2;
 
-    fieldVectors1 = coil1.computeAllBFieldComponents(pointPositions1);
-    fieldVectors2 = coil2.computeAllBFieldComponents(pointPositions1);
+    fieldVectors1 = coil1.computeAllBFieldVectors(pointPositions1);
+    fieldVectors2 = coil2.computeAllBFieldVectors(pointPositions1);
 
     for (int i = 0; i < pointCount; ++i)
         printf("%f : %.15g %.15g\n", 0.1 + i * 0.001, fieldVectors1[i].z, fieldVectors2[i].z);
@@ -112,8 +112,8 @@ void testCoilPositionAndRotation()
         pointPositions2[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.001 * i, 0.0);
     }
 
-    fieldVectors1 = coil1.computeAllBFieldComponents(pointPositions1);
-    fieldVectors2 = coil3.computeAllBFieldComponents(pointPositions2);
+    fieldVectors1 = coil1.computeAllBFieldVectors(pointPositions1);
+    fieldVectors2 = coil3.computeAllBFieldVectors(pointPositions2);
 
     for (int i = 0; i < pointCount; ++i)
         printf("%16.10g %16.10g %16.10g | %16.10g %16.10g %16.10g\n",

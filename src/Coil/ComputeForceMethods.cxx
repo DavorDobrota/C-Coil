@@ -50,7 +50,7 @@ Coil::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::Vector3 d
                                  const PrecisionArguments &usedPrecision) const
 {
     vec3::Vector3 magneticField = computeBFieldVector(pointVector, usedPrecision);
-    vec3::Matrix3 magneticGradient = computeBGradientTensor(pointVector, usedPrecision);
+    vec3::Matrix3 magneticGradient = computeBGradientMatrix(pointVector, usedPrecision);
 
     vec3::Vector3 magneticTorque = vec3::Vector3::crossProduct(dipoleMoment, magneticField);
     vec3::Vector3 magneticForce = magneticGradient * dipoleMoment;

@@ -208,42 +208,6 @@ void initCoil(py::module_ &mainModule)
             py::arg("position_vector"), py::arg("y_axis_angle"), py::arg("z_axis_angle"));
 
     coil.def(
-            "compute_B_field_x",
-            static_cast<double (Coil::*)(vec3::CoordVector3) const>(&Coil::computeBFieldX),
-            py::arg("point_vector"))
-        .def(
-            "compute_B_field_x",
-            static_cast<double (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeBFieldX),
-            py::arg("point_vector"), py::arg("used_precision"));
-
-    coil.def(
-            "compute_B_field_y",
-            static_cast<double (Coil::*)(vec3::CoordVector3) const>(&Coil::computeBFieldY),
-            py::arg("point_vector"))
-        .def(
-            "compute_B_field_y",
-            static_cast<double (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeBFieldY),
-            py::arg("point_vector"), py::arg("used_precision"));
-
-    coil.def(
-            "compute_B_field_z",
-            static_cast<double (Coil::*)(vec3::CoordVector3) const>(&Coil::computeBFieldZ),
-            py::arg("point_vector"))
-        .def(
-            "compute_B_field_z",
-            static_cast<double (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeBFieldZ),
-            py::arg("point_vector"), py::arg("used_precision"));
-
-    coil.def(
-            "compute_B_field_abs",
-            static_cast<double (Coil::*)(vec3::CoordVector3) const>(&Coil::computeBFieldAbs),
-            py::arg("point_vector"))
-        .def(
-            "compute_B_field_abs",
-            static_cast<double (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeBFieldAbs),
-            py::arg("point_vector"), py::arg("used_precision"));
-
-    coil.def(
             "compute_B_field_vector",
             static_cast<vec3::Vector3 (Coil::*)(vec3::CoordVector3) const>(&Coil::computeBFieldVector),
             py::arg("point_vector"))
@@ -253,84 +217,12 @@ void initCoil(py::module_ &mainModule)
             py::arg("point_vector"), py::arg("used_precision"));
 
     coil.def(
-            "compute_A_potential_x",
-            static_cast<double (Coil::*)(vec3::CoordVector3) const>(&Coil::computeAPotentialX),
-            py::arg("point_vector"))
-        .def(
-            "compute_A_potential_x",
-            static_cast<double (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeAPotentialX),
-            py::arg("point_vector"), py::arg("used_precision"));
-
-    coil.def(
-            "compute_A_potential_y",
-            static_cast<double (Coil::*)(vec3::CoordVector3) const>(&Coil::computeAPotentialY),
-            py::arg("point_vector"))
-        .def(
-            "compute_A_potential_y",
-            static_cast<double (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeAPotentialY),
-            py::arg("point_vector"), py::arg("used_precision"));
-
-    coil.def(
-            "compute_A_potential_z",
-            static_cast<double (Coil::*)(vec3::CoordVector3) const>(&Coil::computeAPotentialZ),
-            py::arg("point_vector"))
-        .def(
-            "compute_A_potential_z",
-            static_cast<double (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeAPotentialZ),
-            py::arg("point_vector"), py::arg("used_precision"));
-
-    coil.def(
-            "compute_A_potential_abs",
-            static_cast<double (Coil::*)(vec3::CoordVector3) const>(&Coil::computeAPotentialAbs),
-            py::arg("point_vector"))
-        .def(
-            "compute_A_potential_abs",
-            static_cast<double (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeAPotentialAbs),
-            py::arg("point_vector"), py::arg("used_precision"));
-
-    coil.def(
             "compute_A_potential_vector",
             static_cast<vec3::Vector3 (Coil::*)(vec3::CoordVector3) const>(&Coil::computeAPotentialVector),
             py::arg("point_vector"))
         .def(
             "compute_A_potential_vector",
             static_cast<vec3::Vector3 (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeAPotentialVector),
-            py::arg("point_vector"), py::arg("used_precision"));
-
-    coil.def(
-            "compute_E_field_x",
-            static_cast<double (Coil::*)(vec3::CoordVector3) const>(&Coil::computeEFieldX),
-            py::arg("point_vector"))
-        .def(
-            "compute_E_field_x",
-            static_cast<double (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeEFieldX),
-            py::arg("point_vector"), py::arg("used_precision"));
-
-    coil.def(
-            "compute_E_field_y",
-            static_cast<double (Coil::*)(vec3::CoordVector3) const>(&Coil::computeEFieldY),
-            py::arg("point_vector"))
-        .def(
-            "compute_E_field_y",
-            static_cast<double (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeEFieldY),
-            py::arg("point_vector"), py::arg("used_precision"));
-
-    coil.def(
-            "compute_E_field_z",
-            static_cast<double (Coil::*)(vec3::CoordVector3) const>(&Coil::computeEFieldZ),
-            py::arg("point_vector"))
-        .def(
-            "compute_E_field_z",
-            static_cast<double (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeEFieldZ),
-            py::arg("point_vector"), py::arg("used_precision"));
-
-    coil.def(
-            "compute_E_field_abs",
-            static_cast<double (Coil::*)(vec3::CoordVector3) const>(&Coil::computeEFieldAbs),
-            py::arg("point_vector"))
-        .def(
-            "compute_E_field_abs",
-            static_cast<double (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeEFieldAbs),
             py::arg("point_vector"), py::arg("used_precision"));
 
     coil.def(
@@ -344,195 +236,63 @@ void initCoil(py::module_ &mainModule)
 
     coil.def(
             "compute_B_gradient_tensor",
-            static_cast<vec3::Matrix3 (Coil::*)(vec3::CoordVector3) const>(&Coil::computeBGradientTensor),
+            static_cast<vec3::Matrix3 (Coil::*)(vec3::CoordVector3) const>(&Coil::computeBGradientMatrix),
             py::arg("point_vector"))
         .def(
             "compute_B_gradient_tensor",
-            static_cast<vec3::Matrix3 (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeBGradientTensor),
+            static_cast<vec3::Matrix3 (Coil::*)(vec3::CoordVector3, const PrecisionArguments&) const>(&Coil::computeBGradientMatrix),
             py::arg("point_vector"), py::arg("used_precision"));
 
     coil.def(
-            "compute_all_B_field_x",
-            static_cast<std::vector<double> (Coil::*)(const std::vector<vec3::CoordVector3>&, ComputeMethod) const>(&Coil::computeAllBFieldX),
-            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-        .def(
-            "compute_all_B_field_x",
-            static_cast<std::vector<double> (Coil::*)(
-                const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllBFieldX),
-            py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
-
-    coil.def(
-            "compute_all_B_field_y",
-            static_cast<std::vector<double> (Coil::*)(const std::vector<vec3::CoordVector3>&, ComputeMethod) const>(&Coil::computeAllBFieldY),
-            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-        .def(
-            "compute_all_B_field_y",
-            static_cast<std::vector<double> (Coil::*)(
-                const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllBFieldY),
-            py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
-
-    coil.def(
-            "compute_all_B_field_z",
-            static_cast<std::vector<double> (Coil::*)(const std::vector<vec3::CoordVector3>&, ComputeMethod) const>(&Coil::computeAllBFieldZ),
-            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-        .def(
-            "compute_all_B_field_z",
-            static_cast<std::vector<double> (Coil::*)(
-                const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllBFieldZ),
-            py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
-
-    coil.def(
-            "compute_all_B_field_abs",
-            static_cast<std::vector<double> (Coil::*)(const std::vector<vec3::CoordVector3>&, ComputeMethod) const>(&Coil::computeAllBFieldAbs),
-            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-        .def(
-            "compute_all_B_field_abs",
-            static_cast<std::vector<double> (Coil::*)(
-                const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllBFieldAbs),
-            py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
-
-    coil.def(
             "compute_all_B_field_components",
             static_cast<std::vector<vec3::Vector3> (Coil::*)(
                 const std::vector<vec3::CoordVector3>&, ComputeMethod
-            ) const>(&Coil::computeAllBFieldComponents),
+            ) const>(&Coil::computeAllBFieldVectors),
             py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
         .def(
             "compute_all_B_field_components",
             static_cast<std::vector<vec3::Vector3> (Coil::*)(
                 const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllBFieldComponents),
-            py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
-
-    coil.def(
-            "compute_all_A_potential_x",
-            static_cast<std::vector<double> (Coil::*)(const std::vector<vec3::CoordVector3>&, ComputeMethod) const>(&Coil::computeAllAPotentialX),
-            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-        .def(
-            "compute_all_A_potential_x",
-            static_cast<std::vector<double> (Coil::*)(
-                const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllAPotentialX),
-            py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
-
-    coil.def(
-            "compute_all_A_potential_y",
-            static_cast<std::vector<double> (Coil::*)(const std::vector<vec3::CoordVector3>&, ComputeMethod) const>(&Coil::computeAllAPotentialY),
-            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-        .def(
-            "compute_all_A_potential_y",
-            static_cast<std::vector<double> (Coil::*)(
-                const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllAPotentialY),
-            py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
-
-    coil.def(
-            "compute_all_A_potential_z",
-            static_cast<std::vector<double> (Coil::*)(const std::vector<vec3::CoordVector3>&, ComputeMethod) const>(&Coil::computeAllAPotentialZ),
-            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-        .def(
-            "compute_all_A_potential_z",
-            static_cast<std::vector<double> (Coil::*)(
-                const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllAPotentialZ),
-            py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
-
-    coil.def(
-            "compute_all_A_potential_abs",
-            static_cast<std::vector<double> (Coil::*)(const std::vector<vec3::CoordVector3>&, ComputeMethod) const>(&Coil::computeAllAPotentialAbs),
-            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-        .def(
-            "compute_all_A_potential_abs",
-            static_cast<std::vector<double> (Coil::*)(
-                const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllAPotentialAbs),
+            ) const>(&Coil::computeAllBFieldVectors),
             py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
 
     coil.def(
             "compute_all_A_potential_components",
             static_cast<std::vector<vec3::Vector3> (Coil::*)(
                 const std::vector<vec3::CoordVector3>&, ComputeMethod
-            ) const>(&Coil::computeAllAPotentialComponents),
+            ) const>(&Coil::computeAllAPotentialVectors),
             py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
         .def(
             "compute_all_A_potential_components",
             static_cast<std::vector<vec3::Vector3> (Coil::*)(
                 const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllAPotentialComponents),
-            py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
-
-    coil.def(
-            "compute_all_E_field_x",
-            static_cast<std::vector<double> (Coil::*)(const std::vector<vec3::CoordVector3>&, ComputeMethod) const>(&Coil::computeAllEFieldX),
-            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-        .def(
-            "compute_all_E_field_x",
-            static_cast<std::vector<double> (Coil::*)(
-                const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllEFieldX),
-            py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
-
-    coil.def(
-            "compute_all_E_field_y",
-            static_cast<std::vector<double> (Coil::*)(const std::vector<vec3::CoordVector3>&, ComputeMethod) const>(&Coil::computeAllEFieldY),
-            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-        .def(
-            "compute_all_E_field_y",
-            static_cast<std::vector<double> (Coil::*)(
-                const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllEFieldY),
-            py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
-
-    coil.def(
-            "compute_all_E_field_z",
-            static_cast<std::vector<double> (Coil::*)(const std::vector<vec3::CoordVector3>&, ComputeMethod) const>(&Coil::computeAllEFieldZ),
-            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-        .def(
-            "compute_all_E_field_z",
-            static_cast<std::vector<double> (Coil::*)(
-                const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllEFieldZ),
-            py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
-
-    coil.def(
-            "compute_all_E_field_abs",
-            static_cast<std::vector<double> (Coil::*)(const std::vector<vec3::CoordVector3>&, ComputeMethod) const>(&Coil::computeAllEFieldAbs),
-            py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-        .def(
-            "compute_all_E_field_abs",
-            static_cast<std::vector<double> (Coil::*)(
-                const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllEFieldAbs),
+            ) const>(&Coil::computeAllAPotentialVectors),
             py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
 
     coil.def(
             "compute_all_E_field_components",
             static_cast<std::vector<vec3::Vector3> (Coil::*)(
                 const std::vector<vec3::CoordVector3>&, ComputeMethod
-            ) const>(&Coil::computeAllEFieldComponents),
+            ) const>(&Coil::computeAllEFieldVectors),
             py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
         .def(
             "compute_all_E_field_components",
             static_cast<std::vector<vec3::Vector3> (Coil::*)(
                 const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllEFieldComponents),
+            ) const>(&Coil::computeAllEFieldVectors),
             py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
 
     coil.def(
             "compute_all_B_gradient_tensors",
             static_cast<std::vector<vec3::Matrix3> (Coil::*)(
                 const std::vector<vec3::CoordVector3>&, ComputeMethod
-            ) const>(&Coil::computeAllBGradientTensors),
+            ) const>(&Coil::computeAllBGradientMatrices),
             py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
         .def(
             "compute_all_B_gradient_tensors",
             static_cast<std::vector<vec3::Matrix3> (Coil::*)(
                 const std::vector<vec3::CoordVector3>&, const PrecisionArguments&, ComputeMethod
-            ) const>(&Coil::computeAllBGradientTensors),
+            ) const>(&Coil::computeAllBGradientMatrices),
             py::arg("point_vectors"), py::arg("used_precision"), py::arg("compute_method") = CPU_ST);
 
     coil.def_static(

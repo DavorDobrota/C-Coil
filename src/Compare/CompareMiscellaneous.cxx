@@ -24,20 +24,20 @@ void compMethodPrecisionCPUvsGPU()
     std::vector<vec3::Vector3> cpuFieldVectors;
     std::vector<vec3::Vector3> gpuFieldVectors;
 
-    cpuPotential = testCoil.computeAllAPotentialAbs(positionValues, CPU_ST);
-    cpuFieldVectors = testCoil.computeAllBFieldComponents(positionValues, CPU_ST);
+//    cpuPotential = testCoil.computeAllAPotentialAbs(positionValues, CPU_ST);
+    cpuFieldVectors = testCoil.computeAllBFieldVectors(positionValues, CPU_ST);
 
-    gpuPotential = testCoil.computeAllAPotentialAbs(positionValues, GPU);
-    gpuFieldVectors = testCoil.computeAllBFieldComponents(positionValues, GPU);
+//    gpuPotential = testCoil.computeAllAPotentialAbs(positionValues, GPU);
+    gpuFieldVectors = testCoil.computeAllBFieldVectors(positionValues, GPU);
 
     FILE *output = fopen("output.txt", "w");
 
     for (int i = 0; i < pointCount; ++i)
     {
-        fprintf(output, "%.20f\t%.20f\t%.20f\t%.20f\t%.20f\t%.20f\n",
+        fprintf(output, "%.20f\t%.20f\t%.20f\t%.20f\n",
                 cpuFieldVectors[i].x, gpuFieldVectors[i].x,
-                cpuFieldVectors[i].z, gpuFieldVectors[i].z,
-                cpuPotential[i], gpuPotential[i]);
+                cpuFieldVectors[i].z, gpuFieldVectors[i].z);
+//                cpuPotential[i], gpuPotential[i]);
     }
 }
 
@@ -63,11 +63,11 @@ void compPrecisionCPUvsGPU()
     coordArr.emplace_back();
     coordArr.emplace_back();
 
-    std::vector<vec3::Matrix3> gradientArr = prim1.computeAllBGradientTensors(coordArr, GPU);
+    std::vector<vec3::Matrix3> gradientArr = prim1.computeAllBGradientMatrices(coordArr, GPU);
 
-    printf("Gradient xx : %.15g | %.15g\n", prim1.computeBGradientTensor(vec3::CoordVector3()).xx, gradientArr[0].xx);
-    printf("Gradient yy : %.15g | %.15g\n", prim1.computeBGradientTensor(vec3::CoordVector3()).yy, gradientArr[0].yy);
-    printf("Gradient zz : %.15g | %.15g\n", prim1.computeBGradientTensor(vec3::CoordVector3()).zz, gradientArr[0].zz);
+    printf("Gradient xx : %.15g | %.15g\n", prim1.computeBGradientMatrix(vec3::CoordVector3()).xx, gradientArr[0].xx);
+    printf("Gradient yy : %.15g | %.15g\n", prim1.computeBGradientMatrix(vec3::CoordVector3()).yy, gradientArr[0].yy);
+    printf("Gradient zz : %.15g | %.15g\n", prim1.computeBGradientMatrix(vec3::CoordVector3()).zz, gradientArr[0].zz);
 
     printf("\n");
     printf("Comparing calculation precision in GPU and CPU cases (CPU | GPU) slow\n\n");
@@ -86,11 +86,11 @@ void compPrecisionCPUvsGPU()
            Coil::computeAmpereForce(prim2, sec2, PrecisionFactor(7.0), CPU_MT).first.z,
            Coil::computeAmpereForce(prim2, sec2, PrecisionFactor(7.0), GPU).first.z);
 
-    gradientArr = prim2.computeAllBGradientTensors(coordArr, GPU);
+    gradientArr = prim2.computeAllBGradientMatrices(coordArr, GPU);
 
-    printf("Gradient xx : %.15g | %.15g\n", prim2.computeBGradientTensor(vec3::CoordVector3()).xx, gradientArr[0].xx);
-    printf("Gradient yy : %.15g | %.15g\n", prim2.computeBGradientTensor(vec3::CoordVector3()).yy, gradientArr[0].yy);
-    printf("Gradient zz : %.15g | %.15g\n", prim2.computeBGradientTensor(vec3::CoordVector3()).zz, gradientArr[0].zz);
+    printf("Gradient xx : %.15g | %.15g\n", prim2.computeBGradientMatrix(vec3::CoordVector3()).xx, gradientArr[0].xx);
+    printf("Gradient yy : %.15g | %.15g\n", prim2.computeBGradientMatrix(vec3::CoordVector3()).yy, gradientArr[0].yy);
+    printf("Gradient zz : %.15g | %.15g\n", prim2.computeBGradientMatrix(vec3::CoordVector3()).zz, gradientArr[0].zz);
 }
 
 void compMInductanceForSpecialCase()

@@ -36,7 +36,7 @@ void testGradientTensor()
     printf("Z Axis test\n");
     for (int i = 0; i < 1000; ++i)
     {
-        tensor = coil.computeBGradientTensor(vec3::CoordVector3(vec3::CYLINDRICAL, 0.001 * i, 0.0, 0.0));
+        tensor = coil.computeBGradientMatrix(vec3::CoordVector3(vec3::CYLINDRICAL, 0.001 * i, 0.0, 0.0));
         printf("%.15f %.15f %.15f\n", tensor.xx / (1e-7), tensor.yy / (1e-7), tensor.zz / (1e-7));
     }
     printf("\n");
@@ -44,7 +44,7 @@ void testGradientTensor()
     printf("Off axis test\n");
     for (int i = 0; i < 1000; ++i)
     {
-        tensor = coil.computeBGradientTensor(vec3::CoordVector3(vec3::CYLINDRICAL, i * 0.001, 0.5, M_PI / 4));
+        tensor = coil.computeBGradientMatrix(vec3::CoordVector3(vec3::CYLINDRICAL, i * 0.001, 0.5, M_PI / 4));
         printf("%.8f %.8f %.8f | %.8f %.8f %.8f | %.8f %.8f %.8f\n",
                tensor.xx / (1e-7), tensor.xy / (1e-7), tensor.xz / (1e-7),
                tensor.yx / (1e-7), tensor.yy / (1e-7), tensor.yz / (1e-7),

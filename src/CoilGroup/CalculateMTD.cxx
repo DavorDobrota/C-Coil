@@ -30,7 +30,7 @@ CoilGroup::calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3>
                     std::vector<vec3::Vector3> &outputVector
             )
     {
-        outputVector = coil.computeAllBFieldComponents(pointVectors);
+        outputVector = coil.computeAllBFieldVectors(pointVectors);
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
@@ -79,7 +79,7 @@ CoilGroup::calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVect
                     std::vector<vec3::Vector3> &outputVector
             )
     {
-        outputVector = coil.computeAllAPotentialComponents(pointVectors);
+        outputVector = coil.computeAllAPotentialVectors(pointVectors);
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
@@ -128,7 +128,7 @@ CoilGroup::calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3>
                     std::vector<vec3::Vector3> &outputVector
             )
     {
-        outputVector = coil.computeAllEFieldComponents(pointVectors);
+        outputVector = coil.computeAllEFieldVectors(pointVectors);
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
@@ -177,7 +177,7 @@ CoilGroup::calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3>
                     std::vector<vec3::Matrix3> &outputVector
             )
     {
-        outputVector = coil.computeAllBGradientTensors(pointVectors);
+        outputVector = coil.computeAllBGradientMatrices(pointVectors);
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };

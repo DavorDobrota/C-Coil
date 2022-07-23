@@ -132,7 +132,7 @@ std::vector<vec3::Matrix3> Coil::calculateAllBGradientMT(const std::vector<vec3:
     {
         for(size_t i = startIdx; i < stopIdx; i++)
         {
-            auto result = coil.computeBGradientTensor(pointVectors[i], usedPrecision);
+            auto result = coil.computeBGradientMatrix(pointVectors[i], usedPrecision);
             computedGradients[i] = result;
 
             g_threadPool.getCompletedTasks().fetch_add(1ull);

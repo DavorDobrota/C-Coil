@@ -17,7 +17,7 @@ CoilGroup::computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> 
 
         for (const auto & memberCoil : memberCoils)
         {
-            tempArr = memberCoil.computeAllAPotentialComponents(pointVectors, computeMethod);
+            tempArr = memberCoil.computeAllAPotentialVectors(pointVectors, computeMethod);
             for (int i = 0; i < pointVectors.size(); ++i)
                 outputArr[i] += tempArr[i];
         }
@@ -92,7 +92,7 @@ CoilGroup::computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &poi
 
         for (const auto & memberCoil : memberCoils)
         {
-            tempArr = memberCoil.computeAllBFieldComponents(pointVectors, computeMethod);
+            tempArr = memberCoil.computeAllBFieldVectors(pointVectors, computeMethod);
             for (int i = 0; i < pointVectors.size(); ++i)
                 outputArr[i] += tempArr[i];
         }
@@ -164,7 +164,7 @@ CoilGroup::computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &poi
 
         for (const auto & memberCoil : memberCoils)
         {
-            tempArr = memberCoil.computeAllEFieldComponents(pointVectors, computeMethod);
+            tempArr = memberCoil.computeAllEFieldVectors(pointVectors, computeMethod);
             for (int i = 0; i < pointVectors.size(); ++i)
                 outputArr[i] += tempArr[i];
         }
@@ -238,7 +238,7 @@ std::vector<vec3::Matrix3> CoilGroup::computeAllBGradientTensors(const std::vect
 
         for (const auto & memberCoil : memberCoils)
         {
-            tempArr = memberCoil.computeAllBGradientTensors(pointVectors, computeMethod);
+            tempArr = memberCoil.computeAllBGradientMatrices(pointVectors, computeMethod);
             for (int i = 0; i < pointVectors.size(); ++i)
                 outputArr[i] += tempArr[i];
         }

@@ -85,7 +85,7 @@ vec3::Matrix3 CoilGroup::computeBGradientTensor(vec3::CoordVector3 pointVector) 
     vec3::Matrix3 totalGradient = vec3::Matrix3();
 
     for (const auto & memberCoil : memberCoils)
-        totalGradient += memberCoil.computeBGradientTensor(pointVector);
+        totalGradient += memberCoil.computeBGradientMatrix(pointVector);
 
     return totalGradient;
 }

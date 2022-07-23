@@ -67,11 +67,11 @@ double Coil::calculateAmpereForceZAxisSlow(const Coil &primary, const Coil &seco
     }
 
     double ampereForce = 0.0;
-    std::vector<double> fieldH = primary.computeAllBFieldX(positionVectors, primaryPrecisionArguments, computeMethod);
+    std::vector<vec3::Vector3> fieldH = primary.computeAllBFieldVectors(positionVectors, primaryPrecisionArguments, computeMethod);
 
     for (int i = 0; i < fieldH.size(); ++i)
     {
-        ampereForce += fieldH[i] * weights[i];
+        ampereForce += fieldH[i].x * weights[i];
     }
     ampereForce /= (lengthBlocks * thicknessBlocks);
     return (-1.0) * ampereForce * 2*M_PI * secondary.numOfTurns * secondary.current;
@@ -327,8 +327,9 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
             }
         }
     }
-    std::vector<vec3::Vector3> magneticFields = primary.computeAllBFieldComponents(positionVectors,
-                                                                                   primaryPrecisionArguments, computeMethod);
+    std::vector<vec3::Vector3> magneticFields = primary.computeAllBFieldVectors(positionVectors,
+                                                                                primaryPrecisionArguments,
+                                                                                computeMethod);
 
     vec3::Vector3 forceVector;
     vec3::Vector3 torqueVector;

@@ -11,6 +11,11 @@ vec3::FieldVector3::FieldVector3() : FieldVector3(0.0, 0.0, 0.0) {}
 vec3::FieldVector3::FieldVector3(double x, double y, double z) : x(x), y(y), z(z) {}
 
 
+vec3::Triplet::Triplet() : Triplet(0.0, 0.0, 0.0) {}
+
+vec3::Triplet::Triplet(double first, double second, double third) : first(first), second(second), third(third) {}
+
+
 vec3::FieldVector3 vec3::FieldVector3::operator+(const FieldVector3 &otherVec) const
 {
     return FieldVector3(this->x + otherVec.x,
@@ -77,11 +82,45 @@ vec3::FieldVector3 vec3::FieldVector3::crossProduct(FieldVector3 vector1, FieldV
     return FieldVector3(xOutput, yOutput, zOutput);
 }
 
+
+vec3::FieldVector3 vec3::FieldVector3::getFromCylindricalCoords(double z, double r, double phi)
+{
+    return vec3::FieldVector3(r * std::cos(phi), r * std::sin(phi), z);
+}
+
+vec3::FieldVector3 vec3::FieldVector3::getFromSphericalCoords(double r, double theta, double phi)
+{
+    double rCoord = r * std::sin(theta);
+    return vec3::FieldVector3(rCoord * std::cos(phi), rCoord * std::sin(phi), r * std::cos(phi));
+}
+
+vec3::Triplet vec3::FieldVector3::getAsCylindricalCoords() const
+{
+    return vec3::Triplet(z, std::sqrt(x * x + y * y), std::atan2(y, x));
+}
+
+vec3::Triplet vec3::FieldVector3::getAsSphericalCoords() const
+{
+    double temp = x * x + y * y;
+
+    return vec3::Triplet(std::sqrt(temp + z * z), std::atan2(temp, z), std::atan2(y, x));
+}
+
+
 vec3::FieldVector3::operator std::string() const
 {
     std::stringstream output;
 
     output << "FieldVector3(" << "x=" << x << ", y=" << y << ", z=" << z << ")";
+
+    return output.str();
+}
+
+vec3::Triplet::operator std::string() const
+{
+    std::stringstream output;
+
+    output << "Triplet(" << "first=" << first << ", second=" << second << ", third=" << third << ")";
 
     return output.str();
 }

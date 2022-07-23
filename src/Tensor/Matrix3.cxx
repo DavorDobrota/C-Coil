@@ -10,6 +10,11 @@ vec3::Matrix3::Matrix3(double xx, double xy, double xz, double yx, double yy, do
                         yx(yx), yy(yy), yz(yz),
                         zx(zx), zy(zy), zz(zz) {}
 
+double vec3::Matrix3::det() const
+{
+    return xx * (yy * zz - yz * zy) - xy * (yx * zz - yz * zx) + xz * (yx * zy - yy * zx);
+}
+
 
 vec3::Matrix3 vec3::Matrix3::operator+(const Matrix3 &mat) const
 {
@@ -24,6 +29,20 @@ vec3::Matrix3 vec3::Matrix3::operator+=(const Matrix3 &mat)
     this->yx += mat.yx; this->yy += mat.yy; this->yz += mat.yz;
     this->zx += mat.zx; this->zy += mat.zy; this->zz += mat.zz;
     return *this;
+}
+
+vec3::Matrix3 vec3::Matrix3::operator*(double multiplier) const
+{
+    return vec3::Matrix3(this->xx * multiplier, this->xy * multiplier, this->xz * multiplier,
+                         this->yx * multiplier, this->yy * multiplier, this->yz * multiplier,
+                         this->zx * multiplier, this->zy * multiplier, this->zz * multiplier);
+}
+
+void vec3::Matrix3::operator*=(double multiplier)
+{
+    this->xx *= multiplier; this->xy *= multiplier; this->xz *= multiplier;
+    this->yx *= multiplier; this->yy *= multiplier; this->yz *= multiplier;
+    this->zx *= multiplier; this->zy *= multiplier; this->zz *= multiplier;
 }
 
 vec3::FieldVector3 vec3::Matrix3::operator*(const FieldVector3 &vec) const

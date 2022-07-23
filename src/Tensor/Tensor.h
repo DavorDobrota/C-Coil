@@ -13,6 +13,11 @@ namespace vec3
     class FieldVector3;
     class Matrix3;
 
+    class Triplet;
+
+    class Vector3Array;
+    class Matrix3Array;
+
     class CoordVector3
     {
         public:
@@ -79,6 +84,12 @@ namespace vec3
             static double scalarProduct(FieldVector3 vector1, FieldVector3 vector2);
             static FieldVector3 crossProduct(FieldVector3 vector1, FieldVector3 vector2);
 
+            static FieldVector3 getFromCylindricalCoords(double z, double r, double phi);
+            static FieldVector3 getFromSphericalCoords(double r, double theta, double phi);
+
+            [[nodiscard]] Triplet getAsCylindricalCoords() const;
+            [[nodiscard]] Triplet getAsSphericalCoords() const;
+
             explicit operator std::string() const;
     };
 
@@ -101,12 +112,97 @@ namespace vec3
             Matrix3();
             explicit Matrix3(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz);
 
+            [[nodiscard]] double det() const;
+
             Matrix3 operator+(const Matrix3 &mat) const;
             Matrix3 operator+=(const Matrix3 &mat);
+
+            Matrix3 operator*(double multiplier) const;
+            void operator*=(double multiplier);
             Matrix3 operator*(const Matrix3 &mat) const;
             FieldVector3 operator*(const FieldVector3 &vec) const;
 
-            operator std::string() const;
+            explicit operator std::string() const;
+    };
+
+    class Triplet
+    {
+        public:
+
+            double first;
+            double second;
+            double third;
+
+            Triplet();
+            explicit Triplet(double first, double second, double third);
+
+            explicit operator std::string() const;
+    };
+
+    class Vector3Array
+    {
+        private:
+
+            std::vector<FieldVector3> vectorArray;
+
+        public:
+
+            Vector3Array();
+            explicit Vector3Array(const std::vector<FieldVector3> &vectorArray);
+
+            void append(const FieldVector3 &appendedVector3);
+            void append(double x, double y, double z);
+            void reserve(size_t reserveSize);
+            void resize(size_t newSize);
+            [[nodiscard]] size_t size() const;
+
+            std::vector<FieldVector3> & getStdVectorRef();
+
+            [[nodiscard]] std::vector<double> x() const;
+            [[nodiscard]] std::vector<double> y() const;
+            [[nodiscard]] std::vector<double> z() const;
+            [[nodiscard]] std::vector<double> abs() const;
+
+            FieldVector3 operator[](int index);
+            void operator+=(const FieldVector3 &appendedVector3);
+
+            explicit operator std::string() const;
+    };
+
+    class Matrix3Array
+    {
+        private:
+
+        std::vector<Matrix3> matrixArray;
+
+        public:
+
+            Matrix3Array();
+            explicit Matrix3Array(const std::vector<Matrix3> &matrixArray);
+
+            void append(const Matrix3 &appendedMatrix3);
+            void append(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz);
+            void reserve(size_t reserveSize);
+            void resize(size_t newSize);
+            [[nodiscard]] size_t size() const;
+
+            std::vector<Matrix3> & getStdVectorRef();
+
+            [[nodiscard]] std::vector<double> xx() const;
+            [[nodiscard]] std::vector<double> xy() const;
+            [[nodiscard]] std::vector<double> xz() const;
+            [[nodiscard]] std::vector<double> yx() const;
+            [[nodiscard]] std::vector<double> yy() const;
+            [[nodiscard]] std::vector<double> yz() const;
+            [[nodiscard]] std::vector<double> zx() const;
+            [[nodiscard]] std::vector<double> zy() const;
+            [[nodiscard]] std::vector<double> zz() const;
+            [[nodiscard]] std::vector<double> det() const;
+
+            Matrix3 operator[](int index);
+            void operator+=(const Matrix3 &appendedMatrix3);
+
+            explicit operator std::string() const;
     };
 }
 

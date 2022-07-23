@@ -1,4 +1,4 @@
-add_library(Tensor OBJECT CoordVector3.cxx FieldVector3.cxx Matrix3.cxx)
+add_library(Tensor OBJECT CoordVector3.cxx FieldVector3.cxx Matrix3.cxx Vector3Array.cxx Matrix3Array.cxx)
 
 target_compile_options(Tensor PRIVATE -fpic)
 

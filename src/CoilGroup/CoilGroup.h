@@ -14,7 +14,8 @@ class CoilGroup
         int threadCount{};
         
     public:
-        explicit CoilGroup(std::vector<Coil> memberCoils = std::vector<Coil>(), PrecisionFactor precisionFactor = PrecisionFactor(), 
+        explicit CoilGroup(std::vector<Coil> memberCoils = std::vector<Coil>(),
+                           PrecisionFactor precisionFactor = PrecisionFactor(),
                            int threadCount = defaultThreadCount);
         
         [[nodiscard]] PrecisionFactor getDefaultPrecisionFactor() const;
@@ -28,47 +29,20 @@ class CoilGroup
         [[nodiscard]] vec3::Vector3 computeBFieldVector(vec3::CoordVector3 pointVector) const;
         [[nodiscard]] vec3::Vector3 computeAPotentialVector(vec3::CoordVector3 pointVector) const;
         [[nodiscard]] vec3::Vector3 computeEFieldVector(vec3::CoordVector3 pointVector) const;
-        [[nodiscard]] vec3::Matrix3 computeBGradientTensor(vec3::CoordVector3 pointVector) const;
+        [[nodiscard]] vec3::Matrix3 computeBGradientMatrix(vec3::CoordVector3 pointVector) const;
 
-        [[nodiscard]] std::vector<vec3::Vector3>
-        computeAllAPotentialComponents(const std::vector<vec3::CoordVector3> &pointVectors,
-                                       ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] std::vector<double> computeAllAPotentialX(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                                ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] std::vector<double> computeAllAPotentialY(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                                ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] std::vector<double> computeAllAPotentialZ(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                                ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] std::vector<double> computeAllAPotentialAbs(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                                  ComputeMethod computeMethod = CPU_ST) const;
+        [[nodiscard]] vec3::Vector3Array computeAllAPotentialVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                     ComputeMethod computeMethod = CPU_ST) const;
 
-        [[nodiscard]] std::vector<vec3::Vector3>
-        computeAllBFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
-                                   ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] std::vector<double> computeAllBFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                            ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] std::vector<double> computeAllBFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                            ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] std::vector<double> computeAllBFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                            ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] std::vector<double> computeAllBFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                              ComputeMethod computeMethod = CPU_ST) const;
+        [[nodiscard]] vec3::Vector3Array computeAllBFieldVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                 ComputeMethod computeMethod = CPU_ST) const;
 
-        [[nodiscard]] std::vector<vec3::Vector3>
-        computeAllEFieldComponents(const std::vector<vec3::CoordVector3> &pointVectors,
-                                   ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] std::vector<double> computeAllEFieldX(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                            ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] std::vector<double> computeAllEFieldY(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                            ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] std::vector<double> computeAllEFieldZ(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                            ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] std::vector<double> computeAllEFieldAbs(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                              ComputeMethod computeMethod = CPU_ST) const;
+        [[nodiscard]] vec3::Vector3Array computeAllEFieldVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                 ComputeMethod computeMethod = CPU_ST) const;
 
-        [[nodiscard]] std::vector<vec3::Matrix3>
-        computeAllBGradientTensors(const std::vector<vec3::CoordVector3> &pointVectors,
-                                   ComputeMethod computeMethod = CPU_ST) const;
+        [[nodiscard]] vec3::Matrix3Array computeAllBGradientMatrices(const std::vector<vec3::CoordVector3> &pointVectors,
+                                                                     ComputeMethod computeMethod = CPU_ST) const;
+
 
         [[nodiscard]] double computeMutualInductance(const Coil &secondary,
                                                      PrecisionFactor precisionFactor = PrecisionFactor(),
@@ -85,28 +59,17 @@ class CoilGroup
 
     private:
         // MTD stands for Multithreading Distributed - useful when there are many coils, each is given its own thread
-        [[nodiscard]] std::vector<vec3::Vector3>
-        calculateAllAPotentialComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
-
-        [[nodiscard]] std::vector<vec3::Vector3>
-        calculateAllBFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
-
-        [[nodiscard]] std::vector<vec3::Vector3>
-        calculateAllEFieldComponentsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
-
-        [[nodiscard]] std::vector<vec3::Matrix3>
-        calculateAllBGradientTensorsMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
+        [[nodiscard]] vec3::Vector3Array calculateAllAPotentialMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
+        [[nodiscard]] vec3::Vector3Array calculateAllBFieldMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
+        [[nodiscard]] vec3::Vector3Array calculateAllEFieldMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
+        [[nodiscard]] vec3::Matrix3Array calculateAllBGradientMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
 
         void generateCoilDataArray(CoilData *coilDataArr) const;
 
-        [[nodiscard]] std::vector<vec3::Vector3>
-        calculateAllAPotentialComponentsGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
+        [[nodiscard]] vec3::Vector3Array calculateAllAPotentialGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
+        [[nodiscard]] vec3::Vector3Array calculateAllBFieldGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
+        [[nodiscard]] vec3::Matrix3Array calculateAllBGradientGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
 
-        [[nodiscard]] std::vector<vec3::Vector3>
-        calculateAllBFieldComponentsGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
-
-        [[nodiscard]] std::vector<vec3::Matrix3>
-        calculateAllBGradientTensorsGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
 
         [[nodiscard]] double calculateMutualInductanceMTD(const Coil &secondary,
                                                           PrecisionFactor precisionFactor = PrecisionFactor()) const;

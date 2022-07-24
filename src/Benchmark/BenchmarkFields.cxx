@@ -48,6 +48,8 @@ void benchComputeFieldsST(int opCount)
     printf("gradient G  : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int repeatCount, int threadCount)
 {
     using namespace std::chrono;
@@ -84,14 +86,11 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
     for (int i = 0; i < opCount; i++)
         positionValues[i] = vec3::CoordVector3(vec3::CYLINDRICAL, 0.1, i * M_PI / opCount, 0.0);
 
-    std::vector<vec3::Vector3> cpuPotentialVector;
-    std::vector<vec3::Vector3> gpuPotentialVector;
+    vec3::Vector3Array potentialVectors;
 
-    std::vector<vec3::Vector3> cpuFieldVectors;
-    std::vector<vec3::Vector3> gpuFieldVectors;
+    vec3::Vector3Array fieldVectors;
 
-    std::vector<vec3::Matrix3> cpuGradientMatrices;
-    std::vector<vec3::Matrix3> gpuGradientMatrices;
+    vec3::Matrix3Array gradientMatrices;
 
     high_resolution_clock::time_point begin_time;
     double interval;
@@ -100,19 +99,19 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
 
     // ST methods slow - repetitions removed for single core, it is just too slow compared to the rest
     begin_time = high_resolution_clock::now();
-    cpuPotentialVector = testCoilSlow.computeAllAPotentialVectors(positionValues, CPU_ST);
+    potentialVectors = testCoilSlow.computeAllAPotentialVectors(positionValues, CPU_ST);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A CPU_ST slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * numOperationsSlowCPU / interval, 1e-6 * numOperationsSlowCPU / interval, opCount / interval);
 
     begin_time = high_resolution_clock::now();
-    cpuFieldVectors = testCoilSlow.computeAllBFieldVectors(positionValues, CPU_ST);
+    fieldVectors = testCoilSlow.computeAllBFieldVectors(positionValues, CPU_ST);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B CPU_ST slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * numOperationsSlowCPU / interval, 1e-6 * numOperationsSlowCPU / interval, opCount / interval);
 
     begin_time = high_resolution_clock::now();
-    cpuGradientMatrices = testCoilSlow.computeAllBGradientMatrices(positionValues, CPU_ST);
+    gradientMatrices = testCoilSlow.computeAllBGradientMatrices(positionValues, CPU_ST);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_ST slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * numOperationsSlowCPU / interval, 1e-6 * numOperationsSlowCPU / interval, opCount / interval);
@@ -120,19 +119,19 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
     printf("\n");
     // ST methods fast - repetitions removed for single core, it is just too slow compared to the rest
     begin_time = high_resolution_clock::now();
-    cpuPotentialVector = testCoilFast.computeAllAPotentialVectors(positionValues, CPU_ST);
+    potentialVectors = testCoilFast.computeAllAPotentialVectors(positionValues, CPU_ST);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A CPU_ST fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * numOperationsFastCPU1 / interval, 1e-6 * numOperationsFastCPU2 / interval, opCount / interval);
 
     begin_time = high_resolution_clock::now();
-    cpuFieldVectors = testCoilFast.computeAllBFieldVectors(positionValues, CPU_ST);
+    fieldVectors = testCoilFast.computeAllBFieldVectors(positionValues, CPU_ST);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B CPU_ST fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * numOperationsFastCPU1 / interval, 1e-6 * numOperationsFastCPU2 / interval, opCount / interval);
 
     begin_time = high_resolution_clock::now();
-    cpuGradientMatrices = testCoilFast.computeAllBGradientMatrices(positionValues, CPU_ST);
+    gradientMatrices = testCoilFast.computeAllBGradientMatrices(positionValues, CPU_ST);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_ST fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * numOperationsFastCPU1 / interval, 1e-6 * numOperationsFastCPU2 / interval, opCount / interval);
@@ -142,7 +141,7 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
     // MT methods slow
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < repeatCount; i++)
-        cpuPotentialVector = testCoilSlow.computeAllAPotentialVectors(positionValues, CPU_MT);
+        potentialVectors = testCoilSlow.computeAllAPotentialVectors(positionValues, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A CPU_MT slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * (numOperationsSlowCPU * repeatCount) / interval,
@@ -151,7 +150,7 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < repeatCount; i++)
-        cpuFieldVectors = testCoilSlow.computeAllBFieldVectors(positionValues, CPU_MT);
+        fieldVectors = testCoilSlow.computeAllBFieldVectors(positionValues, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B CPU_MT slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * (numOperationsSlowCPU * repeatCount) / interval,
@@ -160,7 +159,7 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < repeatCount; i++)
-        cpuGradientMatrices = testCoilSlow.computeAllBGradientMatrices(positionValues, CPU_MT);
+        gradientMatrices = testCoilSlow.computeAllBGradientMatrices(positionValues, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_MT slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * (numOperationsSlowCPU * repeatCount) / interval,
@@ -171,7 +170,7 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
     // MT methods fast
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < repeatCount; i++)
-        cpuPotentialVector = testCoilFast.computeAllAPotentialVectors(positionValues, CPU_MT);
+        potentialVectors = testCoilFast.computeAllAPotentialVectors(positionValues, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A CPU_MT fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * (numOperationsFastCPU1 * repeatCount) / interval,
@@ -180,7 +179,7 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < repeatCount; i++)
-        cpuFieldVectors = testCoilFast.computeAllBFieldVectors(positionValues, CPU_MT);
+        fieldVectors = testCoilFast.computeAllBFieldVectors(positionValues, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B CPU_MT fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * (numOperationsFastCPU1 * repeatCount) / interval,
@@ -189,7 +188,7 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < repeatCount; i++)
-        cpuGradientMatrices = testCoilFast.computeAllBGradientMatrices(positionValues, CPU_MT);
+        gradientMatrices = testCoilFast.computeAllBGradientMatrices(positionValues, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_MT fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * (numOperationsFastCPU1 * repeatCount) / interval,
@@ -198,12 +197,12 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
 
     printf("\n");
 
-    cpuPotentialVector = testCoilSlow.computeAllAPotentialVectors(positionValues, GPU); // warmup for the GPU
+    potentialVectors = testCoilSlow.computeAllAPotentialVectors(positionValues, GPU); // warmup for the GPU
 
     // GPU methods slow
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < repeatCount; i++)
-        cpuPotentialVector = testCoilSlow.computeAllAPotentialVectors(positionValues, GPU);
+        potentialVectors = testCoilSlow.computeAllAPotentialVectors(positionValues, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A GPU    slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * (numOperationsSlowGPU * repeatCount) / interval,
@@ -212,7 +211,7 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < repeatCount; i++)
-        gpuFieldVectors = testCoilSlow.computeAllBFieldVectors(positionValues, GPU);
+        fieldVectors = testCoilSlow.computeAllBFieldVectors(positionValues, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B GPU    slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * (numOperationsSlowGPU * repeatCount) / interval,
@@ -221,7 +220,7 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < repeatCount; i++)
-        gpuGradientMatrices = testCoilSlow.computeAllBGradientMatrices(positionValues, GPU);
+        gradientMatrices = testCoilSlow.computeAllBGradientMatrices(positionValues, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G GPU    slow : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * (numOperationsSlowGPU * repeatCount) / interval,
@@ -233,7 +232,7 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < repeatCount; i++)
-        cpuPotentialVector = testCoilFast.computeAllAPotentialVectors(positionValues, GPU);
+        potentialVectors = testCoilFast.computeAllAPotentialVectors(positionValues, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A GPU    fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * (numOperationsFastGPU1 * repeatCount) / interval,
@@ -242,7 +241,7 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < repeatCount; i++)
-        gpuFieldVectors = testCoilFast.computeAllBFieldVectors(positionValues, GPU);
+        fieldVectors = testCoilFast.computeAllBFieldVectors(positionValues, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B GPU    fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * (numOperationsFastGPU1 * repeatCount) / interval,
@@ -251,7 +250,7 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < repeatCount; i++)
-        gpuGradientMatrices = testCoilFast.computeAllBGradientMatrices(positionValues, GPU);
+        gradientMatrices = testCoilFast.computeAllBGradientMatrices(positionValues, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G GPU    fast : %.1f MInc/s | eff: %.1f MInc/s | %.0f points/s\n",
            1e-6 * (numOperationsFastGPU1 * repeatCount) / interval,
@@ -260,7 +259,10 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
 
     printf("\n");
 }
+#pragma clang diagnostic pop
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
 {
     using namespace std::chrono;
@@ -280,9 +282,9 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     for (int i = 0; i < opCount; ++i)
         positionValues[i] = vec3::CoordVector3(vec3::SPHERICAL, 1.0, M_PI * i / opCount, 0.0);
 
-    std::vector<vec3::Vector3> potentialArr;
-    std::vector<vec3::Vector3> fieldArr;
-    std::vector<vec3::Matrix3> gradientArr;
+    vec3::Vector3Array potentialArr;
+    vec3::Vector3Array fieldArr;
+    vec3::Matrix3Array gradientArr;
 
     printf("This test is created for the purpose of generating performance charts\n\n");
 
@@ -839,6 +841,7 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
 
     fclose(output);
 }
+#pragma clang diagnostic pop
 
 void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int threadCount, int maxPointsLog2)
 {
@@ -862,9 +865,9 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
 
     std::vector<vec3::CoordVector3> positions;
 
-    std::vector<vec3::Vector3> potentialArr;
-    std::vector<vec3::Vector3> fieldArr;
-    std::vector<vec3::Matrix3> gradientArr;
+    vec3::Vector3Array potentialArr;
+    vec3::Vector3Array fieldArr;
+    vec3::Matrix3Array gradientArr;
 
     printf("Vector potential performance slow for precision factor %.1f and %d threads\n",
            precisionFactor.relativePrecision, threadCount);
@@ -1044,9 +1047,9 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
 
     std::vector<vec3::CoordVector3> positions;
 
-    std::vector<vec3::Vector3> potentialArr;
-    std::vector<vec3::Vector3> fieldArr;
-    std::vector<vec3::Matrix3> gradientArr;
+    vec3::Vector3Array potentialArr;
+    vec3::Vector3Array fieldArr;
+    vec3::Matrix3Array gradientArr;
 
     printf("Vector potential performance slow for precision factor %.1f\n",
            precisionFactor.relativePrecision);

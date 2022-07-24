@@ -21,23 +21,23 @@ void compMethodPrecisionCPUvsGPU()
     std::vector<double> cpuPotential;
     std::vector<double> gpuPotential;
 
-    std::vector<vec3::Vector3> cpuFieldVectors;
-    std::vector<vec3::Vector3> gpuFieldVectors;
+    vec3::Vector3Array cpuFieldVectors;
+    vec3::Vector3Array gpuFieldVectors;
 
-//    cpuPotential = testCoil.computeAllAPotentialAbs(positionValues, CPU_ST);
+    cpuPotential = testCoil.computeAllAPotentialVectors(positionValues, CPU_ST).abs();
     cpuFieldVectors = testCoil.computeAllBFieldVectors(positionValues, CPU_ST);
 
-//    gpuPotential = testCoil.computeAllAPotentialAbs(positionValues, GPU);
+    gpuPotential = testCoil.computeAllAPotentialVectors(positionValues, GPU).abs();
     gpuFieldVectors = testCoil.computeAllBFieldVectors(positionValues, GPU);
 
     FILE *output = fopen("output.txt", "w");
 
     for (int i = 0; i < pointCount; ++i)
     {
-        fprintf(output, "%.20f\t%.20f\t%.20f\t%.20f\n",
+        fprintf(output, "%.20f\t%.20f\t%.20f\t%.20f\t%.20f\t%.20f\n",
                 cpuFieldVectors[i].x, gpuFieldVectors[i].x,
-                cpuFieldVectors[i].z, gpuFieldVectors[i].z);
-//                cpuPotential[i], gpuPotential[i]);
+                cpuFieldVectors[i].z, gpuFieldVectors[i].z,
+                cpuPotential[i], gpuPotential[i]);
     }
 }
 
@@ -63,7 +63,7 @@ void compPrecisionCPUvsGPU()
     coordArr.emplace_back();
     coordArr.emplace_back();
 
-    std::vector<vec3::Matrix3> gradientArr = prim1.computeAllBGradientMatrices(coordArr, GPU);
+    vec3::Matrix3Array gradientArr = prim1.computeAllBGradientMatrices(coordArr, GPU);
 
     printf("Gradient xx : %.15g | %.15g\n", prim1.computeBGradientMatrix(vec3::CoordVector3()).xx, gradientArr[0].xx);
     printf("Gradient yy : %.15g | %.15g\n", prim1.computeBGradientMatrix(vec3::CoordVector3()).yy, gradientArr[0].yy);

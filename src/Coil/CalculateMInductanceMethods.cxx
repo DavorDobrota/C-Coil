@@ -65,7 +65,9 @@ double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil 
             }
         }
     }
-    std::vector<vec3::Vector3> potentialA = primary.computeAllAPotentialVectors(positionVectors, primaryPrecisionArguments, computeMethod);
+    vec3::Vector3Array potentialA = primary.computeAllAPotentialVectors(positionVectors,
+                                                                        primaryPrecisionArguments,
+                                                                        computeMethod);
     double mutualInductance = 0.0;
 
     for (int i = 0; i < potentialA.size(); ++i)
@@ -328,9 +330,9 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
             }
         }
     }
-    std::vector<vec3::Vector3> potentialVectors =
-            primary.computeAllAPotentialVectors(positionVectors, primaryPrecisionArguments, computeMethod);
-
+    vec3::Vector3Array potentialVectors = primary.computeAllAPotentialVectors(positionVectors,
+                                                                              primaryPrecisionArguments,
+                                                                              computeMethod);
     double mutualInductance = 0.0;
 
     for (int i = 0; i < numElements; ++i)
@@ -421,7 +423,6 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, Comp
                             calculatedSelfInductance +=
                                     tempConst * incrementWeightFi *
                                     tempConstA * cosinePhi * (tempConstD - tempConstE + length * tempConstH);
-
                         }
                     }
                 }

@@ -3,10 +3,9 @@
 #include <sstream>
 
 
-vec3::Matrix3Array::Matrix3Array()
-{
-    this->matrixArray = {};
-}
+vec3::Matrix3Array::Matrix3Array() { this->matrixArray = {}; }
+
+vec3::Matrix3Array::Matrix3Array(size_t initSize) { this->matrixArray.resize(initSize); }
 
 vec3::Matrix3Array::Matrix3Array(const std::vector<Matrix3> &matrixArray)
 {
@@ -14,10 +13,7 @@ vec3::Matrix3Array::Matrix3Array(const std::vector<Matrix3> &matrixArray)
 }
 
 
-void vec3::Matrix3Array::append(const Matrix3 &appendedMatrix3)
-{
-    this->matrixArray.push_back(appendedMatrix3);
-}
+void vec3::Matrix3Array::append(const Matrix3 &appendedMatrix3) { this->matrixArray.push_back(appendedMatrix3); }
 
 void vec3::Matrix3Array::append(double xx, double xy, double xz,
                                 double yx, double yy, double yz,
@@ -26,25 +22,15 @@ void vec3::Matrix3Array::append(double xx, double xy, double xz,
     this->matrixArray.emplace_back(xx, xy, xz, yx, yy, yz, zx, zy, zz);
 }
 
-void vec3::Matrix3Array::reserve(size_t reserveSize)
-{
-    this->matrixArray.reserve(reserveSize);
-}
+void vec3::Matrix3Array::reserve(size_t reserveSize) { this->matrixArray.reserve(reserveSize); }
 
-void vec3::Matrix3Array::resize(size_t newSize)
-{
-    this->matrixArray.resize(newSize);
-}
+void vec3::Matrix3Array::resize(size_t newSize) { this->matrixArray.resize(newSize); }
 
-size_t vec3::Matrix3Array::size() const
-{
-    return this->matrixArray.size();
-}
+size_t vec3::Matrix3Array::size() const { return this->matrixArray.size(); }
 
-std::vector<vec3::Matrix3> & vec3::Matrix3Array::getStdVectorRef()
-{
-    return this->matrixArray;
-}
+void vec3::Matrix3Array::clear() { this->matrixArray.clear(); }
+
+std::vector<vec3::Matrix3> & vec3::Matrix3Array::getStdVectorRef() { return this->matrixArray; }
 
 
 std::vector<double> vec3::Matrix3Array::xx() const
@@ -158,7 +144,7 @@ std::vector<double> vec3::Matrix3Array::det() const
 }
 
 
-vec3::Matrix3 vec3::Matrix3Array::operator[](int index)
+vec3::Matrix3 vec3::Matrix3Array::operator[](size_t index)
 {
     return this->matrixArray[index];
 }

@@ -80,7 +80,7 @@ vec3::Vector3 CoilGroup::computeEFieldVector(vec3::CoordVector3 pointVector) con
     return totalField;
 }
 
-vec3::Matrix3 CoilGroup::computeBGradientTensor(vec3::CoordVector3 pointVector) const
+vec3::Matrix3 CoilGroup::computeBGradientMatrix(vec3::CoordVector3 pointVector) const
 {
     vec3::Matrix3 totalGradient = vec3::Matrix3();
 

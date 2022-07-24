@@ -3,10 +3,9 @@
 #include <sstream>
 
 
-vec3::Vector3Array::Vector3Array()
-{
-    this->vectorArray = {};
-}
+vec3::Vector3Array::Vector3Array() { this->vectorArray = {}; }
+
+vec3::Vector3Array::Vector3Array(size_t initSize) { this->vectorArray.resize(initSize); }
 
 vec3::Vector3Array::Vector3Array(const std::vector<Vector3> &vectorArray)
 {
@@ -14,35 +13,19 @@ vec3::Vector3Array::Vector3Array(const std::vector<Vector3> &vectorArray)
 }
 
 
-void vec3::Vector3Array::append(const Vector3 &appendedVector3)
-{
-    this->vectorArray.push_back(appendedVector3);
-}
+void vec3::Vector3Array::append(const Vector3 &appendedVector3) { this->vectorArray.push_back(appendedVector3); }
 
-void vec3::Vector3Array::append(double x, double y, double z)
-{
-    this->vectorArray.emplace_back(x, y, z);
-}
+void vec3::Vector3Array::append(double x, double y, double z) { this->vectorArray.emplace_back(x, y, z); }
 
-void vec3::Vector3Array::reserve(size_t reserveSize)
-{
-    this->vectorArray.reserve(reserveSize);
-}
+void vec3::Vector3Array::reserve(size_t reserveSize) { this->vectorArray.reserve(reserveSize); }
 
-void vec3::Vector3Array::resize(size_t newSize)
-{
-    this->vectorArray.resize(newSize);
-}
+void vec3::Vector3Array::resize(size_t newSize) { this->vectorArray.resize(newSize); }
 
-size_t vec3::Vector3Array::size() const
-{
-    return this->vectorArray.size();
-}
+size_t vec3::Vector3Array::size() const { return this->vectorArray.size(); }
 
-std::vector<vec3::Vector3> & vec3::Vector3Array::getStdVectorRef()
-{
-    return this->vectorArray;
-}
+void vec3::Vector3Array::clear() { this->vectorArray.clear(); }
+
+std::vector<vec3::Vector3> & vec3::Vector3Array::getStdVectorRef() { return this->vectorArray; }
 
 
 std::vector<double> vec3::Vector3Array::x() const
@@ -89,7 +72,7 @@ std::vector<double> vec3::Vector3Array::abs() const
     return outputArr;
 }
 
-vec3::Vector3 vec3::Vector3Array::operator[](int index)
+vec3::Vector3 vec3::Vector3Array::operator[](size_t index)
 {
     return this->vectorArray[index];
 }

@@ -12,6 +12,8 @@ namespace
 }
 
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 void CoilGroup::generateCoilDataArray(CoilData *coilDataArr) const
 {
     for (int i = 0; i < memberCoils.size(); ++i)
@@ -81,8 +83,8 @@ void CoilGroup::generateCoilDataArray(CoilData *coilDataArr) const
     }
 }
 
-std::vector<vec3::Vector3>
-CoilGroup::calculateAllAPotentialComponentsGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
+
+vec3::Vector3Array CoilGroup::calculateAllAPotentialGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
 {
     long long size = pointVectors.size();
     long long coils = memberCoils.size();
@@ -115,19 +117,20 @@ CoilGroup::calculateAllAPotentialComponentsGPU(const std::vector<vec3::CoordVect
     #endif // USE_GPU
 
     free(coordinateArr);
-    std::vector<vec3::Vector3> computedPotentialArr;
+
+    vec3::Vector3Array computedPotentialArr;
     computedPotentialArr.reserve(size);
 
     for (long long i = 0; i < pointVectors.size(); ++i)
-        computedPotentialArr.emplace_back(resultArr[i].x, resultArr[i].y, resultArr[i].z);
+        computedPotentialArr.append(resultArr[i].x, resultArr[i].y, resultArr[i].z);
 
     free(resultArr);
 
     return computedPotentialArr;
 }
 
-std::vector<vec3::Vector3>
-CoilGroup::calculateAllBFieldComponentsGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
+
+vec3::Vector3Array CoilGroup::calculateAllBFieldGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
 {
     long long size = pointVectors.size();
     long long coils = memberCoils.size();
@@ -161,19 +164,20 @@ CoilGroup::calculateAllBFieldComponentsGPU(const std::vector<vec3::CoordVector3>
     #endif // USE_GPU
 
     free(coordinateArr);
-    std::vector<vec3::Vector3> computedFieldArr;
+
+    vec3::Vector3Array computedFieldArr;
     computedFieldArr.reserve(size);
 
     for (long long i = 0; i < pointVectors.size(); ++i)
-        computedFieldArr.emplace_back(resultArr[i].x, resultArr[i].y, resultArr[i].z);
+        computedFieldArr.append(resultArr[i].x, resultArr[i].y, resultArr[i].z);
 
     free(resultArr);
 
     return computedFieldArr;
 }
 
-std::vector<vec3::Matrix3>
-CoilGroup::calculateAllBGradientTensorsGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
+
+vec3::Matrix3Array CoilGroup::calculateAllBGradientGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
 {
     long long size = pointVectors.size();
     long long coils = memberCoils.size();
@@ -207,16 +211,18 @@ CoilGroup::calculateAllBGradientTensorsGPU(const std::vector<vec3::CoordVector3>
     #endif // USE_GPU
 
     free(coordinateArr);
-    std::vector<vec3::Matrix3> computedGradientArr;
+
+    vec3::Matrix3Array computedGradientArr;
     computedGradientArr.reserve(size);
 
     for (long long i = 0; i < pointVectors.size(); ++i)
-        computedGradientArr.emplace_back(resultArr[i].xx, resultArr[i].xy, resultArr[i].xz,
-                                         resultArr[i].yx, resultArr[i].yy, resultArr[i].yz,
-                                         resultArr[i].zx, resultArr[i].zy, resultArr[i].zz);
+        computedGradientArr.append(resultArr[i].xx, resultArr[i].xy, resultArr[i].xz,
+                                   resultArr[i].yx, resultArr[i].yy, resultArr[i].yz,
+                                   resultArr[i].zx, resultArr[i].zy, resultArr[i].zz);
 
     free(resultArr);
 
     return computedGradientArr;
 
 }
+#pragma clang diagnostic pop

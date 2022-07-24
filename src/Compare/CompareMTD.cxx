@@ -16,7 +16,7 @@ void compCoilGroupMTD(int coilCount, int pointCount, int threadCount, bool print
 
     CoilGroup torusGroup = CoilGroup();
     std::vector<vec3::CoordVector3> fieldPoints(pointCount);
-    std::vector<vec3::Vector3> computedBField;
+    vec3::Vector3Array computedBField;
 
     for (int i = 0; i < pointCount; ++i)
         fieldPoints[i] = vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, torusRadius, 2*M_PI * i / pointCount);
@@ -33,7 +33,7 @@ void compCoilGroupMTD(int coilCount, int pointCount, int threadCount, bool print
     torusGroup.setThreadCount(threadCount);
     torusGroup.setDefaultPrecisionFactor(PrecisionFactor(3.0));
 
-    computedBField = torusGroup.computeAllBFieldComponents(fieldPoints, CPU_MT);
+    computedBField = torusGroup.computeAllBFieldVectors(fieldPoints, CPU_MT);
 
     if (print)
         for (int i = 0; i < pointCount; ++i)

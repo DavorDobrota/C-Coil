@@ -97,7 +97,7 @@ void testCoilPositionAndRotation()
     for (int i = 0; i < pointCount; ++i)
         pointPositions1[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.1 + i * 0.001);
 
-    std::vector<vec3::Vector3> fieldVectors1, fieldVectors2;
+    vec3::Vector3Array fieldVectors1, fieldVectors2;
 
     fieldVectors1 = coil1.computeAllBFieldVectors(pointPositions1);
     fieldVectors2 = coil2.computeAllBFieldVectors(pointPositions1);

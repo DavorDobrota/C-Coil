@@ -148,12 +148,14 @@ namespace vec3
         public:
 
             Vector3Array();
+            explicit Vector3Array(size_t initSize);
             explicit Vector3Array(const std::vector<Vector3> &vectorArray);
 
             void append(const Vector3 &appendedVector3);
             void append(double x, double y, double z);
             void reserve(size_t reserveSize);
             void resize(size_t newSize);
+            void clear();
             [[nodiscard]] size_t size() const;
 
             std::vector<Vector3> & getStdVectorRef();
@@ -163,7 +165,7 @@ namespace vec3
             [[nodiscard]] std::vector<double> z() const;
             [[nodiscard]] std::vector<double> abs() const;
 
-            Vector3 operator[](int index);
+            Vector3 operator[](size_t index);
             void operator+=(const Vector3 &appendedVector3);
 
             explicit operator std::string() const;
@@ -178,12 +180,14 @@ namespace vec3
         public:
 
             Matrix3Array();
+            explicit Matrix3Array(size_t initSize);
             explicit Matrix3Array(const std::vector<Matrix3> &matrixArray);
 
             void append(const Matrix3 &appendedMatrix3);
             void append(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz);
             void reserve(size_t reserveSize);
             void resize(size_t newSize);
+            void clear();
             [[nodiscard]] size_t size() const;
 
             std::vector<Matrix3> & getStdVectorRef();
@@ -199,7 +203,7 @@ namespace vec3
             [[nodiscard]] std::vector<double> zz() const;
             [[nodiscard]] std::vector<double> det() const;
 
-            Matrix3 operator[](int index);
+            Matrix3 operator[](size_t index);
             void operator+=(const Matrix3 &appendedMatrix3);
 
             explicit operator std::string() const;

@@ -28,9 +28,9 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
     CoilGroup torusGroupFlat = CoilGroup();
 
     std::vector<vec3::CoordVector3> fieldPoints(opCount);
-    std::vector<vec3::Vector3> computedAPotential;
-    std::vector<vec3::Vector3> computedBField;
-    std::vector<vec3::Matrix3> computedGradient;
+    vec3::Vector3Array computedAPotential;
+    vec3::Vector3Array computedBField;
+    vec3::Matrix3Array computedGradient;
 
     for (int i = 0; i < opCount; ++i)
         fieldPoints[i] = vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, torusRadius, 2*M_PI * i / opCount);
@@ -59,19 +59,19 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
 
     // MT slow tests
     begin_time = high_resolution_clock::now();
-    computedAPotential = torusGroupFlat.computeAllAPotentialComponents(fieldPoints, CPU_MT);
+    computedAPotential = torusGroupFlat.computeAllAPotentialVectors(fieldPoints, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A CPU_MT slow : %.1f kPoints/s | eff %.1f kPoints/s\n",
            0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
 
     begin_time = high_resolution_clock::now();
-    computedBField = torusGroupFlat.computeAllBFieldComponents(fieldPoints, CPU_MT);
+    computedBField = torusGroupFlat.computeAllBFieldVectors(fieldPoints, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B CPU_MT slow : %.1f kPoints/s | eff %.1f kPoints/s\n",
            0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
 
     begin_time = high_resolution_clock::now();
-    computedGradient = torusGroupFlat.computeAllBGradientTensors(fieldPoints, CPU_MT);
+    computedGradient = torusGroupFlat.computeAllBGradientMatrices(fieldPoints, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_MT slow : %.1f kPoints/s | eff %.1f kPoints/s\n",
            0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
@@ -80,19 +80,19 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
 
     // MT fast tests
     begin_time = high_resolution_clock::now();
-    computedAPotential = torusGroupThick.computeAllAPotentialComponents(fieldPoints, CPU_MT);
+    computedAPotential = torusGroupThick.computeAllAPotentialVectors(fieldPoints, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A CPU_MT fast : %.1f kPoints/s | eff %.1f kPoints/s\n",
            0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
 
     begin_time = high_resolution_clock::now();
-    computedBField = torusGroupThick.computeAllBFieldComponents(fieldPoints, CPU_MT);
+    computedBField = torusGroupThick.computeAllBFieldVectors(fieldPoints, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B CPU_MT fast : %.1f kPoints/s | eff %.1f kPoints/s\n",
            0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
 
     begin_time = high_resolution_clock::now();
-    computedGradient = torusGroupThick.computeAllBGradientTensors(fieldPoints, CPU_MT);
+    computedGradient = torusGroupThick.computeAllBGradientMatrices(fieldPoints, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_MT fast : %.1f kPoints/s | eff %.1f kPoints/s\n",
            0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
@@ -100,22 +100,22 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
     printf("\n");
 
     // GPU slow tests
-    computedAPotential = torusGroupThick.computeAllAPotentialComponents(fieldPoints, GPU); // warmup
+    computedAPotential = torusGroupThick.computeAllAPotentialVectors(fieldPoints, GPU); // warmup
 
     begin_time = high_resolution_clock::now();
-    computedAPotential = torusGroupFlat.computeAllAPotentialComponents(fieldPoints, GPU);
+    computedAPotential = torusGroupFlat.computeAllAPotentialVectors(fieldPoints, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A GPU    slow : %.1f kPoints/s | eff %.1f kPoints/s\n",
            0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
 
     begin_time = high_resolution_clock::now();
-    computedBField = torusGroupFlat.computeAllBFieldComponents(fieldPoints, GPU);
+    computedBField = torusGroupFlat.computeAllBFieldVectors(fieldPoints, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B GPU    slow : %.1f kPoints/s | eff %.1f kPoints/s\n",
            0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
 
     begin_time = high_resolution_clock::now();
-    computedGradient = torusGroupFlat.computeAllBGradientTensors(fieldPoints, GPU);
+    computedGradient = torusGroupFlat.computeAllBGradientMatrices(fieldPoints, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G GPU    slow : %.1f kPoints/s | eff %.1f kPoints/s\n",
            0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
@@ -125,19 +125,19 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
     // GPU fast tests
 
     begin_time = high_resolution_clock::now();
-    computedAPotential = torusGroupThick.computeAllAPotentialComponents(fieldPoints, GPU);
+    computedAPotential = torusGroupThick.computeAllAPotentialVectors(fieldPoints, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A GPU    fast : %.1f kPoints/s | eff %.1f kPoints/s\n",
            0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
 
     begin_time = high_resolution_clock::now();
-    computedBField = torusGroupThick.computeAllBFieldComponents(fieldPoints, GPU);
+    computedBField = torusGroupThick.computeAllBFieldVectors(fieldPoints, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B GPU    fast : %.1f kPoints/s | eff %.1f kPoints/s\n",
            0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
 
     begin_time = high_resolution_clock::now();
-    computedGradient = torusGroupThick.computeAllBGradientTensors(fieldPoints, GPU);
+    computedGradient = torusGroupThick.computeAllBGradientMatrices(fieldPoints, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G GPU    fast : %.1f kPoints/s | eff %.1f kPoints/s\n",
            0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
@@ -160,9 +160,9 @@ void benchCoilGroupComputeAllFieldsGPU(int numCoils, int opCount)
     CoilGroup torusGroupFlat = CoilGroup();
 
     std::vector<vec3::CoordVector3> fieldPoints(opCount);
-    std::vector<vec3::Vector3> computedAPotential;
-    std::vector<vec3::Vector3> computedBField;
-    std::vector<vec3::Matrix3> computedGradient;
+    vec3::Vector3Array computedAPotential;
+    vec3::Vector3Array computedBField;
+    vec3::Matrix3Array computedGradient;
 
     for (int i = 0; i < opCount; ++i)
         fieldPoints[i] = vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, torusRadius, 2*M_PI * i / opCount);
@@ -185,7 +185,7 @@ void benchCoilGroupComputeAllFieldsGPU(int numCoils, int opCount)
         torusGroupFlat.addCoil(tempCoil);
     }
 
-    computedAPotential = torusGroupThick.computeAllAPotentialComponents(fieldPoints, GPU); // warmup
+    computedAPotential = torusGroupThick.computeAllAPotentialVectors(fieldPoints, GPU); // warmup
 
     for (int i = 1; i <= 8; ++i)
     {
@@ -195,37 +195,37 @@ void benchCoilGroupComputeAllFieldsGPU(int numCoils, int opCount)
         printf("Precision factor %.1f\n", double(i));
 
         begin_time = high_resolution_clock::now();
-        computedAPotential = torusGroupFlat.computeAllAPotentialComponents(fieldPoints, GPU);
+        computedAPotential = torusGroupFlat.computeAllAPotentialVectors(fieldPoints, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("Potential A  slow : %.1f kPoints/s | eff %.1f MPoints/s\n",
                0.001 * opCount / interval, 1e-6 * opCount * numCoils / interval);
 
         begin_time = high_resolution_clock::now();
-        computedBField = torusGroupFlat.computeAllBFieldComponents(fieldPoints, GPU);
+        computedBField = torusGroupFlat.computeAllBFieldVectors(fieldPoints, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("Field     B  slow : %.1f kPoints/s | eff %.1f MPoints/s\n",
                0.001 * opCount / interval, 1e-6 * opCount * numCoils / interval);
 
         begin_time = high_resolution_clock::now();
-        computedGradient = torusGroupFlat.computeAllBGradientTensors(fieldPoints, GPU);
+        computedGradient = torusGroupFlat.computeAllBGradientMatrices(fieldPoints, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("Gradient  G  slow : %.1f kPoints/s | eff %.1f MPoints/s\n",
                0.001 * opCount / interval, 1e-6 * opCount * numCoils / interval);
 
         begin_time = high_resolution_clock::now();
-        computedAPotential = torusGroupThick.computeAllAPotentialComponents(fieldPoints, GPU);
+        computedAPotential = torusGroupThick.computeAllAPotentialVectors(fieldPoints, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("Potential A  fast : %.1f kPoints/s | eff %.1f MPoints/s\n",
                0.001 * opCount / interval, 1e-6 * opCount * numCoils / interval);
 
         begin_time = high_resolution_clock::now();
-        computedBField = torusGroupThick.computeAllBFieldComponents(fieldPoints, GPU);
+        computedBField = torusGroupThick.computeAllBFieldVectors(fieldPoints, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("Field     B  fast : %.1f kPoints/s | eff %.1f MPoints/s\n",
                0.001 * opCount / interval, 1e-6 * opCount * numCoils / interval);
 
         begin_time = high_resolution_clock::now();
-        computedGradient = torusGroupThick.computeAllBGradientTensors(fieldPoints, GPU);
+        computedGradient = torusGroupThick.computeAllBGradientMatrices(fieldPoints, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("Gradient  G  fast : %.1f kPoints/s | eff %.1f MPoints/s\n",
                0.001 * opCount / interval, 1e-6 * opCount * numCoils / interval);
@@ -280,28 +280,28 @@ void benchCoilGroupComputeAllFieldsMTD(int threadCount)
     }
 
     std::vector<vec3::CoordVector3> referencePoints(pointCount);
-    std::vector<vec3::Vector3> computedAPotential;
-    std::vector<vec3::Vector3> computedBField;
-    std::vector<vec3::Matrix3> computedBGradient;
+    vec3::Vector3Array computedAPotential;
+    vec3::Vector3Array computedBField;
+    vec3::Matrix3Array computedBGradient;
 
     for (int i = 0; i < pointCount; ++i)
         referencePoints[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 1.0 * i / pointCount, -0.1);
 
-    computedAPotential = coilGroup.computeAllAPotentialComponents(referencePoints, CPU_ST);
+    computedAPotential = coilGroup.computeAllAPotentialVectors(referencePoints, CPU_ST);
     printf("%.15g\n", computedAPotential[pointCount / 2].x);
-    computedAPotential = coilGroup.computeAllAPotentialComponents(referencePoints, CPU_MT);
+    computedAPotential = coilGroup.computeAllAPotentialVectors(referencePoints, CPU_MT);
     printf("%.15g\n", computedAPotential[pointCount / 2].x);
     printf("\n");
 
-    computedBField = coilGroup.computeAllBFieldComponents(referencePoints, CPU_ST);
+    computedBField = coilGroup.computeAllBFieldVectors(referencePoints, CPU_ST);
     printf("%.15g\n", computedBField[pointCount / 2].x);
-    computedBField = coilGroup.computeAllBFieldComponents(referencePoints, CPU_MT);
+    computedBField = coilGroup.computeAllBFieldVectors(referencePoints, CPU_MT);
     printf("%.15g\n", computedBField[pointCount / 2].x);
     printf("\n");
 
-    computedBGradient = coilGroup.computeAllBGradientTensors(referencePoints, CPU_ST);
+    computedBGradient = coilGroup.computeAllBGradientMatrices(referencePoints, CPU_ST);
     printf("%.15g\n", computedBGradient[pointCount / 2].xy);
-    computedBGradient = coilGroup.computeAllBGradientTensors(referencePoints, CPU_MT);
+    computedBGradient = coilGroup.computeAllBGradientMatrices(referencePoints, CPU_MT);
     printf("%.15g\n", computedBGradient[pointCount / 2].xy);
     printf("\n");
 }

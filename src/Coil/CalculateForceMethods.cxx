@@ -55,7 +55,7 @@ double Coil::calculateAmpereForceZAxisSlow(const Coil &primary, const Coil &seco
                     double incrementPositionR = rBlockPosition +
                                                 (thicknessBlockSize * 0.5) * Legendre::positionMatrix[maxThicknessIndex][rIndex];
 
-                    positionVectors.append(incrementPositionZ, incrementPositionR, 0.0);
+                    positionVectors.append(incrementPositionR, 0.0, incrementPositionZ);
 
                     weights.emplace_back(
                             incrementPositionR * 0.25 *

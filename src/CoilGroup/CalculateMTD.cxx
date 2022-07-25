@@ -12,7 +12,7 @@ namespace
 }
 
 
-vec3::Vector3Array CoilGroup::calculateAllBFieldMTD(const std::vector<vec3::CoordVector3> &pointVectors) const
+vec3::Vector3Array CoilGroup::calculateAllBFieldMTD(const vec3::Vector3Array &pointVectors) const
 {
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -25,7 +25,7 @@ vec3::Vector3Array CoilGroup::calculateAllBFieldMTD(const std::vector<vec3::Coor
             (
                     int idx,
                     const Coil &coil,
-                    const std::vector<vec3::CoordVector3> &pointVectors,
+                    const vec3::Vector3Array &pointVectors,
                     std::vector<vec3::Vector3> &outputVector
             )
     {
@@ -56,7 +56,7 @@ vec3::Vector3Array CoilGroup::calculateAllBFieldMTD(const std::vector<vec3::Coor
     return output;
 }
 
-vec3::Vector3Array CoilGroup::calculateAllAPotentialMTD(const std::vector<vec3::CoordVector3> &pointVectors) const
+vec3::Vector3Array CoilGroup::calculateAllAPotentialMTD(const vec3::Vector3Array &pointVectors) const
 {
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -69,7 +69,7 @@ vec3::Vector3Array CoilGroup::calculateAllAPotentialMTD(const std::vector<vec3::
             (
                     int idx,
                     const Coil &coil,
-                    const std::vector<vec3::CoordVector3> &pointVectors,
+                    const vec3::Vector3Array &pointVectors,
                     std::vector<vec3::Vector3> &outputVector
             )
     {
@@ -100,7 +100,7 @@ vec3::Vector3Array CoilGroup::calculateAllAPotentialMTD(const std::vector<vec3::
     return output;
 }
 
-vec3::Vector3Array CoilGroup::calculateAllEFieldMTD(const std::vector<vec3::CoordVector3> &pointVectors) const
+vec3::Vector3Array CoilGroup::calculateAllEFieldMTD(const vec3::Vector3Array &pointVectors) const
 {
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -113,7 +113,7 @@ vec3::Vector3Array CoilGroup::calculateAllEFieldMTD(const std::vector<vec3::Coor
             (
                     int idx,
                     const Coil &coil,
-                    const std::vector<vec3::CoordVector3> &pointVectors,
+                    const vec3::Vector3Array &pointVectors,
                     std::vector<vec3::Vector3> &outputVector
             )
     {
@@ -144,7 +144,7 @@ vec3::Vector3Array CoilGroup::calculateAllEFieldMTD(const std::vector<vec3::Coor
     return output;
 }
 
-vec3::Matrix3Array CoilGroup::calculateAllBGradientMTD(const std::vector<vec3::CoordVector3> &pointVectors) const
+vec3::Matrix3Array CoilGroup::calculateAllBGradientMTD(const vec3::Vector3Array &pointVectors) const
 {
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -157,7 +157,7 @@ vec3::Matrix3Array CoilGroup::calculateAllBGradientMTD(const std::vector<vec3::C
             (
                     int idx,
                     const Coil &coil,
-                    const std::vector<vec3::CoordVector3> &pointVectors,
+                    const vec3::Vector3Array &pointVectors,
                     std::vector<vec3::Matrix3> &outputVector
             )
     {

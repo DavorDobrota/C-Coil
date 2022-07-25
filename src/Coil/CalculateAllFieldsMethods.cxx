@@ -22,13 +22,13 @@ void Coil::setThreadCount(int threadCount)
 }
 
 
-vec3::Vector3Array Coil::calculateAllAPotentialMT(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Vector3Array Coil::calculateAllAPotentialMT(const vec3::Vector3Array &pointVectors,
                                                   const PrecisionArguments &usedPrecision) const
 {
     std::vector<size_t> blockPositions = calculateChunkSize(pointVectors.size());
 
     vec3::Vector3Array computedPotentials(pointVectors.size());
-    std::vector<vec3::Vector3> tempRef = computedPotentials.getStdVectorRef();
+    std::vector<vec3::Vector3> &tempRef = computedPotentials.getStdVectorRef();
 
     g_threadPool.setTaskCount(pointVectors.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -37,7 +37,7 @@ vec3::Vector3Array Coil::calculateAllAPotentialMT(const std::vector<vec3::CoordV
             int idx,
             const Coil &coil,
             const PrecisionArguments &usedPrecision,
-            const std::vector<vec3::CoordVector3> &pointVectors,
+            const vec3::Vector3Array &pointVectors,
             std::vector<vec3::Vector3> &computedPotentials,
             size_t startIdx, size_t stopIdx
     ) -> void
@@ -68,13 +68,13 @@ vec3::Vector3Array Coil::calculateAllAPotentialMT(const std::vector<vec3::CoordV
     return computedPotentials;
 }
 
-vec3::Vector3Array Coil::calculateAllBFieldMT(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Vector3Array Coil::calculateAllBFieldMT(const vec3::Vector3Array &pointVectors,
                                               const PrecisionArguments &usedPrecision) const
 {
     std::vector<size_t> blockPositions = calculateChunkSize(pointVectors.size());
 
     vec3::Vector3Array computedFields(pointVectors.size());
-    std::vector<vec3::Vector3> tempRef = computedFields.getStdVectorRef();
+    std::vector<vec3::Vector3> &tempRef = computedFields.getStdVectorRef();
 
     g_threadPool.setTaskCount(pointVectors.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -83,7 +83,7 @@ vec3::Vector3Array Coil::calculateAllBFieldMT(const std::vector<vec3::CoordVecto
             int idx,
             const Coil &coil,
             const PrecisionArguments &usedPrecision,
-            const std::vector<vec3::CoordVector3> &pointVectors,
+            const vec3::Vector3Array &pointVectors,
             std::vector<vec3::Vector3> &computedFields,
             size_t startIdx, size_t stopIdx
     ) -> void
@@ -113,13 +113,13 @@ vec3::Vector3Array Coil::calculateAllBFieldMT(const std::vector<vec3::CoordVecto
     return computedFields;
 }
 
-vec3::Matrix3Array Coil::calculateAllBGradientMT(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Matrix3Array Coil::calculateAllBGradientMT(const vec3::Vector3Array &pointVectors,
                                                  const PrecisionArguments &usedPrecision) const
 {
     std::vector<size_t> blockPositions = calculateChunkSize(pointVectors.size());
 
     vec3::Matrix3Array computedGradients(pointVectors.size());
-    std::vector<vec3::Matrix3> tempRef = computedGradients.getStdVectorRef();
+    std::vector<vec3::Matrix3> &tempRef = computedGradients.getStdVectorRef();
 
     g_threadPool.setTaskCount(pointVectors.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -128,7 +128,7 @@ vec3::Matrix3Array Coil::calculateAllBGradientMT(const std::vector<vec3::CoordVe
             int idx,
             const Coil &coil,
             const PrecisionArguments &usedPrecision,
-            const std::vector<vec3::CoordVector3> &pointVectors,
+            const vec3::Vector3Array &pointVectors,
             std::vector<vec3::Matrix3> &computedGradients,
             size_t startIdx, size_t stopIdx
     ) -> void
@@ -160,7 +160,7 @@ vec3::Matrix3Array Coil::calculateAllBGradientMT(const std::vector<vec3::CoordVe
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-vec3::Vector3Array Coil::calculateAllAPotentialGPU(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Vector3Array Coil::calculateAllAPotentialGPU(const vec3::Vector3Array &pointVectors,
                                                    const PrecisionArguments &usedPrecision) const
 {
     long long size = pointVectors.size();
@@ -173,12 +173,11 @@ vec3::Vector3Array Coil::calculateAllAPotentialGPU(const std::vector<vec3::Coord
 
     for (long long i = 0; i < size; ++i)
     {
-        vec3::CoordVector3 vector = pointVectors[i];
-        vector.convertToCartesian();
+        vec3::Vector3 tempVec = pointVectors[i];
 
-        coordinateArr[i].x = vector.comp1;
-        coordinateArr[i].y = vector.comp2;
-        coordinateArr[i].z = vector.comp3;
+        coordinateArr[i].x = tempVec.x;
+        coordinateArr[i].y = tempVec.y;
+        coordinateArr[i].z = tempVec.z;
     }
 
     CoilData coilData;
@@ -208,7 +207,7 @@ vec3::Vector3Array Coil::calculateAllAPotentialGPU(const std::vector<vec3::Coord
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-vec3::Vector3Array Coil::calculateAllBFieldGPU(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Vector3Array Coil::calculateAllBFieldGPU(const vec3::Vector3Array &pointVectors,
                                                const PrecisionArguments &usedPrecision) const
 {
     long long size = pointVectors.size();
@@ -221,12 +220,11 @@ vec3::Vector3Array Coil::calculateAllBFieldGPU(const std::vector<vec3::CoordVect
 
     for (long long i = 0; i < size; ++i)
     {
-        vec3::CoordVector3 vector = pointVectors[i];
-        vector.convertToCartesian();
+        vec3::Vector3 tempVec = pointVectors[i];
 
-        coordinateArr[i].x = vector.comp1;
-        coordinateArr[i].y = vector.comp2;
-        coordinateArr[i].z = vector.comp3;
+        coordinateArr[i].x = tempVec.x;
+        coordinateArr[i].y = tempVec.y;
+        coordinateArr[i].z = tempVec.z;
     }
 
     CoilData coilData;
@@ -256,7 +254,7 @@ vec3::Vector3Array Coil::calculateAllBFieldGPU(const std::vector<vec3::CoordVect
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-vec3::Matrix3Array Coil::calculateAllBGradientGPU(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Matrix3Array Coil::calculateAllBGradientGPU(const vec3::Vector3Array &pointVectors,
                                                   const PrecisionArguments &usedPrecision) const
 {
     long long size = pointVectors.size();
@@ -269,12 +267,11 @@ vec3::Matrix3Array Coil::calculateAllBGradientGPU(const std::vector<vec3::CoordV
 
     for (long long i = 0; i < size; ++i)
     {
-        vec3::CoordVector3 vector = pointVectors[i];
-        vector.convertToCartesian();
+        vec3::Vector3 tempVec = pointVectors[i];
 
-        coordinateArr[i].x = vector.comp1;
-        coordinateArr[i].y = vector.comp2;
-        coordinateArr[i].z = vector.comp3;
+        coordinateArr[i].x = tempVec.x;
+        coordinateArr[i].y = tempVec.y;
+        coordinateArr[i].z = tempVec.z;
     }
 
     CoilData coilData;

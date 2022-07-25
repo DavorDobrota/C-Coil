@@ -17,7 +17,7 @@ Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, CoilPairArg
 {
     if (isZAxisCase(primary, secondary))
     {
-        vec3::Vector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
+        vec3::Vector3 secPositionVec = secondary.getPositionVector();
         double zForce = 0.0;
 
         if ((primary.coilType == CoilType::THIN || primary.coilType == CoilType::RECTANGULAR) &&
@@ -46,7 +46,7 @@ Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, PrecisionFa
 
 
 std::pair<vec3::Vector3, vec3::Vector3>
-Coil::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::Vector3 dipoleMoment,
+Coil::computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 dipoleMoment,
                                  const PrecisionArguments &usedPrecision) const
 {
     vec3::Vector3 magneticField = computeBFieldVector(pointVector, usedPrecision);
@@ -59,18 +59,18 @@ Coil::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::Vector3 d
 }
 
 std::pair<vec3::Vector3, vec3::Vector3>
-Coil::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::Vector3 dipoleMoment) const
+Coil::computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 dipoleMoment) const
 {
     return computeForceOnDipoleMoment(pointVector, dipoleMoment, defaultPrecisionCPU);
 }
 
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
 Coil::computeAllAmpereForceArrangements(Coil primary, Coil secondary,
-                                        const std::vector<vec3::CoordVector3> &primaryPositions,
-                                        const std::vector<vec3::CoordVector3> &secondaryPositions,
+                                        const vec3::Vector3Array &primaryPositions,
+                                        const vec3::Vector3Array &secondaryPositions,
                                         const std::vector<double> &primaryYAngles, const std::vector<double> &primaryZAngles,
                                         const std::vector<double> &secondaryYAngles, const std::vector<double> &secondaryZAngles,
-                                        PrecisionFactor precisionFactor, ComputeMethod method)
+                                        PrecisionFactor precisionFactor, ComputeMethod computeMethod)
 {
     std::vector<std::pair<vec3::Vector3, vec3::Vector3>> outputForcesAndTorques;
 
@@ -83,14 +83,14 @@ Coil::computeAllAmpereForceArrangements(Coil primary, Coil secondary,
         unsigned long long numArrangements = primaryPositions.size();
         outputForcesAndTorques.resize(numArrangements);
 
-        if (numArrangements < 4 * primary.getThreadCount() || method != CPU_MT)
+        if (numArrangements < 4 * primary.getThreadCount() || computeMethod != CPU_MT)
         {
             for (int i = 0; i < numArrangements; ++i)
             {
                 primary.setPositionAndOrientation(primaryPositions[i], primaryYAngles[i], primaryZAngles[i]);
                 secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
 
-                outputForcesAndTorques[i] = Coil::computeAmpereForce(primary, secondary, precisionFactor, method);
+                outputForcesAndTorques[i] = Coil::computeAmpereForce(primary, secondary, precisionFactor, computeMethod);
             }
         }
         else
@@ -103,8 +103,8 @@ Coil::computeAllAmpereForceArrangements(Coil primary, Coil secondary,
                             int idx,
                             Coil primary,
                             Coil secondary,
-                            vec3::CoordVector3 primaryPosition,
-                            vec3::CoordVector3 secondaryPosition,
+                            vec3::Vector3 primaryPosition,
+                            vec3::Vector3 secondaryPosition,
                             double primaryYAngle,
                             double primaryZAngle,
                             double secondaryYAngle,

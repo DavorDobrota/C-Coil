@@ -4,16 +4,16 @@
 #include <math.h>
 
 
-vec3::Vector3Array Coil::computeAllBFieldVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Vector3Array Coil::computeAllBFieldVectors(const vec3::Vector3Array &pointVectors,
                                                  const PrecisionArguments &usedPrecision,
                                                  ComputeMethod computeMethod) const
 {
-    if (computeMethod == CPU_MT) {
-
+    if (computeMethod == CPU_MT)
+    {
         return calculateAllBFieldMT(pointVectors, usedPrecision);
     }
-    else if (computeMethod == GPU) {
-
+    else if (computeMethod == GPU)
+    {
         return calculateAllBFieldGPU(pointVectors, usedPrecision);
     }
     else
@@ -21,14 +21,14 @@ vec3::Vector3Array Coil::computeAllBFieldVectors(const std::vector<vec3::CoordVe
         vec3::Vector3Array computedFieldArr = vec3::Vector3Array();
         computedFieldArr.reserve(pointVectors.size());
 
-        for (const auto & pointVector : pointVectors)
-            computedFieldArr += computeBFieldVector(pointVector, usedPrecision);
+        for (int i = 0; i < pointVectors.size(); ++i)
+            computedFieldArr += computeBFieldVector(pointVectors[i], usedPrecision);
 
         return computedFieldArr;
     }
 }
 
-vec3::Vector3Array Coil::computeAllBFieldVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Vector3Array Coil::computeAllBFieldVectors(const vec3::Vector3Array &pointVectors,
                                                  ComputeMethod computeMethod) const
 {
     if (computeMethod == GPU)
@@ -38,7 +38,7 @@ vec3::Vector3Array Coil::computeAllBFieldVectors(const std::vector<vec3::CoordVe
 }
 
 
-vec3::Vector3Array Coil::computeAllAPotentialVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Vector3Array Coil::computeAllAPotentialVectors(const vec3::Vector3Array &pointVectors,
                                                      const PrecisionArguments &usedPrecision,
                                                      ComputeMethod computeMethod) const
 {
@@ -52,17 +52,17 @@ vec3::Vector3Array Coil::computeAllAPotentialVectors(const std::vector<vec3::Coo
     }
     else
     {
-        vec3::Vector3Array computedPotentialArr = vec3::Vector3Array();
+        vec3::Vector3Array computedPotentialArr;
         computedPotentialArr.reserve(pointVectors.size());
 
-        for (const auto & pointVector : pointVectors)
-            computedPotentialArr += computeAPotentialVector(pointVector, usedPrecision);
+        for (int i = 0; i < pointVectors.size(); ++i)
+            computedPotentialArr += computeAPotentialVector(pointVectors[i], usedPrecision);
 
         return computedPotentialArr;
     }
 }
 
-vec3::Vector3Array Coil::computeAllAPotentialVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Vector3Array Coil::computeAllAPotentialVectors(const vec3::Vector3Array &pointVectors,
                                                      ComputeMethod computeMethod) const
 {
     if (computeMethod == GPU)
@@ -72,7 +72,7 @@ vec3::Vector3Array Coil::computeAllAPotentialVectors(const std::vector<vec3::Coo
 }
 
 
-vec3::Vector3Array Coil::computeAllEFieldVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Vector3Array Coil::computeAllEFieldVectors(const vec3::Vector3Array &pointVectors,
                                                  const PrecisionArguments &usedPrecision,
                                                  ComputeMethod computeMethod) const
 {
@@ -85,7 +85,7 @@ vec3::Vector3Array Coil::computeAllEFieldVectors(const std::vector<vec3::CoordVe
     return output;
 }
 
-vec3::Vector3Array Coil::computeAllEFieldVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Vector3Array Coil::computeAllEFieldVectors(const vec3::Vector3Array &pointVectors,
                                                  ComputeMethod computeMethod) const
 {
     if (computeMethod == GPU)
@@ -95,7 +95,7 @@ vec3::Vector3Array Coil::computeAllEFieldVectors(const std::vector<vec3::CoordVe
 }
 
 
-vec3::Matrix3Array Coil::computeAllBGradientMatrices(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Matrix3Array Coil::computeAllBGradientMatrices(const vec3::Vector3Array &pointVectors,
                                                      const PrecisionArguments &usedPrecision,
                                                      ComputeMethod computeMethod) const
 {
@@ -109,17 +109,17 @@ vec3::Matrix3Array Coil::computeAllBGradientMatrices(const std::vector<vec3::Coo
     }
     else
     {
-        vec3::Matrix3Array computedGradientArr = vec3::Matrix3Array();
+        vec3::Matrix3Array computedGradientArr;
         computedGradientArr.reserve(pointVectors.size());
 
-        for (const auto & pointVector : pointVectors)
-            computedGradientArr += computeBGradientMatrix(pointVector, usedPrecision);
+        for (int i = 0; i < pointVectors.size(); ++i)
+            computedGradientArr += computeBGradientMatrix(pointVectors[i], usedPrecision);
 
         return computedGradientArr;
     }
 }
 
-vec3::Matrix3Array Coil::computeAllBGradientMatrices(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Matrix3Array Coil::computeAllBGradientMatrices(const vec3::Vector3Array &pointVectors,
                                                      ComputeMethod computeMethod) const
 {
     if (computeMethod == GPU)

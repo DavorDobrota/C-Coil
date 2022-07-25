@@ -26,7 +26,7 @@ void testNewCoilParameters()
     testCoil1.setSineFrequency(0);
     testCoil1.setCurrent(1);
 
-    vec3::CoordVector3 positionVector = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0);
+    vec3::Vector3 positionVector = vec3::Vector3(0.0, 0.0, 0.0);
 
     vec3::Vector3 vector = testCoil1.computeBFieldVector(positionVector);
     printf("%.25f %.25f\n", vector.x, testCoil1.computeBFieldVector(positionVector).x);
@@ -83,19 +83,19 @@ void testVector3()
 void testCoilPositionAndRotation()
 {
     Coil coil1 = Coil(0.03, 0.03, 0.12, 3600);
-    coil1.setPositionAndOrientation(vec3::CoordVector3(), 0.0, 0.0);
+    coil1.setPositionAndOrientation(vec3::Vector3(), 0.0, 0.0);
 
     Coil coil2 = Coil(0.03, 0.03, 0.12, 3600);
-    coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, -0.02), 0, 0);
+    coil2.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, -0.02), 0, 0);
 
     Coil coil3 = Coil(0.03, 0.03, 0.12, 3600);
-    coil3.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0), M_PI_2, M_PI_2);
+    coil3.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.0), M_PI_2, M_PI_2);
 
     int pointCount = 100;
-    std::vector<vec3::CoordVector3> pointPositions1(pointCount), pointPositions2(pointCount);
+    vec3::Vector3Array pointPositions1(pointCount), pointPositions2(pointCount);
 
     for (int i = 0; i < pointCount; ++i)
-        pointPositions1[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.1 + i * 0.001);
+        pointPositions1[i] = vec3::Vector3(0.0, 0.0, 0.1 + i * 0.001);
 
     vec3::Vector3Array fieldVectors1, fieldVectors2;
 
@@ -108,8 +108,8 @@ void testCoilPositionAndRotation()
 
     for (int i = 0; i < pointCount; ++i)
     {
-        pointPositions1[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.001 * i);
-        pointPositions2[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.001 * i, 0.0);
+        pointPositions1[i] = vec3::Vector3(0.0, 0.0, 0.001 * i);
+        pointPositions2[i] = vec3::Vector3(0.0, 0.001 * i, 0.0);
     }
 
     fieldVectors1 = coil1.computeAllBFieldVectors(pointPositions1);

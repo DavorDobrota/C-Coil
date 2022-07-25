@@ -33,7 +33,7 @@ double Coil::calculateAmpereForceZAxisSlow(const Coil &primary, const Coil &seco
     double lengthBlockSize = secondary.length / lengthBlocks;
     double thicknessBlockSize = secondary.thickness / thicknessBlocks;
 
-    std::vector<vec3::CoordVector3> positionVectors;
+    vec3::Vector3Array positionVectors;
     std::vector<double> weights;
 
     positionVectors.reserve(numElements);
@@ -55,9 +55,9 @@ double Coil::calculateAmpereForceZAxisSlow(const Coil &primary, const Coil &seco
                     double incrementPositionR = rBlockPosition +
                                                 (thicknessBlockSize * 0.5) * Legendre::positionMatrix[maxThicknessIndex][rIndex];
 
-                    positionVectors.emplace_back(vec3::CYLINDRICAL, incrementPositionZ, incrementPositionR, 0.0);
+                    positionVectors.append(incrementPositionZ, incrementPositionR, 0.0);
 
-                    weights.push_back(
+                    weights.emplace_back(
                             incrementPositionR * 0.25 *
                             Legendre::weightsMatrix[maxLengthIndex][zIndex] *
                             Legendre::weightsMatrix[maxThicknessIndex][rIndex]);
@@ -110,7 +110,7 @@ double Coil::calculateAmpereForceZAxisFast(const Coil &primary, const Coil &seco
         }
     }
 
-    zDisplacement -= vec3::CoordVector3::convertToFieldVector(primary.getPositionVector()).z;
+    zDisplacement -= primary.getPositionVector().z;
 
     double constZ1 = zDisplacement + secondary.length * 0.5 + primary.length * 0.5;
     double constZ2 = zDisplacement + secondary.length * 0.5 - primary.length * 0.5;
@@ -240,7 +240,7 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
 {
     std::vector<double> forceAndTorqueComponents(6);
 
-    vec3::Vector3 displacementVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
+    vec3::Vector3 displacementVec = secondary.getPositionVector();
 
     double xDisplacement = displacementVec.x;
     double yDisplacement = displacementVec.y;
@@ -272,7 +272,7 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
     double lengthBlockSize = secondary.length / lengthBlocks;
     double thicknessBlockSize = secondary.thickness / thicknessBlocks;
 
-    std::vector<vec3::CoordVector3> positionVectors;
+    vec3::Vector3Array positionVectors;
 
     std::vector<double> radii;
     std::vector<double> weights;
@@ -314,9 +314,9 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                             double displacementZ = zDisplacement + lengthDisplacement * cos(alphaAngle) +
                                                    ringRadius * unitRingValues[phiPosition].first.z;
 
-                            positionVectors.emplace_back(vec3::CARTESIAN, displacementX, displacementY, displacementZ);
+                            positionVectors.append(displacementX, displacementY, displacementZ);
 
-                            weights.push_back(
+                            weights.emplace_back(
                                     0.125 * 2*M_PI * ringRadius *
                                     Legendre::weightsMatrix[maxLengthIndex][zIndex] *
                                     Legendre::weightsMatrix[maxThicknessIndex][rIndex] *
@@ -342,8 +342,7 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
         tempForce *= weights[i];
         forceVector += tempForce;
 
-        vec3::Vector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVectors[i]);
-        vec3::Vector3 tempTorque = vec3::Vector3::crossProduct(positionVec - displacementVec, tempForce);
+        vec3::Vector3 tempTorque = vec3::Vector3::crossProduct(positionVectors[i] - displacementVec, tempForce);
         torqueVector += tempTorque;
     }
     double forceFactor = (secondary.current * secondary.numOfTurns) / (lengthBlocks * thicknessBlocks * angularBlocks);

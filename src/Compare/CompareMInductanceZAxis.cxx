@@ -12,7 +12,7 @@ void compMutualInductanceZAxis()
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
 
     primary.setPositionAndOrientation();
-    secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.2));
+    secondary.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.2));
 
     printf("%.20f\n\n", Coil::computeMutualInductance(primary, secondary));
 
@@ -37,8 +37,8 @@ void compMutualInductanceZAxis()
         Coil prim = Coil(Rt1, at1, bt1, Nt1);
         Coil sec = Coil(Rt2, at2, bt2, Nt2);
 
-        prim.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0));
-        sec.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, distance));
+        prim.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.0));
+        sec.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, distance));
 
         for (int i = 1; i <= 8; i++)
         {

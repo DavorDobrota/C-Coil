@@ -15,7 +15,7 @@ int main()
 {
 //    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(1.0), 16, 22);
 //    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 25);
-//    benchComputeAllFields();
+    benchComputeAllFields();
 
 //    benchComputeAllFieldsEveryCoilType(200003, 8);
 

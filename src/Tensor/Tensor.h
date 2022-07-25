@@ -165,7 +165,8 @@ namespace vec3
             [[nodiscard]] std::vector<double> z() const;
             [[nodiscard]] std::vector<double> abs() const;
 
-            Vector3 operator[](size_t index);
+            Vector3 & operator[](size_t index);
+            const Vector3 & operator[](size_t index) const;
             void operator+=(const Vector3 &appendedVector3);
 
             explicit operator std::string() const;
@@ -203,7 +204,8 @@ namespace vec3
             [[nodiscard]] std::vector<double> zz() const;
             [[nodiscard]] std::vector<double> det() const;
 
-            Matrix3 operator[](size_t index);
+            Matrix3 & operator[](size_t index);
+            const Matrix3 & operator[](size_t index) const;
             void operator+=(const Matrix3 &appendedMatrix3);
 
             explicit operator std::string() const;

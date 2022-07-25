@@ -28,21 +28,21 @@ void benchComputeFieldsST(int opCount)
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < opCount; ++i){
-        temp1 = testCoil.computeAPotentialVector(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, i*0.000001));
+        temp1 = testCoil.computeAPotentialVector(vec3::Vector3(0.0, 0.0, i*0.000001));
     }
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("potential A : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < opCount; ++i){
-        temp2 = testCoil.computeBFieldVector(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, i*0.000001));
+        temp2 = testCoil.computeBFieldVector(vec3::Vector3(0.0, 0.0, i*0.000001));
     }
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("combined B  : %.1f MInc/s\n", 1e-6 * numOperations / interval);
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < opCount; ++i){
-        temp3 = testCoil.computeBGradientMatrix(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, i * 0.000001));
+        temp3 = testCoil.computeBGradientMatrix(vec3::Vector3(0.0, 0.0, i * 0.000001));
     }
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("gradient G  : %.1f MInc/s\n", 1e-6 * numOperations / interval);
@@ -81,10 +81,10 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
     const long long numOperationsFastGPU1 = opCount * precisionFastGPU.thicknessIncrementCount * precisionFastGPU.angularIncrementCount;
     const long long numOperationsFastGPU2 = numOperationsFastGPU1 * precisionFastGPU.lengthIncrementCount;
 
-    std::vector<vec3::CoordVector3> positionValues(opCount);
+    vec3::Vector3Array positionValues(opCount);
 
     for (int i = 0; i < opCount; i++)
-        positionValues[i] = vec3::CoordVector3(vec3::CYLINDRICAL, 0.1, i * M_PI / opCount, 0.0);
+        positionValues[i] = vec3::Vector3::getFromCylindricalCoords(0.1, i * M_PI / opCount, 0.0);
 
     vec3::Vector3Array potentialVectors;
 
@@ -277,10 +277,10 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
 
     high_resolution_clock::time_point beginTime;
     double interval, incrementsPerSec, pointsPerSec;
-    std::vector<vec3::CoordVector3> positionValues(opCount);
+    vec3::Vector3Array positionValues(opCount);
 
     for (int i = 0; i < opCount; ++i)
-        positionValues[i] = vec3::CoordVector3(vec3::SPHERICAL, 1.0, M_PI * i / opCount, 0.0);
+        positionValues[i] = vec3::Vector3::getFromSphericalCoords(1.0, M_PI * i / opCount, 0.0);
 
     vec3::Vector3Array potentialArr;
     vec3::Vector3Array fieldArr;
@@ -863,7 +863,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
     double interval;
     double pointsPerSec;
 
-    std::vector<vec3::CoordVector3> positions;
+    vec3::Vector3Array positions;
 
     vec3::Vector3Array potentialArr;
     vec3::Vector3Array fieldArr;
@@ -879,7 +879,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
         positions.resize(numPoints);
         potentialArr.resize(numPoints);
         for (int j = 0; j < numPoints; ++j)
-            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+            positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         potentialArr = flat.computeAllAPotentialVectors(positions, CPU_MT);
@@ -905,7 +905,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
         positions.resize(numPoints);
         potentialArr.resize(numPoints);
         for (int j = 0; j < numPoints; ++j)
-            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+            positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         fieldArr = flat.computeAllBFieldVectors(positions, CPU_MT);
@@ -931,7 +931,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
         positions.resize(numPoints);
         potentialArr.resize(numPoints);
         for (int j = 0; j < numPoints; ++j)
-            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+            positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         gradientArr = flat.computeAllBGradientMatrices(positions, CPU_MT);
@@ -957,7 +957,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
         positions.resize(numPoints);
         potentialArr.resize(numPoints);
         for (int j = 0; j < numPoints; ++j)
-            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+            positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         potentialArr = coil.computeAllAPotentialVectors(positions, CPU_MT);
@@ -983,7 +983,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
         positions.resize(numPoints);
         potentialArr.resize(numPoints);
         for (int j = 0; j < numPoints; ++j)
-            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+            positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         fieldArr = coil.computeAllBFieldVectors(positions, CPU_MT);
@@ -1009,7 +1009,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
         positions.resize(numPoints);
         potentialArr.resize(numPoints);
         for (int j = 0; j < numPoints; ++j)
-            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+            positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         gradientArr = coil.computeAllBGradientMatrices(positions, CPU_MT);
@@ -1045,7 +1045,7 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
     double interval;
     double pointsPerSec;
 
-    std::vector<vec3::CoordVector3> positions;
+    vec3::Vector3Array positions;
 
     vec3::Vector3Array potentialArr;
     vec3::Vector3Array fieldArr;
@@ -1061,7 +1061,7 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
         positions.resize(numPoints);
         potentialArr.resize(numPoints);
         for (int j = 0; j < numPoints; ++j)
-            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+            positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         potentialArr = flat.computeAllAPotentialVectors(positions, GPU);
@@ -1087,7 +1087,7 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
         positions.resize(numPoints);
         potentialArr.resize(numPoints);
         for (int j = 0; j < numPoints; ++j)
-            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+            positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         fieldArr = flat.computeAllBFieldVectors(positions, GPU);
@@ -1113,7 +1113,7 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
         positions.resize(numPoints);
         potentialArr.resize(numPoints);
         for (int j = 0; j < numPoints; ++j)
-            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+            positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         gradientArr = flat.computeAllBGradientMatrices(positions, GPU);
@@ -1139,7 +1139,7 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
         positions.resize(numPoints);
         potentialArr.resize(numPoints);
         for (int j = 0; j < numPoints; ++j)
-            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+            positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         potentialArr = coil.computeAllAPotentialVectors(positions, GPU);
@@ -1165,7 +1165,7 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
         positions.resize(numPoints);
         potentialArr.resize(numPoints);
         for (int j = 0; j < numPoints; ++j)
-            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+            positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         fieldArr = coil.computeAllBFieldVectors(positions, GPU);
@@ -1191,7 +1191,7 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
         positions.resize(numPoints);
         potentialArr.resize(numPoints);
         for (int j = 0; j < numPoints; ++j)
-            positions[j] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.1, double(j));
+            positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         gradientArr = coil.computeAllBGradientMatrices(positions, GPU);

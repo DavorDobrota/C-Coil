@@ -144,7 +144,12 @@ std::vector<double> vec3::Matrix3Array::det() const
 }
 
 
-vec3::Matrix3 vec3::Matrix3Array::operator[](size_t index)
+vec3::Matrix3 & vec3::Matrix3Array::operator[](size_t index)
+{
+    return static_cast<Matrix3 &>(this->matrixArray[index]);
+}
+
+const vec3::Matrix3 & vec3::Matrix3Array::operator[](size_t index) const
 {
     return this->matrixArray[index];
 }

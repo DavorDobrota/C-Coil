@@ -72,7 +72,12 @@ std::vector<double> vec3::Vector3Array::abs() const
     return outputArr;
 }
 
-vec3::Vector3 vec3::Vector3Array::operator[](size_t index)
+vec3::Vector3 & vec3::Vector3Array::operator[](size_t index)
+{
+    return static_cast<Vector3 &>(this->vectorArray[index]);
+}
+
+const vec3::Vector3 &vec3::Vector3Array::operator[](size_t index) const
 {
     return this->vectorArray[index];
 }

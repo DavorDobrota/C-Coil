@@ -27,19 +27,19 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
     CoilGroup torusGroupThick = CoilGroup();
     CoilGroup torusGroupFlat = CoilGroup();
 
-    std::vector<vec3::CoordVector3> fieldPoints(opCount);
+    vec3::Vector3Array fieldPoints(opCount);
     vec3::Vector3Array computedAPotential;
     vec3::Vector3Array computedBField;
     vec3::Matrix3Array computedGradient;
 
     for (int i = 0; i < opCount; ++i)
-        fieldPoints[i] = vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, torusRadius, 2*M_PI * i / opCount);
+        fieldPoints[i] = vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / opCount);
 
     for (int i = 0; i < numCoils; ++i)
     {
         Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, torusRadius / 100.0, 10000, 10);
         tempCoil.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, torusRadius, 2*M_PI * i / numCoils),
+                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / numCoils),
                 M_PI_2, 2*M_PI * i / numCoils + M_PI_2);
         torusGroupThick.addCoil(tempCoil);
     }
@@ -50,7 +50,7 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
     {
         Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, 0.0, 100, 10);
         tempCoil.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, torusRadius, 2*M_PI * i / numCoils),
+                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / numCoils),
                 M_PI_2, 2*M_PI * i / numCoils + M_PI_2);
         torusGroupFlat.addCoil(tempCoil);
     }
@@ -159,19 +159,19 @@ void benchCoilGroupComputeAllFieldsGPU(int numCoils, int opCount)
     CoilGroup torusGroupThick = CoilGroup();
     CoilGroup torusGroupFlat = CoilGroup();
 
-    std::vector<vec3::CoordVector3> fieldPoints(opCount);
+    vec3::Vector3Array fieldPoints(opCount);
     vec3::Vector3Array computedAPotential;
     vec3::Vector3Array computedBField;
     vec3::Matrix3Array computedGradient;
 
     for (int i = 0; i < opCount; ++i)
-        fieldPoints[i] = vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, torusRadius, 2*M_PI * i / opCount);
+        fieldPoints[i] = vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / opCount);
 
     for (int i = 0; i < numCoils; ++i)
     {
         Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, torusRadius / 100.0, 10000, 10);
         tempCoil.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, torusRadius, 2*M_PI * i / numCoils),
+                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / numCoils),
                 M_PI_2, 2*M_PI * i / numCoils + M_PI_2);
         torusGroupThick.addCoil(tempCoil);
     }
@@ -180,7 +180,7 @@ void benchCoilGroupComputeAllFieldsGPU(int numCoils, int opCount)
     {
         Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, 0.0, 100, 10);
         tempCoil.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CYLINDRICAL, 0.0, torusRadius, 2*M_PI * i / numCoils),
+                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / numCoils),
                 M_PI_2, 2*M_PI * i / numCoils + M_PI_2);
         torusGroupFlat.addCoil(tempCoil);
     }
@@ -273,19 +273,17 @@ void benchCoilGroupComputeAllFieldsMTD(int threadCount)
     for (int i = 1; i <= numCoils; ++i)
     {
         Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000);
-        tempCoil.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.15*i),
-                0.0, 0.0);
+        tempCoil.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.15*i),0.0, 0.0);
         coilGroup.addCoil(tempCoil);
     }
 
-    std::vector<vec3::CoordVector3> referencePoints(pointCount);
+    vec3::Vector3Array referencePoints(pointCount);
     vec3::Vector3Array computedAPotential;
     vec3::Vector3Array computedBField;
     vec3::Matrix3Array computedBGradient;
 
     for (int i = 0; i < pointCount; ++i)
-        referencePoints[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 1.0 * i / pointCount, -0.1);
+        referencePoints[i] = vec3::Vector3(0.1, 1.0 * i / pointCount, -0.1);
 
     computedAPotential = coilGroup.computeAllAPotentialVectors(referencePoints, CPU_ST);
     printf("%.15g\n", computedAPotential[pointCount / 2].x);
@@ -320,9 +318,7 @@ void benchCoilGroupMInductanceAndForceMTD(int threadCount)
     for (int i = 1; i <= numCoils; ++i)
     {
         Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000);
-        tempCoil.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.15*i),
-                0.0, 0.0);
+        tempCoil.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.15*i),0.0, 0.0);
         coilGroup.addCoil(tempCoil);
     }
 
@@ -362,8 +358,8 @@ void benchMInductanceAndForceComputeAll(PrecisionFactor precisionFactor, int thr
 
     int numOps = threadCount * 32;
 
-    std::vector<vec3::CoordVector3> primPositions(numOps);
-    std::vector<vec3::CoordVector3> secPositions(numOps);
+    vec3::Vector3Array primPositions(numOps);
+    vec3::Vector3Array secPositions(numOps);
     std::vector<double> primYAxisAngle(numOps);
     std::vector<double> primZAxisAngle(numOps);
     std::vector<double> secYAxisAngle(numOps);
@@ -376,8 +372,8 @@ void benchMInductanceAndForceComputeAll(PrecisionFactor precisionFactor, int thr
 
     for (int i = 0; i < numOps; ++i)
     {
-        primPositions[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0);
-        secPositions[i] = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.1, 0.2 + double(i) * 0.005);
+        primPositions[i] = vec3::Vector3(0.0, 0.0, 0.0);
+        secPositions[i] = vec3::Vector3(0.0, 0.1, 0.2 + double(i) * 0.005);
         primYAxisAngle[i] = 0.0;
         primZAxisAngle[i] = 0.0;
         secYAxisAngle[i] = 0.5;

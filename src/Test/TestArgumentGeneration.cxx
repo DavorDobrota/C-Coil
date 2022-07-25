@@ -6,7 +6,7 @@
 
 void testMInductanceZAxisDifferentGeometries()
 {
-    vec3::CoordVector3 defaultVec = vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.2);
+    vec3::Vector3 defaultVec = vec3::Vector3(0.0, 0.0, 0.2);
 
     printf("Testing mutual inductance z-axis in 16 different combinations\n\n");
 
@@ -95,7 +95,7 @@ void testMInductanceZAxisDifferentGeometries()
 
 void testMInductanceGeneralDifferentGeometries()
 {
-    vec3::CoordVector3 defaultVec = vec3::CoordVector3(vec3::CARTESIAN, 1e-8, 0.0, 0.2);
+    vec3::Vector3 defaultVec = vec3::Vector3(1e-8, 0.0, 0.2);
 
     printf("Testing mutual inductance general in 16 different combinations\n\n");
 

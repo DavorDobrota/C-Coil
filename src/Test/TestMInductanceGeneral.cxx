@@ -13,8 +13,8 @@ void testMutualInductanceGeneralForZAxis(ComputeMethod computeMethod, int thread
 
     primary.setThreadCount(threadCount);
     secondary.setThreadCount(threadCount);
-    primary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.0), 0.0, 0.0);
-    secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 1e-10, 0.0, 0.2), 0.0, 0.0);
+    primary.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.0), 0.0, 0.0);
+    secondary.setPositionAndOrientation(vec3::Vector3(1e-10, 0.0, 0.2), 0.0, 0.0);
 
 
     printf("%.20f\n\n", Coil::computeMutualInductance(primary, secondary));
@@ -33,8 +33,8 @@ void testMutualInductanceGeneralForZAxis(ComputeMethod computeMethod, int thread
 
         Coil prim = Coil(Rt1, at1, bt1, Nt1);
         Coil sec = Coil(Rt2, at2, bt2, Nt2);
-        prim.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.0), 0.0, 0.0);
-        sec.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, distance), 0.0, 0.0);
+        prim.setPositionAndOrientation(vec3::Vector3(0.1, 0.0, 0.0), 0.0, 0.0);
+        sec.setPositionAndOrientation(vec3::Vector3(0.1, 0.0, distance), 0.0, 0.0);
 
 
         for (int i = 1.0; i <= 8; ++i)
@@ -59,7 +59,7 @@ void testMInductanceGeneralArgumentGeneration()
     Coil coil4 = Coil(0.05, 0.0, 0.1, 10);
     Coil coil5 = Coil(0.05, 0.0, 0.0, 1);
 
-    vec3::CoordVector3 defaultVec = vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.2);
+    vec3::Vector3 defaultVec = vec3::Vector3(0.1, 0.0, 0.2);
 
     coil2.setPositionAndOrientation(defaultVec);
     coil3.setPositionAndOrientation(defaultVec);

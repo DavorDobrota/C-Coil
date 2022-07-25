@@ -4,77 +4,59 @@
 #include <math.h>
 
 
-vec3::CoordVector3 Coil::adaptInputVectorForPoint(const vec3::CoordVector3 &pointVector) const
+vec3::Vector3 Coil::computeAPotentialVector(vec3::Vector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
-    vec3::Vector3 positionVec = vec3::CoordVector3::convertToFieldVector(positionVector);
-    vec3::Vector3 pointVec = vec3::CoordVector3::convertToFieldVector(pointVector);
+    vec3::Triplet transformedVector = (inverseTransformationMatrix * (pointVector - positionVector)).getAsCylindricalCoords();
+    double potential = calculateAPotential(transformedVector.first, transformedVector.second, usedPrecision);
 
-    vec3::Vector3 transformedVec = inverseTransformationMatrix * (pointVec - positionVec);
-    vec3::CoordVector3 finalVec = vec3::CoordVector3::convertToCoordVector(transformedVec);
-
-    finalVec.convertToCylindrical();
-    return finalVec;
-}
-
-vec3::Vector3 Coil::adaptOutputVectorForPoint(const vec3::Vector3 &computedVector) const
-{
+    vec3::Vector3 computedVector = vec3::Vector3(potential * (-1) * std::sin(transformedVector.third),
+                                                 potential * std::cos(transformedVector.third),
+                                                 0.0);
     return transformationMatrix * computedVector;
 }
 
-
-vec3::Vector3 Coil::computeBFieldVector(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
-{
-    vec3::CoordVector3 transformedVector = adaptInputVectorForPoint(pointVector);
-    std::pair fields = calculateBField(transformedVector.comp1, transformedVector.comp2, usedPrecision);
-
-    vec3::Vector3 computedVector = vec3::Vector3(fields.first * std::cos(transformedVector.comp3),
-                                                           fields.first * std::sin(transformedVector.comp3),
-                                                 fields.second);
-    return adaptOutputVectorForPoint(computedVector);
-}
-
-vec3::Vector3 Coil::computeBFieldVector(vec3::CoordVector3 pointVector) const
-{
-    return computeBFieldVector(pointVector, defaultPrecisionCPU);
-}
-
-
-vec3::Vector3 Coil::computeAPotentialVector(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
-{
-    vec3::CoordVector3 transformedVector = adaptInputVectorForPoint(pointVector);
-    double potential = calculateAPotential(transformedVector.comp1, transformedVector.comp2, usedPrecision);
-
-    vec3::Vector3 computedVector = vec3::Vector3(potential * (-1) * std::sin(transformedVector.comp3),
-                                                           potential * std::cos(transformedVector.comp3),
-                                                 0.0);
-    return adaptOutputVectorForPoint(computedVector);
-}
-
-vec3::Vector3 Coil::computeAPotentialVector(vec3::CoordVector3 pointVector) const
+vec3::Vector3 Coil::computeAPotentialVector(vec3::Vector3 pointVector) const
 {
     return computeAPotentialVector(pointVector, defaultPrecisionCPU);
 }
 
 
-vec3::Vector3 Coil::computeEFieldVector(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
+vec3::Vector3 Coil::computeBFieldVector(vec3::Vector3 pointVector, const PrecisionArguments &usedPrecision) const
+{
+    vec3::Triplet transformedVector = (inverseTransformationMatrix * (pointVector - positionVector)).getAsCylindricalCoords();
+    std::pair fields = calculateBField(transformedVector.first, transformedVector.second, usedPrecision);
+
+    vec3::Vector3 computedVector = vec3::Vector3(fields.first * std::cos(transformedVector.third),
+                                                 fields.first * std::sin(transformedVector.third),
+                                                 fields.second);
+    return transformationMatrix * computedVector;
+}
+
+vec3::Vector3 Coil::computeBFieldVector(vec3::Vector3 pointVector) const
+{
+    return computeBFieldVector(pointVector, defaultPrecisionCPU);
+}
+
+
+vec3::Vector3 Coil::computeEFieldVector(vec3::Vector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
     vec3::Vector3 computedVector = computeAPotentialVector(pointVector, usedPrecision);
     computedVector *= 2*M_PI * sineFrequency;
     return computedVector;
 }
 
-vec3::Vector3 Coil::computeEFieldVector(vec3::CoordVector3 pointVector) const
+vec3::Vector3 Coil::computeEFieldVector(vec3::Vector3 pointVector) const
 {
     return computeEFieldVector(pointVector, defaultPrecisionCPU);
 }
 
 
-vec3::Matrix3 Coil::computeBGradientMatrix(vec3::CoordVector3 pointVector, const PrecisionArguments &usedPrecision) const
+vec3::Matrix3 Coil::computeBGradientMatrix(vec3::Vector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
-    vec3::CoordVector3 transformedVector = adaptInputVectorForPoint(pointVector);
-    double cylindricalZ = transformedVector.comp1;
-    double cylindricalR = transformedVector.comp2;
-    double cylindricalPhi = transformedVector.comp3;
+    vec3::Triplet transformedVector = (inverseTransformationMatrix * (pointVector - positionVector)).getAsCylindricalCoords();
+    double cylindricalZ = transformedVector.first;
+    double cylindricalR = transformedVector.second;
+    double cylindricalPhi = transformedVector.third;
 
     std::vector<double> bufferValues = calculateBGradient(cylindricalZ, cylindricalR, usedPrecision);
     double bufferValueRPhi = bufferValues[0];
@@ -110,7 +92,7 @@ vec3::Matrix3 Coil::computeBGradientMatrix(vec3::CoordVector3 pointVector, const
     return transformationMatrix * computedGradientMatrix;
 }
 
-vec3::Matrix3 Coil::computeBGradientMatrix(vec3::CoordVector3 pointVector) const
+vec3::Matrix3 Coil::computeBGradientMatrix(vec3::Vector3 pointVector) const
 {
     return computeBGradientMatrix(pointVector, defaultPrecisionCPU);
 }

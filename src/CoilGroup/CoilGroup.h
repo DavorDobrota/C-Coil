@@ -26,21 +26,21 @@ class CoilGroup
         void setThreadCount(int threadCount);
         void addCoil(Coil coil);
 
-        [[nodiscard]] vec3::Vector3 computeBFieldVector(vec3::CoordVector3 pointVector) const;
-        [[nodiscard]] vec3::Vector3 computeAPotentialVector(vec3::CoordVector3 pointVector) const;
-        [[nodiscard]] vec3::Vector3 computeEFieldVector(vec3::CoordVector3 pointVector) const;
-        [[nodiscard]] vec3::Matrix3 computeBGradientMatrix(vec3::CoordVector3 pointVector) const;
+        [[nodiscard]] vec3::Vector3 computeBFieldVector(vec3::Vector3 pointVector) const;
+        [[nodiscard]] vec3::Vector3 computeAPotentialVector(vec3::Vector3 pointVector) const;
+        [[nodiscard]] vec3::Vector3 computeEFieldVector(vec3::Vector3 pointVector) const;
+        [[nodiscard]] vec3::Matrix3 computeBGradientMatrix(vec3::Vector3 pointVector) const;
 
-        [[nodiscard]] vec3::Vector3Array computeAllAPotentialVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+        [[nodiscard]] vec3::Vector3Array computeAllAPotentialVectors(const vec3::Vector3Array &pointVectors,
                                                                      ComputeMethod computeMethod = CPU_ST) const;
 
-        [[nodiscard]] vec3::Vector3Array computeAllBFieldVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+        [[nodiscard]] vec3::Vector3Array computeAllBFieldVectors(const vec3::Vector3Array &pointVectors,
                                                                  ComputeMethod computeMethod = CPU_ST) const;
 
-        [[nodiscard]] vec3::Vector3Array computeAllEFieldVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+        [[nodiscard]] vec3::Vector3Array computeAllEFieldVectors(const vec3::Vector3Array &pointVectors,
                                                                  ComputeMethod computeMethod = CPU_ST) const;
 
-        [[nodiscard]] vec3::Matrix3Array computeAllBGradientMatrices(const std::vector<vec3::CoordVector3> &pointVectors,
+        [[nodiscard]] vec3::Matrix3Array computeAllBGradientMatrices(const vec3::Vector3Array &pointVectors,
                                                                      ComputeMethod computeMethod = CPU_ST) const;
 
 
@@ -53,22 +53,22 @@ class CoilGroup
                            ComputeMethod computeMethod = CPU_ST) const;
 
         [[nodiscard]] std::pair<vec3::Vector3, vec3::Vector3>
-        computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::Vector3 dipoleMoment) const;
+        computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 dipoleMoment) const;
 
         explicit operator std::string() const;
 
     private:
         // MTD stands for Multithreading Distributed - useful when there are many coils, each is given its own thread
-        [[nodiscard]] vec3::Vector3Array calculateAllAPotentialMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
-        [[nodiscard]] vec3::Vector3Array calculateAllBFieldMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
-        [[nodiscard]] vec3::Vector3Array calculateAllEFieldMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
-        [[nodiscard]] vec3::Matrix3Array calculateAllBGradientMTD(const std::vector<vec3::CoordVector3> &pointVectors) const;
+        [[nodiscard]] vec3::Vector3Array calculateAllAPotentialMTD(const vec3::Vector3Array &pointVectors) const;
+        [[nodiscard]] vec3::Vector3Array calculateAllBFieldMTD(const vec3::Vector3Array &pointVectors) const;
+        [[nodiscard]] vec3::Vector3Array calculateAllEFieldMTD(const vec3::Vector3Array &pointVectors) const;
+        [[nodiscard]] vec3::Matrix3Array calculateAllBGradientMTD(const vec3::Vector3Array &pointVectors) const;
 
         void generateCoilDataArray(CoilData *coilDataArr) const;
 
-        [[nodiscard]] vec3::Vector3Array calculateAllAPotentialGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
-        [[nodiscard]] vec3::Vector3Array calculateAllBFieldGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
-        [[nodiscard]] vec3::Matrix3Array calculateAllBGradientGPU(const std::vector<vec3::CoordVector3> &pointVectors) const;
+        [[nodiscard]] vec3::Vector3Array calculateAllAPotentialGPU(const vec3::Vector3Array &pointVectors) const;
+        [[nodiscard]] vec3::Vector3Array calculateAllBFieldGPU(const vec3::Vector3Array &pointVectors) const;
+        [[nodiscard]] vec3::Matrix3Array calculateAllBGradientGPU(const vec3::Vector3Array &pointVectors) const;
 
 
         [[nodiscard]] double calculateMutualInductanceMTD(const Coil &secondary,

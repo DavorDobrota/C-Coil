@@ -50,7 +50,7 @@ void CoilGroup::addCoil(Coil coil)
 }
 
 
-vec3::Vector3 CoilGroup::computeAPotentialVector(vec3::CoordVector3 pointVector) const
+vec3::Vector3 CoilGroup::computeAPotentialVector(vec3::Vector3 pointVector) const
 {
     vec3::Vector3 totalField = vec3::Vector3();
 
@@ -60,7 +60,7 @@ vec3::Vector3 CoilGroup::computeAPotentialVector(vec3::CoordVector3 pointVector)
     return totalField;
 }
 
-vec3::Vector3 CoilGroup::computeBFieldVector(vec3::CoordVector3 pointVector) const
+vec3::Vector3 CoilGroup::computeBFieldVector(vec3::Vector3 pointVector) const
 {
     vec3::Vector3 totalField = vec3::Vector3();
 
@@ -70,7 +70,7 @@ vec3::Vector3 CoilGroup::computeBFieldVector(vec3::CoordVector3 pointVector) con
     return totalField;
 }
 
-vec3::Vector3 CoilGroup::computeEFieldVector(vec3::CoordVector3 pointVector) const
+vec3::Vector3 CoilGroup::computeEFieldVector(vec3::Vector3 pointVector) const
 {
     vec3::Vector3 totalField = vec3::Vector3();
 
@@ -80,7 +80,7 @@ vec3::Vector3 CoilGroup::computeEFieldVector(vec3::CoordVector3 pointVector) con
     return totalField;
 }
 
-vec3::Matrix3 CoilGroup::computeBGradientMatrix(vec3::CoordVector3 pointVector) const
+vec3::Matrix3 CoilGroup::computeBGradientMatrix(vec3::Vector3 pointVector) const
 {
     vec3::Matrix3 totalGradient = vec3::Matrix3();
 
@@ -131,7 +131,7 @@ CoilGroup::computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFa
 
 
 std::pair<vec3::Vector3, vec3::Vector3>
-CoilGroup::computeForceOnDipoleMoment(vec3::CoordVector3 pointVector, vec3::Vector3 dipoleMoment) const
+CoilGroup::computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 dipoleMoment) const
 {
     vec3::Vector3 totalForce = vec3::Vector3();
     vec3::Vector3 totalTorque = vec3::Vector3();

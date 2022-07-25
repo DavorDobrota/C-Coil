@@ -19,7 +19,7 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
 {
     if (isZAxisCase(primary, secondary))
     {
-        vec3::Vector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
+        vec3::Vector3 secPositionVec = secondary.getPositionVector();
 
         if ((primary.coilType == CoilType::THIN || primary.coilType == CoilType::RECTANGULAR) &&
             (secondary.coilType == CoilType::THIN || secondary.coilType == CoilType::RECTANGULAR))
@@ -56,8 +56,8 @@ double Coil::computeSecondaryInducedVoltage(const Coil &secondary, PrecisionFact
 }
 
 std::vector<double> Coil::computeAllMutualInductanceArrangements(Coil primary, Coil secondary,
-                                                                 const std::vector<vec3::CoordVector3> &primaryPositions,
-                                                                 const std::vector<vec3::CoordVector3> &secondaryPositions,
+                                                                 const vec3::Vector3Array &primaryPositions,
+                                                                 const vec3::Vector3Array &secondaryPositions,
                                                                  const std::vector<double> &primaryYAngles,
                                                                  const std::vector<double> &primaryZAngles,
                                                                  const std::vector<double> &secondaryYAngles,
@@ -76,7 +76,7 @@ std::vector<double> Coil::computeAllMutualInductanceArrangements(Coil primary, C
         unsigned long long numArrangements = primaryPositions.size();
         outputMInductances.resize(numArrangements);
 
-        if (numArrangements < 4 * primary.getThreadCount() || computeMethod != CPU_MT)
+        if (numArrangements < 2 * primary.getThreadCount() || computeMethod != CPU_MT)
         {
             for (int i = 0; i < numArrangements; ++i)
             {
@@ -96,8 +96,8 @@ std::vector<double> Coil::computeAllMutualInductanceArrangements(Coil primary, C
                             int idx,
                             Coil primary,
                             Coil secondary,
-                            vec3::CoordVector3 primaryPosition,
-                            vec3::CoordVector3 secondaryPosition,
+                            vec3::Vector3 primaryPosition,
+                            vec3::Vector3 secondaryPosition,
                             double primaryYAngle,
                             double primaryZAngle,
                             double secondaryYAngle,

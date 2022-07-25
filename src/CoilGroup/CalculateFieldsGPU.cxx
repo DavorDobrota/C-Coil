@@ -51,7 +51,7 @@ void CoilGroup::generateCoilDataArray(CoilData *coilDataArr) const
             coilDataArr[i].thicknessWeightArray[j] = Legendre::weightsMatrix[coilDataArr[i].thicknessIncrements - 1][j];
         }
 
-        vec3::Vector3 tempVec = vec3::CoordVector3::convertToFieldVector(memberCoils[i].getPositionVector());
+        vec3::Vector3 tempVec = memberCoils[i].getPositionVector();
 
         coilDataArr[i].positionVector[0] = tempVec.x;
         coilDataArr[i].positionVector[1] = tempVec.y;
@@ -84,7 +84,7 @@ void CoilGroup::generateCoilDataArray(CoilData *coilDataArr) const
 }
 
 
-vec3::Vector3Array CoilGroup::calculateAllAPotentialGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
+vec3::Vector3Array CoilGroup::calculateAllAPotentialGPU(const vec3::Vector3Array &pointVectors) const
 {
     long long size = pointVectors.size();
     long long coils = memberCoils.size();
@@ -98,12 +98,11 @@ vec3::Vector3Array CoilGroup::calculateAllAPotentialGPU(const std::vector<vec3::
 
     for (long long i = 0; i < size; ++i)
     {
-        vec3::CoordVector3 vector = pointVectors[i];
-        vector.convertToCartesian();
+        vec3::Vector3 tempVec = pointVectors[i];
 
-        coordinateArr[i].x = vector.comp1;
-        coordinateArr[i].y = vector.comp2;
-        coordinateArr[i].z = vector.comp3;
+        coordinateArr[i].x = tempVec.x;
+        coordinateArr[i].y = tempVec.y;
+        coordinateArr[i].z = tempVec.z;
     }
 
     generateCoilDataArray(coilDataArr);
@@ -130,7 +129,7 @@ vec3::Vector3Array CoilGroup::calculateAllAPotentialGPU(const std::vector<vec3::
 }
 
 
-vec3::Vector3Array CoilGroup::calculateAllBFieldGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
+vec3::Vector3Array CoilGroup::calculateAllBFieldGPU(const vec3::Vector3Array &pointVectors) const
 {
     long long size = pointVectors.size();
     long long coils = memberCoils.size();
@@ -144,12 +143,11 @@ vec3::Vector3Array CoilGroup::calculateAllBFieldGPU(const std::vector<vec3::Coor
 
     for (long long i = 0; i < size; ++i)
     {
-        vec3::CoordVector3 vector = pointVectors[i];
-        vector.convertToCartesian();
+        vec3::Vector3 tempVec = pointVectors[i];
 
-        coordinateArr[i].x = vector.comp1;
-        coordinateArr[i].y = vector.comp2;
-        coordinateArr[i].z = vector.comp3;
+        coordinateArr[i].x = tempVec.x;
+        coordinateArr[i].y = tempVec.y;
+        coordinateArr[i].z = tempVec.z;
     }
 
     generateCoilDataArray(coilDataArr);
@@ -177,7 +175,7 @@ vec3::Vector3Array CoilGroup::calculateAllBFieldGPU(const std::vector<vec3::Coor
 }
 
 
-vec3::Matrix3Array CoilGroup::calculateAllBGradientGPU(const std::vector<vec3::CoordVector3> &pointVectors) const
+vec3::Matrix3Array CoilGroup::calculateAllBGradientGPU(const vec3::Vector3Array &pointVectors) const
 {
     long long size = pointVectors.size();
     long long coils = memberCoils.size();
@@ -191,12 +189,11 @@ vec3::Matrix3Array CoilGroup::calculateAllBGradientGPU(const std::vector<vec3::C
 
     for (long long i = 0; i < size; ++i)
     {
-        vec3::CoordVector3 vector = pointVectors[i];
-        vector.convertToCartesian();
+        vec3::Vector3 tempVec = pointVectors[i];
 
-        coordinateArr[i].x = vector.comp1;
-        coordinateArr[i].y = vector.comp2;
-        coordinateArr[i].z = vector.comp3;
+        coordinateArr[i].x = tempVec.x;
+        coordinateArr[i].y = tempVec.y;
+        coordinateArr[i].z = tempVec.z;
     }
 
     generateCoilDataArray(coilDataArr);

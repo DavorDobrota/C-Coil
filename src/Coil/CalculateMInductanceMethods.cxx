@@ -33,7 +33,7 @@ double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil 
     double lengthBlockSize = secondary.length / lengthBlocks;
     double thicknessBlockSize = secondary.thickness / thicknessBlocks;
 
-    std::vector<vec3::CoordVector3> positionVectors;
+    vec3::Vector3Array positionVectors;
     std::vector<double> weights;
 
     positionVectors.reserve(numElements);
@@ -55,9 +55,9 @@ double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil 
                     double incrementPositionR = rBlockPosition +
                                                 (thicknessBlockSize * 0.5) * Legendre::positionMatrix[maxThicknessIndex][rIndex];
 
-                    positionVectors.emplace_back(vec3::CYLINDRICAL, incrementPositionZ, incrementPositionR, 0.0);
+                    positionVectors.append(incrementPositionZ, incrementPositionR, 0.0);
 
-                    weights.push_back(
+                    weights.emplace_back(
                             0.25 * incrementPositionR *
                             Legendre::weightsMatrix[maxLengthIndex][zIndex] *
                             Legendre::weightsMatrix[maxThicknessIndex][rIndex]);
@@ -110,7 +110,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
         }
     }
 
-    zDisplacement -= vec3::CoordVector3::convertToFieldVector(primary.getPositionVector()).z;
+    zDisplacement -= primary.getPositionVector().z;
 
     double constZ1 = zDisplacement + secondary.length * 0.5 + primary.length * 0.5;
     double constZ2 = zDisplacement + secondary.length * 0.5 - primary.length * 0.5;
@@ -247,7 +247,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
 double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
                                               CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
 {
-    vec3::Vector3 displacementVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
+    vec3::Vector3 displacementVec = secondary.getPositionVector();
 
     double xDisplacement = displacementVec.x;
     double yDisplacement = displacementVec.y;
@@ -279,7 +279,7 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
     double lengthBlockSize = secondary.length / lengthBlocks;
     double thicknessBlockSize = secondary.thickness / thicknessBlocks;
 
-    std::vector<vec3::CoordVector3> positionVectors;
+    vec3::Vector3Array positionVectors;
     std::vector<double> weights;
 
     positionVectors.reserve(numElements);
@@ -317,9 +317,9 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
                             double displacementZ = zDisplacement + lengthDisplacement * cos(alphaAngle) +
                                                    ringRadius * unitRingValues[phiPosition].first.z;
 
-                            positionVectors.emplace_back(vec3::CARTESIAN, displacementX, displacementY, displacementZ);
+                            positionVectors.append(displacementX, displacementY, displacementZ);
 
-                            weights.push_back(
+                            weights.emplace_back(
                                     0.125 * ringRadius *
                                     Legendre::weightsMatrix[maxLengthIndex][zIndex] *
                                     Legendre::weightsMatrix[maxThicknessIndex][rIndex] *

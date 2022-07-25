@@ -15,7 +15,7 @@ void benchForceZAxis(ComputeMethod computeMethod, int threadCount)
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
     primary.setThreadCount(threadCount);
-    secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.2));
+    secondary.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.2));
 
     int opCount = 8192;
     double temp;
@@ -42,8 +42,8 @@ void benchForceGeneral(ComputeMethod computeMethod, int threadCount)
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
     primary.setThreadCount(threadCount);
 
-    primary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.0));
-    secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.2));
+    primary.setPositionAndOrientation(vec3::Vector3(0.1, 0.0, 0.0));
+    secondary.setPositionAndOrientation(vec3::Vector3(0.1, 0.0, 0.2));
 
     int opCount = 1024;
     std::pair<vec3::Vector3, vec3::Vector3> temp;

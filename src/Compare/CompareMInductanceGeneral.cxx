@@ -15,7 +15,21 @@ void compMInductanceGeneralMisalignedCoils()
 
     for (int i = 10; i >= 0; --i){
         //    printf("cos(alpha) = %.1f: ", i * 0.1);
-        secondary1.setPositionAndOrientation(vec3::CoordVector3(), std::acos(i * 0.1));
+        secondary1.setPositionAndOrientation(vec3::Vector3(), std::acos(i * 0.1));
+        printf("%.15g\n", 1e6 * Coil::computeMutualInductance(primary1, secondary1, precision));
+    }
+    printf("\n");
+
+    for (int i = 10; i >= 0; --i){
+        //    printf("cos(alpha) = %.1f: ", i * 0.1);
+        secondary1.setPositionAndOrientation(vec3::Vector3( 0.0, 0.0, 0.03), std::acos(i * 0.1));
+        printf("%.15g\n", 1e6 * Coil::computeMutualInductance(primary1, secondary1, precision));
+    }
+    printf("\n");
+
+    for (int i = 10; i >= 0; --i){
+        //    printf("cos(alpha) = %.1f: ", i * 0.1);
+        secondary1.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.06), std::acos(i * 0.1));
         printf("%.15g\n", 1e6 * Coil::computeMutualInductance(primary1, secondary1, precision));
     }
     printf("\n");
@@ -23,23 +37,7 @@ void compMInductanceGeneralMisalignedCoils()
     for (int i = 10; i >= 0; --i){
         //    printf("cos(alpha) = %.1f: ", i * 0.1);
         secondary1.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.03), std::acos(i * 0.1));
-        printf("%.15g\n", 1e6 * Coil::computeMutualInductance(primary1, secondary1, precision));
-    }
-    printf("\n");
-
-    for (int i = 10; i >= 0; --i){
-        //    printf("cos(alpha) = %.1f: ", i * 0.1);
-        secondary1.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.06), std::acos(i * 0.1));
-        printf("%.15g\n", 1e6 * Coil::computeMutualInductance(primary1, secondary1, precision));
-    }
-    printf("\n");
-
-    for (int i = 10; i >= 0; --i){
-        //    printf("cos(alpha) = %.1f: ", i * 0.1);
-        secondary1.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.12), std::acos(i * 0.1));
+                vec3::Vector3(0.0, 0.0, 0.12), std::acos(i * 0.1));
         printf("%.15g\n", 1e6 * Coil::computeMutualInductance(primary1, secondary1, precision));
     }
     printf("\n");
@@ -50,31 +48,28 @@ void compMInductanceGeneralMisalignedCoils()
 
     for (int i = 10; i >= 0; --i){
         //    printf("cos(alpha) = %.1f: ", i * 0.1);
-        secondary2.setPositionAndOrientation(vec3::CoordVector3(), std::acos(i * 0.1));
+        secondary2.setPositionAndOrientation(vec3::Vector3(), std::acos(i * 0.1));
         printf("%.15g\n", 1e6 * Coil::computeMutualInductance(primary2, secondary2, precision));
     }
     printf("\n");
 
     for (int i = 10; i >= 0; --i){
         //   printf("cos(alpha) = %.1f: ", i * 0.1);
-        secondary2.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.03), std::acos(i * 0.1));
+        secondary2.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.03), std::acos(i * 0.1));
         printf("%.15g\n", 1e6 * Coil::computeMutualInductance(primary2, secondary2, precision));
     }
     printf("\n");
 
     for (int i = 10; i >= 0; --i){
         //    printf("cos(alpha) = %.1f: ", i * 0.1);
-        secondary2.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.06), std::acos(i * 0.1));
+        secondary2.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.06), std::acos(i * 0.1));
         printf("%.15g\n", 1e6 * Coil::computeMutualInductance(secondary2, primary2, precision));
     }
     printf("\n");
 
     for (int i = 10; i >= 0; --i){
         //    printf("cos(alpha) = %.1f: ", i * 0.1);
-        secondary2.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.12), std::acos(i * 0.1));
+        secondary2.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.12), std::acos(i * 0.1));
         printf("%.15g\n", 1e6 * Coil::computeMutualInductance(secondary2, primary2, precision));
     }
     printf("\n");
@@ -84,8 +79,7 @@ void compMInductanceGeneralMisalignedCoils()
 
     for (int i = 10; i >= 0; --i){
         //    printf("cos(alpha) = %.1f: ", i * 0.1);
-        secondary3.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.05), std::acos(i * 0.1));
+        secondary3.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.05), std::acos(i * 0.1));
         printf("%.15g\n", 1e6 * Coil::computeMutualInductance(primary3, secondary3, precision));
     }
     printf("\n");
@@ -96,7 +90,7 @@ void compMInductanceGeneralMisalignedCoils()
 
     for (int i = 10; i >= 0; --i){
         //    printf("cos(alpha) = %.1f: ", i * 0.1);
-        secondary4.setPositionAndOrientation(vec3::CoordVector3(), std::acos(i * 0.1));
+        secondary4.setPositionAndOrientation(vec3::Vector3(), std::acos(i * 0.1));
         printf("%.15g\n", 1e6 * Coil::computeMutualInductance(primary4, secondary4, precision));
     }
     printf("\n");
@@ -115,7 +109,7 @@ void compMInductanceGeneralParallelAxes()
 
     for (double i : rArr1)
     {
-        coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, i, 0.0, 0.0));
+        coil2.setPositionAndOrientation(vec3::Vector3(i, 0.0, 0.0));
         tempInductance = Coil::computeMutualInductance(coil1, coil2, precision, CPU_MT);
         printf("%9g : %.14g mH\n", i, 1e3 * tempInductance);
     }
@@ -127,7 +121,7 @@ void compMInductanceGeneralParallelAxes()
                       0.6, 1.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.059309, 0.07, 0.083439, 0.09, 0.1, 0.6, 1.0};
     for (int i = 0; i < 29; ++i)
     {
-        coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, rArr2[i], 0.0, zArr2[i]));
+        coil2.setPositionAndOrientation(vec3::Vector3(rArr2[i], 0.0, zArr2[i]));
         tempInductance = Coil::computeMutualInductance(coil1, coil2, precision, CPU_MT);
         printf("%8g %5g : %.14g mH\n", zArr2[i], rArr2[i], 1e3 * tempInductance);
     }
@@ -147,7 +141,7 @@ void compMInductanceGeneralParallelAxes()
 
         Coil prim = Coil(Rt1, at1, bt1, Nt1);
         Coil sec = Coil(Rt2, at2, bt2, Nt2);
-        sec.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, distanceR, 0.0, distanceZ));
+        sec.setPositionAndOrientation(vec3::Vector3(distanceR, 0.0, distanceZ));
 
         for (int i = 1; i <= 9; i++)
         {
@@ -172,7 +166,7 @@ void compMInductanceGeneralCase()
 
     for (int i = 10; i > 0; --i)
     {
-        coil2.setPositionAndOrientation(vec3::CoordVector3(), std::acos(0.1 * i));
+        coil2.setPositionAndOrientation(vec3::Vector3(), std::acos(0.1 * i));
         for (int j = 1; j <= 9; ++j)
         {
             temp = Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(j), CPU_MT);
@@ -187,8 +181,7 @@ void compMInductanceGeneralCase()
 
     for (int i = 10; i > 0; --i)
     {
-        coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.18),
-                                        std::acos(0.1 * i), 0.0);
+        coil2.setPositionAndOrientation(vec3::Vector3(0.1, 0.0, 0.18),std::acos(0.1 * i), 0.0);
         for (int j = 1; j <= 9; ++j)
         {
             temp = Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(j), CPU_MT);
@@ -214,8 +207,7 @@ void compMInductanceGeneralGraphs()
 
     for (int i = 0; i <= 200; ++i)
     {
-        sec.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, i * 0.0005));
+        sec.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, i * 0.0005));
         fprintf(output, "%f\t%.10g\n", i * 0.0005, Coil::computeMutualInductance(prim, sec, precision, CPU_MT));
     }
     fprintf(output,"\n");
@@ -223,8 +215,7 @@ void compMInductanceGeneralGraphs()
 
     for (int i = 0; i <= 200; ++i)
     {
-        sec.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CARTESIAN, i * 0.001, 0.0, 0.02));
+        sec.setPositionAndOrientation(vec3::Vector3(i * 0.001, 0.0, 0.02));
         fprintf(output, "%f\t%.10g\n", i * 0.001, Coil::computeMutualInductance(prim, sec,precision, CPU_MT));
     }
     fprintf(output,"\n");
@@ -232,8 +223,7 @@ void compMInductanceGeneralGraphs()
 
     for (int i = 0; i <= 200; ++i)
     {
-        sec.setPositionAndOrientation(
-                vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.04), M_PI/100 * i);
+        sec.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.04), M_PI/100 * i);
         fprintf(output, "%f\t%.10g\n", M_PI/100 * i, Coil::computeMutualInductance(prim, sec, precision, CPU_MT));
     }
     fprintf(output,"\n");
@@ -244,7 +234,7 @@ void compMInductanceGeneralGraphs()
         for (int j = 0; j <= 100; ++j)
         {
             sec.setPositionAndOrientation(
-                    vec3::CoordVector3(vec3::CARTESIAN, j * 0.001, 0.0, i * 0.001));
+                    vec3::Vector3(j * 0.001, 0.0, i * 0.001));
             fprintf(output, "%.10g\t", Coil::computeMutualInductance(prim, sec, precision, CPU_MT));
         }
         fprintf(output,"\n");
@@ -257,8 +247,7 @@ void compMInductanceGeneralGraphs()
     {
         for (int j = 0; j <= 100; ++j)
         {
-            sec.setPositionAndOrientation(
-                    vec3::CoordVector3(vec3::CARTESIAN, i * 0.002, 0.0, 0.04), -M_PI/50 * j);
+            sec.setPositionAndOrientation(vec3::Vector3(i * 0.002, 0.0, 0.04), -M_PI/50 * j);
             fprintf(output, "%.10g\t", Coil::computeMutualInductance(prim, sec, precision, CPU_MT));
         }
 
@@ -272,8 +261,7 @@ void compMInductanceGeneralGraphs()
     {
         for (int j = 0; j <= 100; ++j)
         {
-            sec.setPositionAndOrientation(
-                    vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.025 + 0.001 * i), -M_PI/50 * j, 0.0);
+            sec.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.025 + 0.001 * i), -M_PI/50 * j, 0.0);
             fprintf(output, "%.10g\t", Coil::computeMutualInductance(prim, sec, precision, CPU_MT));
         }
         fprintf(output,"\n");
@@ -289,7 +277,7 @@ void compMInductanceGeneralEdgeCases()
 {
     Coil coil1 = Coil(0.03, 0.12, 0.12, 3600);
     Coil coil2 = Coil(0.03, 0.12, 0.12, 3600);
-    coil2.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.0, 0.0, 0.12));
+    coil2.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.12));
     for (int i = 1; i <= 15; ++i)
         printf("%.15g\n", Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(i), CPU_MT));
     printf("\n");
@@ -302,7 +290,7 @@ void compMInductanceGeneralEdgeCases()
 
     Coil coil5 = Coil(0.03, 0.12, 0.12, 3600);
     Coil coil6 = Coil(0.03, 0.12, 0.12, 3600);
-    coil6.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.00001, 0.0, 0.12));
+    coil6.setPositionAndOrientation(vec3::Vector3(0.00001, 0.0, 0.12));
     for (int i = 1; i <= 15; ++i)
         printf("%.15g\n", Coil::computeMutualInductance(coil5, coil6, PrecisionFactor(i), CPU_MT));
     printf("\n");
@@ -315,7 +303,7 @@ void compMInductanceGeneralEdgeCases()
 
     Coil coil9 = Coil(3.0, 0.2, 0.1, 1250);
     Coil coil10 = Coil(2.7, 0.2, 0.1, 1250);
-    coil10.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.0));
+    coil10.setPositionAndOrientation(vec3::Vector3(0.1, 0.0, 0.0));
     for (int i = 1; i <= 15; ++i)
         printf("%.15g\n", Coil::computeMutualInductance(coil9, coil10, PrecisionFactor(i), CPU_MT));
     printf("\n");

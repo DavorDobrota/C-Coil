@@ -3,7 +3,7 @@
 #include <math.h>
 
 
-vec3::Vector3Array CoilGroup::computeAllAPotentialVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Vector3Array CoilGroup::computeAllAPotentialVectors(const vec3::Vector3Array &pointVectors,
                                                           ComputeMethod computeMethod) const
 {
     if (computeMethod == GPU)
@@ -27,7 +27,7 @@ vec3::Vector3Array CoilGroup::computeAllAPotentialVectors(const std::vector<vec3
 }
 
 
-vec3::Vector3Array CoilGroup::computeAllBFieldVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Vector3Array CoilGroup::computeAllBFieldVectors(const vec3::Vector3Array &pointVectors,
                                                       ComputeMethod computeMethod) const
 {
     if (computeMethod == GPU)
@@ -51,7 +51,7 @@ vec3::Vector3Array CoilGroup::computeAllBFieldVectors(const std::vector<vec3::Co
 }
 
 
-vec3::Vector3Array CoilGroup::computeAllEFieldVectors(const std::vector<vec3::CoordVector3> &pointVectors,
+vec3::Vector3Array CoilGroup::computeAllEFieldVectors(const vec3::Vector3Array &pointVectors,
                                                       ComputeMethod computeMethod) const
 {
     if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
@@ -72,8 +72,8 @@ vec3::Vector3Array CoilGroup::computeAllEFieldVectors(const std::vector<vec3::Co
 }
 
 
-vec3::Matrix3Array CoilGroup::computeAllBGradientMatrices(const std::vector<vec3::CoordVector3> &pointVectors,
-                                                                  ComputeMethod computeMethod) const
+vec3::Matrix3Array CoilGroup::computeAllBGradientMatrices(const vec3::Vector3Array &pointVectors,
+                                                          ComputeMethod computeMethod) const
 {
     if (computeMethod == GPU)
         return calculateAllBGradientGPU(pointVectors);

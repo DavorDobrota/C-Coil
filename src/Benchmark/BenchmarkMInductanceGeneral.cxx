@@ -16,7 +16,7 @@ void benchMInductanceGeneral(ComputeMethod computeMethod, int threadCount)
 
     primary.setThreadCount(threadCount);
     primary.setPositionAndOrientation();
-    secondary.setPositionAndOrientation(vec3::CoordVector3(vec3::CARTESIAN, 0.1, 0.0, 0.2));
+    secondary.setPositionAndOrientation(vec3::Vector3(0.1, 0.0, 0.2));
 
     int opCount = 1024;
     double temp;

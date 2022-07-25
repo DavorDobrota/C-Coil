@@ -6,7 +6,6 @@
 
 
 void testNewCoilParameters();
-void testVector3();
 void testCoilPositionAndRotation();
 
 void testMInductanceZAxisArgumentGeneration();

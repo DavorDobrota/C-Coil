@@ -7,9 +7,7 @@
 
 namespace vec3
 {
-    enum CoordinateSystem {CARTESIAN, CYLINDRICAL, SPHERICAL};
 
-    class CoordVector3;
     class Vector3;
     class Matrix3;
 
@@ -18,48 +16,6 @@ namespace vec3
     class Vector3Array;
     class Matrix3Array;
 
-    class CoordVector3
-    {
-        public:
-
-            double comp1;
-            double comp2;
-            double comp3;
-
-            CoordVector3();
-            explicit CoordVector3(CoordinateSystem system, double comp1, double comp2, double comp3);
-
-            [[nodiscard]] bool isCartesian() const;
-            [[nodiscard]] bool isCylindrical() const;
-            [[nodiscard]] bool isSpherical() const;
-
-            void convertToCartesian();
-            void convertToCylindrical();
-            void convertToSpherical();
-
-            static std::vector<CoordVector3> convertAllToCartesian(std::vector<CoordVector3> &Vector3Array);
-            static std::vector<CoordVector3> convertAllToCylindrical(std::vector<CoordVector3> &Vector3Array);
-            static std::vector<CoordVector3> convertAllToSpherical(std::vector<CoordVector3> &Vector3Array);
-
-            static Vector3 convertToFieldVector(const CoordVector3 &vector);
-            static CoordVector3 convertToCoordVector(const Vector3 &vector);
-
-            [[nodiscard]] CoordinateSystem getCoordinateSystem() const { return coordinateSystem; }
-
-            explicit operator std::string() const;
-
-        private:
-
-            CoordinateSystem coordinateSystem;
-
-            void convertCartesianToCylindrical();
-            void convertCartesianToSpherical();
-            void convertCylindricalToCartesian();
-            void convertCylindricalToSpherical();
-            void convertSphericalToCartesian();
-            void convertSphericalToCylindrical();
-
-    };
 
     class Vector3
     {

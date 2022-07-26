@@ -2,11 +2,9 @@
 
 #include "hardware_acceleration.h"
 #include "ThreadPool.h"
-#include "hardware_acceleration.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include <numeric>
 
 
 namespace
@@ -195,9 +193,10 @@ vec3::Vector3Array Coil::calculateAllAPotentialGPU(const vec3::Vector3Array &poi
 
     vec3::Vector3Array computedPotentialArr;
     computedPotentialArr.reserve(size);
+    std::vector<vec3::Vector3> &outputRef = computedPotentialArr.getStdVectorRef();
 
     for (long long i = 0; i < pointVectors.size(); ++i)
-        computedPotentialArr.append(resultArr[i].x, resultArr[i].y, resultArr[i].z);
+        outputRef.emplace_back(resultArr[i].x, resultArr[i].y, resultArr[i].z);
 
     free(resultArr);
 
@@ -241,7 +240,8 @@ vec3::Vector3Array Coil::calculateAllBFieldGPU(const vec3::Vector3Array &pointVe
     free(coordinateArr);
 
     vec3::Vector3Array computedFieldArr;
-    computedFieldArr.reserve(size);
+    computedFieldArr.reserve(pointVectors.size());
+    std::vector<vec3::Vector3> &outputRef = computedFieldArr.getStdVectorRef();
 
     for (long long i = 0; i < pointVectors.size(); ++i)
         computedFieldArr.append(resultArr[i].x, resultArr[i].y, resultArr[i].z);
@@ -289,11 +289,12 @@ vec3::Matrix3Array Coil::calculateAllBGradientGPU(const vec3::Vector3Array &poin
 
     vec3::Matrix3Array computedGradientArr;
     computedGradientArr.reserve(size);
+    std::vector<vec3::Matrix3> &outputRef = computedGradientArr.getStdVectorRef();
 
     for (long long i = 0; i < pointVectors.size(); ++i)
-        computedGradientArr.append(resultArr[i].xx, resultArr[i].xy, resultArr[i].xz,
-                                   resultArr[i].yx, resultArr[i].yy, resultArr[i].yz,
-                                   resultArr[i].zx, resultArr[i].zy, resultArr[i].zz);
+        outputRef.emplace_back(resultArr[i].xx, resultArr[i].xy, resultArr[i].xz,
+                               resultArr[i].yx, resultArr[i].yy, resultArr[i].yz,
+                               resultArr[i].zx, resultArr[i].zy, resultArr[i].zz);
 
     free(resultArr);
 

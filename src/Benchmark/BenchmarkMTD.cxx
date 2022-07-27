@@ -12,6 +12,36 @@
 #include <chrono>
 
 
+void benchCoilGroupMTvsMTD(int threadCount, int pointCount)
+{
+    using namespace std::chrono;
+
+    high_resolution_clock::time_point begin_time;
+    double interval;
+
+    int coilCount1 = threadCount;
+    int coilCount2 = 3 * threadCount;
+
+    printf("Quick performance benchmark for %d coils and %d points\n\n", threadCount, pointCount);
+
+    begin_time = high_resolution_clock::now();
+    compCoilGroupMTD(coilCount1, pointCount, 1, false);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("ST  perf : %.0f kPoints/s\n", 1e-3 * coilCount1 * pointCount / interval);
+
+    begin_time = high_resolution_clock::now();
+    compCoilGroupMTD(coilCount1, pointCount, threadCount, false);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MT  perf : %.0f kPoints/s\n", 1e-3 * coilCount1 * pointCount / interval);
+
+    begin_time = high_resolution_clock::now();
+    compCoilGroupMTD(coilCount2, pointCount, threadCount, false);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("MTD perf : %.0f kPoints/s\n", 1e-3 * coilCount2 * pointCount / interval);
+
+    printf("\n");
+}
+
 void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoils, int opCount, int threadCount)
 {
     using namespace std::chrono;
@@ -234,82 +264,6 @@ void benchCoilGroupComputeAllFieldsGPU(int numCoils, int opCount)
     }
 }
 
-void benchCoilGroupMTvsMTD(int threadCount, int pointCount)
-{
-    using namespace std::chrono;
-
-    high_resolution_clock::time_point begin_time;
-    double interval;
-
-    int coilCount1 = threadCount;
-    int coilCount2 = 3 * threadCount;
-
-    printf("Quick performance benchmark for %d coils and %d points\n\n", threadCount, pointCount);
-
-    begin_time = high_resolution_clock::now();
-    compCoilGroupMTD(coilCount1, pointCount, 1, false);
-    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("ST  perf : %.0f kPoints/s\n", 1e-3 * coilCount1 * pointCount / interval);
-
-    begin_time = high_resolution_clock::now();
-    compCoilGroupMTD(coilCount1, pointCount, threadCount, false);
-    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("MT  perf : %.0f kPoints/s\n", 1e-3 * coilCount1 * pointCount / interval);
-
-    begin_time = high_resolution_clock::now();
-    compCoilGroupMTD(coilCount2, pointCount, threadCount, false);
-    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("MTD perf : %.0f kPoints/s\n", 1e-3 * coilCount2 * pointCount / interval);
-
-    printf("\n");
-}
-
-void benchCoilGroupComputeAllFieldsMTD(int threadCount)
-{
-    using namespace std::chrono;
-
-    high_resolution_clock::time_point begin_time;
-    double interval;
-
-    int numCoils = 8 * threadCount;
-    const int pointCount = 1'000;
-
-    CoilGroup coilGroup = CoilGroup();
-    Coil referenceCoil = Coil(0.1, 0.1, 0.1, 10000);
-
-    for (int i = 1; i <= numCoils; ++i)
-    {
-        Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000);
-        tempCoil.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.15*i),0.0, 0.0);
-        coilGroup.addCoil(tempCoil);
-    }
-
-    vec3::Vector3Array referencePoints(pointCount);
-    vec3::Vector3Array computedAPotential;
-    vec3::Vector3Array computedBField;
-    vec3::Matrix3Array computedBGradient;
-
-    for (int i = 0; i < pointCount; ++i)
-        referencePoints[i] = vec3::Vector3(0.1, 1.0 * i / pointCount, -0.1);
-
-    computedAPotential = coilGroup.computeAllAPotentialVectors(referencePoints, CPU_ST);
-    printf("%.15g\n", computedAPotential[pointCount / 2].x);
-    computedAPotential = coilGroup.computeAllAPotentialVectors(referencePoints, CPU_MT);
-    printf("%.15g\n", computedAPotential[pointCount / 2].x);
-    printf("\n");
-
-    computedBField = coilGroup.computeAllBFieldVectors(referencePoints, CPU_ST);
-    printf("%.15g\n", computedBField[pointCount / 2].x);
-    computedBField = coilGroup.computeAllBFieldVectors(referencePoints, CPU_MT);
-    printf("%.15g\n", computedBField[pointCount / 2].x);
-    printf("\n");
-
-    computedBGradient = coilGroup.computeAllBGradientMatrices(referencePoints, CPU_ST);
-    printf("%.15g\n", computedBGradient[pointCount / 2].xy);
-    computedBGradient = coilGroup.computeAllBGradientMatrices(referencePoints, CPU_MT);
-    printf("%.15g\n", computedBGradient[pointCount / 2].xy);
-    printf("\n");
-}
 
 void benchCoilGroupMInductanceAndForce(int numOps, int threadCount)
 {

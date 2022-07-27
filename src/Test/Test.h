@@ -7,6 +7,7 @@
 
 void testNewCoilParameters();
 void testCoilPositionAndRotation();
+void testCoilGroupComputeAllMTD();
 
 void testMInductanceZAxisArgumentGeneration();
 void testMInductanceZAxisDifferentGeometries();

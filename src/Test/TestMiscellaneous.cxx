@@ -3,6 +3,7 @@
 #include "ComputeMethod.h"
 #include "Tensor.h"
 #include "hardware_acceleration.h"
+#include "CoilGroup.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -75,3 +76,45 @@ void testCoilPositionAndRotation()
     printf("\n");
 }
 
+void testCoilGroupComputeAllMTD()
+{
+    int numCoils = 8 * 8;
+    const int pointCount = 1'000;
+
+    CoilGroup coilGroup = CoilGroup();
+
+    for (int i = 1; i <= numCoils; ++i)
+    {
+        Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000);
+        tempCoil.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.15*i),0.0, 0.0);
+        coilGroup.addCoil(tempCoil);
+    }
+
+    printf("Testing if ST and MTD methods for field computation return the same values\n\n");
+
+    vec3::Vector3Array referencePoints(pointCount);
+    vec3::Vector3Array computedAPotential;
+    vec3::Vector3Array computedBField;
+    vec3::Matrix3Array computedBGradient;
+
+    for (int i = 0; i < pointCount; ++i)
+        referencePoints[i] = vec3::Vector3(0.1, 1.0 * i / pointCount, -0.1);
+
+    computedAPotential = coilGroup.computeAllAPotentialVectors(referencePoints, CPU_ST);
+    printf("ST  potential: %.15g\n", computedAPotential[pointCount / 2].x);
+    computedAPotential = coilGroup.computeAllAPotentialVectors(referencePoints, CPU_MT);
+    printf("MTD potential: %.15g\n", computedAPotential[pointCount / 2].x);
+    printf("\n");
+
+    computedBField = coilGroup.computeAllBFieldVectors(referencePoints, CPU_ST);
+    printf("ST  field      %.15g\n", computedBField[pointCount / 2].x);
+    computedBField = coilGroup.computeAllBFieldVectors(referencePoints, CPU_MT);
+    printf("MTD field      %.15g\n", computedBField[pointCount / 2].x);
+    printf("\n");
+
+    computedBGradient = coilGroup.computeAllBGradientMatrices(referencePoints, CPU_ST);
+    printf("ST  gradient:  %.15g\n", computedBGradient[pointCount / 2].xy);
+    computedBGradient = coilGroup.computeAllBGradientMatrices(referencePoints, CPU_MT);
+    printf("MTD gradient:  %.15g\n", computedBGradient[pointCount / 2].xy);
+    printf("\n");
+}

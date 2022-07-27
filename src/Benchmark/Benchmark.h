@@ -30,12 +30,10 @@ void benchForceZAxisMTScaling(int maxThreadCount = g_defaultThreadCount);
 void benchForceGeneral(ComputeMethod computeMethod = CPU_ST, int threadCount = g_defaultThreadCount);
 void benchForceGeneralMTScaling(int maxThreadCount = g_defaultThreadCount);
 
+void benchCoilGroupMTvsMTD(int threadCount = g_defaultThreadCount, int pointCount = 20'000);
 void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor = PrecisionFactor(),
                                     int numCoils = 50, int opCount = 100'000, int threadCount = g_defaultThreadCount);
 void benchCoilGroupComputeAllFieldsGPU(int numCoils = 100, int opCount = 131'072);
-
-void benchCoilGroupMTvsMTD(int threadCount = g_defaultThreadCount, int pointCount = 20'000);
-void benchCoilGroupComputeAllFieldsMTD(int threadCount = g_defaultThreadCount);
 void benchCoilGroupMInductanceAndForce(int numOps = 2, int threadCount = g_defaultThreadCount);
 void benchMInductanceAndForceComputeAll(PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = g_defaultThreadCount);
 

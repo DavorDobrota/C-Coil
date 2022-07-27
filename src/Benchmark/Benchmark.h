@@ -36,7 +36,7 @@ void benchCoilGroupComputeAllFieldsGPU(int numCoils = 100, int opCount = 131'072
 
 void benchCoilGroupMTvsMTD(int threadCount = g_defaultThreadCount, int pointCount = 20'000);
 void benchCoilGroupComputeAllFieldsMTD(int threadCount = g_defaultThreadCount);
-void benchCoilGroupMInductanceAndForceMTD(int threadCount = g_defaultThreadCount);
+void benchCoilGroupMInductanceAndForce(int numOps = 2, int threadCount = g_defaultThreadCount);
 void benchMInductanceAndForceComputeAll(PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = g_defaultThreadCount);
 
 #endif //GENERAL_COIL_PROGRAM_BENCHMARK_H

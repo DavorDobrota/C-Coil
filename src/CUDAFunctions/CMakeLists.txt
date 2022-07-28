@@ -1,4 +1,4 @@
-add_library(CUDAFunctions OBJECT AField.cu BField.cu GField.cu ErrorCheck.cu GPUMemoryManagement.cu)
+add_library(CUDAFunctions OBJECT AField.cu BField.cu GField.cu ErrorCheck.cu GPUMemoryManagement.cu MInductance.cu)
 
 target_compile_options(CUDAFunctions PRIVATE "--compiler-options=-fpic")
 

@@ -1,9 +1,7 @@
 #include "hardware_acceleration.h"
 
-#include "CUDAConstants.h"
 #include "Timing.h"
 #include "CUDAErrorCheck.h"
-#include "CoilData.h"
 #include "GPUMemoryManagement.h"
 
 #include <cstdio>
@@ -367,7 +365,7 @@ void Calculate_hardware_accelerated_a_group(long long numCoils, long long numOps
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemset(g_resArr, 0, numOps * sizeof(DataVector)));
+    gpuErrchk(cudaMemset(g_resArr, 0, numOps * sizeof(DataVector)))
 
     for (int i = 0; i < numCoils; ++i)
     {
@@ -383,7 +381,7 @@ void Calculate_hardware_accelerated_a_group(long long numCoils, long long numOps
     #endif
 
     if(resArr != nullptr)
-        gpuErrchk(cudaMemcpy(resArr, g_resArr, numOps * sizeof(DataVector), cudaMemcpyDeviceToHost));
+        gpuErrchk(cudaMemcpy(resArr, g_resArr, numOps * sizeof(DataVector), cudaMemcpyDeviceToHost))
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();

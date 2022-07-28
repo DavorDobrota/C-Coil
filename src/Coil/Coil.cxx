@@ -1,6 +1,5 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
-#include "ctpl_stl.h"
 #include "CoilData.h"
 
 #define _USE_MATH_DEFINES
@@ -383,12 +382,12 @@ Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements, d
             double sinPhi = std::sin(phi); double cosPhi = std::cos(phi);
 
             ringPosition = vec3::Vector3(cosB * cosA * cosPhi - sinB * sinPhi,
-                                              sinB * cosA * cosPhi + cosB * sinPhi,
-                                              (-1) * sinA * cosPhi);
+                                         sinB * cosA * cosPhi + cosB * sinPhi,
+                                         (-1) * sinA * cosPhi);
 
             ringTangent = vec3::Vector3((-1) * cosB * cosA * sinPhi - sinB * cosPhi,
-                                             (-1) * sinB * cosA * sinPhi + cosB * cosPhi,
-                                             sinA * sinPhi);
+                                        (-1) * sinB * cosA * sinPhi + cosB * cosPhi,
+                                        sinA * sinPhi);
 
             unitRingVector.emplace_back(ringPosition, ringTangent);
         }
@@ -470,6 +469,78 @@ void Coil::generateCoilData(CoilData &coilData, const PrecisionArguments &usedPr
     coilData.invTransformArray[6] = inverseTransformationMatrix.zx;
     coilData.invTransformArray[7] = inverseTransformationMatrix.zy;
     coilData.invTransformArray[8] = inverseTransformationMatrix.zz;
+}
+#pragma clang diagnostic pop
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
+void Coil::generateCoilPairArgumentsData(const Coil &primary, const Coil &secondary,
+                                         CoilPairArgumentsData &coilPairArgumentsData,
+                                         const CoilPairArguments &inductanceArguments)
+{
+    if (primary.useFastMethod)
+        coilPairArgumentsData.constFactor = g_MiReduced * primary.currentDensity * primary.thickness * M_PI * 0.5;
+    else
+        coilPairArgumentsData.constFactor = g_MiReduced * M_PI * 0.5 *
+                                            primary.currentDensity * primary.thickness * primary.length;
+
+    coilPairArgumentsData.useFastMethod = primary.useFastMethod;
+    coilPairArgumentsData.correctionFactor = 2*M_PI * secondary.numOfTurns / primary.current;
+
+    coilPairArgumentsData.primInnerRadius = primary.innerRadius;
+    coilPairArgumentsData.primThickness = primary.thickness;
+    coilPairArgumentsData.primLength = primary.length;
+
+    coilPairArgumentsData.primLengthIncrements = inductanceArguments.primaryPrecision.lengthIncrementCount;
+    coilPairArgumentsData.primThicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrementCount;
+    coilPairArgumentsData.primAngularIncrements = inductanceArguments.primaryPrecision.angularIncrementCount;
+
+    coilPairArgumentsData.secInnerRadius = secondary.innerRadius;
+    coilPairArgumentsData.secThickness = secondary.thickness;
+    coilPairArgumentsData.secLength = secondary.length;
+
+    coilPairArgumentsData.secLengthIncrements = inductanceArguments.secondaryPrecision.lengthIncrementCount;
+    coilPairArgumentsData.secThicknessIncrements = inductanceArguments.secondaryPrecision.thicknessIncrementCount;
+    coilPairArgumentsData.secAngularIncrements = inductanceArguments.secondaryPrecision.angularIncrementCount;
+
+    for (int i = 0; i < inductanceArguments.primaryPrecision.angularIncrementCount; ++i)
+    {
+        double phiPosition =
+                M_PI_2 * (1.0 + Legendre::positionMatrix[inductanceArguments.primaryPrecision.angularIncrementCount - 1][i]);
+
+        coilPairArgumentsData.primCosPrecomputeArray[i] = std::cos(phiPosition);
+        coilPairArgumentsData.primAngularWeightArray[i] =
+                Legendre::weightsMatrix[inductanceArguments.primaryPrecision.angularIncrementCount - 1][i];
+    }
+    for (int i = 0; i < inductanceArguments.primaryPrecision.thicknessIncrementCount; ++i)
+    {
+        coilPairArgumentsData.primThicknessPositionArray[i] =
+                Legendre::positionMatrix[inductanceArguments.primaryPrecision.thicknessIncrementCount - 1][i];
+        coilPairArgumentsData.primThicknessWeightArray[i] =
+                Legendre::weightsMatrix[inductanceArguments.primaryPrecision.thicknessIncrementCount - 1][i];
+    }
+
+    for (int i = 0; i < inductanceArguments.secondaryPrecision.angularIncrementCount; ++i)
+    {
+        coilPairArgumentsData.secAngularPositionArray[i] =
+                Legendre::positionMatrix[inductanceArguments.secondaryPrecision.angularIncrementCount - 1][i];
+        coilPairArgumentsData.secAngularWeightArray[i] =
+                Legendre::weightsMatrix[inductanceArguments.secondaryPrecision.angularIncrementCount - 1][i];
+    }
+    for (int i = 0; i < inductanceArguments.secondaryPrecision.thicknessIncrementCount; ++i)
+    {
+        coilPairArgumentsData.secThicknessPositionArray[i] =
+                Legendre::positionMatrix[inductanceArguments.secondaryPrecision.thicknessIncrementCount - 1][i];
+        coilPairArgumentsData.secThicknessWeightArray[i] =
+                Legendre::weightsMatrix[inductanceArguments.secondaryPrecision.thicknessIncrementCount - 1][i];
+    }
+    for (int i = 0; i < inductanceArguments.secondaryPrecision.lengthIncrementCount; ++i)
+    {
+        coilPairArgumentsData.secLengthPositionArray[i] =
+                Legendre::positionMatrix[inductanceArguments.secondaryPrecision.lengthIncrementCount - 1][i];
+        coilPairArgumentsData.secLengthWeightArray[i] =
+                Legendre::weightsMatrix[inductanceArguments.secondaryPrecision.lengthIncrementCount - 1][i];
+    }
 
 }
 #pragma clang diagnostic pop

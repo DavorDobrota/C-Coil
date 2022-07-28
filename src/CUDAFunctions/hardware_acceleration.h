@@ -32,4 +32,9 @@ void Calculate_hardware_accelerated_g_group(long long numCoils, long long numOps
                                             const DataVector *posArr,
                                             DataMatrix *resArr = nullptr);
 
+void Calculate_mutual_inductance_configurations(long long numConfigs, long long numPoints,
+                                                CoilPairArgumentsData coilPair,
+                                                const CoilPairPositionData *configArr,
+                                                TYPE *inductanceArr = nullptr);
+
 #endif // COPPER_HARDWARE_ACCELERATED_FUNCTIONS

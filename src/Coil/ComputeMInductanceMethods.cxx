@@ -1,5 +1,6 @@
 #include "Coil.h"
 #include "ThreadPool.h"
+#include "hardware_acceleration.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -55,6 +56,8 @@ double Coil::computeSecondaryInducedVoltage(const Coil &secondary, PrecisionFact
     return computeMutualInductance(*this, secondary, precisionFactor, computeMethod) * 2*M_PI * sineFrequency;
 }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 std::vector<double> Coil::computeAllMutualInductanceArrangements(Coil primary, Coil secondary,
                                                                  const vec3::Vector3Array &primaryPositions,
                                                                  const vec3::Vector3Array &secondaryPositions,
@@ -76,7 +79,65 @@ std::vector<double> Coil::computeAllMutualInductanceArrangements(Coil primary, C
         unsigned long long numArrangements = primaryPositions.size();
         outputMInductances.resize(numArrangements);
 
-        if (numArrangements < 2 * primary.getThreadCount() || computeMethod != CPU_MT)
+        if (computeMethod == GPU)
+        {
+            long long size = numArrangements;
+
+            auto *configArr = static_cast<CoilPairPositionData *>(calloc(size, sizeof(CoilPairPositionData)));
+            auto *resultArr = static_cast<TYPE *>(calloc(size, sizeof(TYPE)));
+
+            if(!configArr || !resultArr)
+                throw std::bad_alloc();
+
+            for (long long i = 0; i < size; ++i)
+            {
+                vec3::Vector3 tempPrimPos = primaryPositions[i];
+                vec3::Vector3 tempSecPos = secondaryPositions[i];
+
+                configArr[i].primPositionVector[0] = tempPrimPos.x;
+                configArr[i].primPositionVector[1] = tempPrimPos.y;
+                configArr[i].primPositionVector[2] = tempPrimPos.z;
+
+                configArr[i].secPositionVector[0] = tempSecPos.x;
+                configArr[i].secPositionVector[1] = tempSecPos.y;
+                configArr[i].secPositionVector[2] = tempSecPos.z;
+
+                configArr[i].primAlphaAngle = primaryYAngles[i];
+                configArr[i].primBetaAngle = primaryZAngles[i];
+
+                configArr[i].secAlphaAngle = secondaryYAngles[i];
+                configArr[i].secBetaAngle = secondaryZAngles[i];
+            }
+
+            CoilPairArguments inductanceArguments = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, GPU);
+            CoilPairArgumentsData coilPairArgumentsData;
+
+            generateCoilPairArgumentsData(primary, secondary, coilPairArgumentsData, inductanceArguments);
+            long long numPoints = inductanceArguments.secondaryPrecision.lengthIncrementCount *
+                                  inductanceArguments.secondaryPrecision.thicknessIncrementCount *
+                                  inductanceArguments.secondaryPrecision.angularIncrementCount;
+
+            #if USE_GPU == 1
+                Calculate_mutual_inductance_configurations(size, numPoints, coilPairArgumentsData, configArr, resultArr);
+            #else
+                free(configArr);
+                free(resultArr);
+                throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
+            #endif // USE_GPU
+
+            free(configArr);
+
+            std::vector<double> outputArr;
+            outputArr.reserve(size);
+
+            for (long long i = 0; i < size; ++i)
+                outputArr.emplace_back(resultArr[i]);
+
+            free(resultArr);
+
+            return outputArr;
+        }
+        else if (numArrangements < 2 * primary.getThreadCount() || computeMethod != CPU_MT)
         {
             for (int i = 0; i < numArrangements; ++i)
             {
@@ -128,9 +189,9 @@ std::vector<double> Coil::computeAllMutualInductanceArrangements(Coil primary, C
     }
     else
     {
-        fprintf(stderr, "Array sizes do not match!\n");
-        throw std::logic_error("Array sizes do not match");
+        throw std::logic_error("Array sizes do not match!");
     }
 
     return outputMInductances;
 }
+#pragma clang diagnostic pop

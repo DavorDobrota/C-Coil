@@ -356,6 +356,9 @@ class Coil
         calculateRingIncrementPosition(int angularBlocks, int angularIncrements, double alpha, double beta);
 
         static bool isZAxisCase(const Coil &primary, const Coil &secondary);
+        static void generateCoilPairArgumentsData(const Coil &primary, const Coil &secondary,
+                                                  CoilPairArgumentsData &coilPairArgumentsData,
+                                                  const CoilPairArguments &inductanceArguments);
 
         static double calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                          CoilPairArguments inductanceArguments,

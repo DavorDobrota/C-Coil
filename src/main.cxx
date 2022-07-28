@@ -46,15 +46,17 @@ int main()
 //    benchCoilGroupMInductanceAndForce(16);
 
 //    benchCoilGroupMTvsMTD(16, 100'000);
-//    benchMInductanceAndForceComputeAll(PrecisionFactor(), 16);
+//    benchMInductanceAndForceComputeAllMTvsMTD(PrecisionFactor(), 16);
 
 //    benchCoilGroupComputeAllFields(PrecisionFactor(3.0), 1, 1'048'576, 16);
 //    benchCoilGroupComputeAllFields(PrecisionFactor(1.0), 100, 131'072, 16);
 
 //    benchCoilGroupComputeAllFieldsGPU();
 
-    benchCoilGroupMTvsMTD();
-    benchCoilGroupMInductanceAndForce();
+//    benchCoilGroupMTvsMTD();
+//    benchCoilGroupMInductanceAndForce();
+
+    benchMInductanceAndForceComputeAll();
 
 
     return 0;

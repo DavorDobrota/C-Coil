@@ -1,9 +1,7 @@
 #include "hardware_acceleration.h"
 
-#include "CUDAConstants.h"
 #include "Timing.h"
 #include "CUDAErrorCheck.h"
-#include "CoilData.h"
 #include "GPUMemoryManagement.h"
 
 #include <cstdio>

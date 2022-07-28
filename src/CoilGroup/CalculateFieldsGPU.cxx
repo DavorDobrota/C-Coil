@@ -1,5 +1,4 @@
 #include "CoilGroup.h"
-#include "CoilData.h"
 #include "hardware_acceleration.h"
 #include "LegendreMatrix.h"
 

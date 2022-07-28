@@ -6,6 +6,7 @@
 #include <math.h>
 #include <numeric>
 
+
 namespace
 {
     const double g_MiReduced = 0.0000001;

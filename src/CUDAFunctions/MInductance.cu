@@ -148,7 +148,7 @@ void CalculateMutualInductanceConfigurations(long long numConfigs, long long num
                   coilPair.secAngularWeightArray[angularIndex];
 
     TYPE mInductance = weight * coilPair.correctionFactor *
-                       (potentialX * ringTangentX + potentialY * ringTangentY + potentialZ * ringTangentZ) ;
+                       (potentialX * ringTangentX + potentialY * ringTangentY + potentialZ * ringTangentZ);
 
     atomicAdd(&inductanceArr[pairIndex], mInductance);
 }
@@ -207,6 +207,7 @@ void Calculate_mutual_inductance_configurations(long long numConfigs, long long 
     gpuErrchk(cudaMemset(g_inductanceArr, 0, numConfigs * sizeof(TYPE)))
 
     CalculateMutualInductanceConfigurations<<<blocks, NTHREADS>>>(numConfigs, numPoints, coilPair, g_configArr, g_inductanceArr);
+    gpuErrchk(cudaDeviceSynchronize())
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();

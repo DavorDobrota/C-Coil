@@ -455,6 +455,61 @@ void benchMInductanceAndForceComputeAllMTvsMTD(PrecisionFactor precisionFactor, 
     printf("\n");
 }
 
+void benchMInductanceAndForceComputeGPU(int configCount)
+{
+    using namespace std::chrono;
+
+    Coil prim = Coil(0.1, 0.1, 0.1, 10000);
+    Coil sec = Coil(0.1, 0.1, 0.1, 10000);
+
+    vec3::Vector3Array primPositions(configCount);
+    vec3::Vector3Array secPositions(configCount);
+    std::vector<double> primYAxisAngle(configCount);
+    std::vector<double> primZAxisAngle(configCount);
+    std::vector<double> secYAxisAngle(configCount);
+    std::vector<double> secZAxisAngle(configCount);
+
+    for (int i = 0; i < configCount; ++i)
+    {
+        primPositions[i] = vec3::Vector3(0.0, 0.0, 0.0);
+        secPositions[i] = vec3::Vector3(0.0, 0.1, 0.2 + double(i) * 0.005);
+        primYAxisAngle[i] = 0.5;
+        primZAxisAngle[i] = 0.5;
+        secYAxisAngle[i] = 0.6;
+        secZAxisAngle[i] = 0.6;
+    }
+
+    high_resolution_clock::time_point begin_time;
+    double interval;
+
+    printf("Benchmarking mutual inductance GPU for %d configurations:\n\n", configCount);
+
+    for (int i = 1; i <= 9; ++i)
+    {
+        std::vector<double> mutualInductance(configCount);
+        auto precisionFactor = PrecisionFactor(double(i));
+        double performance;
+
+        printf("Performance for precision factor %.1f\n", double(i));
+
+        mutualInductance = Coil::computeAllMutualInductanceArrangements(prim, sec, primPositions,secPositions,
+                                                                        primYAxisAngle, primZAxisAngle,
+                                                                        secYAxisAngle, secZAxisAngle,
+                                                                        PrecisionFactor(1.0), GPU); // GPU warmup
+
+        begin_time = high_resolution_clock::now();
+        mutualInductance = Coil::computeAllMutualInductanceArrangements(prim, sec, primPositions,secPositions,
+                                                                        primYAxisAngle, primZAxisAngle,
+                                                                        secYAxisAngle, secZAxisAngle,
+                                                                        precisionFactor, GPU);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        performance = configCount / interval;
+        printf("MInductance : %6.2f microseconds/Op | %.0f Ops/s\n", 1e6 / performance, performance);
+
+        printf("\n");
+    }
+}
+
 void benchMInductanceAndForceComputeAll(int configCount, int threadCount)
 {
     using namespace std::chrono;

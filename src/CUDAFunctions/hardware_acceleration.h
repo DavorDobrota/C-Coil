@@ -37,4 +37,9 @@ void Calculate_mutual_inductance_configurations(long long numConfigs, long long 
                                                 const CoilPairPositionData *configArr,
                                                 TYPE *inductanceArr = nullptr);
 
+void Calculate_force_and_torque_configurations(long long numConfigs, long long numPoints,
+                                               CoilPairArgumentsData coilPair,
+                                               const CoilPairPositionData *configArr,
+                                               ForceTorqueData *forceTorqueArr = nullptr);
+
 #endif // COPPER_HARDWARE_ACCELERATED_FUNCTIONS

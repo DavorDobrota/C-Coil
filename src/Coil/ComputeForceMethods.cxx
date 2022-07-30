@@ -1,5 +1,6 @@
 #include "Coil.h"
 #include "ThreadPool.h"
+#include "hardware_acceleration.h"
 
 #include <functional>
 
@@ -64,6 +65,8 @@ Coil::computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 dipole
     return computeForceOnDipoleMoment(pointVector, dipoleMoment, defaultPrecisionCPU);
 }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
 Coil::computeAllAmpereForceArrangements(Coil primary, Coil secondary,
                                         const vec3::Vector3Array &primaryPositions,
@@ -83,7 +86,71 @@ Coil::computeAllAmpereForceArrangements(Coil primary, Coil secondary,
         unsigned long long numArrangements = primaryPositions.size();
         outputForcesAndTorques.resize(numArrangements);
 
-        if (numArrangements < 4 * primary.getThreadCount() || computeMethod != CPU_MT)
+        if (computeMethod == GPU) {
+            long long size = numArrangements;
+
+            auto *configArr = static_cast<CoilPairPositionData *>(calloc(size, sizeof(CoilPairPositionData)));
+            auto *resultArr = static_cast<ForceTorqueData *>(calloc(size, sizeof(ForceTorqueData)));
+
+            if (!configArr || !resultArr)
+                throw std::bad_alloc();
+
+            for (long long i = 0; i < size; ++i) {
+                vec3::Vector3 tempPrimPos = primaryPositions[i];
+                vec3::Vector3 tempSecPos = secondaryPositions[i];
+
+                configArr[i].primPositionVector[0] = tempPrimPos.x;
+                configArr[i].primPositionVector[1] = tempPrimPos.y;
+                configArr[i].primPositionVector[2] = tempPrimPos.z;
+
+                configArr[i].secPositionVector[0] = tempSecPos.x;
+                configArr[i].secPositionVector[1] = tempSecPos.y;
+                configArr[i].secPositionVector[2] = tempSecPos.z;
+
+                configArr[i].primAlphaAngle = primaryYAngles[i];
+                configArr[i].primBetaAngle = primaryZAngles[i];
+
+                configArr[i].secAlphaAngle = secondaryYAngles[i];
+                configArr[i].secBetaAngle = secondaryZAngles[i];
+            }
+
+            CoilPairArguments inductanceArguments = CoilPairArguments::getAppropriateCoilPairArguments(primary,
+                                                                                                       secondary,
+                                                                                                       precisionFactor,
+                                                                                                       GPU);
+            CoilPairArgumentsData coilPairArgumentsData;
+
+            generateCoilPairArgumentsData(primary, secondary, coilPairArgumentsData, inductanceArguments, false);
+            long long numPoints = inductanceArguments.secondaryPrecision.lengthIncrementCount *
+                                  inductanceArguments.secondaryPrecision.thicknessIncrementCount *
+                                  inductanceArguments.secondaryPrecision.angularIncrementCount;
+
+            #if USE_GPU == 1
+                Calculate_force_and_torque_configurations(size, numPoints, coilPairArgumentsData, configArr, resultArr);
+            #else
+                free(configArr);
+                free(resultArr);
+                throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
+            #endif // USE_GPU
+
+            free(configArr);
+
+            std::vector<std::pair<vec3::Vector3, vec3::Vector3>> outputArr;
+            outputArr.reserve(size);
+
+            for (long long i = 0; i < size; ++i) {
+                outputArr.emplace_back(
+                        std::make_pair(vec3::Vector3(resultArr[i].forceX, resultArr[i].forceY, resultArr[i].forceZ),
+                                       vec3::Vector3(resultArr[i].torqueX, resultArr[i].torqueY,
+                                                     resultArr[i].torqueZ)));
+            }
+
+            free(resultArr);
+
+            return outputArr;
+        }
+
+        else if (numArrangements < 2 * primary.getThreadCount() || computeMethod != CPU_MT)
         {
             for (int i = 0; i < numArrangements; ++i)
             {
@@ -143,3 +210,4 @@ Coil::computeAllAmpereForceArrangements(Coil primary, Coil secondary,
 
     return outputForcesAndTorques;
 }
+#pragma clang diagnostic pop

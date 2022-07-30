@@ -96,6 +96,29 @@ struct DataMatrix
     TYPE zz;
 };
 
+struct ForceTorqueData
+
+{
+    ForceTorqueData() :
+
+        forceX{0.0},
+        forceY{0.0},
+        forceZ{0.0},
+
+        torqueX{0.0},
+        torqueY{0.0},
+        torqueZ{0.0}
+    {}
+
+    TYPE forceX;
+    TYPE forceY;
+    TYPE forceZ;
+
+    TYPE torqueX;
+    TYPE torqueY;
+    TYPE torqueZ;
+};
+
 struct CoilPairPositionData
 {
     CoilPairPositionData() :

@@ -317,7 +317,7 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                             positionVectors.append(displacementX, displacementY, displacementZ);
 
                             weights.emplace_back(
-                                    0.125 * 2*M_PI * ringRadius *
+                                    0.125 * ringRadius *
                                     Legendre::weightsMatrix[maxLengthIndex][zIndex] *
                                     Legendre::weightsMatrix[maxThicknessIndex][rIndex] *
                                     Legendre::weightsMatrix[maxAngularIncrementIndex][phiIndex]);
@@ -345,7 +345,7 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
         vec3::Vector3 tempTorque = vec3::Vector3::crossProduct(positionVectors[i] - displacementVec, tempForce);
         torqueVector += tempTorque;
     }
-    double forceFactor = (secondary.current * secondary.numOfTurns) / (lengthBlocks * thicknessBlocks * angularBlocks);
+    double forceFactor = 2*M_PI * (secondary.current * secondary.numOfTurns) / (lengthBlocks * thicknessBlocks * angularBlocks);
 
     forceVector *= forceFactor;
     torqueVector *= forceFactor;

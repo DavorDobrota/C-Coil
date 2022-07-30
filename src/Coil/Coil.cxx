@@ -476,7 +476,7 @@ void Coil::generateCoilData(CoilData &coilData, const PrecisionArguments &usedPr
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 void Coil::generateCoilPairArgumentsData(const Coil &primary, const Coil &secondary,
                                          CoilPairArgumentsData &coilPairArgumentsData,
-                                         const CoilPairArguments &inductanceArguments)
+                                         const CoilPairArguments &inductanceArguments, bool forceCalculation)
 {
     if (primary.useFastMethod)
         coilPairArgumentsData.constFactor = g_MiReduced * primary.currentDensity * primary.thickness * M_PI * 0.5;
@@ -485,7 +485,11 @@ void Coil::generateCoilPairArgumentsData(const Coil &primary, const Coil &second
                                             primary.currentDensity * primary.thickness * primary.length;
 
     coilPairArgumentsData.useFastMethod = primary.useFastMethod;
-    coilPairArgumentsData.correctionFactor = 2*M_PI * secondary.numOfTurns / primary.current;
+
+    if (!forceCalculation)
+        coilPairArgumentsData.correctionFactor = 2*M_PI * secondary.numOfTurns / primary.current;
+    else
+        coilPairArgumentsData.correctionFactor = 2*M_PI * secondary.numOfTurns * secondary.current;
 
     coilPairArgumentsData.primInnerRadius = primary.innerRadius;
     coilPairArgumentsData.primThickness = primary.thickness;

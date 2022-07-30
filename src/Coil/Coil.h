@@ -358,7 +358,8 @@ class Coil
         static bool isZAxisCase(const Coil &primary, const Coil &secondary);
         static void generateCoilPairArgumentsData(const Coil &primary, const Coil &secondary,
                                                   CoilPairArgumentsData &coilPairArgumentsData,
-                                                  const CoilPairArguments &inductanceArguments);
+                                                  const CoilPairArguments &inductanceArguments,
+                                                  bool forceCalculation);
 
         static double calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                          CoilPairArguments inductanceArguments,

@@ -479,23 +479,25 @@ void benchMInductanceAndForceComputeGPU(int configCount)
         secZAxisAngle[i] = 0.6;
     }
 
+    std::vector<double> warmupOutput =
+            Coil::computeAllMutualInductanceArrangements(prim, sec, primPositions,secPositions,
+                                                         primYAxisAngle, primZAxisAngle,
+                                                         secYAxisAngle, secZAxisAngle,
+                                                         PrecisionFactor(2.0), GPU); // GPU warmup
+
     high_resolution_clock::time_point begin_time;
     double interval;
 
-    printf("Benchmarking mutual inductance GPU for %d configurations:\n\n", configCount);
+    printf("Benchmarking mutual inductance, force and torque on GPU for %d configurations:\n\n", configCount);
 
     for (int i = 1; i <= 9; ++i)
     {
         std::vector<double> mutualInductance(configCount);
+        std::vector<std::pair<vec3::Vector3, vec3::Vector3>> forceTorque(configCount);
         auto precisionFactor = PrecisionFactor(double(i));
         double performance;
 
         printf("Performance for precision factor %.1f\n", double(i));
-
-        mutualInductance = Coil::computeAllMutualInductanceArrangements(prim, sec, primPositions,secPositions,
-                                                                        primYAxisAngle, primZAxisAngle,
-                                                                        secYAxisAngle, secZAxisAngle,
-                                                                        PrecisionFactor(1.0), GPU); // GPU warmup
 
         begin_time = high_resolution_clock::now();
         mutualInductance = Coil::computeAllMutualInductanceArrangements(prim, sec, primPositions,secPositions,
@@ -504,7 +506,17 @@ void benchMInductanceAndForceComputeGPU(int configCount)
                                                                         precisionFactor, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         performance = configCount / interval;
-        printf("MInductance : %6.2f microseconds/Op | %.0f Ops/s\n", 1e6 / performance, performance);
+        printf("Mutual inductance : %6.2f microseconds/Op | %.0f Ops/s\n", 1e6 / performance, performance);
+
+        begin_time = high_resolution_clock::now();
+        forceTorque = Coil::computeAllAmpereForceArrangements(prim, sec, primPositions,secPositions,
+                                                              primYAxisAngle, primZAxisAngle,
+                                                              secYAxisAngle, secZAxisAngle,
+                                                              precisionFactor, GPU);
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        performance = configCount / interval;
+        printf("Force and torque  : %6.2f microseconds/Op | %.0f Ops/s\n", 1e6 / performance, performance);
+
 
         printf("\n");
     }

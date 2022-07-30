@@ -112,7 +112,7 @@ std::vector<double> Coil::computeAllMutualInductanceArrangements(Coil primary, C
             CoilPairArguments inductanceArguments = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, GPU);
             CoilPairArgumentsData coilPairArgumentsData;
 
-            generateCoilPairArgumentsData(primary, secondary, coilPairArgumentsData, inductanceArguments);
+            generateCoilPairArgumentsData(primary, secondary, coilPairArgumentsData, inductanceArguments, false);
             long long numPoints = inductanceArguments.secondaryPrecision.lengthIncrementCount *
                                   inductanceArguments.secondaryPrecision.thicknessIncrementCount *
                                   inductanceArguments.secondaryPrecision.angularIncrementCount;

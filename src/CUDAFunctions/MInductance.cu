@@ -227,7 +227,9 @@ void Calculate_mutual_inductance_configurations(long long numConfigs, long long 
         printf("\tDevice buffer size:       %.3lf MB\n", (numConfigs * double(sizeof(CoilPairPositionData) + sizeof(TYPE)) / 1.0e6));
         printf("\tTotal blocks:             %d\n", blocks);
         printf("\tThreads per calculation:  %i\n", NTHREADS);
+        printf("\tTotal issued threads:     %i\n", NTHREADS * blocks);
         printf("\tTotal configurations:     %d\n", numConfigs);
+        printf("\tPoints per configuration: %d\n", numPoints);
         printf("\tTotal calculations:       %d\n", numPoints * numConfigs);
         printf("\n\tPerformance:              %.1f kCoils/s\n", double(0.001 * numConfigs / g_duration));
         printf("\n\tEffective Performance:    %.1f kPoints/s\n", double(0.001 * numPoints * numConfigs / g_duration));

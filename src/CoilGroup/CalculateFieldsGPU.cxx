@@ -1,5 +1,5 @@
 #include "CoilGroup.h"
-#include "hardware_acceleration.h"
+#include "CUDAFunctions/CoilGroupKernels/CoilGroupAcceleration.h"
 #include "LegendreMatrix.h"
 
 #define _USE_MATH_DEFINES

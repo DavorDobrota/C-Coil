@@ -346,7 +346,7 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
     return mutualInductance * 2*M_PI * secondary.numOfTurns / primary.current;
 }
 
-double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments, ComputeMethod computeMethod) const
+double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments) const
 {
     double calculatedSelfInductance = 0.0;
 

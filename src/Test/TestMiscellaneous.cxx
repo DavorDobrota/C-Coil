@@ -1,8 +1,7 @@
 #include "Test.h"
 #include "Coil.h"
-#include "ComputeMethod.h"
+#include "Coil/EnumsAndConstants/ComputeMethod.h"
 #include "Tensor.h"
-#include "hardware_acceleration.h"
 #include "CoilGroup.h"
 
 #define _USE_MATH_DEFINES

@@ -36,8 +36,8 @@ void compAmpereForceThickCoilsGeneral()
 
     printf("%.15g MJ\n", 1e-6 *
            (0.5 * coil1.computeAndSetSelfInductance(PrecisionFactor(12)) * coil1.getCurrent() * coil1.getCurrent() +
-           0.5 * coil2.computeAndSetSelfInductance(PrecisionFactor(12)) * coil2.getCurrent() * coil2.getCurrent() +
-           0.5 * coil3.computeAndSetSelfInductance(PrecisionFactor(12)) * coil3.getCurrent() * coil3.getCurrent() +
+            0.5 * coil2.computeAndSetSelfInductance(PrecisionFactor(12)) * coil2.getCurrent() * coil2.getCurrent() +
+            0.5 * coil3.computeAndSetSelfInductance(PrecisionFactor(12)) * coil3.getCurrent() * coil3.getCurrent() +
            Coil::computeMutualInductance(coil1, coil2) * coil1.getCurrent() * coil2.getCurrent() +
            Coil::computeMutualInductance(coil2, coil3) * coil2.getCurrent() * coil3.getCurrent() +
            Coil::computeMutualInductance(coil1, coil3) * coil1.getCurrent() * coil3.getCurrent()

@@ -1,7 +1,7 @@
 #include <PyMain.h>
 #include <Coil.h>
-#include <CoilType.h>
-#include <ComputeMethod.h>
+#include "Coil/EnumsAndConstants/CoilType.h"
+#include "Coil/EnumsAndConstants/ComputeMethod.h"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>

@@ -1,8 +1,8 @@
-#include "hardware_acceleration.h"
+#include "CoilAcceleration.h"
 
 #include "Timing.h"
-#include "CUDAErrorCheck.h"
-#include "GPUMemoryManagement.h"
+#include "CUDAFunctions/ErrorCheck/CUDAErrorCheck.h"
+#include "CUDAFunctions/MemoryManagement/GPUMemoryManagement.h"
 
 #include <cstdio>
 
@@ -27,7 +27,7 @@ void CalculateMutualInductanceConfigurations(long long numConfigs, long long num
     TYPE lengthPosition = coilPair.secLength * 0.5f * coilPair.secLengthPositionArray[lengthIndex];
     TYPE thicknessPosition = coilPair.secInnerRadius +
                              coilPair.secThickness * 0.5f * (1.0f + coilPair.secThicknessPositionArray[thicknessIndex]);
-    TYPE angularPosition = M_PI * (1.0f + coilPair.secAngularPositionArray[angularIndex]);
+    TYPE angularPosition = PI * (1.0f + coilPair.secAngularPositionArray[angularIndex]);
 
     TYPE sinAlpha = sin(position.secAlphaAngle);
     TYPE cosAlpha = cos(position.secAlphaAngle);

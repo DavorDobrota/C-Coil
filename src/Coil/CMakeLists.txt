@@ -2,20 +2,20 @@ add_library(
         Coil OBJECT
 
         Coil.cxx
-        PrecisionArrays.cxx
-        PrecisionFactor.cxx
-        PrecisionArguments.cxx
-        CoilPairArguments.cxx
-        CalculateFieldsMethods.cxx
-        ComputePointMethods.cxx
-        CalculateAllFieldsMethods.cxx
-        ComputeAllPointsMethods.cxx
-        CalculateMInductanceMethods.cxx
-        ComputeMInductanceMethods.cxx
-        CalculateForceMethods.cxx
-        ComputeForceMethods.cxx
-        CalculateFieldsSlow.cxx
-        CalculateFieldsFast.cxx)
+        PrecisionArguments/PrecisionArrays.cxx
+        PrecisionArguments/PrecisionFactor.cxx
+        PrecisionArguments/PrecisionArguments.cxx
+        PrecisionArguments/CoilPairArguments.cxx
+        Fields/CalculateFieldsMethods.cxx
+        Fields/CalculateAllFieldsMethods.cxx
+        MInductance/CalculateMInductanceMethods.cxx
+        MInductance/CalculateMInductanceArrangements.cxx
+        ForceAndTorque/CalculateForceMethods.cxx
+        ForceAndTorque/CalculateForceArrangements.cxx
+        Fields/CalculateFieldsSlow.cxx
+        Fields/CalculateFieldsFast.cxx
+        Utils/SupportFunctions.cxx
+        Utils/CalculateAttributes.cxx)
 
 target_compile_options(Coil PRIVATE -fpic)
 

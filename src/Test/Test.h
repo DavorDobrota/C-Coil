@@ -1,7 +1,6 @@
 #ifndef GENERAL_COIL_PROGRAM_TEST_H
 #define GENERAL_COIL_PROGRAM_TEST_H
 
-#include "ComputeMethod.h"
 #include "Coil.h"
 
 

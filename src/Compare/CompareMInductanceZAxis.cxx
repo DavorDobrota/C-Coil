@@ -64,7 +64,7 @@ void compSelfInductance()
     coil1.setThreadCount(8);
 
     for (int i = 1; i <= 12; ++i)
-        printf("%.15g\n", coil1.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT));
+        printf("%.15g\n", coil1.computeAndSetSelfInductance(PrecisionFactor(i)));
     printf("\n");
 
     for (int i = 1; i <= 12; ++i)
@@ -85,7 +85,7 @@ void compSelfInductance()
     Coil coil4 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
     for (int i = 1; i <= 15; ++i)
     {
-        temp = coil4.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        temp = coil4.computeAndSetSelfInductance(PrecisionFactor(i)) / coil4.getInnerRadius();
         printf("%.11g\n", 1e6 * temp);
         fprintf(output, "%.11g\t", 1e6 * temp);
     }
@@ -96,7 +96,7 @@ void compSelfInductance()
     Coil coil5 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
     for (int i = 1; i <= 15; ++i)
     {
-        temp = coil5.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        temp = coil5.computeAndSetSelfInductance(PrecisionFactor(i)) / coil4.getInnerRadius();
         printf("%.11g\n", 1e6 * temp);
         fprintf(output, "%.11g\t", 1e6 * temp);
     }
@@ -107,7 +107,7 @@ void compSelfInductance()
     Coil coil6 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
     for (int i = 1; i <= 15; ++i)
     {
-        temp = coil6.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        temp = coil6.computeAndSetSelfInductance(PrecisionFactor(i)) / coil4.getInnerRadius();
         printf("%.11g\n", 1e6 * temp);
         fprintf(output, "%.11g\t", 1e6 * temp);
     }
@@ -118,7 +118,7 @@ void compSelfInductance()
     Coil coil7 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
     for (int i = 1; i <= 15; ++i)
     {
-        temp = coil7.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        temp = coil7.computeAndSetSelfInductance(PrecisionFactor(i)) / coil4.getInnerRadius();
         printf("%.11g\n", 1e6 * temp);
         fprintf(output, "%.11g\t", 1e6 * temp);
     }
@@ -129,7 +129,7 @@ void compSelfInductance()
     Coil coil8 = Coil(r1, r1 * (alpha - 1), 2 * r1 * beta, 1);
     for (int i = 1; i <= 15; ++i)
     {
-        temp = coil8.computeAndSetSelfInductance(PrecisionFactor(i), CPU_MT) / coil4.getInnerRadius();
+        temp = coil8.computeAndSetSelfInductance(PrecisionFactor(i)) / coil4.getInnerRadius();
         printf("%.11g\n", 1e6 * temp);
         fprintf(output, "%.11g\t", 1e6 * temp);
     }

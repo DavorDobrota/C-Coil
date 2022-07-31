@@ -1,4 +1,16 @@
-add_library(CUDAFunctions OBJECT AField.cu BField.cu GField.cu ErrorCheck.cu GPUMemoryManagement.cu MInductance.cu Force.cu)
+add_library(
+        CUDAFunctions OBJECT
+
+        CoilKernels/FieldA.cu
+        CoilKernels/FieldB.cu
+        CoilKernels/FieldG.cu
+        CoilKernels/MInductance.cu
+        CoilKernels/Force.cu
+        ErrorCheck/ErrorCheck.cu
+        MemoryManagement/GPUMemoryManagement.cu
+        CoilGroupKernels/AFieldGroup.cu
+        CoilGroupKernels/BFieldGroup.cu
+        CoilGroupKernels/GFieldGroup.cu)
 
 target_compile_options(CUDAFunctions PRIVATE "--compiler-options=-fpic")
 

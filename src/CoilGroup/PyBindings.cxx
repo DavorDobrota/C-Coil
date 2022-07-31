@@ -2,7 +2,7 @@
 
 #include <Coil.h>
 #include <CoilGroup.h>
-#include <ComputeMethod.h>
+#include "Coil/EnumsAndConstants/ComputeMethod.h"
 #include <PyMain.h>
 
 #include <pybind11/pybind11.h>

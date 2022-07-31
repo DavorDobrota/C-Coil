@@ -1,4 +1,10 @@
-add_library(CoilGroup OBJECT CoilGroup.cxx CalculateFieldsGPU.cxx ComputeFieldsMethods.cxx CalculateMTD.cxx)
+add_library(
+        CoilGroup OBJECT
+
+        CoilGroup.cxx
+        CalculateFieldsGPU.cxx
+        ComputeFieldsMethods.cxx
+        CalculateMTD.cxx)
 
 target_compile_options(CoilGroup PRIVATE -fpic)
 

@@ -1,6 +1,6 @@
 #include "Compare.h"
 #include "Coil.h"
-#include "ComputeMethod.h"
+#include "Coil/EnumsAndConstants/ComputeMethod.h"
 #include "Tensor.h"
 #include "CoilGroup.h"
 

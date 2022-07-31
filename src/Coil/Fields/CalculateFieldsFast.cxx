@@ -10,7 +10,7 @@ namespace
     const double g_MiReduced = 0.0000001;
 }
 
-double Coil::calculateAPotentialFast(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
+double Coil::calculateAPotentialFast(double zCoord, double rCoord, const PrecisionArguments &usedPrecision) const
 {
     double magneticPotential = 0.0;
 
@@ -24,8 +24,8 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
     // multiplication by 2 because cosine is an even function and by 0.25 for a double change of interval (2 times 1/2)
     double constant = g_MiReduced * currentDensity * thicknessBlock * angularBlock * 2 * 0.25;
 
-    double topEdge = zAxis + length * 0.5;
-    double bottomEdge = zAxis - length * 0.5;
+    double topEdge = zCoord + length * 0.5;
+    double bottomEdge = zCoord - length * 0.5;
 
     std::vector<std::vector<double>> cosPhiPrecomputeMat(usedPrecision.angularBlockCount);
 
@@ -53,8 +53,8 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
 
             double incrementWeightT = Legendre::weightsMatrix[thicknessIncrements][incT];
 
-            double tempConstA = 2.0 * incrementPositionT * rPolar;
-            double tempConstB = incrementPositionT * incrementPositionT + rPolar * rPolar;
+            double tempConstA = 2.0 * incrementPositionT * rCoord;
+            double tempConstB = incrementPositionT * incrementPositionT + rCoord * rCoord;
 
             for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlockCount; ++indBlockPhi)
             {
@@ -82,7 +82,7 @@ double Coil::calculateAPotentialFast(double zAxis, double rPolar, const Precisio
     return magneticPotential;
 }
 
-std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
+std::pair<double, double> Coil::calculateBFieldFast(double zCoord, double rCoord, const PrecisionArguments &usedPrecision) const
 {
     double magneticFieldZ = 0.0;
     double magneticFieldH = 0.0;
@@ -97,8 +97,8 @@ std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar,
     // multiplication by 2 because cosine is an even function and by 0.25 for a double change of interval (2 times 1/2)
     double constant = g_MiReduced * currentDensity * thicknessBlock * angularBlock * 2 * 0.25;
 
-    double topEdge = zAxis + length * 0.5;
-    double bottomEdge = zAxis - length * 0.5;
+    double topEdge = zCoord + length * 0.5;
+    double bottomEdge = zCoord - length * 0.5;
 
     std::vector<std::vector<double>> cosPhiPrecomputeMat(usedPrecision.angularBlockCount);
 
@@ -127,8 +127,8 @@ std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar,
             double incrementWeightT = Legendre::weightsMatrix[thicknessIncrements][incT];
 
             double tempConstA = incrementPositionT * incrementPositionT;
-            double tempConstB = incrementPositionT * rPolar;
-            double tempConstC = tempConstA + rPolar * rPolar;
+            double tempConstB = incrementPositionT * rCoord;
+            double tempConstC = tempConstA + rCoord * rCoord;
 
             double tempConstD1 = topEdge * topEdge + tempConstC;
             double tempConstD2 = bottomEdge * bottomEdge + tempConstC;
@@ -159,7 +159,7 @@ std::pair<double, double> Coil::calculateBFieldFast(double zAxis, double rPolar,
     return {magneticFieldH, magneticFieldZ};
 }
 
-std::vector<double> Coil::calculateBGradientFast(double zAxis, double rPolar, const PrecisionArguments &usedPrecision) const
+std::vector<double> Coil::calculateBGradientFast(double zCoord, double rCoord, const PrecisionArguments &usedPrecision) const
 {
     double bufferValueRPhi = 0.0;
     double bufferValueRR = 0.0;
@@ -176,8 +176,8 @@ std::vector<double> Coil::calculateBGradientFast(double zAxis, double rPolar, co
     // multiplication by 2 because cosine is an even function and by 0.25 for a double change of interval (2 times 1/2)
     double constant = g_MiReduced * currentDensity * thicknessBlock * angularBlock * 2 * 0.25;
 
-    double topEdge = zAxis + length * 0.5;
-    double bottomEdge = zAxis - length * 0.5;
+    double topEdge = zCoord + length * 0.5;
+    double bottomEdge = zCoord - length * 0.5;
 
     std::vector<std::vector<double>> cosPhiPrecomputeMat(usedPrecision.angularBlockCount);
 
@@ -206,8 +206,8 @@ std::vector<double> Coil::calculateBGradientFast(double zAxis, double rPolar, co
             double incrementWeightT = Legendre::weightsMatrix[thicknessIncrements][incT];
 
             double tempConstA = incrementPositionT * incrementPositionT;
-            double tempConstB = rPolar * rPolar;
-            double tempConstC = incrementPositionT * rPolar;
+            double tempConstB = rCoord * rCoord;
+            double tempConstC = incrementPositionT * rCoord;
 
             double tempConstD = tempConstA + tempConstB;
             double tempConstE = tempConstA * tempConstA + tempConstB * tempConstB;
@@ -245,7 +245,7 @@ std::vector<double> Coil::calculateBGradientFast(double zAxis, double rPolar, co
 
                     double tempConstZ = tempConstI * incrementWeightFi;
 
-                    bufferValueRPhi += tempConstZ * (incrementPositionT * cosinePhi / rPolar) * (1 / tempConstK2 - 1 / tempConstK1);
+                    bufferValueRPhi += tempConstZ * (incrementPositionT * cosinePhi / rCoord) * (1 / tempConstK2 - 1 / tempConstK1);
                     bufferValueRR += tempConstZ * (tempConstC - tempConstA * cosinePhi) * cosinePhi * (tempConstL1 - tempConstL2);
                     bufferValueZZ += tempConstZ * (tempConstA - tempConstC * cosinePhi) * (tempConstL1 - tempConstL2);
                     bufferValueRZ += tempConstZ * incrementPositionT / (tempConstM * tempConstM) *

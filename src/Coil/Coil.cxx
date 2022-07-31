@@ -1,6 +1,5 @@
 #include "Coil.h"
-#include "LegendreMatrix.h"
-#include "CoilData.h"
+#include "ThreadPool.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -17,6 +16,8 @@ namespace
     const double g_defaultSineFrequency = 50;
 
     unsigned long long g_currentId = 0;
+
+    threadPool::ThreadPoolControl g_threadPool;
 }
 
 
@@ -135,9 +136,7 @@ vec3::Vector3 Coil::getMagneticMoment()
     double sinA = std::sin(yAxisAngle); double cosA = std::cos(yAxisAngle);
     double sinB = std::sin(zAxisAngle); double cosB = std::cos(zAxisAngle);
 
-    return vec3::Vector3(magneticMoment * sinA * cosB,
-                              magneticMoment * sinA * sinB,
-                              magneticMoment * cosA);
+    return vec3::Vector3(magneticMoment * sinA * cosB,magneticMoment * sinA * sinB,magneticMoment * cosA);
 }
 
 double Coil::getWireResistivity() const { return wireResistivity; }
@@ -240,11 +239,11 @@ void Coil::setDefaultPrecision(PrecisionFactor precisionFactor)
 }
 
 
-void Coil::setSelfInductance(double selfInductance)
+void Coil::setThreadCount(int threadCount)
 {
-    this->selfInductance = selfInductance;
+    Coil::threadCount = threadCount;
+    g_threadPool.setSize(threadCount);
 }
-
 
 void Coil::setPositionAndOrientation(vec3::Vector3 positionVector, double yAxisAngle, double zAxisAngle)
 {
@@ -255,81 +254,218 @@ void Coil::setPositionAndOrientation(vec3::Vector3 positionVector, double yAxisA
     calculateTransformationMatrices();
 }
 
-void Coil::calculateMagneticMoment()
+void Coil::setSelfInductance(double selfInductance)
 {
-    magneticMoment = M_PI * current * numOfTurns *
-            (innerRadius * innerRadius + innerRadius * thickness + thickness * thickness / 3);
+    this->selfInductance = selfInductance;
 }
 
-void Coil::calculateAverageWireThickness()
+
+vec3::Vector3 Coil::computeAPotentialVector(vec3::Vector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
-    averageWireThickness = std::sqrt(length * thickness / numOfTurns);
+    return calculateAPotential(pointVector, usedPrecision);
 }
 
-void Coil::calculateResistance()
+vec3::Vector3 Coil::computeAPotentialVector(vec3::Vector3 pointVector) const
 {
-    double wireRadius = averageWireThickness * 0.5;
-    double ohmicResistance = wireResistivity * numOfTurns * 2*M_PI *
-            (innerRadius + thickness * 0.5) / (wireRadius * wireRadius * M_PI);
-    double skinDepth = std::sqrt(wireResistivity / (M_PI * sineFrequency * g_MiReduced));
-
-    double ohmicSurface = M_PI * wireRadius * wireRadius;
-    double sineSurface = 2*M_PI * (
-            skinDepth * skinDepth * (exp(-wireRadius / skinDepth) - 1) +
-            skinDepth * wireRadius);
-
-    resistance = ohmicResistance * (ohmicSurface / sineSurface);
+    return computeAPotentialVector(pointVector, defaultPrecisionCPU);
 }
 
-void Coil::calculateReactance()
+vec3::Vector3 Coil::computeBFieldVector(vec3::Vector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
-    reactance = selfInductance * 2*M_PI * sineFrequency;
+    return calculateBField(pointVector, usedPrecision);
 }
 
-void Coil::calculateImpedance()
+vec3::Vector3 Coil::computeBFieldVector(vec3::Vector3 pointVector) const
 {
-    calculateResistance();
-    calculateReactance();
-    impedance = std::sqrt(resistance * resistance + reactance * reactance);
+    return computeBFieldVector(pointVector, defaultPrecisionCPU);
 }
 
-void Coil::calculateCoilType()
+vec3::Vector3 Coil::computeEFieldVector(vec3::Vector3 pointVector, const PrecisionArguments &usedPrecision) const
 {
-    if (thickness / innerRadius < g_thinCoilApproximationRatio && length / innerRadius < g_thinCoilApproximationRatio)
-        coilType = CoilType::FILAMENT;
+    vec3::Vector3 computedVector = computeAPotentialVector(pointVector, usedPrecision);
+    computedVector *= 2*M_PI * sineFrequency;
+    return computedVector;
+}
 
-    else if (thickness / innerRadius < g_thinCoilApproximationRatio)
-        coilType = CoilType::THIN;
+vec3::Vector3 Coil::computeEFieldVector(vec3::Vector3 pointVector) const
+{
+    return computeEFieldVector(pointVector, defaultPrecisionCPU);
+}
 
-    else if (length / innerRadius < g_thinCoilApproximationRatio)
-        coilType = CoilType::FLAT;
+vec3::Matrix3 Coil::computeBGradientMatrix(vec3::Vector3 pointVector, const PrecisionArguments &usedPrecision) const
+{
+    return calculateBGradient(pointVector, usedPrecision);
+}
 
+vec3::Matrix3 Coil::computeBGradientMatrix(vec3::Vector3 pointVector) const
+{
+    return computeBGradientMatrix(pointVector, defaultPrecisionCPU);
+}
+
+
+vec3::Vector3Array Coil::computeAllAPotentialVectors(const vec3::Vector3Array &pointVectors,
+                                                     const PrecisionArguments &usedPrecision,
+                                                     ComputeMethod computeMethod) const
+{
+    if (computeMethod == CPU_MT)
+        return calculateAllAPotentialMT(pointVectors, usedPrecision);
+
+    else if (computeMethod == GPU)
+        return calculateAllAPotentialGPU(pointVectors, usedPrecision);
     else
-        coilType = CoilType::RECTANGULAR;
+    {
+        vec3::Vector3Array computedPotentialArr;
+        computedPotentialArr.reserve(pointVectors.size());
+
+        for (int i = 0; i < pointVectors.size(); ++i)
+            computedPotentialArr += computeAPotentialVector(pointVectors[i], usedPrecision);
+
+        return computedPotentialArr;
+    }
 }
 
-void Coil::calculateTransformationMatrices()
+vec3::Vector3Array Coil::computeAllAPotentialVectors(const vec3::Vector3Array &pointVectors,
+                                                     ComputeMethod computeMethod) const
 {
-
-    double cosY = std::cos(yAxisAngle); double sinY = std::sin(yAxisAngle);
-    double cosZ = std::cos(zAxisAngle); double sinZ = std::sin(zAxisAngle);
-
-    transformationMatrix = vec3::Matrix3(cosZ * cosZ * cosY - sinZ * sinZ, -sinZ * cosZ * cosY - sinZ * cosZ, cosZ * sinY,
-                                         sinZ * cosZ * cosY + sinZ * cosZ, cosZ * cosZ - sinZ * sinZ * cosY, sinZ * sinY,
-                                         -sinY * cosZ, sinY * sinZ, cosY);
-
-    inverseTransformationMatrix = vec3::Matrix3(cosZ * cosZ * cosY - sinZ * sinZ, sinZ * cosZ * cosY + sinZ * cosZ, -cosZ * sinY,
-                                                -sinZ * cosZ * cosY - sinZ * cosZ, cosZ * cosZ - sinZ * sinZ * cosY, sinZ * sinY,
-                                                sinY * cosZ, sinY * sinZ, cosY);
+    if (computeMethod == GPU)
+        return computeAllAPotentialVectors(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllAPotentialVectors(pointVectors, defaultPrecisionCPU, computeMethod);
 }
 
-double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, ComputeMethod computeMethod)
+
+vec3::Vector3Array Coil::computeAllBFieldVectors(const vec3::Vector3Array &pointVectors,
+                                                 const PrecisionArguments &usedPrecision,
+                                                 ComputeMethod computeMethod) const
+{
+    if (computeMethod == CPU_MT)
+        return calculateAllBFieldMT(pointVectors, usedPrecision);
+
+    else if (computeMethod == GPU)
+        return calculateAllBFieldGPU(pointVectors, usedPrecision);
+    else
+    {
+        vec3::Vector3Array computedFieldArr = vec3::Vector3Array();
+        computedFieldArr.reserve(pointVectors.size());
+
+        for (int i = 0; i < pointVectors.size(); ++i)
+            computedFieldArr += computeBFieldVector(pointVectors[i], usedPrecision);
+
+        return computedFieldArr;
+    }
+}
+
+vec3::Vector3Array Coil::computeAllBFieldVectors(const vec3::Vector3Array &pointVectors,
+                                                 ComputeMethod computeMethod) const
+{
+    if (computeMethod == GPU)
+        return computeAllBFieldVectors(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllBFieldVectors(pointVectors, defaultPrecisionCPU, computeMethod);
+}
+
+
+vec3::Vector3Array Coil::computeAllEFieldVectors(const vec3::Vector3Array &pointVectors,
+                                                 const PrecisionArguments &usedPrecision,
+                                                 ComputeMethod computeMethod) const
+{
+    vec3::Vector3Array output = computeAllAPotentialVectors(pointVectors, usedPrecision, computeMethod);
+    double frequencyFactor = 2 * M_PI * sineFrequency;
+
+    for (int i = 0; i < output.size(); ++i)
+        output[i] *= frequencyFactor;
+
+    return output;
+}
+
+vec3::Vector3Array Coil::computeAllEFieldVectors(const vec3::Vector3Array &pointVectors,
+                                                 ComputeMethod computeMethod) const
+{
+    if (computeMethod == GPU)
+        return computeAllEFieldVectors(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllEFieldVectors(pointVectors, defaultPrecisionCPU, computeMethod);
+}
+
+
+vec3::Matrix3Array Coil::computeAllBGradientMatrices(const vec3::Vector3Array &pointVectors,
+                                                     const PrecisionArguments &usedPrecision,
+                                                     ComputeMethod computeMethod) const
+{
+    if (computeMethod == CPU_MT)
+        return calculateAllBGradientMT(pointVectors, usedPrecision);
+
+    else if (computeMethod == GPU)
+        return calculateAllBGradientGPU(pointVectors, usedPrecision);
+    else
+    {
+        vec3::Matrix3Array computedGradientArr;
+        computedGradientArr.reserve(pointVectors.size());
+
+        for (int i = 0; i < pointVectors.size(); ++i)
+            computedGradientArr += computeBGradientMatrix(pointVectors[i], usedPrecision);
+
+        return computedGradientArr;
+    }
+}
+
+vec3::Matrix3Array Coil::computeAllBGradientMatrices(const vec3::Vector3Array &pointVectors,
+                                                     ComputeMethod computeMethod) const
+{
+    if (computeMethod == GPU)
+        return computeAllBGradientMatrices(pointVectors, defaultPrecisionGPU, computeMethod);
+    else
+        return computeAllBGradientMatrices(pointVectors, defaultPrecisionCPU, computeMethod);
+}
+
+
+double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
+                                     CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
+{
+    if (isZAxisCase(primary, secondary))
+    {
+        vec3::Vector3 secPositionVec = secondary.getPositionVector();
+
+        if ((primary.coilType == CoilType::THIN || primary.coilType == CoilType::RECTANGULAR) &&
+            (secondary.coilType == CoilType::THIN || secondary.coilType == CoilType::RECTANGULAR))
+        {
+            return calculateMutualInductanceZAxisFast(primary, secondary, secPositionVec.z, inductanceArguments, computeMethod);
+        } else
+        {
+            return calculateMutualInductanceZAxisSlow(primary, secondary, secPositionVec.z, inductanceArguments, computeMethod);
+        }
+    }
+    else
+        return calculateMutualInductanceGeneral(primary, secondary, inductanceArguments, computeMethod);
+}
+
+double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
+                                     PrecisionFactor precisionFactor, ComputeMethod computeMethod)
+{
+    bool zAxisCase = isZAxisCase(primary, secondary);
+    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, computeMethod, zAxisCase);
+
+    return computeMutualInductance(primary, secondary, args, computeMethod);
+}
+
+double Coil::computeSecondaryInducedVoltage(const Coil &secondary, CoilPairArguments inductanceArguments,
+                                            ComputeMethod computeMethod) const
+{
+    return computeMutualInductance(*this, secondary, inductanceArguments, computeMethod) * 2*M_PI * sineFrequency;
+}
+
+double Coil::computeSecondaryInducedVoltage(const Coil &secondary, PrecisionFactor precisionFactor,
+                                            ComputeMethod computeMethod) const
+{
+    return computeMutualInductance(*this, secondary, precisionFactor, computeMethod) * 2*M_PI * sineFrequency;
+}
+
+
+double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor)
 {
     if (coilType == CoilType::FILAMENT)
-    {
-        fprintf(stderr, "ERROR: The integral of a filament is divergent, try a thin rectangular coil\n");
-        throw std::logic_error("Coil loop calculation not supported");
-    }
+        throw std::logic_error("Coil loop self inductance is not defined, integral is divergent");
+
     // centering the coil at (0, 0, 0) and setting angles to 0 improves the accuracy by leveraging the z-axis formula
     vec3::Vector3 tempPosition = getPositionVector();
     std::pair tempAngles = getRotationAngles();
@@ -339,9 +475,9 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, Comput
     double inductance;
 
     if (coilType == CoilType::FLAT)
-        inductance = Coil::computeMutualInductance(*this, *this, arguments, computeMethod);
+        inductance = Coil::computeMutualInductance(*this, *this, arguments);
     else
-        inductance = Coil::calculateSelfInductance(arguments, computeMethod);
+        inductance = Coil::calculateSelfInductance(arguments);
 
     setSelfInductance(inductance);
     setPositionAndOrientation(tempPosition, tempAngles.first, tempAngles.second);
@@ -350,204 +486,147 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, Comput
 }
 
 
-std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements, double alpha, double beta)
+std::pair<vec3::Vector3, vec3::Vector3>
+Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, CoilPairArguments forceArguments, ComputeMethod computeMethod)
 {
-    int numElements = angularBlocks * angularIncrements;
-
-    std::vector<std::pair<vec3::Vector3, vec3::Vector3>> unitRingVector;
-    unitRingVector.reserve(numElements);
-
-    vec3::Vector3 ringPosition;
-    vec3::Vector3 ringTangent;
-
-    double angularBlock = 2*M_PI / angularBlocks;
-
-    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    angularBlocks--;
-    angularIncrements--;
-
-    double sinA = std::sin(alpha); double cosA = std::cos(alpha);
-    double sinB = std::sin(beta); double cosB = std::cos(beta);
-
-    for (int phiBlock = 0; phiBlock <= angularBlocks; ++phiBlock)
+    if (isZAxisCase(primary, secondary))
     {
-        double blockPositionPhi = angularBlock * (phiBlock + 0.5);
+        vec3::Vector3 secPositionVec = secondary.getPositionVector();
+        double zForce = 0.0;
 
-        for (int phiIndex = 0; phiIndex <= angularIncrements; ++phiIndex)
+        if ((primary.coilType == CoilType::THIN || primary.coilType == CoilType::RECTANGULAR) &&
+            (secondary.coilType == CoilType::THIN || secondary.coilType == CoilType::RECTANGULAR))
+
+            zForce = calculateAmpereForceZAxisFast(primary, secondary, secPositionVec.z, forceArguments, computeMethod);
+        else
+            zForce = calculateAmpereForceZAxisSlow(primary, secondary, secPositionVec.z, forceArguments, computeMethod);
+
+        return {vec3::Vector3(0.0, 0.0, zForce), vec3::Vector3()};
+    }
+    else
+        return calculateAmpereForceGeneral(primary, secondary, forceArguments, computeMethod);
+}
+
+std::pair<vec3::Vector3, vec3::Vector3>
+Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod computeMethod)
+{
+    bool zAxisCase = isZAxisCase(primary, secondary);
+    auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, computeMethod, zAxisCase);
+
+    return computeAmpereForce(primary, secondary, args, computeMethod);
+}
+
+
+std::pair<vec3::Vector3, vec3::Vector3>
+Coil::computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 dipoleMoment,
+                                 const PrecisionArguments &usedPrecision) const
+{
+    vec3::Vector3 magneticField = computeBFieldVector(pointVector, usedPrecision);
+    vec3::Matrix3 magneticGradient = computeBGradientMatrix(pointVector, usedPrecision);
+
+    vec3::Vector3 magneticTorque = vec3::Vector3::crossProduct(dipoleMoment, magneticField);
+    vec3::Vector3 magneticForce = magneticGradient * dipoleMoment;
+
+    return {magneticForce, magneticTorque};
+}
+
+std::pair<vec3::Vector3, vec3::Vector3>
+Coil::computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 dipoleMoment) const
+{
+    return computeForceOnDipoleMoment(pointVector, dipoleMoment, defaultPrecisionCPU);
+}
+
+
+std::vector<double> Coil::computeAllMutualInductanceArrangements(Coil primary, Coil secondary,
+                                                                 const vec3::Vector3Array &primaryPositions,
+                                                                 const vec3::Vector3Array &secondaryPositions,
+                                                                 const std::vector<double> &primaryYAngles,
+                                                                 const std::vector<double> &primaryZAngles,
+                                                                 const std::vector<double> &secondaryYAngles,
+                                                                 const std::vector<double> &secondaryZAngles,
+                                                                 PrecisionFactor precisionFactor,
+                                                                 ComputeMethod computeMethod)
+{
+    size_t numArrangements = primaryPositions.size();
+
+    if (numArrangements == secondaryPositions.size() &&
+        numArrangements == primaryYAngles.size() &&
+        numArrangements == primaryZAngles.size() &&
+        numArrangements == secondaryYAngles.size() &&
+        numArrangements == secondaryZAngles.size())
+    {
+        if (computeMethod == GPU) {
+            return calculateAllMutualInductanceArrangementsGPU(primary, secondary, primaryPositions, secondaryPositions,
+                                                               primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
+                                                               precisionFactor);
+        }
+        else if (numArrangements >= 2 * primary.getThreadCount() && computeMethod == CPU_MT)
         {
-            double phi = blockPositionPhi +
-                         (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][phiIndex];
+            return calculateAllMutualInductanceArrangementsMTD(primary, secondary, primaryPositions, secondaryPositions,
+                                                               primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
+                                                               precisionFactor);
+        } else
+        {
+            std::vector<double> outputMInductances;
+            outputMInductances.reserve(numArrangements);
 
-            double sinPhi = std::sin(phi); double cosPhi = std::cos(phi);
+            for (int i = 0; i < numArrangements; ++i) {
+                primary.setPositionAndOrientation(primaryPositions[i], primaryYAngles[i], primaryZAngles[i]);
+                secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
 
-            ringPosition = vec3::Vector3(cosB * cosA * cosPhi - sinB * sinPhi,
-                                         sinB * cosA * cosPhi + cosB * sinPhi,
-                                         (-1) * sinA * cosPhi);
-
-            ringTangent = vec3::Vector3((-1) * cosB * cosA * sinPhi - sinB * cosPhi,
-                                        (-1) * sinB * cosA * sinPhi + cosB * cosPhi,
-                                        sinA * sinPhi);
-
-            unitRingVector.emplace_back(ringPosition, ringTangent);
+                outputMInductances.emplace_back(Coil::computeMutualInductance(primary, secondary, precisionFactor, computeMethod));
+            }
+            return outputMInductances;
         }
     }
-    return unitRingVector;
-}
-
-
-bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
-{
-    vec3::Vector3 primPositionVec = primary.getPositionVector();
-    vec3::Vector3 secPositionVec = secondary.getPositionVector();
-
-    if (std::abs(primPositionVec.x / primary.innerRadius) < g_zAxisApproximationRatio &&
-        std::abs(primPositionVec.y / primary.innerRadius) < g_zAxisApproximationRatio &&
-        std::abs(secPositionVec.x / primary.innerRadius) < g_zAxisApproximationRatio &&
-        std::abs(secPositionVec.y / primary.innerRadius) < g_zAxisApproximationRatio &&
-        std::abs(primary.yAxisAngle / (2 * M_PI)) < g_zAxisApproximationRatio &&
-        std::abs(secondary.yAxisAngle / (2 * M_PI)) < g_zAxisApproximationRatio)
-    {
-        return true;
-    }
-    return false;
-}
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-void Coil::generateCoilData(CoilData &coilData, const PrecisionArguments &usedPrecision) const
-{
-    if (useFastMethod)
-        coilData.constFactor = g_MiReduced * currentDensity * thickness * M_PI * 0.5;
     else
-        coilData.constFactor = g_MiReduced * currentDensity * thickness * length * M_PI * 0.5;
-
-    coilData.useFastMethod = useFastMethod;
-
-    coilData.innerRadius = innerRadius;
-    coilData.thickness = thickness;
-    coilData.length = length;
-
-    coilData.lengthIncrements = usedPrecision.lengthIncrementCount;
-    coilData.thicknessIncrements = usedPrecision.thicknessIncrementCount;
-    coilData.angularIncrements = usedPrecision.angularIncrementCount;
-
-    for (int i = 0; i < coilData.angularIncrements; ++i)
-    {
-        double phiPosition = M_PI_2 * (1.0 + Legendre::positionMatrix[coilData.angularIncrements - 1][i]);
-
-        coilData.cosPrecomputeArray[i] = std::cos(phiPosition);
-        coilData.angularWeightArray[i] = Legendre::weightsMatrix[coilData.angularIncrements - 1][i];
-    }
-
-    for (int i = 0; i < coilData.thicknessIncrements; ++i)
-    {
-        coilData.thicknessPositionArray[i] = Legendre::positionMatrix[coilData.thicknessIncrements - 1][i];
-        coilData.thicknessWeightArray[i] = Legendre::weightsMatrix[coilData.thicknessIncrements - 1][i];
-    }
-
-    coilData.positionVector[0] = positionVector.x;
-    coilData.positionVector[1] = positionVector.y;
-    coilData.positionVector[2] = positionVector.z;
-
-    coilData.transformArray[0] = transformationMatrix.xx;
-    coilData.transformArray[1] = transformationMatrix.xy;
-    coilData.transformArray[2] = transformationMatrix.xz;
-    coilData.transformArray[3] = transformationMatrix.yx;
-    coilData.transformArray[4] = transformationMatrix.yy;
-    coilData.transformArray[5] = transformationMatrix.yz;
-    coilData.transformArray[6] = transformationMatrix.zx;
-    coilData.transformArray[7] = transformationMatrix.zy;
-    coilData.transformArray[8] = transformationMatrix.zz;
-
-    coilData.invTransformArray[0] = inverseTransformationMatrix.xx;
-    coilData.invTransformArray[1] = inverseTransformationMatrix.xy;
-    coilData.invTransformArray[2] = inverseTransformationMatrix.xz;
-    coilData.invTransformArray[3] = inverseTransformationMatrix.yx;
-    coilData.invTransformArray[4] = inverseTransformationMatrix.yy;
-    coilData.invTransformArray[5] = inverseTransformationMatrix.yz;
-    coilData.invTransformArray[6] = inverseTransformationMatrix.zx;
-    coilData.invTransformArray[7] = inverseTransformationMatrix.zy;
-    coilData.invTransformArray[8] = inverseTransformationMatrix.zz;
+        throw std::logic_error("Array sizes do not match!");
 }
-#pragma clang diagnostic pop
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-void Coil::generateCoilPairArgumentsData(const Coil &primary, const Coil &secondary,
-                                         CoilPairArgumentsData &coilPairArgumentsData,
-                                         const CoilPairArguments &inductanceArguments, bool forceCalculation)
+std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
+Coil::computeAllAmpereForceArrangements(Coil primary, Coil secondary,
+                                        const vec3::Vector3Array &primaryPositions,
+                                        const vec3::Vector3Array &secondaryPositions,
+                                        const std::vector<double> &primaryYAngles, const std::vector<double> &primaryZAngles,
+                                        const std::vector<double> &secondaryYAngles, const std::vector<double> &secondaryZAngles,
+                                        PrecisionFactor precisionFactor, ComputeMethod computeMethod)
 {
-    if (primary.useFastMethod)
-        coilPairArgumentsData.constFactor = g_MiReduced * primary.currentDensity * primary.thickness * M_PI * 0.5;
+    size_t numArrangements = primaryPositions.size();
+
+    if (numArrangements == secondaryPositions.size() &&
+        numArrangements == primaryYAngles.size() &&
+        numArrangements == primaryZAngles.size() &&
+        numArrangements == secondaryYAngles.size() &&
+        numArrangements == secondaryZAngles.size())
+    {
+        if (computeMethod == GPU)
+        {
+            return calculateAllAmpereForceArrangementsGPU(primary, secondary, primaryPositions, secondaryPositions,
+                                                          primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
+                                                          precisionFactor);
+        }
+        else if (numArrangements >= 2 * primary.getThreadCount() && computeMethod == CPU_MT)
+        {
+            return calculateAllAmpereForceArrangementsMTD(primary, secondary, primaryPositions, secondaryPositions,
+                                                          primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
+                                                          precisionFactor);
+        } else
+        {
+            std::vector<std::pair<vec3::Vector3, vec3::Vector3>> outputForcesAndTorques;
+
+            for (int i = 0; i < numArrangements; ++i) {
+                primary.setPositionAndOrientation(primaryPositions[i], primaryYAngles[i], primaryZAngles[i]);
+                secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
+
+                outputForcesAndTorques.emplace_back(Coil::computeAmpereForce(primary, secondary, precisionFactor, computeMethod));
+            }
+            return outputForcesAndTorques;
+        }
+    }
     else
-        coilPairArgumentsData.constFactor = g_MiReduced * M_PI * 0.5 *
-                                            primary.currentDensity * primary.thickness * primary.length;
-
-    coilPairArgumentsData.useFastMethod = primary.useFastMethod;
-
-    if (!forceCalculation)
-        coilPairArgumentsData.correctionFactor = 2*M_PI * secondary.numOfTurns / primary.current;
-    else
-        coilPairArgumentsData.correctionFactor = 2*M_PI * secondary.numOfTurns * secondary.current;
-
-    coilPairArgumentsData.primInnerRadius = primary.innerRadius;
-    coilPairArgumentsData.primThickness = primary.thickness;
-    coilPairArgumentsData.primLength = primary.length;
-
-    coilPairArgumentsData.primLengthIncrements = inductanceArguments.primaryPrecision.lengthIncrementCount;
-    coilPairArgumentsData.primThicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrementCount;
-    coilPairArgumentsData.primAngularIncrements = inductanceArguments.primaryPrecision.angularIncrementCount;
-
-    coilPairArgumentsData.secInnerRadius = secondary.innerRadius;
-    coilPairArgumentsData.secThickness = secondary.thickness;
-    coilPairArgumentsData.secLength = secondary.length;
-
-    coilPairArgumentsData.secLengthIncrements = inductanceArguments.secondaryPrecision.lengthIncrementCount;
-    coilPairArgumentsData.secThicknessIncrements = inductanceArguments.secondaryPrecision.thicknessIncrementCount;
-    coilPairArgumentsData.secAngularIncrements = inductanceArguments.secondaryPrecision.angularIncrementCount;
-
-    for (int i = 0; i < inductanceArguments.primaryPrecision.angularIncrementCount; ++i)
-    {
-        double phiPosition =
-                M_PI_2 * (1.0 + Legendre::positionMatrix[inductanceArguments.primaryPrecision.angularIncrementCount - 1][i]);
-
-        coilPairArgumentsData.primCosPrecomputeArray[i] = std::cos(phiPosition);
-        coilPairArgumentsData.primAngularWeightArray[i] =
-                Legendre::weightsMatrix[inductanceArguments.primaryPrecision.angularIncrementCount - 1][i];
-    }
-    for (int i = 0; i < inductanceArguments.primaryPrecision.thicknessIncrementCount; ++i)
-    {
-        coilPairArgumentsData.primThicknessPositionArray[i] =
-                Legendre::positionMatrix[inductanceArguments.primaryPrecision.thicknessIncrementCount - 1][i];
-        coilPairArgumentsData.primThicknessWeightArray[i] =
-                Legendre::weightsMatrix[inductanceArguments.primaryPrecision.thicknessIncrementCount - 1][i];
-    }
-
-    for (int i = 0; i < inductanceArguments.secondaryPrecision.angularIncrementCount; ++i)
-    {
-        coilPairArgumentsData.secAngularPositionArray[i] =
-                Legendre::positionMatrix[inductanceArguments.secondaryPrecision.angularIncrementCount - 1][i];
-        coilPairArgumentsData.secAngularWeightArray[i] =
-                Legendre::weightsMatrix[inductanceArguments.secondaryPrecision.angularIncrementCount - 1][i];
-    }
-    for (int i = 0; i < inductanceArguments.secondaryPrecision.thicknessIncrementCount; ++i)
-    {
-        coilPairArgumentsData.secThicknessPositionArray[i] =
-                Legendre::positionMatrix[inductanceArguments.secondaryPrecision.thicknessIncrementCount - 1][i];
-        coilPairArgumentsData.secThicknessWeightArray[i] =
-                Legendre::weightsMatrix[inductanceArguments.secondaryPrecision.thicknessIncrementCount - 1][i];
-    }
-    for (int i = 0; i < inductanceArguments.secondaryPrecision.lengthIncrementCount; ++i)
-    {
-        coilPairArgumentsData.secLengthPositionArray[i] =
-                Legendre::positionMatrix[inductanceArguments.secondaryPrecision.lengthIncrementCount - 1][i];
-        coilPairArgumentsData.secLengthWeightArray[i] =
-                Legendre::weightsMatrix[inductanceArguments.secondaryPrecision.lengthIncrementCount - 1][i];
-    }
-
+        throw std::logic_error("Array sizes do not match");
 }
-#pragma clang diagnostic pop
+
 
 Coil::operator std::string() const
 {

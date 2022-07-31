@@ -1,11 +1,12 @@
 #ifndef GENERAL_COIL_PROGRAM_COIL_H
 #define GENERAL_COIL_PROGRAM_COIL_H
 
-#include "ComputeMethod.h"
-#include "CoilType.h"
+#include "Coil/EnumsAndConstants/ComputeMethod.h"
+#include "Coil/EnumsAndConstants/CoilType.h"
+#include "Coil/EnumsAndConstants/PrecisionGlobalVars.h"
+
 #include "Tensor.h"
-#include "PrecisionGlobalVars.h"
-#include "CoilData.h"
+#include "CUDAFunctions/ConstantsAndStructs/CoilDataStructs.h"
 
 #include <vector>
 #include <string>
@@ -257,7 +258,7 @@ class Coil
         [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, CoilPairArguments inductanceArguments,
                                                             ComputeMethod computeMethod = CPU_ST) const;
 
-        double computeAndSetSelfInductance(PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod computeMethod = CPU_ST);
+        double computeAndSetSelfInductance(PrecisionFactor precisionFactor);
 
 
         static std::pair<vec3::Vector3, vec3::Vector3>
@@ -308,25 +309,25 @@ class Coil
         void calculateTransformationMatrices();
 
 
-        [[nodiscard]] double calculateAPotential(double zAxis, double rPolar,
-                                                 const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] vec3::Vector3 calculateAPotential(vec3::Vector3 pointVector,
+                                                        const PrecisionArguments &usedPrecision) const;
         [[nodiscard]] double calculateAPotentialSlow(double zCoord, double rCoord,
                                                      const PrecisionArguments &usedPrecision) const;
-        [[nodiscard]] double calculateAPotentialFast(double zAxis, double rPolar,
+        [[nodiscard]] double calculateAPotentialFast(double zCoord, double rCoord,
                                                      const PrecisionArguments &usedPrecision) const;
 
-        [[nodiscard]] std::pair<double, double> calculateBField(double zAxis, double rPolar,
-                                                                const PrecisionArguments &usedPrecision) const;
+        [[nodiscard]] vec3::Vector3 calculateBField(vec3::Vector3 pointVector,
+                                                    const PrecisionArguments &usedPrecision) const;
         [[nodiscard]] std::pair<double, double> calculateBFieldSlow(double zCoord, double rCoord,
                                                                     const PrecisionArguments &usedPrecision) const;
-        [[nodiscard]] std::pair<double, double> calculateBFieldFast(double zAxis, double rPolar,
+        [[nodiscard]] std::pair<double, double> calculateBFieldFast(double zCoord, double rCoord,
                                                                     const PrecisionArguments &usedPrecision) const;
 
-        [[nodiscard]] std::vector<double> calculateBGradient(double zAxis, double rPolar,
+        [[nodiscard]] vec3::Matrix3 calculateBGradient(vec3::Vector3 pointVector,
                                                              const PrecisionArguments &usedPrecision) const;
         [[nodiscard]] std::vector<double> calculateBGradientSlow(double zCoord, double rCoord,
                                                                  const PrecisionArguments &usedPrecision) const;
-        [[nodiscard]] std::vector<double> calculateBGradientFast(double zAxis, double rPolar,
+        [[nodiscard]] std::vector<double> calculateBGradientFast(double zCoord, double rCoord,
                                                                  const PrecisionArguments &usedPrecision) const;
 
         [[nodiscard]] std::vector<size_t> calculateChunkSize(size_t numOps) const;
@@ -384,8 +385,46 @@ class Coil
         calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
                                     CoilPairArguments forceArguments, ComputeMethod computeMethod);
 
-        [[nodiscard]] double calculateSelfInductance(CoilPairArguments inductanceArguments, ComputeMethod computeMethod) const;
+        static std::vector<double>
+        calculateAllMutualInductanceArrangementsMTD(Coil primary, Coil secondary,
+                                                    const vec3::Vector3Array &primaryPositions,
+                                                    const vec3::Vector3Array &secondaryPositions,
+                                                    const std::vector<double> &primaryYAngles,
+                                                    const std::vector<double> &primaryZAngles,
+                                                    const std::vector<double> &secondaryYAngles,
+                                                    const std::vector<double> &secondaryZAngles,
+                                                    PrecisionFactor precisionFactor = PrecisionFactor());
+        static std::vector<double>
+        calculateAllMutualInductanceArrangementsGPU(Coil primary, Coil secondary,
+                                                    const vec3::Vector3Array &primaryPositions,
+                                                    const vec3::Vector3Array &secondaryPositions,
+                                                    const std::vector<double> &primaryYAngles,
+                                                    const std::vector<double> &primaryZAngles,
+                                                    const std::vector<double> &secondaryYAngles,
+                                                    const std::vector<double> &secondaryZAngles,
+                                                    PrecisionFactor precisionFactor = PrecisionFactor());
 
+        static std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
+        calculateAllAmpereForceArrangementsMTD(Coil primary, Coil secondary,
+                                               const vec3::Vector3Array &primaryPositions,
+                                               const vec3::Vector3Array &secondaryPositions,
+                                               const std::vector<double> &primaryYAngles,
+                                               const std::vector<double> &primaryZAngles,
+                                               const std::vector<double> &secondaryYAngles,
+                                               const std::vector<double> &secondaryZAngles,
+                                               PrecisionFactor precisionFactor = PrecisionFactor());
+        static std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
+        calculateAllAmpereForceArrangementsGPU(Coil primary, Coil secondary,
+                                               const vec3::Vector3Array &primaryPositions,
+                                               const vec3::Vector3Array &secondaryPositions,
+                                               const std::vector<double> &primaryYAngles,
+                                               const std::vector<double> &primaryZAngles,
+                                               const std::vector<double> &secondaryYAngles,
+                                               const std::vector<double> &secondaryZAngles,
+                                               PrecisionFactor precisionFactor = PrecisionFactor());
+
+
+        [[nodiscard]] double calculateSelfInductance(CoilPairArguments inductanceArguments) const;
 };
 
 #endif //GENERAL_COIL_PROGRAM_COIL_H

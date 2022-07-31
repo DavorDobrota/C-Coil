@@ -1,6 +1,6 @@
 #include "Coil.h"
 
-#include "hardware_acceleration.h"
+#include "CUDAFunctions/CoilKernels/CoilAcceleration.h"
 #include "ThreadPool.h"
 
 #define _USE_MATH_DEFINES
@@ -14,11 +14,7 @@ namespace
 }
 
 // TODO - fix variable so it is external and setter returned to Coil.cxx
-void Coil::setThreadCount(int threadCount)
-{
-    Coil::threadCount = threadCount;
-    g_threadPool.setSize(threadCount);
-}
+
 
 
 vec3::Vector3Array Coil::calculateAllAPotentialMT(const vec3::Vector3Array &pointVectors,

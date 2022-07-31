@@ -1,6 +1,6 @@
 #include "GPUMemoryManagement.h"
 
-#include "CUDAErrorCheck.h"
+#include "CUDAFunctions/ErrorCheck/CUDAErrorCheck.h"
 
 
 struct GPUBuffer {

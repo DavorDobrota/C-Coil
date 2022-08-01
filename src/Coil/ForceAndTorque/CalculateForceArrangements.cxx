@@ -1,6 +1,6 @@
 #include "Coil.h"
 #include "ThreadPool.h"
-#include "CUDAFunctions/CoilKernels/CoilAcceleration.h"
+#include "CoilAcceleration.h"
 
 #include <functional>
 

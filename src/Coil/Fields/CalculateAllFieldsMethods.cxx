@@ -1,6 +1,6 @@
 #include "Coil.h"
 
-#include "CUDAFunctions/CoilKernels/CoilAcceleration.h"
+#include "CoilAcceleration.h"
 #include "ThreadPool.h"
 
 #define _USE_MATH_DEFINES

@@ -50,8 +50,10 @@ list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Test")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Benchmark")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil")
-list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil/CUDAFunctions")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil/CUDAKernels")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup/CUDAKernels")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CUDAUtils")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Compare")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/LegendreMatrix")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor")
@@ -74,11 +76,6 @@ list(APPEND LIBS "$<TARGET_OBJECTS:Test>")
 add_subdirectory(src/Coil)
 list(APPEND LIBS "$<TARGET_OBJECTS:Coil>")
 
-if(USE_GPU)
-    add_subdirectory(src/Coil/CUDAFunctions)
-    list(APPEND LIBS "$<TARGET_OBJECTS:CUDAFunctions>")
-endif()
-
 add_subdirectory(src/CoilGroup)
 list(APPEND LIBS "$<TARGET_OBJECTS:CoilGroup>")
 
@@ -93,6 +90,17 @@ list(APPEND LIBS "$<TARGET_OBJECTS:Utils>")
 
 add_subdirectory(src/ThreadPool)
 list(APPEND LIBS "$<TARGET_OBJECTS:ThreadPool>")
+
+if(USE_GPU)
+    add_subdirectory(src/Coil/CUDAKernels)
+    list(APPEND LIBS "$<TARGET_OBJECTS:CoilCUDAKernels>")
+
+    add_subdirectory(src/CoilGroup/CUDAKernels)
+    list(APPEND LIBS "$<TARGET_OBJECTS:CoilGroupCUDAKernels>")
+
+    add_subdirectory(src/CUDAUtils)
+    list(APPEND LIBS "$<TARGET_OBJECTS:CUDAUtils>")
+endif()
 #######################################
 
 if(OUTPUT_EXECUTABLE)

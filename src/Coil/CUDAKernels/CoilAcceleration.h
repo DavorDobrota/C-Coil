@@ -1,8 +1,8 @@
 #ifndef COPPER_HARDWARE_ACCELERATED_FUNCTIONS
 #define COPPER_HARDWARE_ACCELERATED_FUNCTIONS
 
-#include "CUDAFunctions/ConstantsAndStructs/CUDAConstants.h"
-#include "CUDAFunctions/ConstantsAndStructs/CoilDataStructs.h"
+#include "CUDAUtils/ConstantsAndStructs/CUDAConstants.h"
+#include "CUDAUtils/ConstantsAndStructs/CoilDataStructs.h"
 
 
 void Calculate_hardware_accelerated_a(long long opCount, CoilData coil,

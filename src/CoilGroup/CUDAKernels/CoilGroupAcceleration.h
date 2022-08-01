@@ -1,8 +1,8 @@
 #ifndef COIL_EVOLUTION_COILGROUPACCELERATION_H
 #define COIL_EVOLUTION_COILGROUPACCELERATION_H
 
-#include "CUDAFunctions/ConstantsAndStructs/CUDAConstants.h"
-#include "CUDAFunctions/ConstantsAndStructs/CoilDataStructs.h"
+#include "CUDAUtils/ConstantsAndStructs/CUDAConstants.h"
+#include "CUDAUtils/ConstantsAndStructs/CoilDataStructs.h"
 
 void Calculate_hardware_accelerated_a_group(long long coilCount, long long opCount,
                                             const CoilData *coilArr,

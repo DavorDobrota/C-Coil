@@ -35,9 +35,11 @@ header_include_dirs = [
     "src/",
     "src/Benchmark/",
     "src/Coil/",
-    "src/Coil/CUDAFunctions",
+    "src/Coil/CUDAKernels",
     "src/CoilGroup/",
+    "src/CoilGroup/CUDAKernels",
     "src/Compare/",
+    "src/CUDAUtils",
     "src/LegendreMatrix/",
     "src/Math/",
     "src/Tensor/",
@@ -99,10 +101,10 @@ if use_GPU:
     CUDA = locate_CUDA()
     print(f"Using CUDA installation: {CUDA}")
     sources = sources + sorted([
-        *glob("src/Coil/CUDAFunctions/CoilGroupKernels/*.cu"),
-        *glob("src/Coil/CUDAFunctions/CoilKernels/*.cu"),
-        *glob("src/Coil/CUDAFunctions/ErrorCheck/*.cu"),
-        *glob("src/Coil/CUDAFunctions/MemoryManagement/*.cu"),
+        *glob("src/Coil/CUDAKernels/*.cu"),
+        *glob("src/CoilGroup/CUDAKernels/*.cu"),
+        *glob("src/CUDAUtils/ErrorCheck/*.cu"),
+        *glob("src/CUDAUtils/MemoryManagement/*.cu"),
     ])
     header_include_dirs += CUDA['include']
     extra_kwargs = {

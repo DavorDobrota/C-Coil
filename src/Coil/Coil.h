@@ -6,7 +6,7 @@
 #include "Coil/EnumsAndConstants/PrecisionGlobalVars.h"
 
 #include "Tensor.h"
-#include "CUDAFunctions/ConstantsAndStructs/CoilDataStructs.h"
+#include "CUDAUtils/ConstantsAndStructs/CoilDataStructs.h"
 
 #include <vector>
 #include <string>

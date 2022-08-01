@@ -1,5 +1,5 @@
 #include "Coil.h"
-#include "CUDAFunctions/ConstantsAndStructs/CoilDataStructs.h"
+#include "CUDAUtils/ConstantsAndStructs/CoilDataStructs.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>

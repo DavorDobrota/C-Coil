@@ -1,8 +1,8 @@
 #include "CoilAcceleration.h"
 
 #include "Timing.h"
-#include "CUDAFunctions/ErrorCheck/CUDAErrorCheck.h"
-#include "CUDAFunctions/MemoryManagement/GPUMemoryManagement.h"
+#include "CUDAUtils/ErrorCheck/CUDAErrorCheck.h"
+#include "CUDAUtils/MemoryManagement/GPUMemoryManagement.h"
 
 #include <cstdio>
 

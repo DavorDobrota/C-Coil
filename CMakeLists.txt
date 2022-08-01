@@ -8,11 +8,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(WIN32)
     set(CMAKE_CXX_FLAGS "/std:c++17 /O2 /arch:AVX2 /fp:fast")
 else()
-    set(CMAKE_CXX_FLAGS "-Ofast -mavx2 -ffast-math")
+    set(CMAKE_CXX_FLAGS "-Ofast -mavx2 -ffast-math -flto=auto")
 endif()
 
 option(USE_GPU "Enable GPU acceleration" OFF)
+
 set(GPU_INCREMENTS "100" CACHE STRING "GPU increment count")
+if(${GPU_INCREMENTS} LESS_EQUAL 100 AND ${GPU_INCREMENTS} GREATER_EQUAL 1)
+    add_compile_definitions(GPU_INCREMENTS=${GPU_INCREMENTS})
+else()
+    message(FATAL_ERROR "GPU_INCREMENTS must be set to an integer in the range [1, 100]!")
+endif()
 
 option(OUTPUT_LIB_SHARED "Build a shared library" ON)
 option(OUTPUT_EXECUTABLE "Build a test executable" ON)
@@ -20,13 +26,6 @@ option(OUTPUT_EXECUTABLE "Build a test executable" ON)
 # TODO: add static lib support
 
 if(USE_GPU)
-
-    if(${GPU_INCREMENTS} LESS_EQUAL 100 AND ${GPU_INCREMENTS} GREATER_EQUAL 1)
-        add_compile_definitions(GPU_INCREMENTS=${GPU_INCREMENTS})
-    else()
-        message(FATAL_ERROR "GPU_INCREMENTS must be set to an integer in the range [1, 100]!")
-    endif()
-
     add_compile_definitions(USE_GPU)
 
     set(CUDA_NVCC_FLAGS "--use_fast_math --optimise -O3")

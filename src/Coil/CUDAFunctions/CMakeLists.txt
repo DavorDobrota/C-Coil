@@ -8,9 +8,9 @@ add_library(
         CoilKernels/Force.cu
         ErrorCheck/ErrorCheck.cu
         MemoryManagement/GPUMemoryManagement.cu
-        CoilGroupKernels/AFieldGroup.cu
-        CoilGroupKernels/BFieldGroup.cu
-        CoilGroupKernels/GFieldGroup.cu CoilGroupKernels/MInductanceGroup.cu)
+        CoilGroupKernels/FieldAGroup.cu
+        CoilGroupKernels/FieldBGroup.cu
+        CoilGroupKernels/FieldGGroup.cu CoilGroupKernels/MInductanceGroup.cu CoilGroupKernels/ForceGroup.cu)
 
 target_compile_options(CUDAFunctions PRIVATE "--compiler-options=-fpic")
 

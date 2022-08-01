@@ -10,7 +10,7 @@
 __global__
 void CalculateForceAndTorqueConfigurations(long long configCount, long long pointCount, CoilPairArgumentsData coilPair,
                                            const CoilPairPositionData *configArr,
-                                           ForceTorqueData *forceTorqueData)
+                                           ForceTorqueData *forceTorqueArr)
 {
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
@@ -49,11 +49,9 @@ void CalculateForceAndTorqueConfigurations(long long configCount, long long poin
     TYPE ringY = lengthPosition * sinAlpha * sinBeta + thicknessPosition * ringPositionY;
     TYPE ringZ = lengthPosition * cosAlpha + thicknessPosition * ringPositionZ;
 
-
     TYPE posX = position.secPositionVector[0] - position.primPositionVector[0] + ringX;
     TYPE posY = position.secPositionVector[1] - position.primPositionVector[1] + ringY;
     TYPE posZ = position.secPositionVector[2] - position.primPositionVector[2] + ringZ;
-                ;
 
     TYPE sinY = sin(position.primAlphaAngle);
     TYPE cosY = cos(position.primAlphaAngle);
@@ -167,13 +165,13 @@ void CalculateForceAndTorqueConfigurations(long long configCount, long long poin
     TYPE torqueY = ringZ * forceX - ringX * forceZ;
     TYPE torqueZ = ringX * forceY - ringY * forceX;
 
-    atomicAdd(&forceTorqueData[pairIndex].forceX, forceX);
-    atomicAdd(&forceTorqueData[pairIndex].forceY, forceY);
-    atomicAdd(&forceTorqueData[pairIndex].forceZ, forceZ);
+    atomicAdd(&forceTorqueArr[pairIndex].forceX, forceX);
+    atomicAdd(&forceTorqueArr[pairIndex].forceY, forceY);
+    atomicAdd(&forceTorqueArr[pairIndex].forceZ, forceZ);
 
-    atomicAdd(&forceTorqueData[pairIndex].torqueX, torqueX);
-    atomicAdd(&forceTorqueData[pairIndex].torqueY, torqueY);
-    atomicAdd(&forceTorqueData[pairIndex].torqueZ, torqueZ);
+    atomicAdd(&forceTorqueArr[pairIndex].torqueX, torqueX);
+    atomicAdd(&forceTorqueArr[pairIndex].torqueY, torqueY);
+    atomicAdd(&forceTorqueArr[pairIndex].torqueZ, torqueZ);
 }
 
 namespace

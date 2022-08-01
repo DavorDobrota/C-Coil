@@ -25,4 +25,10 @@ void Calculate_mutual_inductance_configurations_group(long long coilCount, long 
                                                       const SecondaryCoilPositionData *secondaryPositions,
                                                       TYPE *inductanceArr = nullptr);
 
+void Calculate_force_and_torque_configurations_group(long long coilCount, long long configCount, long long pointCount,
+                                                     SecondaryCoilData secondaryCoil,
+                                                     const CoilData *coils,
+                                                     const SecondaryCoilPositionData *secondaryPositions,
+                                                     ForceTorqueData *forceTorqueArr = nullptr);
+
 #endif //COIL_EVOLUTION_COILGROUPACCELERATION_H

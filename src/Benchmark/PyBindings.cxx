@@ -62,6 +62,9 @@ void initBenchmark(py::module_ &mainModule)
             py::arg("max_thread_count") = g_defaultThreadCount);
 
     benchmarkModule.def(
+            "bench_coil_group_MT_vs_MTD", benchCoilGroupMTvsMTD,
+            py::arg("thread_count") = g_defaultThreadCount, py::arg("point_count") = 20'000)
+        .def(
             "bench_coil_group_compute_all_fields", benchCoilGroupComputeAllFields,
             py::arg("precision_factor") = PrecisionFactor(), py::arg("num_coils") = 50,
             py::arg("op_count") = 100'000, py::arg("thread_count") = g_defaultThreadCount)
@@ -69,15 +72,15 @@ void initBenchmark(py::module_ &mainModule)
             "bench_coil_group_compute_all_fields_GPU", benchCoilGroupComputeAllFieldsGPU,
             py::arg("num_coils") = 100, py::arg("op_count") = 131'072)
         .def(
-            "bench_coil_group_MT_vs_MTD", benchCoilGroupMTvsMTD,
-            py::arg("thread_count") = g_defaultThreadCount, py::arg("point_count") = 20'000)
+            "bench_coil_group_m_inductance_and_force", benchCoilGroupMInductanceAndForce,
+            py::arg("op_count") = 2, py::arg("thread_count") = g_defaultThreadCount)
         .def(
-            "bench_coil_group_compute_all_fields_MTD", benchCoilGroupComputeAllFieldsMTD,
-            py::arg("thread_count") = g_defaultThreadCount)
+            "bench_m_inductance_and_force_compute_all_MT_vs_MTD", benchMInductanceAndForceComputeAllMTvsMTD,
+            py::arg("precision_factor") = PrecisionFactor(), py::arg("thread_count") = g_defaultThreadCount)
         .def(
-            "bench_coil_group_m_inductance_and_force_MTD", benchCoilGroupMInductanceAndForceMTD,
-            py::arg("thread_count") = g_defaultThreadCount)
+            "bench_m_inductance_and_force_compute_all_GPU", benchMInductanceAndForceComputeAllGPU,
+            py::arg("config_count") = 10'000)
         .def(
             "bench_m_inductance_and_force_compute_all", benchMInductanceAndForceComputeAll,
-            py::arg("precision_factor") = PrecisionFactor(), py::arg("thread_count") = g_defaultThreadCount);
+            py::arg("config_count") = 10'000, py::arg("thread_count") = g_defaultThreadCount);
 }

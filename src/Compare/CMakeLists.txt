@@ -6,6 +6,7 @@ add_library(
         CompareMInductanceZAxis.cxx
         CompareMInductanceGeneral.cxx
         CompareMTD.cxx)
+set_property(TARGET Compare PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(Compare PRIVATE -fpic)
 

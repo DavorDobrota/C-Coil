@@ -8,12 +8,12 @@
 
 
 __global__
-void calculatePotentialSlow(long long numOps, CoilData coil, const DataVector *posArr, DataVector *resArr)
+void calculatePotentialSlow(long long opCount, CoilData coil, const DataVector *posArr, DataVector *resArr)
 {
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
 
-    if(global_index >= numOps)
+    if(global_index >= opCount)
         return;
 
     TYPE x1 = posArr[global_index].x;
@@ -67,12 +67,12 @@ void calculatePotentialSlow(long long numOps, CoilData coil, const DataVector *p
 }
 
 __global__
-void calculatePotentialFast(long long numOps, CoilData coil, const DataVector *posArr, DataVector *resArr)
+void calculatePotentialFast(long long opCount, CoilData coil, const DataVector *posArr, DataVector *resArr)
 {
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
 
-    if(global_index >= numOps)
+    if(global_index >= opCount)
         return;
 
     TYPE x1 = posArr[global_index].x;
@@ -142,9 +142,9 @@ namespace
     DataVector *g_posArr = nullptr;
     DataVector *g_resArr = nullptr;
 
-    void getBuffers(long long numOps)
+    void getBuffers(long long opCount)
     {
-        std::vector<DataVector*> buffers = GPUMem::getBuffers<DataVector>({numOps, numOps});
+        std::vector<DataVector*> buffers = GPUMem::getBuffers<DataVector>({opCount, opCount});
 
         g_posArr = buffers[0];
         g_resArr = buffers[1];
@@ -156,7 +156,7 @@ namespace
 }
 
 
-void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
+void Calculate_hardware_accelerated_a (long long opCount, CoilData coil,
                                        const DataVector *posArr,
                                        DataVector *resArr)
 {
@@ -165,9 +165,9 @@ void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
         recordStartPoint();
     #endif
 
-    long long blocks = ceil(double(numOps) / NTHREADS);
+    long long blocks = ceil(double(opCount) / NTHREADS);
 
-    getBuffers(numOps);
+    getBuffers(opCount);
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -176,7 +176,7 @@ void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemcpy(g_posArr, posArr, numOps * sizeof(DataVector), cudaMemcpyHostToDevice));
+    gpuErrchk(cudaMemcpy(g_posArr, posArr, opCount * sizeof(DataVector), cudaMemcpyHostToDevice));
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -185,12 +185,12 @@ void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemset(g_resArr, 0, numOps * sizeof(DataVector)));
+    gpuErrchk(cudaMemset(g_resArr, 0, opCount * sizeof(DataVector)));
 
     if (coil.useFastMethod)
-        calculatePotentialFast<<<blocks, NTHREADS>>>(numOps, coil, g_posArr, g_resArr);
+        calculatePotentialFast<<<blocks, NTHREADS>>>(opCount, coil, g_posArr, g_resArr);
     else
-        calculatePotentialSlow<<<blocks, NTHREADS>>>(numOps, coil, g_posArr, g_resArr);
+        calculatePotentialSlow<<<blocks, NTHREADS>>>(opCount, coil, g_posArr, g_resArr);
 
 	gpuErrchk(cudaDeviceSynchronize());
 
@@ -202,7 +202,7 @@ void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
     #endif
 
 	if(resArr != nullptr)
-        gpuErrchk(cudaMemcpy(resArr, g_resArr, numOps * sizeof(DataVector), cudaMemcpyDeviceToHost));
+        gpuErrchk(cudaMemcpy(resArr, g_resArr, opCount * sizeof(DataVector), cudaMemcpyDeviceToHost));
 
 
     #if DEBUG_TIMINGS
@@ -210,13 +210,13 @@ void Calculate_hardware_accelerated_a (long long numOps, CoilData coil,
         printf("\tWriting to output array:  %.9g s\n\n", g_duration);
 
         g_duration = getIntervalDuration();
-        printf("\tDevice buffer size:       %.3lf MB\n", (6.0 * double(numOps * sizeof(TYPE)) / 1.0e6));
+        printf("\tDevice buffer size:       %.3lf MB\n", (6.0 * double(opCount * sizeof(TYPE)) / 1.0e6));
         printf("\tTotal blocks:             %lli\n", blocks);
         printf("\tThreads per calculation:  %i\n", NTHREADS);
         printf("\tPrecision:                %dx%d\n", coil.thicknessIncrements, coil.angularIncrements);
-        printf("\tTotal calculations:       %lli\n", numOps);
-        printf("\tTotal MegaIncrements:     %.f\n", 1e-6 * double(numOps * coil.thicknessIncrements * coil.angularIncrements));
-        printf("\n\tPerformance:              %.1f kPoints/s\n", double(0.001 * numOps / g_duration));
+        printf("\tTotal calculations:       %lli\n", opCount);
+        printf("\tTotal MegaIncrements:     %.f\n", 1e-6 * double(opCount * coil.thicknessIncrements * coil.angularIncrements));
+        printf("\n\tPerformance:              %.1f kPoints/s\n", double(0.001 * opCount / g_duration));
         printf("---------------------------------------------------\n\n");
     #endif
 }

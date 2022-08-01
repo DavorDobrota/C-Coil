@@ -42,7 +42,7 @@ void benchCoilGroupMTvsMTD(int threadCount, int pointCount)
     printf("\n");
 }
 
-void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoils, int opCount, int threadCount)
+void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int coilCount, int opCount, int threadCount)
 {
     using namespace std::chrono;
 
@@ -50,7 +50,7 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
     double interval;
 
     printf("Benchmarking MT and GPU field compute performance for %d coils in %d points and precision factor %.1f\n\n",
-           numCoils, opCount, precisionFactor.relativePrecision);
+           coilCount, opCount, precisionFactor.relativePrecision);
 
     double torusRadius = 1.0;
 
@@ -65,23 +65,23 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
     for (int i = 0; i < opCount; ++i)
         fieldPoints[i] = vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / opCount);
 
-    for (int i = 0; i < numCoils; ++i)
+    for (int i = 0; i < coilCount; ++i)
     {
         Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, torusRadius / 100.0, 10000, 10);
         tempCoil.setPositionAndOrientation(
-                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / numCoils),
-                M_PI_2, 2*M_PI * i / numCoils + M_PI_2);
+                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / coilCount),
+                M_PI_2, 2*M_PI * i / coilCount + M_PI_2);
         torusGroupThick.addCoil(tempCoil);
     }
     torusGroupThick.setThreadCount(threadCount);
     torusGroupThick.setDefaultPrecisionFactor(precisionFactor);
 
-    for (int i = 0; i < numCoils; ++i)
+    for (int i = 0; i < coilCount; ++i)
     {
         Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, 0.0, 100, 10);
         tempCoil.setPositionAndOrientation(
-                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / numCoils),
-                M_PI_2, 2*M_PI * i / numCoils + M_PI_2);
+                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / coilCount),
+                M_PI_2, 2*M_PI * i / coilCount + M_PI_2);
         torusGroupFlat.addCoil(tempCoil);
     }
     torusGroupFlat.setThreadCount(threadCount);
@@ -92,19 +92,19 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
     computedAPotential = torusGroupFlat.computeAllAPotentialVectors(fieldPoints, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A CPU_MT slow : %.1f kPoints/s | eff %.1f kPoints/s\n",
-           0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
+           0.001 * opCount / interval, 0.001 * opCount * coilCount / interval);
 
     begin_time = high_resolution_clock::now();
     computedBField = torusGroupFlat.computeAllBFieldVectors(fieldPoints, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B CPU_MT slow : %.1f kPoints/s | eff %.1f kPoints/s\n",
-           0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
+           0.001 * opCount / interval, 0.001 * opCount * coilCount / interval);
 
     begin_time = high_resolution_clock::now();
     computedGradient = torusGroupFlat.computeAllBGradientMatrices(fieldPoints, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_MT slow : %.1f kPoints/s | eff %.1f kPoints/s\n",
-           0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
+           0.001 * opCount / interval, 0.001 * opCount * coilCount / interval);
 
     printf("\n");
 
@@ -113,19 +113,19 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
     computedAPotential = torusGroupThick.computeAllAPotentialVectors(fieldPoints, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A CPU_MT fast : %.1f kPoints/s | eff %.1f kPoints/s\n",
-           0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
+           0.001 * opCount / interval, 0.001 * opCount * coilCount / interval);
 
     begin_time = high_resolution_clock::now();
     computedBField = torusGroupThick.computeAllBFieldVectors(fieldPoints, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B CPU_MT fast : %.1f kPoints/s | eff %.1f kPoints/s\n",
-           0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
+           0.001 * opCount / interval, 0.001 * opCount * coilCount / interval);
 
     begin_time = high_resolution_clock::now();
     computedGradient = torusGroupThick.computeAllBGradientMatrices(fieldPoints, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G CPU_MT fast : %.1f kPoints/s | eff %.1f kPoints/s\n",
-           0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
+           0.001 * opCount / interval, 0.001 * opCount * coilCount / interval);
 
     printf("\n");
 
@@ -136,19 +136,19 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
     computedAPotential = torusGroupFlat.computeAllAPotentialVectors(fieldPoints, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A GPU    slow : %.1f kPoints/s | eff %.1f kPoints/s\n",
-           0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
+           0.001 * opCount / interval, 0.001 * opCount * coilCount / interval);
 
     begin_time = high_resolution_clock::now();
     computedBField = torusGroupFlat.computeAllBFieldVectors(fieldPoints, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B GPU    slow : %.1f kPoints/s | eff %.1f kPoints/s\n",
-           0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
+           0.001 * opCount / interval, 0.001 * opCount * coilCount / interval);
 
     begin_time = high_resolution_clock::now();
     computedGradient = torusGroupFlat.computeAllBGradientMatrices(fieldPoints, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G GPU    slow : %.1f kPoints/s | eff %.1f kPoints/s\n",
-           0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
+           0.001 * opCount / interval, 0.001 * opCount * coilCount / interval);
 
     printf("\n");
 
@@ -158,31 +158,31 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int numCoil
     computedAPotential = torusGroupThick.computeAllAPotentialVectors(fieldPoints, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Potential A GPU    fast : %.1f kPoints/s | eff %.1f kPoints/s\n",
-           0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
+           0.001 * opCount / interval, 0.001 * opCount * coilCount / interval);
 
     begin_time = high_resolution_clock::now();
     computedBField = torusGroupThick.computeAllBFieldVectors(fieldPoints, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Field     B GPU    fast : %.1f kPoints/s | eff %.1f kPoints/s\n",
-           0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
+           0.001 * opCount / interval, 0.001 * opCount * coilCount / interval);
 
     begin_time = high_resolution_clock::now();
     computedGradient = torusGroupThick.computeAllBGradientMatrices(fieldPoints, GPU);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("Gradient  G GPU    fast : %.1f kPoints/s | eff %.1f kPoints/s\n",
-           0.001 * opCount / interval, 0.001 * opCount * numCoils / interval);
+           0.001 * opCount / interval, 0.001 * opCount * coilCount / interval);
 
     printf("\n");
 }
 
-void benchCoilGroupComputeAllFieldsGPU(int numCoils, int opCount)
+void benchCoilGroupComputeAllFieldsGPU(int coilCount, int opCount)
 {
     using namespace std::chrono;
 
     high_resolution_clock::time_point begin_time;
     double interval;
 
-    printf("Benchmarking GPU field compute performance for %d coils in %d points\n\n", numCoils, opCount);
+    printf("Benchmarking GPU field compute performance for %d coils in %d points\n\n", coilCount, opCount);
 
     double torusRadius = 1.0;
 
@@ -197,21 +197,21 @@ void benchCoilGroupComputeAllFieldsGPU(int numCoils, int opCount)
     for (int i = 0; i < opCount; ++i)
         fieldPoints[i] = vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / opCount);
 
-    for (int i = 0; i < numCoils; ++i)
+    for (int i = 0; i < coilCount; ++i)
     {
         Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, torusRadius / 100.0, 10000, 10);
         tempCoil.setPositionAndOrientation(
-                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / numCoils),
-                M_PI_2, 2*M_PI * i / numCoils + M_PI_2);
+                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / coilCount),
+                M_PI_2, 2*M_PI * i / coilCount + M_PI_2);
         torusGroupThick.addCoil(tempCoil);
     }
 
-    for (int i = 0; i < numCoils; ++i)
+    for (int i = 0; i < coilCount; ++i)
     {
         Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, 0.0, 100, 10);
         tempCoil.setPositionAndOrientation(
-                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / numCoils),
-                M_PI_2, 2*M_PI * i / numCoils + M_PI_2);
+                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / coilCount),
+                M_PI_2, 2*M_PI * i / coilCount + M_PI_2);
         torusGroupFlat.addCoil(tempCoil);
     }
 
@@ -228,65 +228,65 @@ void benchCoilGroupComputeAllFieldsGPU(int numCoils, int opCount)
         computedAPotential = torusGroupFlat.computeAllAPotentialVectors(fieldPoints, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("Potential A  slow : %.1f kPoints/s | eff %.1f MPoints/s\n",
-               0.001 * opCount / interval, 1e-6 * opCount * numCoils / interval);
+               0.001 * opCount / interval, 1e-6 * opCount * coilCount / interval);
 
         begin_time = high_resolution_clock::now();
         computedBField = torusGroupFlat.computeAllBFieldVectors(fieldPoints, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("Field     B  slow : %.1f kPoints/s | eff %.1f MPoints/s\n",
-               0.001 * opCount / interval, 1e-6 * opCount * numCoils / interval);
+               0.001 * opCount / interval, 1e-6 * opCount * coilCount / interval);
 
         begin_time = high_resolution_clock::now();
         computedGradient = torusGroupFlat.computeAllBGradientMatrices(fieldPoints, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("Gradient  G  slow : %.1f kPoints/s | eff %.1f MPoints/s\n",
-               0.001 * opCount / interval, 1e-6 * opCount * numCoils / interval);
+               0.001 * opCount / interval, 1e-6 * opCount * coilCount / interval);
 
         begin_time = high_resolution_clock::now();
         computedAPotential = torusGroupThick.computeAllAPotentialVectors(fieldPoints, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("Potential A  fast : %.1f kPoints/s | eff %.1f MPoints/s\n",
-               0.001 * opCount / interval, 1e-6 * opCount * numCoils / interval);
+               0.001 * opCount / interval, 1e-6 * opCount * coilCount / interval);
 
         begin_time = high_resolution_clock::now();
         computedBField = torusGroupThick.computeAllBFieldVectors(fieldPoints, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("Field     B  fast : %.1f kPoints/s | eff %.1f MPoints/s\n",
-               0.001 * opCount / interval, 1e-6 * opCount * numCoils / interval);
+               0.001 * opCount / interval, 1e-6 * opCount * coilCount / interval);
 
         begin_time = high_resolution_clock::now();
         computedGradient = torusGroupThick.computeAllBGradientMatrices(fieldPoints, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("Gradient  G  fast : %.1f kPoints/s | eff %.1f MPoints/s\n",
-               0.001 * opCount / interval, 1e-6 * opCount * numCoils / interval);
+               0.001 * opCount / interval, 1e-6 * opCount * coilCount / interval);
 
         printf("\n");
     }
 }
 
 
-void benchCoilGroupMInductanceAndForce(int numOps, int threadCount)
+void benchCoilGroupMInductanceAndForce(int opCount, int threadCount)
 {
     using namespace std::chrono;
 
     high_resolution_clock::time_point begin_time;
     double interval;
 
-    int numCoilsMTD = 3 * threadCount;
-    int numCoils = threadCount;
+    int coilCountMTD = 3 * threadCount;
+    int coilCount = threadCount;
 
     CoilGroup coilGroupMTD = CoilGroup();
     CoilGroup coilGroup = CoilGroup();
     Coil referenceCoil = Coil(0.1, 0.1, 0.1, 10000);
 
-    for (int i = 1; i <= numCoilsMTD; ++i)
+    for (int i = 1; i <= coilCountMTD; ++i)
     {
         Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000);
         tempCoil.setPositionAndOrientation(vec3::Vector3(1e-8, 0.0, 0.15*i),0.0, 0.0);
         coilGroupMTD.addCoil(tempCoil);
     }
 
-    for (int i = 0; i <= numCoils; ++i)
+    for (int i = 0; i <= coilCount; ++i)
     {
         Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000);
         tempCoil.setPositionAndOrientation(vec3::Vector3(1e-8, 0.0, 0.15*i),0.0, 0.0);
@@ -304,32 +304,32 @@ void benchCoilGroupMInductanceAndForce(int numOps, int threadCount)
         printf("Mutual inductance performance for precision factor %.1f\n", double(i));
 
         begin_time = high_resolution_clock::now();
-        for (int j = 0; j < numOps; ++j)
+        for (int j = 0; j < opCount; ++j)
             tempInductance = coilGroup.computeMutualInductance(referenceCoil, precisionFactor, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        perf = numOps * numCoils / interval;
+        perf = opCount * coilCount / interval;
         printf("ST  : %6.3f ms/coil | %.0f coils/s\n", 1e3/ perf, perf);
 
         begin_time = high_resolution_clock::now();
-        for (int j = 0; j < numOps; ++j)
+        for (int j = 0; j < opCount; ++j)
             tempInductance = coilGroup.computeMutualInductance(referenceCoil, precisionFactor, CPU_MT);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        perf = numOps * numCoils / interval;
+        perf = opCount * coilCount / interval;
         printf("MT  : %6.3f ms/coil | %.0f coils/s\n", 1e3 / perf, perf);
 
         begin_time = high_resolution_clock::now();
-        for (int j = 0; j < numOps; ++j)
+        for (int j = 0; j < opCount; ++j)
             tempInductance = coilGroupMTD.computeMutualInductance(referenceCoil, precisionFactor, CPU_MT);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        perf = numOps * numCoilsMTD / interval;
+        perf = opCount * coilCountMTD / interval;
         printf("MTD : %6.3f ms/coil | %.0f coils/s\n", 1e3 / perf, perf);
 
         tempInductance = coilGroupMTD.computeMutualInductance(referenceCoil, precisionFactor, GPU); // GPU warmup
         begin_time = high_resolution_clock::now();
-        for (int j = 0; j < numOps; ++j)
+        for (int j = 0; j < opCount; ++j)
             tempInductance = coilGroupMTD.computeMutualInductance(referenceCoil, precisionFactor, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        perf = numOps * numCoilsMTD / interval;
+        perf = opCount * coilCountMTD / interval;
         printf("GPU : %6.3f ms/coil | %.0f coils/s\n", 1e3 / perf, perf);
 
         printf("\n");
@@ -346,32 +346,32 @@ void benchCoilGroupMInductanceAndForce(int numOps, int threadCount)
         printf("Ampere force performance for precision factor %.1f\n", double(i));
 
         begin_time = high_resolution_clock::now();
-        for (int j = 0; j < numOps; ++j)
+        for (int j = 0; j < opCount; ++j)
             tempForce = coilGroup.computeAmpereForce(referenceCoil, precisionFactor, CPU_ST);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        perf = numOps * numCoils / interval;
+        perf = opCount * coilCount / interval;
         printf("ST  : %6.3f ms/coil | %.0f coils/s\n", 1e3/ perf, perf);
 
         begin_time = high_resolution_clock::now();
-        for (int j = 0; j < numOps; ++j)
+        for (int j = 0; j < opCount; ++j)
             tempForce = coilGroup.computeAmpereForce(referenceCoil, precisionFactor, CPU_MT);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        perf = numOps * numCoils / interval;
+        perf = opCount * coilCount / interval;
         printf("MT  : %6.3f ms/coil | %.0f coils/s\n", 1e3 / perf, perf);
 
         begin_time = high_resolution_clock::now();
-        for (int j = 0; j < numOps; ++j)
+        for (int j = 0; j < opCount; ++j)
             tempForce = coilGroupMTD.computeAmpereForce(referenceCoil, precisionFactor, CPU_MT);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        perf = numOps * numCoilsMTD / interval;
+        perf = opCount * coilCountMTD / interval;
         printf("MTD : %6.3f ms/coil | %.0f coils/s\n", 1e3 / perf, perf);
 
         tempForce = coilGroupMTD.computeAmpereForce(referenceCoil, precisionFactor, GPU); // GPU warmup
         begin_time = high_resolution_clock::now();
-        for (int j = 0; j < numOps; ++j)
+        for (int j = 0; j < opCount; ++j)
             tempForce = coilGroupMTD.computeAmpereForce(referenceCoil, precisionFactor, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-        perf = numOps * numCoilsMTD / interval;
+        perf = opCount * coilCountMTD / interval;
         printf("GPU : %6.3f ms/coil | %.0f coils/s\n", 1e3 / perf, perf);
 
         printf("\n");
@@ -385,21 +385,21 @@ void benchMInductanceAndForceComputeAllMTvsMTD(PrecisionFactor precisionFactor, 
     Coil prim = Coil(0.1, 0.1, 0.1, 10000);
     Coil sec = Coil(0.1, 0.1, 0.1, 10000);
 
-    int numOps = threadCount * 32;
+    int opCount = threadCount * 32;
 
-    vec3::Vector3Array primPositions(numOps);
-    vec3::Vector3Array secPositions(numOps);
-    std::vector<double> primYAxisAngle(numOps);
-    std::vector<double> primZAxisAngle(numOps);
-    std::vector<double> secYAxisAngle(numOps);
-    std::vector<double> secZAxisAngle(numOps);
+    vec3::Vector3Array primPositions(opCount);
+    vec3::Vector3Array secPositions(opCount);
+    std::vector<double> primYAxisAngle(opCount);
+    std::vector<double> primZAxisAngle(opCount);
+    std::vector<double> secYAxisAngle(opCount);
+    std::vector<double> secZAxisAngle(opCount);
 
-    std::vector<double> mutualInductanceMT(numOps);
-    std::vector<double> mutualInductanceAll(numOps);
-    std::vector<std::pair<vec3::Vector3, vec3::Vector3>> forceAndTorqueMT(numOps);
-    std::vector<std::pair<vec3::Vector3, vec3::Vector3>> forceAndTorqueAll(numOps);
+    std::vector<double> mutualInductanceMT(opCount);
+    std::vector<double> mutualInductanceAll(opCount);
+    std::vector<std::pair<vec3::Vector3, vec3::Vector3>> forceAndTorqueMT(opCount);
+    std::vector<std::pair<vec3::Vector3, vec3::Vector3>> forceAndTorqueAll(opCount);
 
-    for (int i = 0; i < numOps; ++i)
+    for (int i = 0; i < opCount; ++i)
     {
         primPositions[i] = vec3::Vector3(0.0, 0.0, 0.0);
         secPositions[i] = vec3::Vector3(0.0, 0.1, 0.2 + double(i) * 0.005);
@@ -415,14 +415,14 @@ void benchMInductanceAndForceComputeAllMTvsMTD(PrecisionFactor precisionFactor, 
     printf("Mutual inductance:\n");
 
     begin_time = high_resolution_clock::now();
-    for (int i = 0; i < numOps; ++i)
+    for (int i = 0; i < opCount; ++i)
     {
         prim.setPositionAndOrientation(primPositions[i], primYAxisAngle[i], primZAxisAngle[i]);
         sec.setPositionAndOrientation(secPositions[i], secYAxisAngle[i], secZAxisAngle[i]);
         mutualInductanceMT[i] = Coil::computeMutualInductance(prim, sec, precisionFactor, CPU_MT);
     }
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("MT perf  : %.1f Ops/s\n", numOps / interval);
+    printf("MT perf  : %.1f Ops/s\n", opCount / interval);
 
     begin_time = high_resolution_clock::now();
     mutualInductanceAll = Coil::computeAllMutualInductanceArrangements(prim, sec, primPositions,secPositions,
@@ -430,19 +430,19 @@ void benchMInductanceAndForceComputeAllMTvsMTD(PrecisionFactor precisionFactor, 
                                                                        secYAxisAngle, secZAxisAngle,
                                                                        precisionFactor, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("MTD perf : %.1f Ops/s\n", numOps / interval);
+    printf("MTD perf : %.1f Ops/s\n", opCount / interval);
 
     printf("\nAmpere force:\n");
 
     begin_time = high_resolution_clock::now();
-    for (int i = 0; i < numOps; ++i)
+    for (int i = 0; i < opCount; ++i)
     {
         prim.setPositionAndOrientation(primPositions[i], primYAxisAngle[i], primZAxisAngle[i]);
         sec.setPositionAndOrientation(secPositions[i], secYAxisAngle[i], secZAxisAngle[i]);
         forceAndTorqueMT[i] = Coil::computeAmpereForce(prim, sec, precisionFactor, CPU_MT);
     }
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("MT perf  : %.1f Ops/s\n", numOps / interval);
+    printf("MT perf  : %.1f Ops/s\n", opCount / interval);
 
     begin_time = high_resolution_clock::now();
     forceAndTorqueAll = Coil::computeAllAmpereForceArrangements(prim, sec, primPositions,secPositions,
@@ -450,12 +450,12 @@ void benchMInductanceAndForceComputeAllMTvsMTD(PrecisionFactor precisionFactor, 
                                                                 secYAxisAngle, secZAxisAngle,
                                                                 precisionFactor, CPU_MT);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
-    printf("MTD perf : %.1f Ops/s\n", numOps / interval);
+    printf("MTD perf : %.1f Ops/s\n", opCount / interval);
 
     printf("\n");
 }
 
-void benchMInductanceAndForceComputeGPU(int configCount)
+void benchMInductanceAndForceComputeAllGPU(int configCount)
 {
     using namespace std::chrono;
 

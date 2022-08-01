@@ -868,20 +868,20 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
 
     for (int i = 0; i <= maxPointsLog2; ++i)
     {
-        int numPoints = int(std::pow(2, i));
+        int pointCount = int(std::pow(2, i));
 
-        vec3::Vector3Array positions(numPoints);
+        vec3::Vector3Array positions(pointCount);
         vec3::Vector3Array results;
-        for (int j = 0; j < numPoints; ++j)
+        for (int j = 0; j < pointCount; ++j)
             positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         results = flat.computeAllAPotentialVectors(positions, CPU_MT);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
-        pointsPerSec = numPoints / interval;
+        pointsPerSec = pointCount / interval;
 
-        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
-        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+        printf("%8d : %.1f\n", pointCount, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", pointCount, 0.001 * pointsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
@@ -891,20 +891,20 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
 
     for (int i = 0; i <= maxPointsLog2; ++i)
     {
-        int numPoints = int(std::pow(2, i));
+        int pointCount = int(std::pow(2, i));
 
-        vec3::Vector3Array positions(numPoints);
+        vec3::Vector3Array positions(pointCount);
         vec3::Vector3Array results;
-        for (int j = 0; j < numPoints; ++j)
+        for (int j = 0; j < pointCount; ++j)
             positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         results = flat.computeAllBFieldVectors(positions, CPU_MT);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
-        pointsPerSec = numPoints / interval;
+        pointsPerSec = pointCount / interval;
 
-        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
-        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+        printf("%8d : %.1f\n", pointCount, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", pointCount, 0.001 * pointsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
@@ -914,20 +914,20 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
 
     for (int i = 0; i <= maxPointsLog2; ++i)
     {
-        int numPoints = int(std::pow(2, i));
+        int pointCount = int(std::pow(2, i));
 
-        vec3::Vector3Array positions(numPoints);
+        vec3::Vector3Array positions(pointCount);
         vec3::Matrix3Array results;
-        for (int j = 0; j < numPoints; ++j)
+        for (int j = 0; j < pointCount; ++j)
             positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         results = flat.computeAllBGradientMatrices(positions, CPU_MT);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
-        pointsPerSec = numPoints / interval;
+        pointsPerSec = pointCount / interval;
 
-        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
-        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+        printf("%8d : %.1f\n", pointCount, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", pointCount, 0.001 * pointsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
@@ -937,20 +937,20 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
 
     for (int i = 0; i <= maxPointsLog2; ++i)
     {
-        int numPoints = int(std::pow(2, i));
+        int pointCount = int(std::pow(2, i));
 
-        vec3::Vector3Array positions(numPoints);
+        vec3::Vector3Array positions(pointCount);
         vec3::Vector3Array results;
-        for (int j = 0; j < numPoints; ++j)
+        for (int j = 0; j < pointCount; ++j)
             positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         results = coil.computeAllAPotentialVectors(positions, CPU_MT);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
-        pointsPerSec = numPoints / interval;
+        pointsPerSec = pointCount / interval;
 
-        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
-        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+        printf("%8d : %.1f\n", pointCount, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", pointCount, 0.001 * pointsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
@@ -960,20 +960,20 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
 
     for (int i = 0; i <= maxPointsLog2; ++i)
     {
-        int numPoints = int(std::pow(2, i));
+        int pointCount = int(std::pow(2, i));
 
-        vec3::Vector3Array positions(numPoints);
+        vec3::Vector3Array positions(pointCount);
         vec3::Vector3Array results;
-        for (int j = 0; j < numPoints; ++j)
+        for (int j = 0; j < pointCount; ++j)
             positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         results = coil.computeAllBFieldVectors(positions, CPU_MT);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
-        pointsPerSec = numPoints / interval;
+        pointsPerSec = pointCount / interval;
 
-        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
-        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+        printf("%8d : %.1f\n", pointCount, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", pointCount, 0.001 * pointsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
@@ -983,20 +983,20 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
 
     for (int i = 0; i <= maxPointsLog2; ++i)
     {
-        int numPoints = int(std::pow(2, i));
+        int pointCount = int(std::pow(2, i));
 
-        vec3::Vector3Array positions(numPoints);
+        vec3::Vector3Array positions(pointCount);
         vec3::Matrix3Array results;
-        for (int j = 0; j < numPoints; ++j)
+        for (int j = 0; j < pointCount; ++j)
             positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         results = coil.computeAllBGradientMatrices(positions, CPU_MT);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
-        pointsPerSec = numPoints / interval;
+        pointsPerSec = pointCount / interval;
 
-        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
-        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+        printf("%8d : %.1f\n", pointCount, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", pointCount, 0.001 * pointsPerSec);
     }
     printf("\n");
 
@@ -1026,20 +1026,20 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
 
     for (int i = 0; i <= maxPointsLog2; ++i)
     {
-        int numPoints = int(std::pow(2, i));
+        int pointCount = int(std::pow(2, i));
 
-        vec3::Vector3Array positions(numPoints);
+        vec3::Vector3Array positions(pointCount);
         vec3::Vector3Array potentialArr;
-        for (int j = 0; j < numPoints; ++j)
+        for (int j = 0; j < pointCount; ++j)
             positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         potentialArr = flat.computeAllAPotentialVectors(positions, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
-        pointsPerSec = numPoints / interval;
+        pointsPerSec = pointCount / interval;
 
-        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
-        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+        printf("%8d : %.1f\n", pointCount, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", pointCount, 0.001 * pointsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
@@ -1049,20 +1049,20 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
 
     for (int i = 0; i <= maxPointsLog2; ++i)
     {
-        int numPoints = int(std::pow(2, i));
+        int pointCount = int(std::pow(2, i));
 
-        vec3::Vector3Array positions(numPoints);
+        vec3::Vector3Array positions(pointCount);
         vec3::Vector3Array fieldArr;
-        for (int j = 0; j < numPoints; ++j)
+        for (int j = 0; j < pointCount; ++j)
             positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         fieldArr = flat.computeAllBFieldVectors(positions, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
-        pointsPerSec = numPoints / interval;
+        pointsPerSec = pointCount / interval;
 
-        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
-        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+        printf("%8d : %.1f\n", pointCount, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", pointCount, 0.001 * pointsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
@@ -1072,20 +1072,20 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
 
     for (int i = 0; i <= maxPointsLog2; ++i)
     {
-        int numPoints = int(std::pow(2, i));
+        int pointCount = int(std::pow(2, i));
 
-        vec3::Vector3Array positions(numPoints);
+        vec3::Vector3Array positions(pointCount);
         vec3::Matrix3Array gradientArr;
-        for (int j = 0; j < numPoints; ++j)
+        for (int j = 0; j < pointCount; ++j)
             positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         gradientArr = flat.computeAllBGradientMatrices(positions, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
-        pointsPerSec = numPoints / interval;
+        pointsPerSec = pointCount / interval;
 
-        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
-        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+        printf("%8d : %.1f\n", pointCount, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", pointCount, 0.001 * pointsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
@@ -1095,20 +1095,20 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
 
     for (int i = 0; i <= maxPointsLog2; ++i)
     {
-        int numPoints = int(std::pow(2, i));
+        int pointCount = int(std::pow(2, i));
 
-        vec3::Vector3Array positions(numPoints);
+        vec3::Vector3Array positions(pointCount);
         vec3::Vector3Array potentialArr;
-        for (int j = 0; j < numPoints; ++j)
+        for (int j = 0; j < pointCount; ++j)
             positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         potentialArr = coil.computeAllAPotentialVectors(positions, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
-        pointsPerSec = numPoints / interval;
+        pointsPerSec = pointCount / interval;
 
-        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
-        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+        printf("%8d : %.1f\n", pointCount, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", pointCount, 0.001 * pointsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
@@ -1118,20 +1118,20 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
 
     for (int i = 0; i <= maxPointsLog2; ++i)
     {
-        int numPoints = int(std::pow(2, i));
+        int pointCount = int(std::pow(2, i));
 
-        vec3::Vector3Array positions(numPoints);
+        vec3::Vector3Array positions(pointCount);
         vec3::Vector3Array fieldArr;
-        for (int j = 0; j < numPoints; ++j)
+        for (int j = 0; j < pointCount; ++j)
             positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         fieldArr = coil.computeAllBFieldVectors(positions, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
-        pointsPerSec = numPoints / interval;
+        pointsPerSec = pointCount / interval;
 
-        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
-        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+        printf("%8d : %.1f\n", pointCount, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", pointCount, 0.001 * pointsPerSec);
     }
     printf("\n");
     fprintf(output, "\n");
@@ -1141,20 +1141,20 @@ void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, in
 
     for (int i = 0; i <= maxPointsLog2; ++i)
     {
-        int numPoints = int(std::pow(2, i));
+        int pointCount = int(std::pow(2, i));
 
-        vec3::Vector3Array positions(numPoints);
+        vec3::Vector3Array positions(pointCount);
         vec3::Matrix3Array gradientArr;
-        for (int j = 0; j < numPoints; ++j)
+        for (int j = 0; j < pointCount; ++j)
             positions[j] = vec3::Vector3(0.1, 0.1, double(j));
 
         beginTime = high_resolution_clock::now();
         gradientArr = coil.computeAllBGradientMatrices(positions, GPU);
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - beginTime).count();
-        pointsPerSec = numPoints / interval;
+        pointsPerSec = pointCount / interval;
 
-        printf("%8d : %.1f\n", numPoints, 0.001 * pointsPerSec);
-        fprintf(output, "%8d\t%.7g\n", numPoints, 0.001 * pointsPerSec);
+        printf("%8d : %.1f\n", pointCount, 0.001 * pointsPerSec);
+        fprintf(output, "%8d\t%.7g\n", pointCount, 0.001 * pointsPerSec);
     }
     printf("\n");
 

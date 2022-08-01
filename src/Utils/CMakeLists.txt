@@ -1,4 +1,5 @@
 add_library(Utils OBJECT Timing.cxx)
+set_property(TARGET Utils PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(Utils PRIVATE -fpic)
 

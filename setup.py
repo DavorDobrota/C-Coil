@@ -13,7 +13,7 @@ GPU_increments = int(os.environ.get("GPU_INCREMENTS", 100))
 if os.name == "nt":
     os.environ["CL"] = "/std:c++17 /O2 /arch:AVX2 /fp:fast"
 else:
-    os.environ["CPPFLAGS"] = "-std=c++17 -Ofast -mavx2 -ffast-math"
+    os.environ["CPPFLAGS"] = "-std=c++17 -Ofast -mavx2 -ffast-math -flto=auto"
 
 macros = []
 
@@ -35,9 +35,9 @@ header_include_dirs = [
     "src/",
     "src/Benchmark/",
     "src/Coil/",
+    "src/Coil/CUDAFunctions",
     "src/CoilGroup/",
     "src/Compare/",
-    "src/CUDAFunctions",
     "src/LegendreMatrix/",
     "src/Math/",
     "src/Tensor/",
@@ -50,6 +50,11 @@ sources = sorted([
     *glob("src/*.cxx"),
     *glob("src/Benchmark/*.cxx"),
     *glob("src/Coil/*.cxx"),
+    *glob("src/Coil/Fields/*.cxx"),
+    *glob("src/Coil/ForceAndTorque/*.cxx"),
+    *glob("src/Coil/MInductance/*.cxx"),
+    *glob("src/Coil/PrecisionArguments/*.cxx"),
+    *glob("src/Coil/Utils/*.cxx"),
     *glob("src/CoilGroup/*.cxx"),
     *glob("src/Compare/*.cxx"),
     *glob("src/LegendreMatrix/*.cxx"),
@@ -60,6 +65,7 @@ sources = sorted([
     *glob("src/Utils/*.cxx"),
 ])
 
+
 def find_in_path(names, path):
     for dir in path.split(os.pathsep):
         print(f"Looking for NVCC in: {dir}")
@@ -68,6 +74,7 @@ def find_in_path(names, path):
             if os.path.exists(binpath):
                 return os.path.abspath(binpath)
     return None
+
 
 def locate_CUDA():
     if 'CUDAHOME' in os.environ:
@@ -85,12 +92,18 @@ def locate_CUDA():
 
     return cudaconfig
 
+
 extra_kwargs = {}
 
 if use_GPU:
     CUDA = locate_CUDA()
     print(f"Using CUDA installation: {CUDA}")
-    sources = sorted(sources + [*glob("src/CUDAFunctions/*.cu")])
+    sources = sources + sorted([
+        *glob("src/Coil/CUDAFunctions/CoilGroupKernels/*.cu"),
+        *glob("src/Coil/CUDAFunctions/CoilKernels/*.cu"),
+        *glob("src/Coil/CUDAFunctions/ErrorCheck/*.cu"),
+        *glob("src/Coil/CUDAFunctions/MemoryManagement/*.cu"),
+    ])
     header_include_dirs += CUDA['include']
     extra_kwargs = {
         'library_dirs': [CUDA['lib64']],
@@ -111,6 +124,7 @@ ext_modules = [
 with open("README.md", "r") as f:
     long_description = f.read()
 
+
 def customize_compiler_for_nvcc(self):
     self.src_extensions.append('.cu')
 
@@ -129,10 +143,12 @@ def customize_compiler_for_nvcc(self):
 
     self._compile = _compile
 
+
 class cuda_build_ext(build_ext):
     def build_extensions(self):
         customize_compiler_for_nvcc(self.compiler)
         build_ext.build_extensions(self)
+
 
 cmdclass = {'build_ext': cuda_build_ext} if use_GPU else {}
 

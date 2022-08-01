@@ -307,7 +307,7 @@ void initCoil(py::module_ &mainModule)
 
     coil.def(
             "compute_and_set_self_inductance", &Coil::computeAndSetSelfInductance,
-            py::arg("precision_factor") = PrecisionFactor(), py::arg("compute_method") = CPU_ST);
+            py::arg("precision_factor") = PrecisionFactor());
 
     coil.def_static(
             "compute_ampere_force",

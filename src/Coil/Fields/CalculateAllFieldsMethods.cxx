@@ -299,17 +299,17 @@ vec3::Matrix3Array Coil::calculateAllBGradientGPU(const vec3::Vector3Array &poin
 }
 #pragma clang diagnostic pop
 
-std::vector<size_t> Coil::calculateChunkSize(size_t numOps) const
+std::vector<size_t> Coil::calculateChunkSize(size_t opCount) const
 {
-    size_t average = std::floor((double)numOps / (double)threadCount);
+    size_t average = std::floor((double)opCount / (double)threadCount);
     std::vector<size_t> ends(threadCount + 1);
-    size_t remaining = numOps;
+    size_t remaining = opCount;
     ends[0] = 0;
 
     for(int i = 0; i < threadCount; i++)
     {
         size_t temp = (remaining % (threadCount - i) == 0 ? average : average + 1);
-        ends[i+1] = (numOps - remaining) + temp;
+        ends[i+1] = (opCount - remaining) + temp;
         remaining -= temp;
     }
 

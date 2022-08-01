@@ -43,16 +43,13 @@ void initCoilGroup(py::module_ &mainModule)
     coilGroup.def(
             "compute_all_A_potential_vectors", &CoilGroup::computeAllAPotentialVectors,
             py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-
-    coilGroup.def(
+        .def(
             "compute_all_B_field_vectors", &CoilGroup::computeAllBFieldVectors,
             py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-
-    coilGroup.def(
+        .def(
             "compute_all_E_field_vectors", &CoilGroup::computeAllEFieldVectors,
             py::arg("point_vectors"), py::arg("compute_method") = CPU_ST)
-
-    coilGroup.def(
+        .def(
             "compute_all_B_gradient_matrices", &CoilGroup::computeAllBGradientMatrices,
             py::arg("point_vectors"), py::arg("compute_method") = CPU_ST);
 

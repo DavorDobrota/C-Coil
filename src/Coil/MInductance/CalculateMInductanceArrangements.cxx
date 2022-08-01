@@ -24,11 +24,11 @@ std::vector<double> Coil::calculateAllMutualInductanceArrangementsMTD(Coil prima
                                                                       const std::vector<double> &secondaryZAngles,
                                                                       PrecisionFactor precisionFactor)
 {
-    size_t numArrangements = primaryPositions.size();
+    size_t arrangementCount = primaryPositions.size();
 
-    std::vector<double> outputMInductances(numArrangements);
+    std::vector<double> outputMInductances(arrangementCount);
 
-    g_threadPool.setTaskCount(numArrangements);
+    g_threadPool.setTaskCount(arrangementCount);
     g_threadPool.getCompletedTasks().store(0ull);
 
     auto calcThread = []
@@ -54,7 +54,7 @@ std::vector<double> Coil::calculateAllMutualInductanceArrangementsMTD(Coil prima
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
 
-    for (int i = 0; i < numArrangements; ++i)
+    for (int i = 0; i < arrangementCount; ++i)
     {
         g_threadPool.push(calcThread,
                           std::ref(primary),
@@ -118,12 +118,12 @@ std::vector<double> Coil::calculateAllMutualInductanceArrangementsGPU(Coil prima
     CoilPairArgumentsData coilPairArgumentsData;
 
     generateCoilPairArgumentsData(primary, secondary, coilPairArgumentsData, inductanceArguments, false);
-    long long numPoints = inductanceArguments.secondaryPrecision.lengthIncrementCount *
+    long long pointCount = inductanceArguments.secondaryPrecision.lengthIncrementCount *
                           inductanceArguments.secondaryPrecision.thicknessIncrementCount *
                           inductanceArguments.secondaryPrecision.angularIncrementCount;
 
     #if USE_GPU == 1
-        Calculate_mutual_inductance_configurations(size, numPoints, coilPairArgumentsData, configArr, resultArr);
+        Calculate_mutual_inductance_configurations(size, pointCount, coilPairArgumentsData, configArr, resultArr);
     #else
         free(configArr);
         free(resultArr);

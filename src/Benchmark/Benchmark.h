@@ -32,11 +32,11 @@ void benchForceGeneralMTScaling(int maxThreadCount = g_defaultThreadCount);
 
 void benchCoilGroupMTvsMTD(int threadCount = g_defaultThreadCount, int pointCount = 20'000);
 void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor = PrecisionFactor(),
-                                    int numCoils = 50, int opCount = 100'000, int threadCount = g_defaultThreadCount);
-void benchCoilGroupComputeAllFieldsGPU(int numCoils = 100, int opCount = 131'072);
-void benchCoilGroupMInductanceAndForce(int numOps = 2, int threadCount = g_defaultThreadCount);
+                                    int coilCount = 50, int opCount = 100'000, int threadCount = g_defaultThreadCount);
+void benchCoilGroupComputeAllFieldsGPU(int coilCount = 100, int opCount = 131'072);
+void benchCoilGroupMInductanceAndForce(int opCount = 2, int threadCount = g_defaultThreadCount);
 void benchMInductanceAndForceComputeAllMTvsMTD(PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = g_defaultThreadCount);
-void benchMInductanceAndForceComputeGPU(int configCount = 10'000);
+void benchMInductanceAndForceComputeAllGPU(int configCount = 10'000);
 void benchMInductanceAndForceComputeAll(int configCount = 100, int threadCount = g_defaultThreadCount);
 
 #endif //GENERAL_COIL_PROGRAM_BENCHMARK_H

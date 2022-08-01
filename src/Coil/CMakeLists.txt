@@ -15,7 +15,9 @@ add_library(
         Fields/CalculateFieldsSlow.cxx
         Fields/CalculateFieldsFast.cxx
         Utils/SupportFunctions.cxx
-        Utils/CalculateAttributes.cxx)
+        Utils/CalculateAttributes.cxx
+)
+set_property(TARGET Coil PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(Coil PRIVATE -fpic)
 

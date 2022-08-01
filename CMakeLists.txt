@@ -5,6 +5,8 @@ project(Coil_Evolution)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+cmake_policy(SET CMP0069 NEW)
+
 if(WIN32)
     set(CMAKE_CXX_FLAGS "/std:c++17 /O2 /arch:AVX2 /fp:fast")
 else()
@@ -48,9 +50,9 @@ list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Test")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Benchmark")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil")
+list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Coil/CUDAFunctions")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CoilGroup")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Compare")
-list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/CUDAFunctions")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/LegendreMatrix")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Tensor")
 list(APPEND INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/ThreadPool")
@@ -72,13 +74,13 @@ list(APPEND LIBS "$<TARGET_OBJECTS:Test>")
 add_subdirectory(src/Coil)
 list(APPEND LIBS "$<TARGET_OBJECTS:Coil>")
 
-add_subdirectory(src/CoilGroup)
-list(APPEND LIBS "$<TARGET_OBJECTS:CoilGroup>")
-
 if(USE_GPU)
-    add_subdirectory(src/CUDAFunctions)
+    add_subdirectory(src/Coil/CUDAFunctions)
     list(APPEND LIBS "$<TARGET_OBJECTS:CUDAFunctions>")
 endif()
+
+add_subdirectory(src/CoilGroup)
+list(APPEND LIBS "$<TARGET_OBJECTS:CoilGroup>")
 
 add_subdirectory(src/LegendreMatrix)
 list(APPEND LIBS "$<TARGET_OBJECTS:LegendreMatrix>")
@@ -95,6 +97,7 @@ list(APPEND LIBS "$<TARGET_OBJECTS:ThreadPool>")
 
 if(OUTPUT_EXECUTABLE)
     add_executable(test_executable src/main.cxx ${LIBS})
+    set_property(TARGET test_executable PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
     target_include_directories(
             test_executable
             BEFORE
@@ -109,9 +112,10 @@ if(OUTPUT_EXECUTABLE)
 endif()
 
 if(OUTPUT_LIB_SHARED)
-    add_library(coil_calculations_shared SHARED ${LIBS})
+    add_library(coil_evolution_shared SHARED ${LIBS})
+    set_property(TARGET coil_evolution_shared PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
     target_include_directories(
-            coil_calculations_shared
+            coil_evolution_shared
             BEFORE
             PUBLIC ${INCS}
     )
@@ -119,6 +123,6 @@ if(OUTPUT_LIB_SHARED)
 #        set_target_properties(coil_calculations_shared PROPERTIES CUDA_ARCHITECTURES "all-major")
 #    endif()
     if(!WIN32)
-        target_link_libraries(coil_calculations_shared pthread)
+        target_link_libraries(coil_evolution_shared pthread)
     endif()
 endif()

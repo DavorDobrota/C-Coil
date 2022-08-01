@@ -5,6 +5,7 @@ add_library(
         CalculateFieldsGPU.cxx
         ComputeFieldsMethods.cxx
         CalculateMTD.cxx)
+set_property(TARGET CoilGroup PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(CoilGroup PRIVATE -fpic)
 

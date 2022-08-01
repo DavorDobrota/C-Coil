@@ -77,12 +77,12 @@ void testCoilPositionAndRotation()
 
 void testCoilGroupComputeAllMTD()
 {
-    int numCoils = 8 * 8;
+    int coilCount = 8 * 8;
     const int pointCount = 1'000;
 
     CoilGroup coilGroup = CoilGroup();
 
-    for (int i = 1; i <= numCoils; ++i)
+    for (int i = 1; i <= coilCount; ++i)
     {
         Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000);
         tempCoil.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.15*i),0.0, 0.0);

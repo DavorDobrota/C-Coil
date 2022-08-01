@@ -23,11 +23,11 @@ Coil::calculateAllAmpereForceArrangementsMTD(Coil primary, Coil secondary,
                                              const std::vector<double> &secondaryZAngles,
                                              PrecisionFactor precisionFactor)
 {
-    size_t numArrangements = primaryPositions.size();
+    size_t arrangementCount = primaryPositions.size();
 
-    std::vector<std::pair<vec3::Vector3, vec3::Vector3>> outputForcesAndTorques(numArrangements);
+    std::vector<std::pair<vec3::Vector3, vec3::Vector3>> outputForcesAndTorques(arrangementCount);
 
-    g_threadPool.setTaskCount(numArrangements);
+    g_threadPool.setTaskCount(arrangementCount);
     g_threadPool.getCompletedTasks().store(0ull);
 
     auto calcThread = []
@@ -53,7 +53,7 @@ Coil::calculateAllAmpereForceArrangementsMTD(Coil primary, Coil secondary,
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
 
-    for (int i = 0; i < numArrangements; ++i)
+    for (int i = 0; i < arrangementCount; ++i)
     {
         primary.setPositionAndOrientation(primaryPositions[i], primaryYAngles[i], primaryZAngles[i]);
         secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
@@ -120,12 +120,12 @@ Coil::calculateAllAmpereForceArrangementsGPU(Coil primary, Coil secondary,
     CoilPairArgumentsData coilPairArgumentsData;
 
     generateCoilPairArgumentsData(primary, secondary, coilPairArgumentsData, inductanceArguments, false);
-    long long numPoints = inductanceArguments.secondaryPrecision.lengthIncrementCount *
+    long long pointCount = inductanceArguments.secondaryPrecision.lengthIncrementCount *
                           inductanceArguments.secondaryPrecision.thicknessIncrementCount *
                           inductanceArguments.secondaryPrecision.angularIncrementCount;
 
     #if USE_GPU == 1
-        Calculate_force_and_torque_configurations(size, numPoints, coilPairArgumentsData, configArr, resultArr);
+        Calculate_force_and_torque_configurations(size, pointCount, coilPairArgumentsData, configArr, resultArr);
     #else
         free(configArr);
         free(resultArr);

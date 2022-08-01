@@ -7,6 +7,7 @@ add_library(
         BenchmarkMInductanceZAxis.cxx
         BenchmarkMInductanceGeneral.cxx
         BenchmarkMTD.cxx)
+set_property(TARGET Benchmark PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(Benchmark PRIVATE -fpic)
 

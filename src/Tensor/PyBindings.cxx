@@ -11,54 +11,13 @@ namespace py = pybind11;
 void initTensor(py::module_ &mainModule)
 {
     py::module_ tensorModule = mainModule.def_submodule("tensor");
-    
-    py::enum_<vec3::CoordinateSystem> coordinateSystem(tensorModule, "CoordinateSystem");
-    py::class_<vec3::CoordVector3> coordVector3(tensorModule, "CoordVector3");
+
     py::class_<vec3::Vector3> fieldVector3(tensorModule, "FieldVector3");
     py::class_<vec3::Matrix3> matrix3(tensorModule, "Matrix3");
     py::class_<vec3::Triplet> triplet(tensorModule, "Triplet");
 
     py::class_<vec3::Vector3Array> vector3Array(tensorModule, "Vector3Array");
     py::class_<vec3::Matrix3Array> matrix3Array(tensorModule, "Matrix3Array");
-
-    // CoordinateSystem
-
-    coordinateSystem.value("CARTESIAN", vec3::CoordinateSystem::CARTESIAN)
-        .value("CYLINDRICAL", vec3::CoordinateSystem::CYLINDRICAL)
-        .value("SPHERICAL", vec3::CoordinateSystem::SPHERICAL)
-        .export_values();
-
-
-    // CoordVector3
-
-    coordVector3.def_readwrite("elem_1", &vec3::CoordVector3::comp1)
-        .def_readwrite("elem_2", &vec3::CoordVector3::comp2)
-        .def_readwrite("elem_3", &vec3::CoordVector3::comp3);
-
-    coordVector3.def(py::init<>())
-        .def(
-            py::init<vec3::CoordinateSystem, double, double, double>(),
-            py::arg("system"), py::arg("elem_1"), py::arg("elem_2"), py::arg("elem_3"));
-
-    coordVector3.def("is_cartesian", &vec3::CoordVector3::isCartesian)
-        .def("is_cylindrical", &vec3::CoordVector3::isCylindrical)
-        .def("is_spherical", &vec3::CoordVector3::isSpherical);
-
-    coordVector3.def("convert_to_cartesian", &vec3::CoordVector3::convertToCartesian)
-        .def("convert_to_cylindrical", &vec3::CoordVector3::convertToCylindrical)
-        .def("convert_to_spherical", &vec3::CoordVector3::convertToSpherical);
-
-    coordVector3.def_static(
-            "convert_all_to_cartesian", &vec3::CoordVector3::convertAllToCartesian, py::arg("vectors"))
-        .def_static("convert_all_to_cylindrical", &vec3::CoordVector3::convertAllToCylindrical, py::arg("vectors"))
-        .def_static("convert_all_to_spherical", &vec3::CoordVector3::convertAllToSpherical, py::arg("vectors"));
-
-    coordVector3.def_static("convert_to_field_vector", &vec3::CoordVector3::convertToFieldVector, py::arg("vector"))
-        .def_static("convert_to_coord_vector", &vec3::CoordVector3::convertToCoordVector, py::arg("vector"));
-
-    coordVector3.def_property_readonly("coordinate_system", &vec3::CoordVector3::getCoordinateSystem);
-
-    coordVector3.def("__repr__", &vec3::CoordVector3::operator std::string);
 
 
     // FieldVector3

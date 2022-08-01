@@ -8,20 +8,20 @@
 
 
 __global__
-void CalculateForceAndTorqueConfigurations(long long numConfigs, long long numPoints, CoilPairArgumentsData coilPair,
+void CalculateForceAndTorqueConfigurations(long long configCount, long long pointCount, CoilPairArgumentsData coilPair,
                                            const CoilPairPositionData *configArr,
                                            ForceTorqueData *forceTorqueData)
 {
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
 
-    if(global_index >= numConfigs * numPoints)
+    if(global_index >= configCount * pointCount)
         return;
 
-    int pairIndex = int(global_index % numConfigs);
-    int lengthIndex = int((global_index / numConfigs) % coilPair.secLengthIncrements);
-    int thicknessIndex = int(((global_index / numConfigs) / coilPair.secLengthIncrements) % coilPair.secThicknessIncrements);
-    int angularIndex = int((((global_index / numConfigs) / coilPair.secLengthIncrements) / coilPair.secThicknessIncrements) % coilPair.secAngularIncrements);
+    int pairIndex = int(global_index % configCount);
+    int lengthIndex = int((global_index / configCount) % coilPair.secLengthIncrements);
+    int thicknessIndex = int(((global_index / configCount) / coilPair.secLengthIncrements) % coilPair.secThicknessIncrements);
+    int angularIndex = int((((global_index / configCount) / coilPair.secLengthIncrements) / coilPair.secThicknessIncrements) % coilPair.secAngularIncrements);
 
     CoilPairPositionData position = configArr[pairIndex];
 
@@ -199,7 +199,7 @@ namespace
 #endif
 }
 
-void Calculate_force_and_torque_configurations(long long numConfigs, long long numPoints,
+void Calculate_force_and_torque_configurations(long long configCount, long long pointCount,
                                                CoilPairArgumentsData coilPair,
                                                const CoilPairPositionData *configArr,
                                                ForceTorqueData *forceTorqueArr)
@@ -209,9 +209,9 @@ void Calculate_force_and_torque_configurations(long long numConfigs, long long n
         recordStartPoint();
     #endif
 
-    int blocks = ceil(double(numConfigs * numPoints) / NTHREADS);
+    int blocks = ceil(double(configCount * pointCount) / NTHREADS);
 
-    getBuffers(numConfigs);
+    getBuffers(configCount);
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -220,7 +220,7 @@ void Calculate_force_and_torque_configurations(long long numConfigs, long long n
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemcpy(g_configArr, configArr, numConfigs * sizeof(CoilPairPositionData), cudaMemcpyHostToDevice));
+    gpuErrchk(cudaMemcpy(g_configArr, configArr, configCount * sizeof(CoilPairPositionData), cudaMemcpyHostToDevice));
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -229,9 +229,9 @@ void Calculate_force_and_torque_configurations(long long numConfigs, long long n
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemset(g_forceTorqueArr, 0, numConfigs * sizeof(ForceTorqueData)))
+    gpuErrchk(cudaMemset(g_forceTorqueArr, 0, configCount * sizeof(ForceTorqueData)))
 
-    CalculateForceAndTorqueConfigurations<<<blocks, NTHREADS>>>(numConfigs, numPoints, coilPair, g_configArr, g_forceTorqueArr);
+    CalculateForceAndTorqueConfigurations<<<blocks, NTHREADS>>>(configCount, pointCount, coilPair, g_configArr, g_forceTorqueArr);
     gpuErrchk(cudaDeviceSynchronize())
 
     #if DEBUG_TIMINGS
@@ -242,22 +242,22 @@ void Calculate_force_and_torque_configurations(long long numConfigs, long long n
     #endif
 
     if(g_forceTorqueArr != nullptr)
-    gpuErrchk(cudaMemcpy(forceTorqueArr, g_forceTorqueArr, numConfigs * sizeof(ForceTorqueData), cudaMemcpyDeviceToHost))
+    gpuErrchk(cudaMemcpy(forceTorqueArr, g_forceTorqueArr, configCount * sizeof(ForceTorqueData), cudaMemcpyDeviceToHost))
 
 #if DEBUG_TIMINGS
     g_duration = getIntervalDuration();
     printf("\tWriting to output array:  %.9g s\n\n", g_duration);
 
     g_duration = getIntervalDuration();
-    printf("\tDevice buffer size:       %.3lf MB\n", (numConfigs * double(sizeof(CoilPairPositionData) + sizeof(TYPE)) / 1.0e6));
+    printf("\tDevice buffer size:       %.3lf MB\n", (configCount * double(sizeof(CoilPairPositionData) + sizeof(TYPE)) / 1.0e6));
     printf("\tTotal blocks:             %d\n", blocks);
     printf("\tThreads per calculation:  %i\n", NTHREADS);
     printf("\tTotal issued threads:     %i\n", NTHREADS * blocks);
-    printf("\tTotal configurations:     %d\n", numConfigs);
-    printf("\tPoints per configuration: %d\n", numPoints);
-    printf("\tTotal calculations:       %d\n", numPoints * numConfigs);
-    printf("\n\tPerformance:              %.1f kCoils/s\n", double(0.001 * numConfigs / g_duration));
-    printf("\n\tEffective Performance:    %.1f kPoints/s\n", double(0.001 * numPoints * numConfigs / g_duration));
+    printf("\tTotal configurations:     %d\n", configCount);
+    printf("\tPoints per configuration: %d\n", pointCount);
+    printf("\tTotal calculations:       %d\n", pointCount * configCount);
+    printf("\n\tPerformance:              %.1f kCoils/s\n", double(0.001 * configCount / g_duration));
+    printf("\n\tEffective Performance:    %.1f kPoints/s\n", double(0.001 * pointCount * configCount / g_duration));
     printf("---------------------------------------------------\n\n");
 #endif
 }

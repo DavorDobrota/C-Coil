@@ -119,6 +119,60 @@ struct ForceTorqueData
     TYPE torqueZ;
 };
 
+struct SecondaryCoilData
+{
+    SecondaryCoilData() :
+
+        innerRadius{0.0},
+        thickness{0.0},
+        length{0.0},
+
+        correctionFactor{0.0},
+
+        angularIncrements{0},
+        thicknessIncrements{0},
+        lengthIncrements{0},
+
+        angularPositionArray{},
+        angularWeightArray{},
+        thicknessPositionArray{},
+        thicknessWeightArray{},
+        lengthPositionArray{},
+        lengthWeightArray{}
+    {}
+
+    TYPE innerRadius;
+    TYPE thickness;
+    TYPE length;
+
+    TYPE correctionFactor;
+
+    int angularIncrements;
+    int lengthIncrements;
+    int thicknessIncrements;
+
+    TYPE angularPositionArray[GPU_INCREMENTS];
+    TYPE angularWeightArray[GPU_INCREMENTS];
+    TYPE thicknessPositionArray[GPU_INCREMENTS];
+    TYPE thicknessWeightArray[GPU_INCREMENTS];
+    TYPE lengthPositionArray[GPU_INCREMENTS];
+    TYPE lengthWeightArray[GPU_INCREMENTS];
+};
+
+struct SecondaryCoilPositionData
+{
+    SecondaryCoilPositionData() :
+
+        positionVector{},
+        alphaAngle{0.0},
+        betaAngle{0.0}
+    {}
+
+    TYPE positionVector[3];
+    TYPE alphaAngle;
+    TYPE betaAngle;
+};
+
 struct CoilPairPositionData
 {
     CoilPairPositionData() :

@@ -10,7 +10,7 @@ add_library(
         MemoryManagement/GPUMemoryManagement.cu
         CoilGroupKernels/AFieldGroup.cu
         CoilGroupKernels/BFieldGroup.cu
-        CoilGroupKernels/GFieldGroup.cu)
+        CoilGroupKernels/GFieldGroup.cu CoilGroupKernels/MInductanceGroup.cu)
 
 target_compile_options(CUDAFunctions PRIVATE "--compiler-options=-fpic")
 

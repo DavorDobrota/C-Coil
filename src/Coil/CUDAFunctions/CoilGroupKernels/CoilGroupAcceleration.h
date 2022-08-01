@@ -19,4 +19,10 @@ void Calculate_hardware_accelerated_g_group(long long coilCount, long long opCou
                                             const DataVector *posArr,
                                             DataMatrix *resArr = nullptr);
 
+void Calculate_mutual_inductance_configurations_group(long long coilCount, long long configCount, long long pointCount,
+                                                      SecondaryCoilData secondaryCoil,
+                                                      const CoilData *coils,
+                                                      const SecondaryCoilPositionData *secondaryPositions,
+                                                      TYPE *inductanceArr = nullptr);
+
 #endif //COIL_EVOLUTION_COILGROUPACCELERATION_H

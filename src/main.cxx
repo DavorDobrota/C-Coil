@@ -57,7 +57,7 @@ int main()
 //    benchCoilGroupMInductanceAndForce();
 
     benchMInductanceAndForceComputeAll();
-//    benchMInductanceAndForceComputeGPU();
+    benchMInductanceAndForceComputeAllGPU();
 
 
     return 0;

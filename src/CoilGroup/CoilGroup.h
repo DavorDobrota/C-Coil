@@ -55,6 +55,22 @@ class CoilGroup
         [[nodiscard]] std::pair<vec3::Vector3, vec3::Vector3>
         computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 dipoleMoment) const;
 
+        [[nodiscard]] std::vector<double>
+        computeAllMutualInductanceArrangements(Coil secondary,
+                                               const vec3::Vector3Array &secondaryPositions,
+                                               const std::vector<double> &secondaryYAngles,
+                                               const std::vector<double> &secondaryZAngles,
+                                               PrecisionFactor precisionFactor = PrecisionFactor(),
+                                               ComputeMethod computeMethod = CPU_ST) const;
+
+        [[nodiscard]] std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
+        computeAllAmpereForceArrangements(Coil secondary,
+                                          const vec3::Vector3Array &secondaryPositions,
+                                          const std::vector<double> &secondaryYAngles,
+                                          const std::vector<double> &secondaryZAngles,
+                                          PrecisionFactor precisionFactor = PrecisionFactor(),
+                                          ComputeMethod computeMethod = CPU_ST) const;
+
         explicit operator std::string() const;
 
     private:
@@ -77,7 +93,31 @@ class CoilGroup
         [[nodiscard]] std::pair<vec3::Vector3, vec3::Vector3>
         calculateAmpereForceMTD(const Coil &secondary, PrecisionFactor precisionFactor = PrecisionFactor()) const;
 
+        [[nodiscard]] std::vector<double>
+        calculateAllMutualInductanceArrangementsMTD(Coil secondary,
+                                                    const vec3::Vector3Array &secondaryPositions,
+                                                    const std::vector<double> &secondaryYAngles,
+                                                    const std::vector<double> &secondaryZAngles,
+                                                    PrecisionFactor precisionFactor = PrecisionFactor()) const;
+        [[nodiscard]] std::vector<double>
+        calculateAllMutualInductanceArrangementsGPU(Coil secondary,
+                                                    const vec3::Vector3Array &secondaryPositions,
+                                                    const std::vector<double> &secondaryYAngles,
+                                                    const std::vector<double> &secondaryZAngles,
+                                                    PrecisionFactor precisionFactor = PrecisionFactor()) const;
 
+        [[nodiscard]] std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
+        calculateAllAmpereForceArrangementsMTD(Coil secondary,
+                                               const vec3::Vector3Array &secondaryPositions,
+                                               const std::vector<double> &secondaryYAngles,
+                                               const std::vector<double> &secondaryZAngles,
+                                               PrecisionFactor precisionFactor = PrecisionFactor()) const;
+        [[nodiscard]] std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
+        calculateAllAmpereForceArrangementsGPU(Coil secondary,
+                                               const vec3::Vector3Array &secondaryPositions,
+                                               const std::vector<double> &secondaryYAngles,
+                                               const std::vector<double> &secondaryZAngles,
+                                               PrecisionFactor precisionFactor = PrecisionFactor()) const;
 };
 
 #endif //GENERAL_COIL_PROGRAM_COILGROUP_H

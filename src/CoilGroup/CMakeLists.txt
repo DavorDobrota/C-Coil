@@ -2,9 +2,8 @@ add_library(
         CoilGroup OBJECT
 
         CoilGroup.cxx
-        CalculateFieldsGPU.cxx
-        ComputeFieldsMethods.cxx
-        CalculateMTD.cxx)
+        Fields/CalculateFieldsGPU.cxx
+        Fields/CalculateFieldsMTD.cxx MInductance/CalculateMInductanceMTD.cxx MInductance/CalculateMInductanceGPU.cxx ForceAndTorque/CalculateForceMTD.cxx ForceAndTorque/CalculateForceGPU.cxx)
 set_property(TARGET CoilGroup PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(CoilGroup PRIVATE -fpic)

@@ -91,6 +91,96 @@ vec3::Matrix3 CoilGroup::computeBGradientMatrix(vec3::Vector3 pointVector) const
 }
 
 
+vec3::Vector3Array CoilGroup::computeAllAPotentialVectors(const vec3::Vector3Array &pointVectors,
+                                                          ComputeMethod computeMethod) const
+{
+    if (computeMethod == GPU)
+        return calculateAllAPotentialGPU(pointVectors);
+
+    else if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
+    {
+        vec3::Vector3Array tempArr(pointVectors.size());
+        vec3::Vector3Array outputArr(pointVectors.size());
+
+        for (const auto & memberCoil : memberCoils)
+        {
+            tempArr = memberCoil.computeAllAPotentialVectors(pointVectors, computeMethod);
+            for (int i = 0; i < pointVectors.size(); ++i)
+                outputArr[i] += tempArr[i];
+        }
+        return outputArr;
+    }
+    else
+        return calculateAllAPotentialMTD(pointVectors);
+}
+
+vec3::Vector3Array CoilGroup::computeAllBFieldVectors(const vec3::Vector3Array &pointVectors,
+                                                      ComputeMethod computeMethod) const
+{
+    if (computeMethod == GPU)
+        return calculateAllBFieldGPU(pointVectors);
+
+    else if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
+    {
+        vec3::Vector3Array tempArr(pointVectors.size());
+        vec3::Vector3Array outputArr(pointVectors.size());
+
+        for (const auto & memberCoil : memberCoils)
+        {
+            tempArr = memberCoil.computeAllBFieldVectors(pointVectors, computeMethod);
+            for (int i = 0; i < pointVectors.size(); ++i)
+                outputArr[i] += tempArr[i];
+        }
+        return outputArr;
+    }
+    else
+        return calculateAllBFieldMTD(pointVectors);
+}
+
+vec3::Vector3Array CoilGroup::computeAllEFieldVectors(const vec3::Vector3Array &pointVectors,
+                                                      ComputeMethod computeMethod) const
+{
+    if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
+    {
+        vec3::Vector3Array tempArr(pointVectors.size());
+        vec3::Vector3Array outputArr(pointVectors.size());
+
+        for (const auto & memberCoil : memberCoils)
+        {
+            tempArr = memberCoil.computeAllEFieldVectors(pointVectors, computeMethod);
+            for (int i = 0; i < pointVectors.size(); ++i)
+                outputArr[i] += tempArr[i];
+        }
+        return outputArr;
+    }
+    else
+        return calculateAllAPotentialMTD(pointVectors);
+}
+
+vec3::Matrix3Array CoilGroup::computeAllBGradientMatrices(const vec3::Vector3Array &pointVectors,
+                                                          ComputeMethod computeMethod) const
+{
+    if (computeMethod == GPU)
+        return calculateAllBGradientGPU(pointVectors);
+
+    else if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
+    {
+        vec3::Matrix3Array tempArr(pointVectors.size());
+        vec3::Matrix3Array outputArr(pointVectors.size());
+
+        for (const auto & memberCoil : memberCoils)
+        {
+            tempArr = memberCoil.computeAllBGradientMatrices(pointVectors, computeMethod);
+            for (int i = 0; i < pointVectors.size(); ++i)
+                outputArr[i] += tempArr[i];
+        }
+        return outputArr;
+    }
+    else
+        return calculateAllBGradientMTD(pointVectors);
+}
+
+
 double CoilGroup::computeMutualInductance(const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod computeMethod) const
 {
     double totalMutualInductance = 0.0;
@@ -144,6 +234,88 @@ CoilGroup::computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 d
         totalTorque += tempPair.second;
     }
     return {totalForce, totalTorque};
+}
+
+
+std::vector<double> CoilGroup::computeAllMutualInductanceArrangements(Coil secondary,
+                                                                      const vec3::Vector3Array &secondaryPositions,
+                                                                      const std::vector<double> &secondaryYAngles,
+                                                                      const std::vector<double> &secondaryZAngles,
+                                                                      PrecisionFactor precisionFactor,
+                                                                      ComputeMethod computeMethod) const
+{
+    size_t arrangementCount = secondaryPositions.size();
+
+    if (arrangementCount == secondaryPositions.size() &&
+        arrangementCount == secondaryYAngles.size() &&
+        arrangementCount == secondaryZAngles.size()) {
+        if (computeMethod == GPU)
+        {
+            return calculateAllMutualInductanceArrangementsGPU(
+                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles,precisionFactor
+            );
+        }
+        else if (arrangementCount >= 2 * this->threadCount && computeMethod == CPU_MT)
+        {
+            return calculateAllMutualInductanceArrangementsMTD(
+                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
+            );
+        }
+        else
+        {
+            std::vector<double> outputMInductances;
+            outputMInductances.reserve(arrangementCount);
+
+            for (int i = 0; i < arrangementCount; ++i)
+            {
+                secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
+                outputMInductances.emplace_back(computeMutualInductance(secondary, precisionFactor, computeMethod));
+            }
+            return outputMInductances;
+        }
+    }
+    else
+        throw std::logic_error("Array sizes do not match!");
+}
+
+std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
+CoilGroup::computeAllAmpereForceArrangements(Coil secondary, const vec3::Vector3Array &secondaryPositions,
+                                             const std::vector<double> &secondaryYAngles,
+                                             const std::vector<double> &secondaryZAngles,
+                                             PrecisionFactor precisionFactor, ComputeMethod computeMethod) const
+{
+    size_t arrangementCount = secondaryPositions.size();
+
+    if (arrangementCount == secondaryPositions.size() &&
+        arrangementCount == secondaryYAngles.size() &&
+        arrangementCount == secondaryZAngles.size()) {
+        if (computeMethod == GPU)
+        {
+            return calculateAllAmpereForceArrangementsGPU(
+                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
+            );
+        }
+        else if (arrangementCount >= 2 * this->threadCount && computeMethod == CPU_MT)
+        {
+            return calculateAllAmpereForceArrangementsMTD(
+                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
+            );
+        }
+        else
+        {
+            std::vector<std::pair<vec3::Vector3, vec3::Vector3>> outputMInductances;
+            outputMInductances.reserve(arrangementCount);
+
+            for (int i = 0; i < arrangementCount; ++i)
+            {
+                secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
+                outputMInductances.emplace_back(computeAmpereForce(secondary, precisionFactor, computeMethod));
+            }
+            return outputMInductances;
+        }
+    }
+    else
+        throw std::logic_error("Array sizes do not match!");
 }
 
 CoilGroup::operator std::string() const

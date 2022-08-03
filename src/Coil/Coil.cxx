@@ -487,7 +487,8 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor)
 
 
 std::pair<vec3::Vector3, vec3::Vector3>
-Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, CoilPairArguments forceArguments, ComputeMethod computeMethod)
+Coil::computeAmpereForce(const Coil &primary, const Coil &secondary,
+                         CoilPairArguments forceArguments, ComputeMethod computeMethod)
 {
     if (isZAxisCase(primary, secondary))
     {
@@ -508,7 +509,8 @@ Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, CoilPairArg
 }
 
 std::pair<vec3::Vector3, vec3::Vector3>
-Coil::computeAmpereForce(const Coil &primary, const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod computeMethod)
+Coil::computeAmpereForce(const Coil &primary, const Coil &secondary,
+                         PrecisionFactor precisionFactor, ComputeMethod computeMethod)
 {
     bool zAxisCase = isZAxisCase(primary, secondary);
     auto args = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor, computeMethod, zAxisCase);
@@ -555,24 +557,37 @@ std::vector<double> Coil::computeAllMutualInductanceArrangements(Coil primary, C
         arrangementCount == secondaryYAngles.size() &&
         arrangementCount == secondaryZAngles.size())
     {
-        if (computeMethod == GPU) {
-            return calculateAllMutualInductanceArrangementsGPU(primary, secondary, primaryPositions, secondaryPositions,
-                                                               primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
-                                                               precisionFactor);
+        if (computeMethod == GPU)
+        {
+            return calculateAllMutualInductanceArrangementsGPU
+            (
+                    primary, secondary, primaryPositions, secondaryPositions,
+                    primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
+                    precisionFactor
+            );
         }
         else if (arrangementCount >= 2 * primary.getThreadCount() && computeMethod == CPU_MT)
         {
-            return calculateAllMutualInductanceArrangementsMTD(primary, secondary, primaryPositions, secondaryPositions,
-                                                               primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
-                                                               precisionFactor);
-        } else
+            return calculateAllMutualInductanceArrangementsMTD
+            (
+                    primary, secondary, primaryPositions, secondaryPositions,
+                    primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
+                    precisionFactor
+            );
+        }
+        else
         {
             std::vector<double> outputMInductances;
             outputMInductances.reserve(arrangementCount);
 
-            for (int i = 0; i < arrangementCount; ++i) {
-                primary.setPositionAndOrientation(primaryPositions[i], primaryYAngles[i], primaryZAngles[i]);
-                secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
+            for (int i = 0; i < arrangementCount; ++i)
+            {
+                primary.setPositionAndOrientation(
+                        primaryPositions[i], primaryYAngles[i], primaryZAngles[i]
+                );
+                secondary.setPositionAndOrientation(
+                        secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]
+                );
 
                 outputMInductances.emplace_back(Coil::computeMutualInductance(primary, secondary, precisionFactor, computeMethod));
             }
@@ -587,8 +602,10 @@ std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
 Coil::computeAllAmpereForceArrangements(Coil primary, Coil secondary,
                                         const vec3::Vector3Array &primaryPositions,
                                         const vec3::Vector3Array &secondaryPositions,
-                                        const std::vector<double> &primaryYAngles, const std::vector<double> &primaryZAngles,
-                                        const std::vector<double> &secondaryYAngles, const std::vector<double> &secondaryZAngles,
+                                        const std::vector<double> &primaryYAngles,
+                                        const std::vector<double> &primaryZAngles,
+                                        const std::vector<double> &secondaryYAngles,
+                                        const std::vector<double> &secondaryZAngles,
                                         PrecisionFactor precisionFactor, ComputeMethod computeMethod)
 {
     size_t arrangementCount = primaryPositions.size();
@@ -601,24 +618,36 @@ Coil::computeAllAmpereForceArrangements(Coil primary, Coil secondary,
     {
         if (computeMethod == GPU)
         {
-            return calculateAllAmpereForceArrangementsGPU(primary, secondary, primaryPositions, secondaryPositions,
-                                                          primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
-                                                          precisionFactor);
+            return calculateAllAmpereForceArrangementsGPU
+            (
+                    primary, secondary,primaryPositions, secondaryPositions,
+                    primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
+                    precisionFactor
+            );
         }
         else if (arrangementCount >= 2 * primary.getThreadCount() && computeMethod == CPU_MT)
         {
-            return calculateAllAmpereForceArrangementsMTD(primary, secondary, primaryPositions, secondaryPositions,
-                                                          primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
-                                                          precisionFactor);
-        } else
+            return calculateAllAmpereForceArrangementsMTD
+            (
+                    primary, secondary, primaryPositions, secondaryPositions,
+                    primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
+                    precisionFactor
+            );
+        }
+        else
         {
             std::vector<std::pair<vec3::Vector3, vec3::Vector3>> outputForcesAndTorques;
 
-            for (int i = 0; i < arrangementCount; ++i) {
-                primary.setPositionAndOrientation(primaryPositions[i], primaryYAngles[i], primaryZAngles[i]);
-                secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
+            for (int i = 0; i < arrangementCount; ++i)
+            {
+                primary.setPositionAndOrientation(
+                        primaryPositions[i], primaryYAngles[i],primaryZAngles[i]
+                );
+                secondary.setPositionAndOrientation(
+                        secondaryPositions[i],secondaryYAngles[i],secondaryZAngles[i]
+                );
 
-                outputForcesAndTorques.emplace_back(Coil::computeAmpereForce(primary, secondary, precisionFactor, computeMethod));
+                outputForcesAndTorques.emplace_back(computeAmpereForce(primary, secondary, precisionFactor, computeMethod));
             }
             return outputForcesAndTorques;
         }

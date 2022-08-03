@@ -28,7 +28,7 @@ void CalculateForceAndTorqueConfigurations(long long configCount, long long poin
     TYPE lengthPosition = coilPair.secLength * 0.5f * coilPair.secLengthPositionArray[lengthIndex];
     TYPE thicknessPosition = coilPair.secInnerRadius +
                              coilPair.secThickness * 0.5f * (1.0f + coilPair.secThicknessPositionArray[thicknessIndex]);
-    TYPE angularPosition = M_PI * (1.0f + coilPair.secAngularPositionArray[angularIndex]);
+    TYPE angularPosition = PI * (1.0f + coilPair.secAngularPositionArray[angularIndex]);
 
     TYPE sinAlpha = sin(position.secAlphaAngle);
     TYPE cosAlpha = cos(position.secAlphaAngle);

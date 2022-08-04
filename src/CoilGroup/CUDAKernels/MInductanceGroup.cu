@@ -17,7 +17,7 @@ void CalculateMutualInductanceConfigurationsGroup(long long coilCount, long long
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
 
-    if(global_index >= configCount * pointCount)
+    if(global_index >= configCount * pointCount * coilCount)
         return;
 
     int coilIndex = int(global_index % coilCount);
@@ -130,7 +130,7 @@ void CalculateMutualInductanceConfigurationsGroup(long long coilCount, long long
     TYPE potentialY = xPot * primCoil.transformArray[3] + yPot * primCoil.transformArray[4] + zPot * primCoil.transformArray[5];
     TYPE potentialZ = xPot * primCoil.transformArray[6] + yPot * primCoil.transformArray[7] + zPot * primCoil.transformArray[8];
 
-    TYPE weight = 0.125f * thicknessPosition *
+    TYPE weight = 0.125f * thicknessPosition / primCoil.current *
                   secondaryCoil.lengthWeightArray[lengthIndex] *
                   secondaryCoil.thicknessWeightArray[thicknessIndex] *
                   secondaryCoil.angularWeightArray[angularIndex];

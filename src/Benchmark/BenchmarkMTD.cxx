@@ -378,6 +378,62 @@ void benchCoilGroupMInductanceAndForce(int opCount, int threadCount)
     }
 }
 
+void benchCoilGroupMInductanceAndForceAll(int coilCount, int opCount, int threadCount)
+{
+    using namespace std::chrono;
+
+    double torusRadius = 1.0;
+
+    CoilGroup torusGroup = CoilGroup();
+
+    vec3::Vector3Array secPositions(opCount);
+    std::vector<double> secYAxisAngle(opCount);
+    std::vector<double> secZAxisAngle(opCount);
+
+    for (int i = 0; i < coilCount; ++i)
+    {
+        Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000, 10);
+        tempCoil.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.2 * double(i)));
+
+        torusGroup.addCoil(tempCoil);
+    }
+
+    torusGroup.setDefaultPrecisionFactor(PrecisionFactor(3.0));
+
+    Coil secondary = Coil(0.1, 0.1, 0.1, 10000, 5);
+
+    for (int i = 0; i < opCount; ++i)
+    {
+        secPositions[i] = vec3::Vector3(0.5, 0.0, 0.1 * double(i));
+        secYAxisAngle[i] = 0.5;
+        secZAxisAngle[i] = 0.6;
+    }
+
+    high_resolution_clock::time_point begin_time;
+    double interval;
+    double perf;
+
+    std::vector<double> tempInductances = torusGroup.computeAllMutualInductanceArrangements(
+            secondary, secPositions, secYAxisAngle, secZAxisAngle,
+            PrecisionFactor(1.0), GPU
+    ); // GPU warmup
+
+    for (int i = 1; i <= 4; ++i)
+    {
+        printf("Mutual inductance performance for precision factor %.1f\n", double(i));
+
+        begin_time = high_resolution_clock::now();
+        tempInductances = torusGroup.computeAllMutualInductanceArrangements(
+            secondary, secPositions, secYAxisAngle, secZAxisAngle,
+            PrecisionFactor(double(i)), GPU
+        );
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        perf = opCount * coilCount / interval;
+        printf("GPU : %6.2f microseconds/Op | %.0f Ops/s\n", 1e6 / perf, perf);
+    }
+
+}
+
 void benchMInductanceAndForceComputeAllMTvsMTD(PrecisionFactor precisionFactor, int threadCount)
 {
     using namespace std::chrono;

@@ -35,6 +35,7 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor = PrecisionF
                                     int coilCount = 50, int opCount = 100'000, int threadCount = g_defaultThreadCount);
 void benchCoilGroupComputeAllFieldsGPU(int coilCount = 100, int opCount = 131'072);
 void benchCoilGroupMInductanceAndForce(int opCount = 2, int threadCount = g_defaultThreadCount);
+void benchCoilGroupMInductanceAndForceAll(int coilCount = 50, int opCount = 100, int threadCount = g_defaultThreadCount);
 void benchMInductanceAndForceComputeAllMTvsMTD(PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = g_defaultThreadCount);
 void benchMInductanceAndForceComputeAllGPU(int configCount = 10'000);
 void benchMInductanceAndForceComputeAll(int configCount = 100, int threadCount = g_defaultThreadCount);

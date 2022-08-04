@@ -76,6 +76,7 @@ bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
+
 void Coil::generateCoilData(CoilData &coilData, const PrecisionArguments &usedPrecision) const
 {
     if (useFastMethod)
@@ -83,6 +84,7 @@ void Coil::generateCoilData(CoilData &coilData, const PrecisionArguments &usedPr
     else
         coilData.constFactor = g_MiReduced * currentDensity * thickness * length * M_PI * 0.5;
 
+    coilData.current = current;
     coilData.useFastMethod = useFastMethod;
 
     coilData.innerRadius = innerRadius;
@@ -131,10 +133,8 @@ void Coil::generateCoilData(CoilData &coilData, const PrecisionArguments &usedPr
     coilData.invTransformArray[7] = inverseTransformationMatrix.zy;
     coilData.invTransformArray[8] = inverseTransformationMatrix.zz;
 }
-#pragma clang diagnostic pop
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
+
 void Coil::generateCoilPairArgumentsData(const Coil &primary, const Coil &secondary,
                                          CoilPairArgumentsData &coilPairArgumentsData,
                                          const CoilPairArguments &inductanceArguments, bool forceCalculation)
@@ -206,6 +206,5 @@ void Coil::generateCoilPairArgumentsData(const Coil &primary, const Coil &second
         coilPairArgumentsData.secLengthWeightArray[i] =
                 Legendre::weightsMatrix[inductanceArguments.secondaryPrecision.lengthIncrementCount - 1][i];
     }
-
 }
 #pragma clang diagnostic pop

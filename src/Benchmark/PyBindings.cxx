@@ -52,7 +52,8 @@ void initBenchmark(py::module_ &mainModule)
             py::arg("compute_method") = CPU_ST, py::arg("thread_count") = g_defaultThreadCount)
         .def(
             "bench_force_Z_axis_MT_scaling", benchForceZAxisMTScaling,
-            py::arg("max_thread_count") = g_defaultThreadCount);
+            py::arg("max_thread_count") = g_defaultThreadCount)
+        .def("bench_self_inductance", benchSelfInductance);
 
     benchmarkModule.def(
             "bench_force_general", benchForceGeneral,
@@ -74,6 +75,10 @@ void initBenchmark(py::module_ &mainModule)
         .def(
             "bench_coil_group_m_inductance_and_force", benchCoilGroupMInductanceAndForce,
             py::arg("op_count") = 2, py::arg("thread_count") = g_defaultThreadCount)
+        .def(
+            "bench_coil_group_m_inductance_and_force_all", benchCoilGroupMInductanceAndForceAll,
+            py::arg("coil_count"), py::arg("op_count") = 100,
+            py::arg("thread_count") = g_defaultThreadCount)
         .def(
             "bench_m_inductance_and_force_compute_all_MT_vs_MTD", benchMInductanceAndForceComputeAllMTvsMTD,
             py::arg("precision_factor") = PrecisionFactor(), py::arg("thread_count") = g_defaultThreadCount)

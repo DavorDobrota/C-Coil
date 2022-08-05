@@ -7,13 +7,25 @@ from distutils.command.build_ext import build_ext
 from pybind11.setup_helpers import Pybind11Extension
 
 
+# Load environment variables
+
 use_GPU = int(os.environ.get("USE_GPU", 0))
 GPU_increments = int(os.environ.get("GPU_INCREMENTS", 100))
+type = str(os.environ.get("TYPE", "float"))
+
+
+# Set compilation flags
 
 if os.name == "nt":
     os.environ["CL"] = "/std:c++17 /O2 /arch:AVX2 /fp:fast"
 else:
     os.environ["CPPFLAGS"] = "-std=c++17 -Ofast -mavx2 -ffast-math -flto=auto"
+
+if use_GPU:
+    cuda_compile_args = ["--use_fast_math", "-O3"]
+
+
+# Set macros
 
 macros = []
 
@@ -21,12 +33,12 @@ if GPU_increments < 1 or GPU_increments > 100:
     raise ValueError("GPU_INCREMENTS must be set to an integer in the range [1, 100]!")
 
 if os.name == "nt":
-    os.environ["CL"] += f" /DUSE_GPU#{use_GPU} /DGPU_INCREMENTS#{GPU_increments}"
+    os.environ["CL"] += f" /DUSE_GPU#{use_GPU} /DGPU_INCREMENTS#{GPU_increments} /DTYPE#{type}"
 else:
-    macros += [("USE_GPU", use_GPU), ("GPU_INCREMENTS", GPU_increments)]
+    macros += [("USE_GPU", use_GPU), ("GPU_INCREMENTS", GPU_increments), ("TYPE", type)]
 
-if use_GPU:
-    cuda_compile_args = ["--use_fast_math", "-O3"]
+
+# Define source paths
 
 header_include_dirs = [
     "extern/CTPL/",

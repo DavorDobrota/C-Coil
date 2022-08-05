@@ -1,8 +1,6 @@
 #ifndef GENERAL_COIL_PROGRAM_COILDATA_H
 #define GENERAL_COIL_PROGRAM_COILDATA_H
 
-#define TYPE float
-
 
 struct CoilData
 {

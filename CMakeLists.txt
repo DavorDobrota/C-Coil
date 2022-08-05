@@ -22,6 +22,9 @@ else()
     message(FATAL_ERROR "GPU_INCREMENTS must be set to an integer in the range [1, 100]!")
 endif()
 
+set(TYPE "float" CACHE STRING "Floating point precision (can be float or double)")
+add_compile_definitions(TYPE=${TYPE})
+
 option(OUTPUT_LIB_SHARED "Build a shared library" ON)
 option(OUTPUT_EXECUTABLE "Build a test executable" ON)
 

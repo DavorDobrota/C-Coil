@@ -68,5 +68,25 @@ void initCoilGroup(py::module_ &mainModule)
         "compute_force_on_dipole_moment", &CoilGroup::computeForceOnDipoleMoment,
         py::arg("point_vector"), py::arg("dipole_moment"));
 
+    coilGroup
+        .def(
+            "compute_all_mutual_inductance_arrangements",
+            &CoilGroup::computeAllMutualInductanceArrangements,
+            py::arg("secondary"),
+            py::arg("secondary_positions"),
+            py::arg("secondary_y_angles"),
+            py::arg("secondary_z_angles"),
+            py::arg("precision_factor") = PrecisionFactor(),
+            py::arg("compute_method") = CPU_ST)
+        .def(
+            "compute_all_ampere_force_arrangements",
+            &CoilGroup::computeAllAmpereForceArrangements,
+            py::arg("secondary"),
+            py::arg("secondary_positions"),
+            py::arg("secondary_y_angles"),
+            py::arg("secondary_z_angles"),
+            py::arg("precision_factor") = PrecisionFactor(),
+            py::arg("compute_method") = CPU_ST);
+
     coilGroup.def("__repr__", &CoilGroup::operator std::string);
 }

@@ -26,6 +26,7 @@ void initCompare(py::module_ &mainModule)
                  .def("comp_m_inductance_general_edge_cases", compMInductanceGeneralEdgeCases);
 
     compareModule.def("comp_mutual_inductance_Z_axis", compMutualInductanceZAxis)
+                 .def("comp_precision_CPU_vs_GPU", compPrecisionCPUvsGPU)
                  .def("comp_self_inductance", compSelfInductance);
 
     compareModule.def(

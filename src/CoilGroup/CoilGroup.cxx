@@ -291,9 +291,10 @@ CoilGroup::computeAllAmpereForceArrangements(Coil secondary, const vec3::Vector3
         arrangementCount == secondaryZAngles.size()) {
         if (computeMethod == GPU)
         {
-            return calculateAllAmpereForceArrangementsGPU(
-                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
-            );
+//            TODO: Implement
+//            return calculateAllAmpereForceArrangementsGPU(
+//                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
+//            );
         }
         else if (arrangementCount >= 2 * this->threadCount && computeMethod == CPU_MT)
         {

@@ -8,7 +8,7 @@
 
 
 __global__
-void CalculateForceAndTorqueConfigurationsGroup(long long coilCount, long long configCount, long long pointCount,
+void CalculateForceAndTorqueConfigurationsGroup(long long coilIndex, long long configCount, long long pointCount,
                                                 SecondaryCoilData secondaryCoil,
                                                 const CoilData *primaryCoils,
                                                 const SecondaryCoilPositionData *secondaryPositions,
@@ -20,13 +20,14 @@ void CalculateForceAndTorqueConfigurationsGroup(long long coilCount, long long c
     if(global_index >= configCount * pointCount)
         return;
 
-    int coilIndex = int(global_index % coilCount);
-    int configIndex = int((global_index / coilCount) % configCount);
-    int lengthIndex = int(((global_index / coilCount) / configCount) % secondaryCoil.lengthIncrements);
-    int thicknessIndex = int((((global_index / coilCount) / configCount) / secondaryCoil.lengthIncrements) % secondaryCoil.thicknessIncrements);
-    int angularIndex = int(((((global_index / coilCount) / configCount) / secondaryCoil.lengthIncrements) / secondaryCoil.thicknessIncrements) % secondaryCoil.angularIncrements);
+    int configIndex = int(global_index % configCount);
+    int lengthIndex = int((global_index / configCount) % secondaryCoil.lengthIncrements);
+    int thicknessIndex = int(((global_index / configCount) / secondaryCoil.lengthIncrements) % secondaryCoil.thicknessIncrements);
+    int angularIndex = int((((global_index / configCount) / secondaryCoil.lengthIncrements) / secondaryCoil.thicknessIncrements) % secondaryCoil.angularIncrements);
 
-    CoilData primCoil = primaryCoils[coilIndex];
+    __shared__ CoilData primCoil;
+    primCoil = primaryCoils[coilIndex];
+
     SecondaryCoilPositionData position = secondaryPositions[configIndex];
 
     TYPE lengthPosition = secondaryCoil.length * 0.5f * secondaryCoil.lengthPositionArray[lengthIndex];
@@ -216,8 +217,11 @@ void Calculate_force_and_torque_configurations_group(long long coilCount, long l
 
     gpuErrchk(cudaMemset(g_forceTorqueArr, 0, configCount * sizeof(ForceTorqueData)))
 
-    CalculateForceAndTorqueConfigurationsGroup<<<blocks, NTHREADS>>>
-            (coilCount, configCount, pointCount, secondaryCoil, g_coilArr, g_secondaryPositionArr, g_forceTorqueArr);
+    for (int i = 0; i < coilCount; ++i)
+        CalculateForceAndTorqueConfigurationsGroup<<<blocks, NTHREADS>>>(
+            i, configCount, pointCount, secondaryCoil, g_coilArr,
+            g_secondaryPositionArr, g_forceTorqueArr
+        );
     gpuErrchk(cudaDeviceSynchronize())
 
     #if DEBUG_TIMINGS

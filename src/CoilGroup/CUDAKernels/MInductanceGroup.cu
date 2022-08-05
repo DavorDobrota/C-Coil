@@ -8,7 +8,7 @@
 
 
 __global__
-void CalculateMutualInductanceConfigurationsGroup(long long coilCount, long long configCount, long long pointCount,
+void CalculateMutualInductanceConfigurationsGroup(long long coilIndex, long long configCount, long long pointCount,
                                                   SecondaryCoilData secondaryCoil,
                                                   const CoilData *primaryCoils,
                                                   const SecondaryCoilPositionData *secondaryPositions,
@@ -17,16 +17,17 @@ void CalculateMutualInductanceConfigurationsGroup(long long coilCount, long long
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
 
-    if(global_index >= configCount * pointCount * coilCount)
+    if(global_index >= configCount * pointCount)
         return;
 
-    int coilIndex = int(global_index % coilCount);
-    int configIndex = int((global_index / coilCount) % configCount);
-    int lengthIndex = int(((global_index / coilCount) / configCount) % secondaryCoil.lengthIncrements);
-    int thicknessIndex = int((((global_index / coilCount) / configCount) / secondaryCoil.lengthIncrements) % secondaryCoil.thicknessIncrements);
-    int angularIndex = int(((((global_index / coilCount) / configCount) / secondaryCoil.lengthIncrements) / secondaryCoil.thicknessIncrements) % secondaryCoil.angularIncrements);
+    int configIndex = int(global_index % configCount);
+    int lengthIndex = int((global_index / configCount) % secondaryCoil.lengthIncrements);
+    int thicknessIndex = int(((global_index / configCount) / secondaryCoil.lengthIncrements) % secondaryCoil.thicknessIncrements);
+    int angularIndex = int((((global_index / configCount) / secondaryCoil.lengthIncrements) / secondaryCoil.thicknessIncrements) % secondaryCoil.angularIncrements);
 
-    CoilData primCoil = primaryCoils[coilIndex];
+    __shared__ CoilData primCoil;
+    primCoil = primaryCoils[coilIndex];
+
     SecondaryCoilPositionData position = secondaryPositions[configIndex];
 
     TYPE lengthPosition = secondaryCoil.length * 0.5f * secondaryCoil.lengthPositionArray[lengthIndex];
@@ -177,7 +178,7 @@ void Calculate_mutual_inductance_configurations_group(long long coilCount, long 
         recordStartPoint();
     #endif
 
-    int blocks = ceil(double(coilCount * configCount * pointCount) / NTHREADS);
+    int blocks = ceil(double(configCount * pointCount) / NTHREADS);
 
     getBuffers(coilCount, configCount);
 
@@ -200,8 +201,11 @@ void Calculate_mutual_inductance_configurations_group(long long coilCount, long 
 
     gpuErrchk(cudaMemset(g_inductanceArr, 0, configCount * sizeof(TYPE)))
 
-    CalculateMutualInductanceConfigurationsGroup<<<blocks, NTHREADS>>>
-        (coilCount, configCount, pointCount, secondaryCoil, g_coilArr, g_secondaryPositionArr, g_inductanceArr);
+    for (int i = 0; i < coilCount; ++i)
+        CalculateMutualInductanceConfigurationsGroup<<<blocks, NTHREADS>>> (
+            i, configCount, pointCount, secondaryCoil, g_coilArr,
+            g_secondaryPositionArr, g_inductanceArr
+        );
     gpuErrchk(cudaDeviceSynchronize())
 
     #if DEBUG_TIMINGS

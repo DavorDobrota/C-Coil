@@ -398,7 +398,7 @@ void benchCoilGroupMInductanceAndForceAll(int coilCount, int opCount, int thread
         torusGroup.addCoil(tempCoil);
     }
 
-    torusGroup.setDefaultPrecisionFactor(PrecisionFactor(3.0));
+    torusGroup.setDefaultPrecisionFactor(PrecisionFactor(5.0));
 
     Coil secondary = Coil(0.1, 0.1, 0.1, 10000, 5);
 
@@ -418,18 +418,23 @@ void benchCoilGroupMInductanceAndForceAll(int coilCount, int opCount, int thread
             PrecisionFactor(1.0), GPU
     ); // GPU warmup
 
-    for (int i = 1; i <= 4; ++i)
+    for (int i = 1; i <= 8; ++i)
     {
         printf("Mutual inductance performance for precision factor %.1f\n", double(i));
+
+        double precision = ((double(i) - 1.0) / 2.0) + 1.0;
+        torusGroup.setDefaultPrecisionFactor(PrecisionFactor(precision));
 
         begin_time = high_resolution_clock::now();
         tempInductances = torusGroup.computeAllMutualInductanceArrangements(
             secondary, secPositions, secYAxisAngle, secZAxisAngle,
-            PrecisionFactor(double(i)), GPU
+            PrecisionFactor(precision), GPU
         );
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         perf = opCount * coilCount / interval;
         printf("GPU : %6.2f microseconds/Op | %.0f Ops/s\n", 1e6 / perf, perf);
+
+        printf("\n");
     }
 
 }

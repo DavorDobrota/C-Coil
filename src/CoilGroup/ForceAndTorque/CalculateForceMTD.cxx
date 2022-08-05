@@ -87,7 +87,7 @@ CoilGroup::calculateAllAmpereForceArrangementsMTD(Coil secondary, const vec3::Ve
 
         secondary.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
 
-        for (const auto & memberCoil : group)
+        for (const auto& memberCoil : group)
             if (memberCoil.getId() != secondary.getId())
             {
                 std::pair<vec3::Vector3, vec3::Vector3> tempPair;

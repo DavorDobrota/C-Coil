@@ -32,7 +32,7 @@ void CoilGroup::setDefaultPrecisionFactor(PrecisionFactor precisionFactor)
 {
     defaultPrecisionFactor = precisionFactor;
 
-    for (auto & memberCoil : memberCoils)
+    for (auto& memberCoil : memberCoils)
         memberCoil.setDefaultPrecision(precisionFactor);
 }
 
@@ -40,7 +40,7 @@ void CoilGroup::setThreadCount(int threadCount)
 {
     this->threadCount = threadCount;
 
-    for (auto & memberCoil : memberCoils)
+    for (auto& memberCoil : memberCoils)
         memberCoil.setThreadCount(threadCount);
 }
 
@@ -54,7 +54,7 @@ vec3::Vector3 CoilGroup::computeAPotentialVector(vec3::Vector3 pointVector) cons
 {
     vec3::Vector3 totalField = vec3::Vector3();
 
-    for (const auto & memberCoil : memberCoils)
+    for (const auto& memberCoil : memberCoils)
         totalField += memberCoil.computeAPotentialVector(pointVector);
 
     return totalField;
@@ -64,7 +64,7 @@ vec3::Vector3 CoilGroup::computeBFieldVector(vec3::Vector3 pointVector) const
 {
     vec3::Vector3 totalField = vec3::Vector3();
 
-    for (const auto & memberCoil : memberCoils)
+    for (const auto& memberCoil : memberCoils)
         totalField += memberCoil.computeBFieldVector(pointVector);
 
     return totalField;
@@ -74,7 +74,7 @@ vec3::Vector3 CoilGroup::computeEFieldVector(vec3::Vector3 pointVector) const
 {
     vec3::Vector3 totalField = vec3::Vector3();
 
-    for (const auto & memberCoil : memberCoils)
+    for (const auto& memberCoil : memberCoils)
         totalField += memberCoil.computeEFieldVector(pointVector);
 
     return totalField;
@@ -84,7 +84,7 @@ vec3::Matrix3 CoilGroup::computeBGradientMatrix(vec3::Vector3 pointVector) const
 {
     vec3::Matrix3 totalGradient = vec3::Matrix3();
 
-    for (const auto & memberCoil : memberCoils)
+    for (const auto& memberCoil : memberCoils)
         totalGradient += memberCoil.computeBGradientMatrix(pointVector);
 
     return totalGradient;
@@ -102,7 +102,7 @@ vec3::Vector3Array CoilGroup::computeAllAPotentialVectors(const vec3::Vector3Arr
         vec3::Vector3Array tempArr(pointVectors.size());
         vec3::Vector3Array outputArr(pointVectors.size());
 
-        for (const auto & memberCoil : memberCoils)
+        for (const auto& memberCoil : memberCoils)
         {
             tempArr = memberCoil.computeAllAPotentialVectors(pointVectors, computeMethod);
             for (int i = 0; i < pointVectors.size(); ++i)
@@ -125,7 +125,7 @@ vec3::Vector3Array CoilGroup::computeAllBFieldVectors(const vec3::Vector3Array &
         vec3::Vector3Array tempArr(pointVectors.size());
         vec3::Vector3Array outputArr(pointVectors.size());
 
-        for (const auto & memberCoil : memberCoils)
+        for (const auto& memberCoil : memberCoils)
         {
             tempArr = memberCoil.computeAllBFieldVectors(pointVectors, computeMethod);
             for (int i = 0; i < pointVectors.size(); ++i)
@@ -145,7 +145,7 @@ vec3::Vector3Array CoilGroup::computeAllEFieldVectors(const vec3::Vector3Array &
         vec3::Vector3Array tempArr(pointVectors.size());
         vec3::Vector3Array outputArr(pointVectors.size());
 
-        for (const auto & memberCoil : memberCoils)
+        for (const auto& memberCoil : memberCoils)
         {
             tempArr = memberCoil.computeAllEFieldVectors(pointVectors, computeMethod);
             for (int i = 0; i < pointVectors.size(); ++i)
@@ -168,7 +168,7 @@ vec3::Matrix3Array CoilGroup::computeAllBGradientMatrices(const vec3::Vector3Arr
         vec3::Matrix3Array tempArr(pointVectors.size());
         vec3::Matrix3Array outputArr(pointVectors.size());
 
-        for (const auto & memberCoil : memberCoils)
+        for (const auto& memberCoil : memberCoils)
         {
             tempArr = memberCoil.computeAllBGradientMatrices(pointVectors, computeMethod);
             for (int i = 0; i < pointVectors.size(); ++i)
@@ -227,7 +227,7 @@ CoilGroup::computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 d
     vec3::Vector3 totalTorque = vec3::Vector3();
     std::pair<vec3::Vector3, vec3::Vector3> tempPair;
 
-    for (const auto & memberCoil : memberCoils)
+    for (const auto& memberCoil : memberCoils)
     {
         tempPair = memberCoil.computeForceOnDipoleMoment(pointVector, dipoleMoment);
         totalForce += tempPair.first;

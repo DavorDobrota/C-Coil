@@ -5,9 +5,9 @@
 
 namespace vec3
 {
-    Vector3Array::Vector3Array() { this->vectorArray = {}; }
+    Vector3Array::Vector3Array() { vectorArray = {}; }
 
-    Vector3Array::Vector3Array(size_t initSize) { this->vectorArray.resize(initSize); }
+    Vector3Array::Vector3Array(size_t initSize) { vectorArray.resize(initSize); }
 
     Vector3Array::Vector3Array(const std::vector<Vector3> &vectorArray)
     {
@@ -15,27 +15,27 @@ namespace vec3
     }
 
 
-    void Vector3Array::append(const Vector3 &appendedVector3) { this->vectorArray.push_back(appendedVector3); }
+    void Vector3Array::append(const Vector3 &appendedVector3) { vectorArray.push_back(appendedVector3); }
 
-    void Vector3Array::append(double x, double y, double z) { this->vectorArray.emplace_back(x, y, z); }
+    void Vector3Array::append(double x, double y, double z) { vectorArray.emplace_back(x, y, z); }
 
-    void Vector3Array::reserve(size_t reserveSize) { this->vectorArray.reserve(reserveSize); }
+    void Vector3Array::reserve(size_t reserveSize) { vectorArray.reserve(reserveSize); }
 
-    void Vector3Array::resize(size_t newSize) { this->vectorArray.resize(newSize); }
+    void Vector3Array::resize(size_t newSize) { vectorArray.resize(newSize); }
 
-    size_t Vector3Array::size() const { return this->vectorArray.size(); }
+    size_t Vector3Array::size() const { return vectorArray.size(); }
 
-    void Vector3Array::clear() { this->vectorArray.clear(); }
+    void Vector3Array::clear() { vectorArray.clear(); }
 
-    std::vector<Vector3> & Vector3Array::getStdVectorRef() { return this->vectorArray; }
+    std::vector<Vector3>& Vector3Array::getItems() { return vectorArray; }
 
 
     std::vector<double> Vector3Array::x() const
     {
         std::vector<double> outputArr;
-        outputArr.reserve(this->vectorArray.size());
+        outputArr.reserve(vectorArray.size());
 
-        for (const auto & i : this->vectorArray)
+        for (const auto& i : vectorArray)
             outputArr.emplace_back(i.x);
 
         return outputArr;
@@ -44,9 +44,9 @@ namespace vec3
     std::vector<double> Vector3Array::y() const
     {
         std::vector<double> outputArr;
-        outputArr.reserve(this->vectorArray.size());
+        outputArr.reserve(vectorArray.size());
 
-        for (const auto & i : this->vectorArray)
+        for (const auto& i : vectorArray)
             outputArr.emplace_back(i.y);
 
         return outputArr;
@@ -55,9 +55,9 @@ namespace vec3
     std::vector<double> Vector3Array::z() const
     {
         std::vector<double> outputArr;
-        outputArr.reserve(this->vectorArray.size());
+        outputArr.reserve(vectorArray.size());
 
-        for (const auto & i : this->vectorArray)
+        for (const auto& i : vectorArray)
             outputArr.emplace_back(i.z);
 
         return outputArr;
@@ -66,27 +66,28 @@ namespace vec3
     std::vector<double> Vector3Array::abs() const
     {
         std::vector<double> outputArr;
-        outputArr.reserve(this->vectorArray.size());
+        outputArr.reserve(vectorArray.size());
 
-        for (const auto & i : this->vectorArray)
+        for (const auto& i : vectorArray)
             outputArr.emplace_back(i.abs());
 
         return outputArr;
     }
 
-    Vector3 & Vector3Array::operator[](size_t index)
+    Vector3 &Vector3Array::operator[](size_t index)
     {
-        return static_cast<Vector3 &>(this->vectorArray[index]);
+        return vectorArray[index];
     }
 
     const Vector3 &Vector3Array::operator[](size_t index) const
     {
-        return this->vectorArray[index];
+        return vectorArray[index];
     }
 
-    void Vector3Array::operator+=(const Vector3 &appendedVector3)
+    Vector3Array& Vector3Array::operator+=(const Vector3 &appendedVector3)
     {
-        this->vectorArray.push_back(appendedVector3);
+        vectorArray.push_back(appendedVector3);
+        return *this;
     }
 
 
@@ -113,7 +114,7 @@ namespace vec3
         };
 
         output << "Vector3Array("
-               << "vector_array=" << stringifyVector(this->vectorArray)
+               << "vector_array=" << stringifyVector(vectorArray)
                << ")";
 
         return output.str();

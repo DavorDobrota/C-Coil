@@ -48,24 +48,34 @@ header_include_dirs = [
     "src/Utils/",
 ]
 
-sources = sorted([
+sources = [
     *glob("src/*.cxx"),
     *glob("src/Benchmark/*.cxx"),
+    *glob("src/Compare/*.cxx"),
+    *glob("src/Test/*.cxx"),
+
+    *glob("src/CoilGroup/*.cxx"),
+    *glob("src/CoilGroup/Fields/*.cxx"),
+    *glob("src/CoilGroup/ForceAndTorque/*.cxx"),
+    *glob("src/CoilGroup/MInductance/*.cxx"),
+    *glob("src/CoilGroup/Utils/*.cxx"),
+
     *glob("src/Coil/*.cxx"),
     *glob("src/Coil/Fields/*.cxx"),
     *glob("src/Coil/ForceAndTorque/*.cxx"),
     *glob("src/Coil/MInductance/*.cxx"),
     *glob("src/Coil/PrecisionArguments/*.cxx"),
     *glob("src/Coil/Utils/*.cxx"),
-    *glob("src/CoilGroup/*.cxx"),
-    *glob("src/Compare/*.cxx"),
+
+    *glob("src/Tensor/*.cxx"),
+    *glob("src/Tensor/Matrix/*.cxx"),
+    *glob("src/Tensor/Vector/*.cxx"),
+
     *glob("src/LegendreMatrix/*.cxx"),
     *glob("src/Math/*.cxx"),
-    *glob("src/Tensor/*.cxx"),
-    *glob("src/Test/*.cxx"),
     *glob("src/ThreadPool/*.cxx"),
     *glob("src/Utils/*.cxx"),
-])
+]
 
 
 def find_in_path(names, path):
@@ -100,12 +110,12 @@ extra_kwargs = {}
 if use_GPU:
     CUDA = locate_CUDA()
     print(f"Using CUDA installation: {CUDA}")
-    sources = sources + sorted([
+    sources = sources + [
         *glob("src/Coil/CUDAKernels/*.cu"),
         *glob("src/CoilGroup/CUDAKernels/*.cu"),
         *glob("src/CUDAUtils/ErrorCheck/*.cu"),
         *glob("src/CUDAUtils/MemoryManagement/*.cu"),
-    ])
+    ]
     header_include_dirs += CUDA['include']
     extra_kwargs = {
         'library_dirs': [CUDA['lib64']],

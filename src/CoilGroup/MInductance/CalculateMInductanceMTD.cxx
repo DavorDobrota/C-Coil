@@ -81,7 +81,7 @@ std::vector<double> CoilGroup::calculateAllMutualInductanceArrangementsMTD(Coil 
 
         secondary.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
 
-        for (const auto & memberCoil : group)
+        for (const auto& memberCoil : group)
             if (memberCoil.getId() != secondary.getId())
                 inductance += Coil::computeMutualInductance(memberCoil, secondary, precisionFactor, CPU_ST);
 

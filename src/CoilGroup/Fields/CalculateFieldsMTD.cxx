@@ -26,7 +26,7 @@ vec3::Vector3Array CoilGroup::calculateAllBFieldMTD(const vec3::Vector3Array &po
             const vec3::Vector3Array &pointVectors,
             std::vector<vec3::Vector3> &outputVector
     ){
-        outputVector = coil.computeAllBFieldVectors(pointVectors).getStdVectorRef();
+        outputVector = coil.computeAllBFieldVectors(pointVectors).getItems();
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
@@ -69,7 +69,7 @@ vec3::Vector3Array CoilGroup::calculateAllAPotentialMTD(const vec3::Vector3Array
             const vec3::Vector3Array &pointVectors,
             std::vector<vec3::Vector3> &outputVector
     ){
-        outputVector = coil.computeAllAPotentialVectors(pointVectors).getStdVectorRef();
+        outputVector = coil.computeAllAPotentialVectors(pointVectors).getItems();
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
@@ -112,7 +112,7 @@ vec3::Vector3Array CoilGroup::calculateAllEFieldMTD(const vec3::Vector3Array &po
             const vec3::Vector3Array &pointVectors,
             std::vector<vec3::Vector3> &outputVector
     ){
-        outputVector = coil.computeAllEFieldVectors(pointVectors).getStdVectorRef();
+        outputVector = coil.computeAllEFieldVectors(pointVectors).getItems();
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
@@ -154,7 +154,7 @@ vec3::Matrix3Array CoilGroup::calculateAllBGradientMTD(const vec3::Vector3Array 
             const vec3::Vector3Array &pointVectors,
             std::vector<vec3::Matrix3> &outputVector
     ){
-        outputVector = coil.computeAllBGradientMatrices(pointVectors).getStdVectorRef();
+        outputVector = coil.computeAllBGradientMatrices(pointVectors).getItems();
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };

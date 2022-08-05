@@ -37,7 +37,7 @@ std::vector<double> CoilGroup::calculateAllMutualInductanceArrangementsGPU(Coil 
 
     size_t coilArrSize = memberCoils.size();
     bool removeSpecificCoil = false;
-    for (const auto & memberCoil : memberCoils)
+    for (const auto& memberCoil : memberCoils)
         if (memberCoil.getId() == secondary.getId())
         {
             --coilArrSize; removeSpecificCoil = true;

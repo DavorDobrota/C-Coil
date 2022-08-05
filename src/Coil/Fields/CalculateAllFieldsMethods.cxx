@@ -23,7 +23,7 @@ vec3::Vector3Array Coil::calculateAllAPotentialMT(const vec3::Vector3Array &poin
     std::vector<size_t> blockPositions = calculateChunkSize(pointVectors.size());
 
     vec3::Vector3Array computedPotentials(pointVectors.size());
-    std::vector<vec3::Vector3> &tempRef = computedPotentials.getStdVectorRef();
+    std::vector<vec3::Vector3> &tempRef = computedPotentials.getItems();
 
     g_threadPool.setTaskCount(pointVectors.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -69,7 +69,7 @@ vec3::Vector3Array Coil::calculateAllBFieldMT(const vec3::Vector3Array &pointVec
     std::vector<size_t> blockPositions = calculateChunkSize(pointVectors.size());
 
     vec3::Vector3Array computedFields(pointVectors.size());
-    std::vector<vec3::Vector3> &tempRef = computedFields.getStdVectorRef();
+    std::vector<vec3::Vector3> &tempRef = computedFields.getItems();
 
     g_threadPool.setTaskCount(pointVectors.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -114,7 +114,7 @@ vec3::Matrix3Array Coil::calculateAllBGradientMT(const vec3::Vector3Array &point
     std::vector<size_t> blockPositions = calculateChunkSize(pointVectors.size());
 
     vec3::Matrix3Array computedGradients(pointVectors.size());
-    std::vector<vec3::Matrix3> &tempRef = computedGradients.getStdVectorRef();
+    std::vector<vec3::Matrix3> &tempRef = computedGradients.getItems();
 
     g_threadPool.setTaskCount(pointVectors.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -190,7 +190,7 @@ vec3::Vector3Array Coil::calculateAllAPotentialGPU(const vec3::Vector3Array &poi
 
     vec3::Vector3Array computedPotentialArr;
     computedPotentialArr.reserve(size);
-    std::vector<vec3::Vector3> &outputRef = computedPotentialArr.getStdVectorRef();
+    std::vector<vec3::Vector3> &outputRef = computedPotentialArr.getItems();
 
     for (long long i = 0; i < pointVectors.size(); ++i)
         outputRef.emplace_back(resultArr[i].x, resultArr[i].y, resultArr[i].z);
@@ -238,7 +238,7 @@ vec3::Vector3Array Coil::calculateAllBFieldGPU(const vec3::Vector3Array &pointVe
 
     vec3::Vector3Array computedFieldArr;
     computedFieldArr.reserve(pointVectors.size());
-    std::vector<vec3::Vector3> &outputRef = computedFieldArr.getStdVectorRef();
+    std::vector<vec3::Vector3> &outputRef = computedFieldArr.getItems();
 
     for (long long i = 0; i < pointVectors.size(); ++i)
         computedFieldArr.append(resultArr[i].x, resultArr[i].y, resultArr[i].z);
@@ -286,7 +286,7 @@ vec3::Matrix3Array Coil::calculateAllBGradientGPU(const vec3::Vector3Array &poin
 
     vec3::Matrix3Array computedGradientArr;
     computedGradientArr.reserve(size);
-    std::vector<vec3::Matrix3> &outputRef = computedGradientArr.getStdVectorRef();
+    std::vector<vec3::Matrix3> &outputRef = computedGradientArr.getItems();
 
     for (long long i = 0; i < pointVectors.size(); ++i)
         outputRef.emplace_back(resultArr[i].xx, resultArr[i].xy, resultArr[i].xz,

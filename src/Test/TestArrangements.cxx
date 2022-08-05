@@ -7,7 +7,7 @@ void testCoilMInductanceArrangements()
     Coil sec = Coil(0.1, 0.1, 0.1, 10000);
 
     int configCount = 20;
-    auto precision = PrecisionFactor(7.0);
+    auto precision = PrecisionFactor(5.0);
 
     vec3::Vector3Array primPositions(configCount);
     vec3::Vector3Array secPositions(configCount);
@@ -57,7 +57,7 @@ void testCoilForceArrangements()
     Coil sec = Coil(0.1, 0.1, 0.1, 10000);
 
     int configCount = 20;
-    auto precision = PrecisionFactor(7.0);
+    auto precision = PrecisionFactor(5.0);
 
     vec3::Vector3Array primPositions(configCount);
     vec3::Vector3Array secPositions(configCount);

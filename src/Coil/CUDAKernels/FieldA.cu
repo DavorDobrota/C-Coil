@@ -112,8 +112,8 @@ void calculatePotentialFast(long long opCount, CoilData coil, const DataVector *
             TYPE tempConstD1 = topEdge * tempConstC;
             TYPE tempConstD2 = bottomEdge * tempConstC;
 
-            TYPE tempConstE1 = sqrt(fma(tempConstD1, tempConstD1, 1.0f));
-            TYPE tempConstE2 = sqrt(fma(tempConstD2, tempConstD2, 1.0f));
+            TYPE tempConstE1 = sqrt(tempConstD1 * tempConstD1 + 1.0f);
+            TYPE tempConstE2 = sqrt(tempConstD2 * tempConstD2 + 1.0f);
 
             TYPE tempConstF = log((tempConstE1 + tempConstD1) / (tempConstE2 + tempConstD2));
 

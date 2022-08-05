@@ -34,7 +34,7 @@ if(USE_GPU)
     add_compile_definitions(USE_GPU)
 
     set(CUDA_NVCC_FLAGS "--use_fast_math --optimise -O3")
-    set(CMAKE_CUDA_ARCHITECTURES "52;61;72;75;86")
+    set(CMAKE_CUDA_ARCHITECTURES "61;72;75;86")
 
     project(Coil_Evolution LANGUAGES CXX CUDA)
 endif()

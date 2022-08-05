@@ -125,7 +125,7 @@ void calculateFieldFast(long long opCount, CoilData coil, const DataVector *posA
 
             fieldH += tempConstG * incrementPositionT * cosinePhi * (tempConstF2 - tempConstF1);
             fieldZ += tempConstG *
-                    ((fma(0.5f, tempConstE, tempConstA)) / (tempConstC + tempConstE)) *
+                    ((tempConstA + 0.5f * tempConstE) / (tempConstC + tempConstE)) *
                     (topEdge * tempConstF1 - bottomEdge * tempConstF2);
         }
     }

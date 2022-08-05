@@ -5,7 +5,7 @@ add_library(
         TestMInductanceGeneral.cxx
         TestForce.cxx
         TestMInductanceZAxis.cxx
-        TestArgumentGeneration.cxx)
+        TestArgumentGeneration.cxx TestArrangements.cxx)
 set_property(TARGET Test PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(Test PRIVATE -fpic)

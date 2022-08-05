@@ -17,4 +17,7 @@ void testMInductanceGeneralDifferentGeometries();
 void testAmpereForceGeneralForZAxis();
 void testGradientTensor();
 
+void testCoilMInductanceArrangements();
+void testCoilForceArrangements();
+
 #endif //GENERAL_COIL_PROGRAM_TEST_H

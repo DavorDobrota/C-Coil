@@ -8,20 +8,21 @@
 
 
 __global__
-void CalculateForceAndTorqueConfigurations(long long configCount, long long pointCount, CoilPairArgumentsData coilPair,
+void CalculateForceAndTorqueConfigurations(long long configCount, long long pointCount, int issuedPoints,
+                                           CoilPairArgumentsData coilPair,
                                            const CoilPairPositionData *configArr,
                                            ForceTorqueData *forceTorqueArr)
 {
     unsigned int index = threadIdx.x;
-    long long global_index = blockIdx.x * blockDim.x + index;
+    long long globalIndex = blockIdx.x * blockDim.x + index;
 
-    if(global_index >= configCount * pointCount)
+    if(globalIndex >= configCount * issuedPoints || globalIndex % issuedPoints >= pointCount)
         return;
 
-    int pairIndex = int(global_index % configCount);
-    int lengthIndex = int((global_index / configCount) % coilPair.secLengthIncrements);
-    int thicknessIndex = int(((global_index / configCount) / coilPair.secLengthIncrements) % coilPair.secThicknessIncrements);
-    int angularIndex = int((((global_index / configCount) / coilPair.secLengthIncrements) / coilPair.secThicknessIncrements) % coilPair.secAngularIncrements);
+    int lengthIndex = int(globalIndex % coilPair.secLengthIncrements);
+    int thicknessIndex = int((globalIndex / coilPair.secLengthIncrements) % coilPair.secThicknessIncrements);
+    int angularIndex = int(((globalIndex / coilPair.secLengthIncrements) / coilPair.secThicknessIncrements) % coilPair.secAngularIncrements);
+    int pairIndex = int((globalIndex / issuedPoints) % configCount);
 
     CoilPairPositionData position = configArr[pairIndex];
 
@@ -207,7 +208,8 @@ void Calculate_force_and_torque_configurations(long long configCount, long long 
         recordStartPoint();
     #endif
 
-    int blocks = ceil(double(configCount * pointCount) / NTHREADS);
+    int blocks = int(configCount) * int(ceil(double(pointCount) / NTHREADS));
+    int issuedPoints = int(blocks * NTHREADS / configCount);
 
     getBuffers(configCount);
 
@@ -229,7 +231,9 @@ void Calculate_force_and_torque_configurations(long long configCount, long long 
 
     gpuErrchk(cudaMemset(g_forceTorqueArr, 0, configCount * sizeof(ForceTorqueData)))
 
-    CalculateForceAndTorqueConfigurations<<<blocks, NTHREADS>>>(configCount, pointCount, coilPair, g_configArr, g_forceTorqueArr);
+    CalculateForceAndTorqueConfigurations<<<blocks, NTHREADS>>>(
+        configCount, pointCount, issuedPoints, coilPair, g_configArr, g_forceTorqueArr
+    );
     gpuErrchk(cudaDeviceSynchronize())
 
     #if DEBUG_TIMINGS

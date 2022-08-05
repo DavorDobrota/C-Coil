@@ -540,11 +540,11 @@ void benchMInductanceAndForceComputeAllGPU(int configCount)
         secZAxisAngle[i] = 0.6;
     }
 
-    std::vector<double> warmupOutput =
-            Coil::computeAllMutualInductanceArrangements(prim, sec, primPositions,secPositions,
-                                                         primYAxisAngle, primZAxisAngle,
-                                                         secYAxisAngle, secZAxisAngle,
-                                                         PrecisionFactor(2.0), GPU); // GPU warmup
+    std::vector<double> warmupOutput = Coil::computeAllMutualInductanceArrangements(
+        prim, sec, primPositions,secPositions,
+        primYAxisAngle, primZAxisAngle, secYAxisAngle, secZAxisAngle,
+        PrecisionFactor(2.0), GPU
+    ); // GPU warmup
 
     high_resolution_clock::time_point begin_time;
     double interval;

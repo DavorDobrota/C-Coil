@@ -79,8 +79,12 @@ struct CoilPairArguments
                                                                PrecisionFactor precisionFactor, bool zAxisCase = false);
 };
 
+class CoilGroup;
+
 class Coil
 {
+    friend CoilGroup;
+
     private:
         unsigned long long id;
 

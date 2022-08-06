@@ -3,30 +3,25 @@
 #include "Timing.h"
 #include "CUDAUtils/ErrorCheck/CUDAErrorCheck.h"
 #include "CUDAUtils/MemoryManagement/GPUMemoryManagement.h"
-#include "CUDAUtils/BufferReduce/CUDABufferReduce.h"
 
 #include <cstdio>
 
 
 __global__
-void CalculateForceAndTorqueConfigurations(long long configCount, long long pointCount, int issuedPoints,
-                                           const CoilPairArgumentsData *pairData,
+void CalculateForceAndTorqueConfigurations(long long configCount, long long pointCount, CoilPairArgumentsData coilPair,
                                            const CoilPairPositionData *configArr,
                                            ForceTorqueData *forceTorqueArr)
 {
     unsigned int index = threadIdx.x;
-    long long globalIndex = blockIdx.x * blockDim.x + index;
+    long long global_index = blockIdx.x * blockDim.x + index;
 
-    if(globalIndex >= configCount * issuedPoints || globalIndex % issuedPoints >= pointCount)
+    if(global_index >= configCount * pointCount)
         return;
 
-    __shared__ CoilPairArgumentsData coilPair;
-    coilPair = *pairData;
-
-    int lengthIndex = int(globalIndex % coilPair.secLengthIncrements);
-    int thicknessIndex = int((globalIndex / coilPair.secLengthIncrements) % coilPair.secThicknessIncrements);
-    int angularIndex = int(((globalIndex / coilPair.secLengthIncrements) / coilPair.secThicknessIncrements) % coilPair.secAngularIncrements);
-    int pairIndex = int((globalIndex / issuedPoints) % configCount);
+    int pairIndex = int(global_index % configCount);
+    int lengthIndex = int((global_index / configCount) % coilPair.secLengthIncrements);
+    int thicknessIndex = int(((global_index / configCount) / coilPair.secLengthIncrements) % coilPair.secThicknessIncrements);
+    int angularIndex = int((((global_index / configCount) / coilPair.secLengthIncrements) / coilPair.secThicknessIncrements) % coilPair.secAngularIncrements);
 
     CoilPairPositionData position = configArr[pairIndex];
 
@@ -170,63 +165,30 @@ void CalculateForceAndTorqueConfigurations(long long configCount, long long poin
     TYPE torqueY = ringZ * forceX - ringX * forceZ;
     TYPE torqueZ = ringX * forceY - ringY * forceX;
 
-    __shared__ TYPE resultBuffer[NTHREADS];
+    atomicAdd(&forceTorqueArr[pairIndex].forceX, forceX);
+    atomicAdd(&forceTorqueArr[pairIndex].forceY, forceY);
+    atomicAdd(&forceTorqueArr[pairIndex].forceZ, forceZ);
 
-    resultBuffer[index] = forceX;
-    __syncthreads();
-    warpReduce(resultBuffer, index);
-    if(index == 0)
-        atomicAdd(&forceTorqueArr[pairIndex].forceX, resultBuffer[index]);
-
-    resultBuffer[index] = forceY;
-    __syncthreads();
-    warpReduce(resultBuffer, index);
-    if(index == 0)
-        atomicAdd(&forceTorqueArr[pairIndex].forceY, resultBuffer[index]);
-
-    resultBuffer[index] = forceZ;
-    __syncthreads();
-    warpReduce(resultBuffer, index);
-    if(index == 0)
-        atomicAdd(&forceTorqueArr[pairIndex].forceZ, resultBuffer[index]);
-
-
-    resultBuffer[index] = torqueX;
-    __syncthreads();
-    warpReduce(resultBuffer, index);
-    if(index == 0)
-        atomicAdd(&forceTorqueArr[pairIndex].torqueX, resultBuffer[index]);
-
-    resultBuffer[index] = torqueY;
-    __syncthreads();
-    warpReduce(resultBuffer, index);
-    if(index == 0)
-        atomicAdd(&forceTorqueArr[pairIndex].torqueY, resultBuffer[index]);
-
-    resultBuffer[index] = torqueZ;
-    __syncthreads();
-    warpReduce(resultBuffer, index);
-    if(index == 0)
-        atomicAdd(&forceTorqueArr[pairIndex].torqueZ, resultBuffer[index]);
+    atomicAdd(&forceTorqueArr[pairIndex].torqueX, torqueX);
+    atomicAdd(&forceTorqueArr[pairIndex].torqueY, torqueY);
+    atomicAdd(&forceTorqueArr[pairIndex].torqueZ, torqueZ);
 }
 
 namespace
 {
     CoilPairPositionData *g_configArr = nullptr;
-    CoilPairArgumentsData *g_pairData = nullptr;
+
     ForceTorqueData *g_forceTorqueArr = nullptr;
 
     void getBuffers(long long configs)
     {
         std::vector<void*> buffers = GPUMem::getBuffers(
                 { configs * (long long)sizeof(CoilPairPositionData),
-                  1 * (long long)sizeof(CoilPairArgumentsData),
                   configs * (long long)sizeof(ForceTorqueData)}
         );
 
-        g_configArr = static_cast<CoilPairPositionData *>(buffers[0]);
-        g_pairData = static_cast<CoilPairArgumentsData *>(buffers[1]);
-        g_forceTorqueArr = static_cast<ForceTorqueData *>(buffers[2]);
+        g_configArr = static_cast<CoilPairPositionData*>(buffers[0]);
+        g_forceTorqueArr = static_cast<ForceTorqueData*>(buffers[1]);
 
     }
 
@@ -236,7 +198,7 @@ namespace
 }
 
 void Calculate_force_and_torque_configurations(long long configCount, long long pointCount,
-                                               const CoilPairArgumentsData *coilPair,
+                                               CoilPairArgumentsData coilPair,
                                                const CoilPairPositionData *configArr,
                                                ForceTorqueData *forceTorqueArr)
 {
@@ -245,8 +207,7 @@ void Calculate_force_and_torque_configurations(long long configCount, long long 
         recordStartPoint();
     #endif
 
-    int blocks = int(configCount) * int(ceil(double(pointCount) / NTHREADS));
-    int issuedPoints = int(blocks * NTHREADS / configCount);
+    int blocks = ceil(double(configCount * pointCount) / NTHREADS);
 
     getBuffers(configCount);
 
@@ -257,8 +218,7 @@ void Calculate_force_and_torque_configurations(long long configCount, long long 
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemcpy(g_configArr, configArr, configCount * sizeof(CoilPairPositionData), cudaMemcpyHostToDevice))
-    gpuErrchk(cudaMemcpy(g_pairData, coilPair, 1 * sizeof(CoilPairArgumentsData), cudaMemcpyHostToDevice))
+    gpuErrchk(cudaMemcpy(g_configArr, configArr, configCount * sizeof(CoilPairPositionData), cudaMemcpyHostToDevice));
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -269,9 +229,7 @@ void Calculate_force_and_torque_configurations(long long configCount, long long 
 
     gpuErrchk(cudaMemset(g_forceTorqueArr, 0, configCount * sizeof(ForceTorqueData)))
 
-    CalculateForceAndTorqueConfigurations<<<blocks, NTHREADS>>>(
-        configCount, pointCount, issuedPoints, g_pairData, g_configArr, g_forceTorqueArr
-    );
+    CalculateForceAndTorqueConfigurations<<<blocks, NTHREADS>>>(configCount, pointCount, coilPair, g_configArr, g_forceTorqueArr);
     gpuErrchk(cudaDeviceSynchronize())
 
     #if DEBUG_TIMINGS

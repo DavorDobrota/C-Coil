@@ -57,15 +57,15 @@ int main()
 //    benchCoilGroupMInductanceAndForce();
 
 //    benchMInductanceAndForceComputeAll();
-    benchMInductanceAndForceComputeAllGPU();
+//    benchMInductanceAndForceComputeAllGPU();
 
 //    benchCoilGroupMInductanceAndForceAll();
 
 //    testCoilMInductanceArrangements();
 //    testCoilForceArrangements();
 
-//    testGroupMInductanceArrangements();
-//    testGroupForceArrangements();
+    testGroupMInductanceArrangements();
+    testGroupForceArrangements();
 
     return 0;
 }

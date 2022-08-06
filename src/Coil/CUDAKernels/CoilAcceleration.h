@@ -19,12 +19,12 @@ void Calculate_hardware_accelerated_g(long long opCount, CoilData coil,
 
 
 void Calculate_mutual_inductance_configurations(long long configCount, long long pointCount,
-                                                CoilPairArgumentsData coilPair,
+                                                const CoilPairArgumentsData *coilPair,
                                                 const CoilPairPositionData *configArr,
                                                 TYPE *inductanceArr = nullptr);
 
 void Calculate_force_and_torque_configurations(long long configCount, long long pointCount,
-                                               CoilPairArgumentsData coilPair,
+                                               const CoilPairArgumentsData *coilPair,
                                                const CoilPairPositionData *configArr,
                                                ForceTorqueData *forceTorqueArr = nullptr);
 

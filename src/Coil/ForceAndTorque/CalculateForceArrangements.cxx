@@ -125,7 +125,9 @@ Coil::calculateAllAmpereForceArrangementsGPU(Coil primary, Coil secondary,
                           inductanceArguments.secondaryPrecision.angularIncrementCount;
 
     #if USE_GPU == 1
-        Calculate_force_and_torque_configurations(size, pointCount, coilPairArgumentsData, configArr, resultArr);
+        Calculate_force_and_torque_configurations(
+            size, pointCount, &coilPairArgumentsData, configArr, resultArr
+        );
     #else
         free(configArr);
         free(resultArr);

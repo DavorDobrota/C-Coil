@@ -15,11 +15,11 @@ endif()
 
 option(USE_GPU "Enable GPU acceleration" OFF)
 
-set(GPU_INCREMENTS "100" CACHE STRING "GPU increment count")
-if(${GPU_INCREMENTS} LESS_EQUAL 100 AND ${GPU_INCREMENTS} GREATER_EQUAL 1)
+set(GPU_INCREMENTS "80" CACHE STRING "GPU increment count")
+if(${GPU_INCREMENTS} LESS_EQUAL 80 AND ${GPU_INCREMENTS} GREATER_EQUAL 1)
     add_compile_definitions(GPU_INCREMENTS=${GPU_INCREMENTS})
 else()
-    message(FATAL_ERROR "GPU_INCREMENTS must be set to an integer in the range [1, 100]!")
+    message(FATAL_ERROR "GPU_INCREMENTS must be set to an integer in the range [1, 80]!")
 endif()
 
 set(TYPE "float" CACHE STRING "Floating point precision (can be float or double)")

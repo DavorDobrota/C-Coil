@@ -118,12 +118,15 @@ std::vector<double> Coil::calculateAllMutualInductanceArrangementsGPU(Coil prima
     CoilPairArgumentsData coilPairArgumentsData;
 
     generateCoilPairArgumentsData(primary, secondary, coilPairArgumentsData, inductanceArguments, false);
+
     long long pointCount = inductanceArguments.secondaryPrecision.lengthIncrementCount *
                           inductanceArguments.secondaryPrecision.thicknessIncrementCount *
                           inductanceArguments.secondaryPrecision.angularIncrementCount;
 
     #if USE_GPU == 1
-        Calculate_mutual_inductance_configurations(size, pointCount, coilPairArgumentsData, configArr, resultArr);
+        Calculate_mutual_inductance_configurations(
+            size, pointCount, &coilPairArgumentsData, configArr, resultArr
+        );
     #else
         free(configArr);
         free(resultArr);

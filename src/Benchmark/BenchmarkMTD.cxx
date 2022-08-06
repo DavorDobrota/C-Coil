@@ -217,7 +217,7 @@ void benchCoilGroupComputeAllFieldsGPU(int coilCount, int opCount)
 
     computedAPotential = torusGroupThick.computeAllAPotentialVectors(fieldPoints, GPU); // warmup
 
-    for (int i = 1; i <= 8; ++i)
+    for (int i = 1; i <= 7; ++i)
     {
         torusGroupFlat.setDefaultPrecisionFactor(PrecisionFactor(double(i)));
         torusGroupThick.setDefaultPrecisionFactor(PrecisionFactor(double(i)));

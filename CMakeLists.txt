@@ -7,28 +7,28 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 cmake_policy(SET CMP0069 NEW)
 
+#######################################
+# Define all build options
+#######################################
+option(USE_GPU "Enable GPU acceleration" OFF)
+
+set(GPU_INCREMENTS "80" CACHE STRING "GPU increment count")
+
+set(TYPE "float" CACHE STRING "Floating point precision (can be float or double)")
+
+option(OUTPUT_LIB_SHARED "Build a shared library" ON)
+option(OUTPUT_EXECUTABLE "Build a test executable" ON)
+# TODO: add static lib support
+#######################################
+
+#######################################
+# Handle chosen options
+#######################################
 if(WIN32)
     set(CMAKE_CXX_FLAGS "/std:c++17 /O2 /arch:AVX2 /fp:fast")
 else()
     set(CMAKE_CXX_FLAGS "-Ofast -mavx2 -ffast-math -flto=auto")
 endif()
-
-option(USE_GPU "Enable GPU acceleration" OFF)
-
-set(GPU_INCREMENTS "80" CACHE STRING "GPU increment count")
-if(${GPU_INCREMENTS} LESS_EQUAL 80 AND ${GPU_INCREMENTS} GREATER_EQUAL 1)
-    add_compile_definitions(GPU_INCREMENTS=${GPU_INCREMENTS})
-else()
-    message(FATAL_ERROR "GPU_INCREMENTS must be set to an integer in the range [1, 80]!")
-endif()
-
-set(TYPE "float" CACHE STRING "Floating point precision (can be float or double)")
-add_compile_definitions(TYPE=${TYPE})
-
-option(OUTPUT_LIB_SHARED "Build a shared library" ON)
-option(OUTPUT_EXECUTABLE "Build a test executable" ON)
-
-# TODO: add static lib support
 
 if(USE_GPU)
     add_compile_definitions(USE_GPU)
@@ -38,6 +38,15 @@ if(USE_GPU)
 
     project(Coil_Evolution LANGUAGES CXX CUDA)
 endif()
+
+if(${GPU_INCREMENTS} LESS_EQUAL 80 AND ${GPU_INCREMENTS} GREATER_EQUAL 1)
+    add_compile_definitions(GPU_INCREMENTS=${GPU_INCREMENTS})
+else()
+    message(FATAL_ERROR "GPU_INCREMENTS must be set to an integer in the range [1, 80]!")
+endif()
+
+add_compile_definitions(TYPE=${TYPE})
+#######################################
 
 #######################################
 # Add all extern include paths

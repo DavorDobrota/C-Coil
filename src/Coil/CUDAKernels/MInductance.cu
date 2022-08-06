@@ -3,6 +3,7 @@
 #include "Timing.h"
 #include "CUDAUtils/ErrorCheck/CUDAErrorCheck.h"
 #include "CUDAUtils/MemoryManagement/GPUMemoryManagement.h"
+#include "CUDAUtils/BufferReduce/CUDABufferReduce.h"
 
 #include <cstdio>
 
@@ -155,7 +156,16 @@ void CalculateMutualInductanceConfigurations(long long configCount, long long po
     TYPE mInductance = weight * coilPair.correctionFactor *
                        (potentialX * ringTangentX + potentialY * ringTangentY + potentialZ * ringTangentZ);
 
-    atomicAdd(&inductanceArr[pairIndex], mInductance);
+    __shared__ TYPE resultBuffer[NTHREADS];
+
+    resultBuffer[index] = mInductance;
+    __syncthreads();
+
+    warpReduce(resultBuffer, index);
+
+    if(index == 0)
+        atomicAdd(&inductanceArr[pairIndex], resultBuffer[index]);
+//    atomicAdd(&inductanceArr[pairIndex], mInductance);
 }
 
 namespace

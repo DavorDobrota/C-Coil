@@ -3,6 +3,7 @@
 #include "Timing.h"
 #include "CUDAUtils/ErrorCheck/CUDAErrorCheck.h"
 #include "CUDAUtils/MemoryManagement/GPUMemoryManagement.h"
+#include "CUDAUtils/BufferReduce/CUDABufferReduce.h"
 
 #include <cstdio>
 
@@ -169,13 +170,44 @@ void CalculateForceAndTorqueConfigurations(long long configCount, long long poin
     TYPE torqueY = ringZ * forceX - ringX * forceZ;
     TYPE torqueZ = ringX * forceY - ringY * forceX;
 
-    atomicAdd(&forceTorqueArr[pairIndex].forceX, forceX);
-    atomicAdd(&forceTorqueArr[pairIndex].forceY, forceY);
-    atomicAdd(&forceTorqueArr[pairIndex].forceZ, forceZ);
+    __shared__ TYPE resultBuffer[NTHREADS];
 
-    atomicAdd(&forceTorqueArr[pairIndex].torqueX, torqueX);
-    atomicAdd(&forceTorqueArr[pairIndex].torqueY, torqueY);
-    atomicAdd(&forceTorqueArr[pairIndex].torqueZ, torqueZ);
+    resultBuffer[index] = forceX;
+    __syncthreads();
+    warpReduce(resultBuffer, index);
+    if(index == 0)
+        atomicAdd(&forceTorqueArr[pairIndex].forceX, resultBuffer[index]);
+
+    resultBuffer[index] = forceY;
+    __syncthreads();
+    warpReduce(resultBuffer, index);
+    if(index == 0)
+        atomicAdd(&forceTorqueArr[pairIndex].forceY, resultBuffer[index]);
+
+    resultBuffer[index] = forceZ;
+    __syncthreads();
+    warpReduce(resultBuffer, index);
+    if(index == 0)
+        atomicAdd(&forceTorqueArr[pairIndex].forceZ, resultBuffer[index]);
+
+
+    resultBuffer[index] = torqueX;
+    __syncthreads();
+    warpReduce(resultBuffer, index);
+    if(index == 0)
+        atomicAdd(&forceTorqueArr[pairIndex].torqueX, resultBuffer[index]);
+
+    resultBuffer[index] = torqueY;
+    __syncthreads();
+    warpReduce(resultBuffer, index);
+    if(index == 0)
+        atomicAdd(&forceTorqueArr[pairIndex].torqueY, resultBuffer[index]);
+
+    resultBuffer[index] = torqueZ;
+    __syncthreads();
+    warpReduce(resultBuffer, index);
+    if(index == 0)
+        atomicAdd(&forceTorqueArr[pairIndex].torqueZ, resultBuffer[index]);
 }
 
 namespace

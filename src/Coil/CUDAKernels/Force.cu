@@ -8,7 +8,8 @@
 
 
 __global__
-void CalculateForceAndTorqueConfigurations(long long configCount, long long pointCount, CoilPairArgumentsData coilPair,
+void CalculateForceAndTorqueConfigurations(long long configCount, long long pointCount,
+                                           const CoilPairArgumentsData *pairData,
                                            const CoilPairPositionData *configArr,
                                            ForceTorqueData *forceTorqueArr)
 {
@@ -17,6 +18,9 @@ void CalculateForceAndTorqueConfigurations(long long configCount, long long poin
 
     if(global_index >= configCount * pointCount)
         return;
+
+    __shared__ CoilPairArgumentsData coilPair;
+    coilPair = *pairData;
 
     int pairIndex = int(global_index % configCount);
     int lengthIndex = int((global_index / configCount) % coilPair.secLengthIncrements);
@@ -177,18 +181,20 @@ void CalculateForceAndTorqueConfigurations(long long configCount, long long poin
 namespace
 {
     CoilPairPositionData *g_configArr = nullptr;
-
+    CoilPairArgumentsData *g_coilPair = nullptr;
     ForceTorqueData *g_forceTorqueArr = nullptr;
 
     void getBuffers(long long configs)
     {
         std::vector<void*> buffers = GPUMem::getBuffers(
                 { configs * (long long)sizeof(CoilPairPositionData),
+                  1 * (long long)sizeof(CoilPairArgumentsData),
                   configs * (long long)sizeof(ForceTorqueData)}
         );
 
-        g_configArr = static_cast<CoilPairPositionData*>(buffers[0]);
-        g_forceTorqueArr = static_cast<ForceTorqueData*>(buffers[1]);
+        g_configArr = static_cast<CoilPairPositionData *>(buffers[0]);
+        g_coilPair = static_cast<CoilPairArgumentsData *>(buffers[1]);
+        g_forceTorqueArr = static_cast<ForceTorqueData *>(buffers[2]);
 
     }
 
@@ -198,7 +204,7 @@ namespace
 }
 
 void Calculate_force_and_torque_configurations(long long configCount, long long pointCount,
-                                               CoilPairArgumentsData coilPair,
+                                               const CoilPairArgumentsData *coilPair,
                                                const CoilPairPositionData *configArr,
                                                ForceTorqueData *forceTorqueArr)
 {
@@ -218,7 +224,8 @@ void Calculate_force_and_torque_configurations(long long configCount, long long 
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemcpy(g_configArr, configArr, configCount * sizeof(CoilPairPositionData), cudaMemcpyHostToDevice));
+    gpuErrchk(cudaMemcpy(g_configArr, configArr, configCount * sizeof(CoilPairPositionData), cudaMemcpyHostToDevice))
+    gpuErrchk(cudaMemcpy(g_coilPair, coilPair, 1 * sizeof(CoilPairArgumentsData), cudaMemcpyHostToDevice))
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -229,7 +236,9 @@ void Calculate_force_and_torque_configurations(long long configCount, long long 
 
     gpuErrchk(cudaMemset(g_forceTorqueArr, 0, configCount * sizeof(ForceTorqueData)))
 
-    CalculateForceAndTorqueConfigurations<<<blocks, NTHREADS>>>(configCount, pointCount, coilPair, g_configArr, g_forceTorqueArr);
+    CalculateForceAndTorqueConfigurations<<<blocks, NTHREADS>>>(
+        configCount, pointCount, g_coilPair, g_configArr, g_forceTorqueArr
+    );
     gpuErrchk(cudaDeviceSynchronize())
 
     #if DEBUG_TIMINGS

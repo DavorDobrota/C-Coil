@@ -8,7 +8,8 @@
 
 
 __global__
-void CalculateMutualInductanceConfigurations(long long configCount, long long pointCount, CoilPairArgumentsData coilPair,
+void CalculateMutualInductanceConfigurations(long long configCount, long long pointCount,
+                                             const CoilPairArgumentsData *pairData,
                                              const CoilPairPositionData *configArr, TYPE *inductanceArr)
 {
     unsigned int index = threadIdx.x;
@@ -16,6 +17,9 @@ void CalculateMutualInductanceConfigurations(long long configCount, long long po
 
     if(global_index >= configCount * pointCount)
         return;
+
+    __shared__ CoilPairArgumentsData coilPair;
+    coilPair = *pairData;
 
     int pairIndex = int(global_index % configCount);
     int lengthIndex = int((global_index / configCount) % coilPair.secLengthIncrements);
@@ -156,17 +160,20 @@ void CalculateMutualInductanceConfigurations(long long configCount, long long po
 namespace
 {
     CoilPairPositionData *g_configArr = nullptr;
+    CoilPairArgumentsData *g_coilPair = nullptr;
     TYPE *g_inductanceArr = nullptr;
 
     void getBuffers(long long configs)
     {
         std::vector<void*> buffers = GPUMem::getBuffers(
                 { configs * (long long)sizeof(CoilPairPositionData),
+                  1 * (long long)sizeof(CoilPairArgumentsData),
                   configs * (long long)sizeof(TYPE)}
         );
 
-        g_configArr = static_cast<CoilPairPositionData*>(buffers[0]);
-        g_inductanceArr = static_cast<TYPE*>(buffers[1]);
+        g_configArr = static_cast<CoilPairPositionData *>(buffers[0]);
+        g_coilPair = static_cast<CoilPairArgumentsData *>(buffers[1]);
+        g_inductanceArr = static_cast<TYPE *>(buffers[2]);
     }
 
     #if DEBUG_TIMINGS
@@ -175,7 +182,7 @@ namespace
 }
 
 void Calculate_mutual_inductance_configurations(long long configCount, long long pointCount,
-                                                CoilPairArgumentsData coilPair,
+                                                const CoilPairArgumentsData *coilPair,
                                                 const CoilPairPositionData *configArr,
                                                 TYPE *inductanceArr)
 {
@@ -196,6 +203,7 @@ void Calculate_mutual_inductance_configurations(long long configCount, long long
     #endif
 
     gpuErrchk(cudaMemcpy(g_configArr, configArr, configCount * sizeof(CoilPairPositionData), cudaMemcpyHostToDevice))
+    gpuErrchk(cudaMemcpy(g_coilPair, coilPair, 1 * sizeof(CoilPairArgumentsData), cudaMemcpyHostToDevice))
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -206,7 +214,9 @@ void Calculate_mutual_inductance_configurations(long long configCount, long long
 
     gpuErrchk(cudaMemset(g_inductanceArr, 0, configCount * sizeof(TYPE)))
 
-    CalculateMutualInductanceConfigurations<<<blocks, NTHREADS>>>(configCount, pointCount, coilPair, g_configArr, g_inductanceArr);
+    CalculateMutualInductanceConfigurations<<<blocks, NTHREADS>>>(
+        configCount, pointCount, g_coilPair, g_configArr, g_inductanceArr
+    );
     gpuErrchk(cudaDeviceSynchronize())
 
     #if DEBUG_TIMINGS

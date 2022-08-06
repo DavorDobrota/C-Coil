@@ -51,6 +51,8 @@ void testCoilMInductanceArrangements()
                mutualInductanceCPU[i], mutualInductanceGPU[i],
                std::abs((mutualInductanceGPU[i] - mutualInductanceCPU[i]) / mutualInductanceCPU[i])
         );
+
+    printf("\n\n");
 }
 
 void testCoilForceArrangements()
@@ -101,6 +103,8 @@ void testCoilForceArrangements()
                forceTorqueCPU[i].first.abs(), forceTorqueGPU[i].first.abs(),
                std::abs((forceTorqueGPU[i].first.abs() - forceTorqueCPU[i].first.abs()) / forceTorqueCPU[i].first.abs())
         );
+
+    printf("\n\n");
 }
 
 void testGroupMInductanceArrangements()
@@ -155,6 +159,8 @@ void testGroupMInductanceArrangements()
                mutualInductanceCPU[i], mutualInductanceGPU[i],
                std::abs((mutualInductanceGPU[i] - mutualInductanceCPU[i]) / mutualInductanceCPU[i])
         );
+
+    printf("\n\n");
 }
 
 void testGroupForceArrangements()
@@ -209,4 +215,6 @@ void testGroupForceArrangements()
                forceTorqueCPU[i].first.abs(), forceTorqueGPU[i].first.abs(),
                std::abs((forceTorqueGPU[i].first.abs() - forceTorqueCPU[i].first.abs()) / forceTorqueCPU[i].first.abs())
         );
+
+    printf("\n\n");
 }

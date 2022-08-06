@@ -77,7 +77,7 @@ std::vector<double> CoilGroup::calculateAllMutualInductanceArrangementsMTD(Coil 
             PrecisionFactor precisionFactor,
             double &mutualInductance
     ){
-        double inductance;
+        double inductance = 0.0;
 
         secondary.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
 

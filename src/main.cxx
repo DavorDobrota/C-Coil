@@ -51,18 +51,21 @@ int main()
 //    benchCoilGroupComputeAllFields(PrecisionFactor(3.0), 1, 1'048'576, 16);
 //    benchCoilGroupComputeAllFields(PrecisionFactor(1.0), 100, 131'072, 16);
 
-//    benchCoilGroupComputeAllFieldsGPU();
+    benchCoilGroupComputeAllFieldsGPU(1000, 1000000);
 
 //    benchCoilGroupMTvsMTD();
 //    benchCoilGroupMInductanceAndForce();
 
 //    benchMInductanceAndForceComputeAll();
-    benchMInductanceAndForceComputeAllGPU();
+//    benchMInductanceAndForceComputeAllGPU();
 
 //    benchCoilGroupMInductanceAndForceAll();
 
-    testCoilMInductanceArrangements();
-    testCoilForceArrangements();
+//    testCoilMInductanceArrangements();
+//    testCoilForceArrangements();
+
+//    testGroupMInductanceArrangements();
+//    testGroupForceArrangements();
 
     return 0;
 }

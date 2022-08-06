@@ -232,7 +232,7 @@ void Calculate_force_and_torque_configurations_group(long long coilCount, long l
     #endif
 
     if(forceTorqueArr != nullptr)
-        gpuErrchk(cudaMemcpy(forceTorqueArr, g_forceTorqueArr, configCount * sizeof(TYPE), cudaMemcpyDeviceToHost))
+        gpuErrchk(cudaMemcpy(forceTorqueArr, g_forceTorqueArr, configCount * sizeof(ForceTorqueData), cudaMemcpyDeviceToHost))
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();

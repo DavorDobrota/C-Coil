@@ -117,13 +117,12 @@ class CoilGroup
                                                const std::vector<double> &secondaryZAngles,
                                                PrecisionFactor precisionFactor = PrecisionFactor()) const;
 
-// TODO: Implement
-//        [[nodiscard]] std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-//        calculateAllAmpereForceArrangementsGPU(Coil secondary,
-//                                               const vec3::Vector3Array &secondaryPositions,
-//                                               const std::vector<double> &secondaryYAngles,
-//                                               const std::vector<double> &secondaryZAngles,
-//                                               PrecisionFactor precisionFactor = PrecisionFactor()) const;
+        [[nodiscard]] std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
+        calculateAllAmpereForceArrangementsGPU(Coil secondary,
+                                               const vec3::Vector3Array &secondaryPositions,
+                                               const std::vector<double> &secondaryYAngles,
+                                               const std::vector<double> &secondaryZAngles,
+                                               PrecisionFactor precisionFactor = PrecisionFactor()) const;
 };
 
 #endif //GENERAL_COIL_PROGRAM_COILGROUP_H

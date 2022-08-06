@@ -1,8 +1,6 @@
 #ifndef GENERAL_COIL_PROGRAM_TEST_H
 #define GENERAL_COIL_PROGRAM_TEST_H
 
-#include "Coil.h"
-
 
 void testNewCoilParameters();
 void testCoilPositionAndRotation();
@@ -19,5 +17,7 @@ void testGradientTensor();
 
 void testCoilMInductanceArrangements();
 void testCoilForceArrangements();
+void testGroupMInductanceArrangements();
+void testGroupForceArrangements();
 
 #endif //GENERAL_COIL_PROGRAM_TEST_H

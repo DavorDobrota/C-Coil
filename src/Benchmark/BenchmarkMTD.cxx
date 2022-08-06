@@ -384,7 +384,7 @@ void benchCoilGroupMInductanceAndForceAll(int coilCount, int opCount, int thread
 
     double torusRadius = 1.0;
 
-    CoilGroup torusGroup = CoilGroup();
+    CoilGroup coilGroup = CoilGroup();
 
     vec3::Vector3Array secPositions(opCount);
     std::vector<double> secYAxisAngle(opCount);
@@ -395,10 +395,10 @@ void benchCoilGroupMInductanceAndForceAll(int coilCount, int opCount, int thread
         Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000, 10);
         tempCoil.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.2 * double(i)));
 
-        torusGroup.addCoil(tempCoil);
+        coilGroup.addCoil(tempCoil);
     }
 
-    torusGroup.setDefaultPrecisionFactor(PrecisionFactor(5.0));
+    coilGroup.setDefaultPrecisionFactor(PrecisionFactor(5.0));
 
     Coil secondary = Coil(0.1, 0.1, 0.1, 10000, 5);
 
@@ -413,30 +413,41 @@ void benchCoilGroupMInductanceAndForceAll(int coilCount, int opCount, int thread
     double interval;
     double perf;
 
-    std::vector<double> tempInductances = torusGroup.computeAllMutualInductanceArrangements(
+    std::vector<double> tempInductances;
+    std::vector<std::pair<vec3::Vector3, vec3::Vector3>> tempForceTorque;
+
+    tempInductances = coilGroup.computeAllMutualInductanceArrangements(
             secondary, secPositions, secYAxisAngle, secZAxisAngle,
             PrecisionFactor(1.0), GPU
     ); // GPU warmup
 
     for (int i = 1; i <= 8; ++i)
     {
-        printf("Mutual inductance performance for precision factor %.1f\n", double(i));
+        printf("Precision factor %.1f\n", double(i));
 
         double precision = ((double(i) - 1.0) / 2.0) + 1.0;
-        torusGroup.setDefaultPrecisionFactor(PrecisionFactor(precision));
+        coilGroup.setDefaultPrecisionFactor(PrecisionFactor(precision));
 
         begin_time = high_resolution_clock::now();
-        tempInductances = torusGroup.computeAllMutualInductanceArrangements(
+        tempInductances = coilGroup.computeAllMutualInductanceArrangements(
             secondary, secPositions, secYAxisAngle, secZAxisAngle,
             PrecisionFactor(precision), GPU
         );
         interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         perf = opCount * coilCount / interval;
-        printf("GPU : %6.2f microseconds/Op | %.0f Ops/s\n", 1e6 / perf, perf);
+        printf("Mutual inductance : %6.2f microseconds/Op | %.0f Ops/s\n", 1e6 / perf, perf);
+
+        begin_time = high_resolution_clock::now();
+        tempForceTorque = coilGroup.computeAllAmpereForceArrangements(
+                secondary, secPositions, secYAxisAngle, secZAxisAngle,
+                PrecisionFactor(precision), GPU
+        );
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        perf = opCount * coilCount / interval;
+        printf("Force and torque  : %6.2f microseconds/Op | %.0f Ops/s\n", 1e6 / perf, perf);
 
         printf("\n");
     }
-
 }
 
 void benchMInductanceAndForceComputeAllMTvsMTD(PrecisionFactor precisionFactor, int threadCount)
@@ -678,3 +689,5 @@ void benchMInductanceAndForceComputeAll(int configCount, int threadCount)
         printf("\n");
     }
 }
+
+#pragma clang diagnostic pop

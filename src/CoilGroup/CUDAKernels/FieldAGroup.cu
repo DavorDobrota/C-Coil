@@ -8,10 +8,10 @@
 
 
 __global__
-void calculateFieldEGroup(long long opCount, long long coilIndex,
-                          const CoilData *coilArr,
-                          const DataVector *posArr,
-                          DataVector *resArr)
+void calculatePotentialGroup(long long opCount, long long coilIndex,
+                             const CoilData *coilArr,
+                             const DataVector *posArr,
+                             DataVector *resArr)
 {
     unsigned int index = threadIdx.x;
     long long globalIndex = blockIdx.x * blockDim.x + index;
@@ -168,7 +168,7 @@ void Calculate_hardware_accelerated_a_group(long long coilCount, long long opCou
 
     for (int i = 0; i < coilCount; ++i)
     {
-        calculateFieldEGroup<<<blocks, NTHREADS>>>(
+        calculatePotentialGroup<<<blocks, NTHREADS>>>(
             opCount, i, g_coilArr, g_posArr, g_resArr
         );
         gpuErrchk(cudaDeviceSynchronize())

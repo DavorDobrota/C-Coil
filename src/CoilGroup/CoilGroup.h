@@ -94,13 +94,9 @@ class CoilGroup
 
         [[nodiscard]] double calculateMutualInductanceMTD(const Coil &secondary,
                                                           PrecisionFactor precisionFactor = PrecisionFactor()) const;
-        [[nodiscard]] double calculateMutualInductanceGPU(const Coil &secondary,
-                                                          PrecisionFactor precisionFactor = PrecisionFactor()) const;
 
         [[nodiscard]] std::pair<vec3::Vector3, vec3::Vector3>
         calculateAmpereForceMTD(const Coil &secondary, PrecisionFactor precisionFactor = PrecisionFactor()) const;
-        [[nodiscard]] std::pair<vec3::Vector3, vec3::Vector3>
-        calculateAmpereForceGPU(const Coil &secondary, PrecisionFactor precisionFactor = PrecisionFactor()) const;
 
         [[nodiscard]] std::vector<double>
         calculateAllMutualInductanceArrangementsMTD(Coil secondary,

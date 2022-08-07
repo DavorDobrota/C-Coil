@@ -198,11 +198,7 @@ vec3::Matrix3Array CoilGroup::computeAllBGradientMatrices(const vec3::Vector3Arr
 
 double CoilGroup::computeMutualInductance(const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod computeMethod) const
 {
-    if (computeMethod == GPU)
-    {
-        return calculateMutualInductanceGPU(secondary, precisionFactor);
-    }
-    else if (memberCoils.size() >= 2 * threadCount && computeMethod == CPU_MT)
+    if (memberCoils.size() >= 2 * threadCount && computeMethod == CPU_MT)
     {
         return calculateMutualInductanceMTD(secondary, precisionFactor);
     }
@@ -221,13 +217,7 @@ double CoilGroup::computeMutualInductance(const Coil &secondary, PrecisionFactor
 std::pair<vec3::Vector3, vec3::Vector3>
 CoilGroup::computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod computeMethod) const
 {
-
-
-    if (computeMethod == GPU)
-    {
-        return calculateAmpereForceGPU(secondary, precisionFactor);
-    }
-    else if (memberCoils.size() >= 2 * threadCount && computeMethod == CPU_MT)
+    if (memberCoils.size() >= 2 * threadCount && computeMethod == CPU_MT)
     {
         return calculateAmpereForceMTD(secondary, precisionFactor);
     }

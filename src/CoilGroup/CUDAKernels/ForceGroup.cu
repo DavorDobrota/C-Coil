@@ -15,15 +15,15 @@ void CalculateForceAndTorqueConfigurationsGroup(long long coilIndex, long long c
                                                 ForceTorqueData *forceTorqueArr)
 {
     unsigned int index = threadIdx.x;
-    long long global_index = blockIdx.x * blockDim.x + index;
+    long long globalIndex = blockIdx.x * blockDim.x + index;
 
-    if(global_index >= configCount * pointCount)
+    if(globalIndex >= configCount * pointCount)
         return;
 
-    int configIndex = int(global_index % configCount);
-    int lengthIndex = int((global_index / configCount) % secondaryCoil.lengthIncrements);
-    int thicknessIndex = int(((global_index / configCount) / secondaryCoil.lengthIncrements) % secondaryCoil.thicknessIncrements);
-    int angularIndex = int((((global_index / configCount) / secondaryCoil.lengthIncrements) / secondaryCoil.thicknessIncrements) % secondaryCoil.angularIncrements);
+    int configIndex = int(globalIndex % configCount);
+    int lengthIndex = int((globalIndex / configCount) % secondaryCoil.lengthIncrements);
+    int thicknessIndex = int(((globalIndex / configCount) / secondaryCoil.lengthIncrements) % secondaryCoil.thicknessIncrements);
+    int angularIndex = int((((globalIndex / configCount) / secondaryCoil.lengthIncrements) / secondaryCoil.thicknessIncrements) % secondaryCoil.angularIncrements);
 
     __shared__ CoilData primCoil;
     primCoil = primaryCoils[coilIndex];

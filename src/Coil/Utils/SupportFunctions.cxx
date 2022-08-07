@@ -85,6 +85,7 @@ void Coil::generateCoilData(CoilData &coilData, const PrecisionArguments &usedPr
         coilData.constFactor = g_MiReduced * currentDensity * thickness * length * M_PI * 0.5;
 
     coilData.current = current;
+    coilData.frequency = sineFrequency;
     coilData.useFastMethod = useFastMethod;
 
     coilData.innerRadius = innerRadius;

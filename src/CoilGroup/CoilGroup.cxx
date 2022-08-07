@@ -95,9 +95,14 @@ vec3::Vector3Array CoilGroup::computeAllAPotentialVectors(const vec3::Vector3Arr
                                                           ComputeMethod computeMethod) const
 {
     if (computeMethod == GPU)
+    {
         return calculateAllAPotentialGPU(pointVectors);
-
-    else if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
+    }
+    else if (memberCoils.size() >= 2 * threadCount && computeMethod == CPU_MT)
+    {
+        return calculateAllAPotentialMTD(pointVectors);
+    }
+    else
     {
         vec3::Vector3Array tempArr(pointVectors.size());
         vec3::Vector3Array outputArr(pointVectors.size());
@@ -110,17 +115,20 @@ vec3::Vector3Array CoilGroup::computeAllAPotentialVectors(const vec3::Vector3Arr
         }
         return outputArr;
     }
-    else
-        return calculateAllAPotentialMTD(pointVectors);
 }
 
 vec3::Vector3Array CoilGroup::computeAllBFieldVectors(const vec3::Vector3Array &pointVectors,
                                                       ComputeMethod computeMethod) const
 {
     if (computeMethod == GPU)
+    {
         return calculateAllBFieldGPU(pointVectors);
-
+    }
     else if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
+    {
+        return calculateAllBFieldMTD(pointVectors);
+    }
+    else
     {
         vec3::Vector3Array tempArr(pointVectors.size());
         vec3::Vector3Array outputArr(pointVectors.size());
@@ -133,14 +141,20 @@ vec3::Vector3Array CoilGroup::computeAllBFieldVectors(const vec3::Vector3Array &
         }
         return outputArr;
     }
-    else
-        return calculateAllBFieldMTD(pointVectors);
 }
 
 vec3::Vector3Array CoilGroup::computeAllEFieldVectors(const vec3::Vector3Array &pointVectors,
                                                       ComputeMethod computeMethod) const
 {
-    if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
+    if (computeMethod == GPU)
+    {
+        return calculateAllEFieldGPU(pointVectors);
+    }
+    else if (memberCoils.size() < 2 * threadCount && computeMethod == CPU_MT)
+    {
+        return calculateAllEFieldMTD(pointVectors);
+    }
+    else
     {
         vec3::Vector3Array tempArr(pointVectors.size());
         vec3::Vector3Array outputArr(pointVectors.size());
@@ -153,17 +167,20 @@ vec3::Vector3Array CoilGroup::computeAllEFieldVectors(const vec3::Vector3Array &
         }
         return outputArr;
     }
-    else
-        return calculateAllAPotentialMTD(pointVectors);
 }
 
 vec3::Matrix3Array CoilGroup::computeAllBGradientMatrices(const vec3::Vector3Array &pointVectors,
                                                           ComputeMethod computeMethod) const
 {
     if (computeMethod == GPU)
+    {
         return calculateAllBGradientGPU(pointVectors);
-
-    else if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
+    }
+    else if (memberCoils.size() >= 2 * threadCount && computeMethod == CPU_MT)
+    {
+        return calculateAllBGradientMTD(pointVectors);
+    }
+    else
     {
         vec3::Matrix3Array tempArr(pointVectors.size());
         vec3::Matrix3Array outputArr(pointVectors.size());
@@ -176,47 +193,60 @@ vec3::Matrix3Array CoilGroup::computeAllBGradientMatrices(const vec3::Vector3Arr
         }
         return outputArr;
     }
-    else
-        return calculateAllBGradientMTD(pointVectors);
 }
 
 
 double CoilGroup::computeMutualInductance(const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod computeMethod) const
 {
-    double totalMutualInductance = 0.0;
-
-    if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
+    if (computeMethod == GPU)
     {
-        for (const auto &memberCoil: memberCoils) {
-            if (memberCoil.getId() != secondary.getId())
-                totalMutualInductance += Coil::computeMutualInductance(memberCoil, secondary, precisionFactor, computeMethod);
-        }
-        return totalMutualInductance;
+        return calculateMutualInductanceGPU(secondary, precisionFactor);
+    }
+    else if (memberCoils.size() >= 2 * threadCount && computeMethod == CPU_MT)
+    {
+        return calculateMutualInductanceMTD(secondary, precisionFactor);
     }
     else
-        return calculateMutualInductanceMTD(secondary, precisionFactor);
+    {
+        double totalMutualInductance = 0.0;
+
+        for (const auto &memberCoil: memberCoils)
+            if (memberCoil.getId() != secondary.getId())
+                totalMutualInductance += Coil::computeMutualInductance(memberCoil, secondary, precisionFactor, computeMethod);
+
+        return totalMutualInductance;
+    }
 }
 
 std::pair<vec3::Vector3, vec3::Vector3>
 CoilGroup::computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod computeMethod) const
 {
-    vec3::Vector3 totalForce{};
-    vec3::Vector3 totalTorque{};
-    std::pair<vec3::Vector3, vec3::Vector3> tempPair;
 
-    if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
+
+    if (computeMethod == GPU)
     {
-        for (const auto &memberCoil: memberCoils) {
-            if (memberCoil.getId() != secondary.getId()) {
+        return calculateAmpereForceGPU(secondary, precisionFactor);
+    }
+    else if (memberCoils.size() >= 2 * threadCount && computeMethod == CPU_MT)
+    {
+        return calculateAmpereForceMTD(secondary, precisionFactor);
+    }
+    else
+    {
+        vec3::Vector3 totalForce;
+        vec3::Vector3 totalTorque;
+        std::pair<vec3::Vector3, vec3::Vector3> tempPair;
+
+        for (const auto &memberCoil: memberCoils)
+            if (memberCoil.getId() != secondary.getId())
+            {
                 tempPair = Coil::computeAmpereForce(memberCoil, secondary, precisionFactor, computeMethod);
                 totalForce += tempPair.first;
                 totalTorque += tempPair.second;
             }
-        }
+
         return {totalForce, totalTorque};
     }
-    else
-        return calculateAmpereForceMTD(secondary, precisionFactor);
 }
 
 

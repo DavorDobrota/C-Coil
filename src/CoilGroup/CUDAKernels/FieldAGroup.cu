@@ -8,23 +8,23 @@
 
 
 __global__
-void calculatePotentialGroup(long long opCount, long long coilIndex,
-                             const CoilData *coilArr,
-                             const DataVector *posArr,
-                             DataVector *resArr)
+void calculateFieldEGroup(long long opCount, long long coilIndex,
+                          const CoilData *coilArr,
+                          const DataVector *posArr,
+                          DataVector *resArr)
 {
     unsigned int index = threadIdx.x;
-    long long global_index = blockIdx.x * blockDim.x + index;
+    long long globalIndex = blockIdx.x * blockDim.x + index;
 
-    if(global_index >= opCount)
+    if(globalIndex >= opCount)
         return;
 
     __shared__ CoilData coil;
     coil = coilArr[coilIndex];
 
-    TYPE x1 = posArr[global_index].x;
-    TYPE y1 = posArr[global_index].y;
-    TYPE z1 = posArr[global_index].z;
+    TYPE x1 = posArr[globalIndex].x;
+    TYPE y1 = posArr[globalIndex].y;
+    TYPE z1 = posArr[globalIndex].z;
 
     x1 -= coil.positionVector[0];
     y1 -= coil.positionVector[1];
@@ -102,9 +102,9 @@ void calculatePotentialGroup(long long opCount, long long coilIndex,
     TYPE yRes = xPot * coil.transformArray[3] + yPot * coil.transformArray[4] + zPot * coil.transformArray[5];
     TYPE zRes = xPot * coil.transformArray[6] + yPot * coil.transformArray[7] + zPot * coil.transformArray[8];
 
-    resArr[global_index].x += xRes;
-    resArr[global_index].y += yRes;
-    resArr[global_index].z += zRes;
+    resArr[globalIndex].x += xRes;
+    resArr[globalIndex].y += yRes;
+    resArr[globalIndex].z += zRes;
 }
 
 
@@ -168,7 +168,9 @@ void Calculate_hardware_accelerated_a_group(long long coilCount, long long opCou
 
     for (int i = 0; i < coilCount; ++i)
     {
-        calculatePotentialGroup<<<blocks, NTHREADS>>>(opCount, i, g_coilArr, g_posArr, g_resArr);
+        calculateFieldEGroup<<<blocks, NTHREADS>>>(
+            opCount, i, g_coilArr, g_posArr, g_resArr
+        );
         gpuErrchk(cudaDeviceSynchronize())
     }
 

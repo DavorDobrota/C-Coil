@@ -8,6 +8,8 @@ struct CoilData
 
         constFactor{0.0},
         current{0.0},
+        frequency{0.0},
+
         useFastMethod{false},
 
         innerRadius{0.0},
@@ -31,6 +33,8 @@ struct CoilData
 
     TYPE constFactor;
     TYPE current;
+    TYPE frequency;
+
     bool useFastMethod;
 
     TYPE innerRadius;

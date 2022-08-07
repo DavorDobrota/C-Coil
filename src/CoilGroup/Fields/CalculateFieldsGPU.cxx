@@ -99,6 +99,52 @@ vec3::Vector3Array CoilGroup::calculateAllBFieldGPU(const vec3::Vector3Array &po
 }
 
 
+vec3::Vector3Array CoilGroup::calculateAllEFieldGPU(const vec3::Vector3Array &pointVectors) const
+{
+    long long size = pointVectors.size();
+    long long coils = memberCoils.size();
+
+    auto *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    auto *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    auto *coilDataArr = static_cast<CoilData *>(calloc(coils, sizeof(CoilData)));
+
+    if(!coordinateArr || !resultArr || !coilDataArr)
+        throw std::bad_alloc();
+
+    for (long long i = 0; i < size; ++i)
+    {
+        vec3::Vector3 tempVec = pointVectors[i];
+
+        coordinateArr[i].x = tempVec.x;
+        coordinateArr[i].y = tempVec.y;
+        coordinateArr[i].z = tempVec.z;
+    }
+
+    generateCoilDataArray(coilDataArr);
+
+    #if USE_GPU == 1
+        Calculate_hardware_accelerated_e_group(coils, size, coilDataArr, coordinateArr, resultArr);
+    #else
+        free(coordinateArr);
+        free(resultArr);
+        free(coilDataArr);
+        throw std::logic_error("GPU functions are disabled. (rebuild the project with USE_GPU)");
+    #endif // USE_GPU
+
+    free(coordinateArr);
+
+    vec3::Vector3Array computedFieldArr;
+    computedFieldArr.reserve(size);
+
+    for (long long i = 0; i < pointVectors.size(); ++i)
+        computedFieldArr.append(resultArr[i].x, resultArr[i].y, resultArr[i].z);
+
+    free(resultArr);
+
+    return computedFieldArr;
+}
+
+
 vec3::Matrix3Array CoilGroup::calculateAllBGradientGPU(const vec3::Vector3Array &pointVectors) const
 {
     long long size = pointVectors.size();

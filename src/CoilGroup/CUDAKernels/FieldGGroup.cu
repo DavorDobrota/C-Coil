@@ -14,17 +14,17 @@ void calculateGradientGroup(long long opCount, long long coilIndex,
                             DataMatrix *resArr)
 {
     unsigned int index = threadIdx.x;
-    long long global_index = blockIdx.x * blockDim.x + index;
+    long long globalIndex = blockIdx.x * blockDim.x + index;
 
-    if(global_index >= opCount)
+    if(globalIndex >= opCount)
         return;
 
     __shared__ CoilData coil;
     coil = coilArr[coilIndex];
 
-    TYPE x1 = posArr[global_index].x;
-    TYPE y1 = posArr[global_index].y;
-    TYPE z1 = posArr[global_index].z;
+    TYPE x1 = posArr[globalIndex].x;
+    TYPE y1 = posArr[globalIndex].y;
+    TYPE z1 = posArr[globalIndex].z;
 
     x1 -= coil.positionVector[0];
     y1 -= coil.positionVector[1];
@@ -173,15 +173,15 @@ void calculateGradientGroup(long long opCount, long long coilIndex,
     TYPE zyRes = coil.transformArray[6] * xyGrad + coil.transformArray[7] * yyGrad + coil.transformArray[8] * zyGrad;
     TYPE zzRes = coil.transformArray[6] * xzGrad + coil.transformArray[7] * yzGrad + coil.transformArray[8] * zzGrad;
 
-    resArr[global_index].xx += xxRes;
-    resArr[global_index].xy += xyRes;
-    resArr[global_index].xz += xzRes;
-    resArr[global_index].yx += yxRes;
-    resArr[global_index].yy += yyRes;
-    resArr[global_index].yz += yzRes;
-    resArr[global_index].zx += zxRes;
-    resArr[global_index].zy += zyRes;
-    resArr[global_index].zz += zzRes;
+    resArr[globalIndex].xx += xxRes;
+    resArr[globalIndex].xy += xyRes;
+    resArr[globalIndex].xz += xzRes;
+    resArr[globalIndex].yx += yxRes;
+    resArr[globalIndex].yy += yyRes;
+    resArr[globalIndex].yz += yzRes;
+    resArr[globalIndex].zx += zxRes;
+    resArr[globalIndex].zy += zyRes;
+    resArr[globalIndex].zz += zzRes;
 }
 
 
@@ -244,7 +244,9 @@ void Calculate_hardware_accelerated_g_group(long long coilCount, long long opCou
 
     for (int i = 0; i < coilCount; ++i)
     {
-        calculateGradientGroup<<<blocks, NTHREADS>>>(opCount, i, g_coilArr, g_posArr, g_resArr);
+        calculateGradientGroup<<<blocks, NTHREADS>>>(
+            opCount, i, g_coilArr, g_posArr, g_resArr
+        );
         gpuErrchk(cudaDeviceSynchronize())
     }
 

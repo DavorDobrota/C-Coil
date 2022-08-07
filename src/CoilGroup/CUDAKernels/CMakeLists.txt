@@ -3,6 +3,7 @@ add_library(
 
         FieldAGroup.cu
         FieldBGroup.cu
+        FieldEGroup.cu
         FieldGGroup.cu
         MInductanceGroup.cu
         ForceGroup.cu

@@ -35,6 +35,7 @@ void CoilGroup::generateCoilDataArray(CoilData *coilDataArr, bool removeSpecific
                                          memberCoils[i].getThickness() * memberCoils[i].getLength() * M_PI * 0.5;
 
         coilDataArr[i].current = memberCoils[i].getCurrent();
+        coilDataArr[i].frequency = memberCoils[i].getSineFrequency();
         coilDataArr[i].useFastMethod = memberCoils[i].isUsingFastMethod();
 
         coilDataArr[i].innerRadius = memberCoils[i].getInnerRadius();

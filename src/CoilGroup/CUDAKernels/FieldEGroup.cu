@@ -8,10 +8,10 @@
 
 
 __global__
-void calculateFieldGroup(long long opCount, long long coilIndex,
-                         const CoilData *coilArr,
-                         const DataVector *posArr,
-                         DataVector *resArr)
+void calculateFieldEGroup(long long opCount, long long coilIndex,
+                          const CoilData *coilArr,
+                          const DataVector *posArr,
+                          DataVector *resArr)
 {
     unsigned int index = threadIdx.x;
     long long globalIndex = blockIdx.x * blockDim.x + index;
@@ -38,8 +38,7 @@ void calculateFieldGroup(long long opCount, long long coilIndex,
     TYPE rCoord = sqrt(x * x + y * y);
     TYPE phiCord = atan2(y, x);
 
-    TYPE fieldH = 0.0f;
-    TYPE fieldZ = 0.0f;
+    TYPE potential = 0.0f;
 
     TYPE topEdge = zCoord + 0.5f * coil.length;
     TYPE bottomEdge = zCoord - 0.5f * coil.length;
@@ -50,28 +49,26 @@ void calculateFieldGroup(long long opCount, long long coilIndex,
         {
             TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.thicknessPositionArray[incT]);
 
-            TYPE tempConstA = incrementPositionT * incrementPositionT;
+            TYPE tempConstA = incrementPositionT * incrementPositionT + rCoord * rCoord;
             TYPE tempConstB = 2.0f * incrementPositionT * rCoord;
-            TYPE tempConstC = tempConstA + rCoord * rCoord;
-
-            TYPE tempConstD1 = topEdge * topEdge + tempConstC;
-            TYPE tempConstD2 = bottomEdge * bottomEdge + tempConstC;
 
             for (int incF = 0; incF < coil.angularIncrements; ++incF)
             {
                 TYPE cosinePhi = coil.cosPrecomputeArray[incF];
 
-                TYPE tempConstE = tempConstB * cosinePhi;
+                TYPE tempConstC = rsqrt(tempConstA - tempConstB * cosinePhi);
 
-                TYPE tempConstF1 = rsqrt(tempConstD1 - tempConstE);
-                TYPE tempConstF2 = rsqrt(tempConstD2 - tempConstE);
+                TYPE tempConstD1 = topEdge * tempConstC;
+                TYPE tempConstD2 = bottomEdge * tempConstC;
 
-                TYPE tempConstG = coil.constFactor * coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF];
+                TYPE tempConstE1 = sqrt(tempConstD1 * tempConstD1 + 1.0f);
+                TYPE tempConstE2 = sqrt(tempConstD2 * tempConstD2 + 1.0f);
 
-                fieldH += tempConstG * incrementPositionT * cosinePhi * (tempConstF2 - tempConstF1);
-                fieldZ += tempConstG *
-                          ((tempConstA - 0.5f * tempConstE) / (tempConstC - tempConstE)) *
-                          (topEdge * tempConstF1 - bottomEdge * tempConstF2);
+                TYPE tempConstF = log((tempConstE1 + tempConstD1) / (tempConstE2 + tempConstD2));
+
+                potential += coil.constFactor *
+                             coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF] *
+                             incrementPositionT * cosinePhi * tempConstF;
             }
         }
     }
@@ -81,32 +78,33 @@ void calculateFieldGroup(long long opCount, long long coilIndex,
         {
             TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.thicknessPositionArray[incT]);
 
-            TYPE tempConstA = incrementPositionT * incrementPositionT;
-            TYPE tempConstB = incrementPositionT * rCoord;
-            TYPE tempConstC = tempConstA + rCoord * rCoord + zCoord * zCoord;
-            TYPE tempConstD = incrementPositionT * zCoord;
+            TYPE tempConstA = incrementPositionT * incrementPositionT + rCoord * rCoord + zCoord * zCoord;
+            TYPE tempConstB = 2.0f * incrementPositionT * rCoord;
 
             for (int incF = 0; incF < coil.angularIncrements; ++incF)
             {
                 TYPE cosinePhi = coil.cosPrecomputeArray[incF];
 
-                TYPE tempConstE = tempConstC - 2.0f * tempConstB * cosinePhi;
-                TYPE tempConstF = tempConstE * sqrt(tempConstE);
-                TYPE tempConstG = coil.constFactor * coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF] / tempConstF;
+                TYPE tempConstC = rsqrt(tempConstA - tempConstB * cosinePhi);
 
-                fieldH += tempConstG * (tempConstD * cosinePhi);
-                fieldZ += tempConstG * (tempConstA - tempConstB * cosinePhi);
+                potential += coil.constFactor *
+                             coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF] *
+                             incrementPositionT * cosinePhi * tempConstC;
             }
         }
     }
 
-    TYPE xField = fieldH * cos(phiCord);
-    TYPE yField = fieldH * sin(phiCord);
-    TYPE zField = fieldZ;
+    TYPE xPot = (-1.0f) * sin(phiCord) * potential;
+    TYPE yPot = potential * cos(phiCord);
+    TYPE zPot = 0.0f;
 
-    TYPE xRes = xField * coil.transformArray[0] + yField * coil.transformArray[1] + zField * coil.transformArray[2];
-    TYPE yRes = xField * coil.transformArray[3] + yField * coil.transformArray[4] + zField * coil.transformArray[5];
-    TYPE zRes = xField * coil.transformArray[6] + yField * coil.transformArray[7] + zField * coil.transformArray[8];
+    TYPE xRes = xPot * coil.transformArray[0] + yPot * coil.transformArray[1] + zPot * coil.transformArray[2];
+    TYPE yRes = xPot * coil.transformArray[3] + yPot * coil.transformArray[4] + zPot * coil.transformArray[5];
+    TYPE zRes = xPot * coil.transformArray[6] + yPot * coil.transformArray[7] + zPot * coil.transformArray[8];
+
+    xRes *= 2 * (TYPE)PI * coil.frequency;
+    yRes *= 2 * (TYPE)PI * coil.frequency;
+    zRes *= 2 * (TYPE)PI * coil.frequency;
 
     resArr[globalIndex].x += xRes;
     resArr[globalIndex].y += yRes;
@@ -133,13 +131,13 @@ namespace
         g_resArr = static_cast<DataVector*>(buffers[2]);
     }
 
-    #if DEBUG_TIMINGS
-        double g_duration;
-    #endif
+#if DEBUG_TIMINGS
+    double g_duration;
+#endif
 }
 
 
-void Calculate_hardware_accelerated_b_group(long long coilCount, long long opCount,
+void Calculate_hardware_accelerated_e_group(long long coilCount, long long opCount,
                                             const CoilData *coilArr,
                                             const DataVector *posArr,
                                             DataVector *resArr)
@@ -174,7 +172,7 @@ void Calculate_hardware_accelerated_b_group(long long coilCount, long long opCou
 
     for (int i = 0; i < coilCount; ++i)
     {
-        calculateFieldGroup<<<blocks, NTHREADS>>>(
+        calculateFieldEGroup<<<blocks, NTHREADS>>>(
             opCount, i, g_coilArr, g_posArr, g_resArr
         );
         gpuErrchk(cudaDeviceSynchronize())
@@ -188,7 +186,7 @@ void Calculate_hardware_accelerated_b_group(long long coilCount, long long opCou
     #endif
 
     if(resArr != nullptr)
-        gpuErrchk(cudaMemcpy(resArr, g_resArr, opCount * sizeof(DataVector), cudaMemcpyDeviceToHost))
+    gpuErrchk(cudaMemcpy(resArr, g_resArr, opCount * sizeof(DataVector), cudaMemcpyDeviceToHost))
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();

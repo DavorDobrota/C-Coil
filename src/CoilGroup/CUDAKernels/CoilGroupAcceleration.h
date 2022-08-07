@@ -14,6 +14,11 @@ void Calculate_hardware_accelerated_b_group(long long coilCount, long long opCou
                                             const DataVector *posArr,
                                             DataVector *resArr = nullptr);
 
+void Calculate_hardware_accelerated_e_group(long long coilCount, long long opCount,
+                                            const CoilData *coilArr,
+                                            const DataVector *posArr,
+                                            DataVector *resArr = nullptr);
+
 void Calculate_hardware_accelerated_g_group(long long coilCount, long long opCount,
                                             const CoilData *coilArr,
                                             const DataVector *posArr,

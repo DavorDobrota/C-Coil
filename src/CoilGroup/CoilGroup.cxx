@@ -44,7 +44,7 @@ void CoilGroup::setThreadCount(int threadCount)
         memberCoil.setThreadCount(threadCount);
 }
 
-void CoilGroup::addCoil(Coil coil)
+void CoilGroup::addCoil(const Coil &coil)
 {
     this->memberCoils.push_back(coil);
 }
@@ -257,7 +257,7 @@ CoilGroup::computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 d
 }
 
 
-std::vector<double> CoilGroup::computeAllMutualInductanceArrangements(Coil secondary,
+std::vector<double> CoilGroup::computeAllMutualInductanceArrangements(const Coil &secondary,
                                                                       const vec3::Vector3Array &secondaryPositions,
                                                                       const std::vector<double> &secondaryYAngles,
                                                                       const std::vector<double> &secondaryZAngles,
@@ -266,19 +266,21 @@ std::vector<double> CoilGroup::computeAllMutualInductanceArrangements(Coil secon
 {
     size_t arrangementCount = secondaryPositions.size();
 
+    Coil sec = Coil(secondary);
+
     if (arrangementCount == secondaryPositions.size() &&
         arrangementCount == secondaryYAngles.size() &&
         arrangementCount == secondaryZAngles.size()) {
         if (computeMethod == GPU)
         {
             return calculateAllMutualInductanceArrangementsGPU(
-                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles,precisionFactor
+                sec, secondaryPositions, secondaryYAngles, secondaryZAngles,precisionFactor
             );
         }
         else if (arrangementCount >= 2 * this->threadCount && computeMethod == CPU_MT)
         {
             return calculateAllMutualInductanceArrangementsMTD(
-                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
+                sec, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
             );
         }
         else
@@ -288,7 +290,7 @@ std::vector<double> CoilGroup::computeAllMutualInductanceArrangements(Coil secon
 
             for (int i = 0; i < arrangementCount; ++i)
             {
-                secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
+                sec.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
                 outputMInductances.emplace_back(computeMutualInductance(secondary, precisionFactor, computeMethod));
             }
             return outputMInductances;
@@ -299,12 +301,14 @@ std::vector<double> CoilGroup::computeAllMutualInductanceArrangements(Coil secon
 }
 
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-CoilGroup::computeAllAmpereForceArrangements(Coil secondary, const vec3::Vector3Array &secondaryPositions,
+CoilGroup::computeAllAmpereForceArrangements(const Coil &secondary, const vec3::Vector3Array &secondaryPositions,
                                              const std::vector<double> &secondaryYAngles,
                                              const std::vector<double> &secondaryZAngles,
                                              PrecisionFactor precisionFactor, ComputeMethod computeMethod) const
 {
     size_t arrangementCount = secondaryPositions.size();
+
+    Coil sec = Coil(secondary);
 
     if (arrangementCount == secondaryPositions.size() &&
         arrangementCount == secondaryYAngles.size() &&
@@ -312,13 +316,13 @@ CoilGroup::computeAllAmpereForceArrangements(Coil secondary, const vec3::Vector3
         if (computeMethod == GPU)
         {
             return calculateAllAmpereForceArrangementsGPU(
-                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
+                sec, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
             );
         }
         else if (arrangementCount >= 2 * this->threadCount && computeMethod == CPU_MT)
         {
             return calculateAllAmpereForceArrangementsMTD(
-                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
+                sec, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
             );
         }
         else
@@ -328,7 +332,7 @@ CoilGroup::computeAllAmpereForceArrangements(Coil secondary, const vec3::Vector3
 
             for (int i = 0; i < arrangementCount; ++i)
             {
-                secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
+                sec.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
                 outputMInductances.emplace_back(computeAmpereForce(secondary, precisionFactor, computeMethod));
             }
             return outputMInductances;

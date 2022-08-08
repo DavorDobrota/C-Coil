@@ -24,7 +24,7 @@ class CoilGroup
 
         void setDefaultPrecisionFactor(PrecisionFactor precisionFactor = PrecisionFactor());
         void setThreadCount(int threadCount);
-        void addCoil(Coil coil);
+        void addCoil(const Coil &coil);
 
         [[nodiscard]] vec3::Vector3 computeBFieldVector(vec3::Vector3 pointVector) const;
         [[nodiscard]] vec3::Vector3 computeAPotentialVector(vec3::Vector3 pointVector) const;
@@ -56,7 +56,7 @@ class CoilGroup
         computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 dipoleMoment) const;
 
         [[nodiscard]] std::vector<double>
-        computeAllMutualInductanceArrangements(Coil secondary,
+        computeAllMutualInductanceArrangements(const Coil &secondary,
                                                const vec3::Vector3Array &secondaryPositions,
                                                const std::vector<double> &secondaryYAngles,
                                                const std::vector<double> &secondaryZAngles,
@@ -64,7 +64,7 @@ class CoilGroup
                                                ComputeMethod computeMethod = CPU_ST) const;
 
         [[nodiscard]] std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-        computeAllAmpereForceArrangements(Coil secondary,
+        computeAllAmpereForceArrangements(const Coil &secondary,
                                           const vec3::Vector3Array &secondaryPositions,
                                           const std::vector<double> &secondaryYAngles,
                                           const std::vector<double> &secondaryZAngles,
@@ -124,6 +124,7 @@ class CoilGroup
                                                const std::vector<double> &secondaryYAngles,
                                                const std::vector<double> &secondaryZAngles,
                                                PrecisionFactor precisionFactor = PrecisionFactor()) const;
+
 };
 
 #endif //GENERAL_COIL_PROGRAM_COILGROUP_H

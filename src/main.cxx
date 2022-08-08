@@ -61,6 +61,7 @@ int main()
 
     benchCoilGroupMInductanceAndForceAll();
 
+
 //    testCoilMInductanceArrangements();
 //    testCoilForceArrangements();
 

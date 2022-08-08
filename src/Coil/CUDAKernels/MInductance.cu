@@ -238,11 +238,11 @@ void Calculate_mutual_inductance_configurations(long long configCount, long long
         printf("\tTotal blocks:             %d\n", blocks);
         printf("\tThreads per calculation:  %i\n", NTHREADS);
         printf("\tTotal issued threads:     %i\n", NTHREADS * blocks);
-        printf("\tTotal configurations:     %d\n", configCount);
-        printf("\tPoints per configuration: %d\n", pointCount);
-        printf("\tTotal calculations:       %d\n", pointCount * configCount);
-        printf("\n\tPerformance:              %.1f kCoils/s\n", double(0.001 * configCount / g_duration));
-        printf("\n\tEffective Performance:    %.1f kPoints/s\n", double(0.001 * pointCount * configCount / g_duration));
+        printf("\tTotal configurations:     %lli\n", configCount);
+        printf("\tPoints per configuration: %lli\n", pointCount);
+        printf("\tTotal calculations:       %lli\n", pointCount * configCount);
+        printf("\n\tPerformance:              %.1lf kCoils/s\n", double(0.001 * configCount / g_duration));
+        printf("\n\tEffective Performance:    %.1lf kPoints/s\n", double(0.001 * pointCount * configCount / g_duration));
         printf("---------------------------------------------------\n\n");
     #endif
 }

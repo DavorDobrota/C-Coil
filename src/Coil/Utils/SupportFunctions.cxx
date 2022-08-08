@@ -11,6 +11,44 @@ namespace
 }
 
 
+Coil::Coil(const Coil &original)
+{
+    this->id = original.getId();
+
+    this->innerRadius = original.innerRadius;
+    this->thickness = original.thickness;
+    this->length = original.length;
+    this->numOfTurns = original.numOfTurns;
+
+    this->currentDensity = original.currentDensity;
+    this->current = original.current;
+
+    this->wireResistivity = original.wireResistivity;
+    this->sineDriven = original.sineDriven;
+    this->sineFrequency = original.sineFrequency;
+
+    this->magneticMoment = original.magneticMoment;
+    this->averageWireThickness = original.averageWireThickness;
+
+    this->resistance = original.resistance;
+    this->selfInductance = original.selfInductance;
+    this->reactance = original.reactance;
+    this->impedance = original.impedance;
+
+    this->coilType = original.coilType;
+    this->useFastMethod = original.useFastMethod;
+    this->threadCount = original.threadCount;
+
+    this->defaultPrecisionCPU = original.defaultPrecisionCPU;
+    this->defaultPrecisionGPU = original.defaultPrecisionGPU;
+
+    this->positionVector = original.positionVector;
+    this->yAxisAngle = original.yAxisAngle;
+    this->zAxisAngle = original.zAxisAngle;
+    this->transformationMatrix = original.transformationMatrix;
+    this->inverseTransformationMatrix = original.inverseTransformationMatrix;
+}
+
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
 Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements, double alpha, double beta)
 {

@@ -16,7 +16,7 @@ add_library(
         Fields/CalculateFieldsFast.cxx
         Utils/SupportFunctions.cxx
         Utils/CalculateAttributes.cxx
-)
+        Fields/ComputeFieldsMethods.cxx ForceAndTorque/ComputeForceMethods.cxx MInductance/ComputeMInductanceMethods.cxx)
 set_property(TARGET Coil PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(Coil PRIVATE -fpic)

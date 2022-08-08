@@ -23,11 +23,12 @@ void compCoilGroupMTD(int coilCount, int pointCount, int threadCount, bool print
 
     for (int i = 0; i < coilCount; ++i)
     {
-        Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, torusRadius / 100.0, 10000, 10);
-        tempCoil.setPositionAndOrientation(
-                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / coilCount),
-                M_PI_2, 2*M_PI * i / coilCount + M_PI_2);
-        torusGroup.addCoil(tempCoil);
+        torusGroup.addCoil(
+            torusRadius / 10.0, torusRadius / 100.0, torusRadius / 100.0,
+            10000, 10, PrecisionFactor(), 8,
+            vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / coilCount),
+            M_PI_2, 2*M_PI * i / coilCount + M_PI_2
+        );
     }
 
     torusGroup.setThreadCount(threadCount);

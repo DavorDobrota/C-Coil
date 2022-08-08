@@ -15,7 +15,7 @@ namespace
 
 
 double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                                CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
+                                                const CoilPairArguments &inductanceArguments, ComputeMethod computeMethod)
 {
     PrecisionArguments primaryPrecisionArguments = inductanceArguments.primaryPrecision;
 
@@ -80,7 +80,7 @@ double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil 
 }
 
 double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                                CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
+                                                const CoilPairArguments &inductanceArguments, ComputeMethod computeMethod)
 {
     double mutualInductance = 0.0;
 
@@ -246,7 +246,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
 }
 
 double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
-                                              CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
+                                              const CoilPairArguments &inductanceArguments, ComputeMethod computeMethod)
 {
     vec3::Vector3 displacementVec = secondary.getPositionVector();
 

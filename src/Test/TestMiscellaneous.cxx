@@ -84,9 +84,11 @@ void testCoilGroupComputeAllMTD()
 
     for (int i = 1; i <= coilCount; ++i)
     {
-        Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000);
-        tempCoil.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.15*i),0.0, 0.0);
-        coilGroup.addCoil(tempCoil);
+        coilGroup.addCoil(
+            0.1, 0.1, 0.1, 10000, 10,
+            PrecisionFactor(), 8,
+            vec3::Vector3(0.0, 0.0, 0.15*i), 0.0, 0.0
+        );
     }
 
     printf("Testing if ST and MTD methods for field computation return the same values\n\n");

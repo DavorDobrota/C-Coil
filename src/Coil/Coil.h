@@ -369,30 +369,30 @@ class Coil
                                                   bool forceCalculation);
 
         static double calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                                         CoilPairArguments inductanceArguments,
+                                                         const CoilPairArguments &inductanceArguments,
                                                          ComputeMethod computeMethod = CPU_ST);
 
         static double calculateMutualInductanceZAxisFast(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                                         CoilPairArguments inductanceArguments,
+                                                         const CoilPairArguments &inductanceArguments,
                                                          ComputeMethod computeMethod = CPU_ST);
 
         static double calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
-                                                       CoilPairArguments inductanceArguments, ComputeMethod computeMethod = CPU_ST);
+                                                       const CoilPairArguments &inductanceArguments, ComputeMethod computeMethod = CPU_ST);
 
         static double calculateAmpereForceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                                    CoilPairArguments forceArguments,
+                                                    const CoilPairArguments &forceArguments,
                                                     ComputeMethod computeMethod = CPU_ST);
 
         static double calculateAmpereForceZAxisFast(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                                    CoilPairArguments forceArguments,
+                                                    const CoilPairArguments &forceArguments,
                                                     ComputeMethod computeMethod = CPU_ST);
 
         static std::pair<vec3::Vector3, vec3::Vector3>
         calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                    CoilPairArguments forceArguments, ComputeMethod computeMethod);
+                                    const CoilPairArguments &forceArguments, ComputeMethod computeMethod);
 
         static std::vector<double>
-        calculateAllMutualInductanceArrangementsMTD(Coil primary, Coil secondary,
+        calculateAllMutualInductanceArrangementsMTD(const Coil &primary, const Coil &secondary,
                                                     const vec3::Vector3Array &primaryPositions,
                                                     const vec3::Vector3Array &secondaryPositions,
                                                     const std::vector<double> &primaryYAngles,
@@ -401,7 +401,7 @@ class Coil
                                                     const std::vector<double> &secondaryZAngles,
                                                     PrecisionFactor precisionFactor = PrecisionFactor());
         static std::vector<double>
-        calculateAllMutualInductanceArrangementsGPU(Coil primary, Coil secondary,
+        calculateAllMutualInductanceArrangementsGPU(const Coil &primary, const Coil &secondary,
                                                     const vec3::Vector3Array &primaryPositions,
                                                     const vec3::Vector3Array &secondaryPositions,
                                                     const std::vector<double> &primaryYAngles,
@@ -411,7 +411,7 @@ class Coil
                                                     PrecisionFactor precisionFactor = PrecisionFactor());
 
         static std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-        calculateAllAmpereForceArrangementsMTD(Coil primary, Coil secondary,
+        calculateAllAmpereForceArrangementsMTD(const Coil &primary, const Coil &secondary,
                                                const vec3::Vector3Array &primaryPositions,
                                                const vec3::Vector3Array &secondaryPositions,
                                                const std::vector<double> &primaryYAngles,
@@ -420,7 +420,7 @@ class Coil
                                                const std::vector<double> &secondaryZAngles,
                                                PrecisionFactor precisionFactor = PrecisionFactor());
         static std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-        calculateAllAmpereForceArrangementsGPU(Coil primary, Coil secondary,
+        calculateAllAmpereForceArrangementsGPU(const Coil &primary, const Coil &secondary,
                                                const vec3::Vector3Array &primaryPositions,
                                                const vec3::Vector3Array &secondaryPositions,
                                                const std::vector<double> &primaryYAngles,
@@ -434,139 +434,3 @@ class Coil
 };
 
 #endif //GENERAL_COIL_PROGRAM_COIL_H
-double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                     CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
-{
-    if (isZAxisCase(primary, secondary))
-    {
-        vec3::Vector3 secPositionVec = secondary.getPositionVector();
-
-        if ((primary.coilType == CoilType::THIN || primary.coilType == CoilType::RECTANGULAR) &&
-            (secondary.coilType == CoilType::THIN || secondary.coilType == CoilType::RECTANGULAR))
-        {
-            return calculateMutualInductanceZAxisFast(
-                    primary, secondary, secPositionVec.z, inductanceArguments, computeMethod
-            );
-        }
-        else
-        {
-            return calculateMutualInductanceZAxisSlow(
-                    primary, secondary, secPositionVec.z, inductanceArguments, computeMethod
-            );
-        }
-    }
-    else
-        return calculateMutualInductanceGeneral(primary, secondary, inductanceArguments, computeMethod);
-}
-
-double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                     PrecisionFactor precisionFactor, ComputeMethod computeMethod)
-{
-    auto args = CoilPairArguments::getAppropriateCoilPairArguments(
-            primary, secondary, precisionFactor, computeMethod,isZAxisCase(primary, secondary)
-    );
-
-    return computeMutualInductance(primary, secondary, args, computeMethod);
-}
-
-double Coil::computeSecondaryInducedVoltage(const Coil &secondary, CoilPairArguments inductanceArguments,
-                                            ComputeMethod computeMethod) const
-{
-    return computeMutualInductance(*this, secondary, inductanceArguments, computeMethod) * 2*M_PI * sineFrequency;
-}
-
-double Coil::computeSecondaryInducedVoltage(const Coil &secondary, PrecisionFactor precisionFactor,
-                                            ComputeMethod computeMethod) const
-{
-    return computeMutualInductance(*this, secondary, precisionFactor, computeMethod) * 2*M_PI * sineFrequency;
-}
-
-
-double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor)
-{
-    if (coilType == CoilType::FILAMENT)
-        throw std::logic_error("Coil loop self inductance is not defined, integral is divergent");
-
-    // centering the coil at (0, 0, 0) and setting angles to 0 improves the accuracy by leveraging the z-axis formula
-    vec3::Vector3 tempPosition = getPositionVector();
-    std::pair tempAngles = getRotationAngles();
-    setPositionAndOrientation();
-
-    auto arguments = CoilPairArguments::getAppropriateCoilPairArguments(
-            *this, *this, precisionFactor
-    );
-    double inductance;
-
-    if (coilType == CoilType::FLAT)
-        inductance = Coil::computeMutualInductance(*this, *this, arguments);
-    else
-        inductance = Coil::calculateSelfInductance(arguments);
-
-    setSelfInductance(inductance);
-    setPositionAndOrientation(tempPosition, tempAngles.first, tempAngles.second);
-
-    return inductance;
-}
-
-
-std::vector<double> Coil::computeAllMutualInductanceArrangements(const Coil &primary, const Coil &secondary,
-                                                                 const vec3::Vector3Array &primaryPositions,
-                                                                 const vec3::Vector3Array &secondaryPositions,
-                                                                 const std::vector<double> &primaryYAngles,
-                                                                 const std::vector<double> &primaryZAngles,
-                                                                 const std::vector<double> &secondaryYAngles,
-                                                                 const std::vector<double> &secondaryZAngles,
-                                                                 PrecisionFactor precisionFactor,
-                                                                 ComputeMethod computeMethod)
-{
-    size_t arrangementCount = primaryPositions.size();
-
-    if (arrangementCount == secondaryPositions.size() &&
-        arrangementCount == primaryYAngles.size() &&
-        arrangementCount == primaryZAngles.size() &&
-        arrangementCount == secondaryYAngles.size() &&
-        arrangementCount == secondaryZAngles.size())
-    {
-        if (computeMethod == GPU)
-        {
-            return calculateAllMutualInductanceArrangementsGPU
-                    (
-                            primary, secondary, primaryPositions, secondaryPositions,
-                            primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
-                            precisionFactor
-                    );
-        }
-        else if (arrangementCount >= 2 * primary.getThreadCount() && computeMethod == CPU_MT)
-        {
-            return calculateAllMutualInductanceArrangementsMTD
-                    (
-                            primary, secondary, primaryPositions, secondaryPositions,
-                            primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
-                            precisionFactor
-                    );
-        }
-        else
-        {
-            Coil prim = Coil(primary);
-            Coil sec = Coil(secondary);
-
-            std::vector<double> outputMInductances;
-            outputMInductances.reserve(arrangementCount);
-
-            for (int i = 0; i < arrangementCount; ++i)
-            {
-                prim.setPositionAndOrientation(
-                        primaryPositions[i], primaryYAngles[i], primaryZAngles[i]
-                );
-                sec.setPositionAndOrientation(
-                        secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]
-                );
-
-                outputMInductances.emplace_back(Coil::computeMutualInductance(primary, secondary, precisionFactor, computeMethod));
-            }
-            return outputMInductances;
-        }
-    }
-    else
-        throw std::logic_error("Array sizes do not match!");
-}

@@ -107,7 +107,7 @@ Coil::computeAllAmpereForceArrangements(const Coil &primary, const Coil &seconda
                     secondaryPositions[i],secondaryYAngles[i],secondaryZAngles[i]
                 );
 
-                outputForcesAndTorques.emplace_back(computeAmpereForce(primary, secondary, precisionFactor, computeMethod));
+                outputForcesAndTorques.emplace_back(computeAmpereForce(prim, sec, precisionFactor, computeMethod));
             }
             return outputForcesAndTorques;
         }

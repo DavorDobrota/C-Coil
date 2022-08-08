@@ -8,14 +8,14 @@
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 
 
-std::vector<double> CoilGroup::calculateAllMutualInductanceArrangementsGPU(Coil secondary,
+std::vector<double> CoilGroup::calculateAllMutualInductanceArrangementsGPU(const Coil &secondary,
                                                                            const vec3::Vector3Array &secondaryPositions,
                                                                            const std::vector<double> &secondaryYAngles,
                                                                            const std::vector<double> &secondaryZAngles,
                                                                            PrecisionFactor precisionFactor) const
 {
     size_t size = secondaryPositions.size();
-    secondary.setDefaultPrecisionGPU(precisionFactor);
+    auto secPrecision = PrecisionArguments::getCoilPrecisionArgumentsGPU(secondary, precisionFactor);
 
     auto *configArr = static_cast<SecondaryCoilPositionData *>(calloc(size, sizeof(SecondaryCoilPositionData)));
     auto *resultArr = static_cast<TYPE *>(calloc(size, sizeof(TYPE)));
@@ -38,7 +38,7 @@ std::vector<double> CoilGroup::calculateAllMutualInductanceArrangementsGPU(Coil 
     size_t coilArrSize = memberCoils.size();
     bool removeSpecificCoil = false;
     for (const auto& memberCoil : memberCoils)
-        if (memberCoil.getId() == secondary.getId())
+        if (memberCoil->getId() == secondary.getId())
         {
             --coilArrSize; removeSpecificCoil = true;
             break;
@@ -48,12 +48,11 @@ std::vector<double> CoilGroup::calculateAllMutualInductanceArrangementsGPU(Coil 
     generateCoilDataArray(coilArr, removeSpecificCoil, secondary.getId());
 
     SecondaryCoilData secondaryData;
-    generateSecondaryData(secondary, secondaryData, false);
+    generateSecondaryData(secondary, secondaryData, secPrecision, false);
 
-    PrecisionArguments precisionArguments = secondary.getPrecisionSettingsGPU();
-    long long pointCount = precisionArguments.lengthIncrementCount *
-                           precisionArguments.thicknessIncrementCount *
-                           precisionArguments.angularIncrementCount;
+    long long pointCount = secPrecision.lengthIncrementCount *
+                           secPrecision.thicknessIncrementCount *
+                           secPrecision.angularIncrementCount;
 
     #if USE_GPU == 1
         Calculate_mutual_inductance_configurations_group(

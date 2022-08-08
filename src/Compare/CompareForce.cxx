@@ -28,16 +28,16 @@ void compAmpereForceThickCoilsGeneral()
     Coil coil3 = Coil(0.1965, 0.04365, 0.552, 3792, 725);
 
     CoilGroup group = CoilGroup();
-    group.addCoil(coil1);
-    group.addCoil(coil2);
-    group.addCoil(coil3);
+    group.addCoil(0.0602, 0.0728, 0.5292, 126, 16500);
+    group.addCoil(0.168, 0.0285, 0.552, 1890, 725);
+    group.addCoil(0.1965, 0.04365, 0.552, 3792, 725);
 
     printf("%.15g T\n", group.computeBFieldVector(vec3::Vector3()).z);
 
     printf("%.15g MJ\n", 1e-6 *
-           (0.5 * coil1.computeAndSetSelfInductance(PrecisionFactor(12)) * coil1.getCurrent() * coil1.getCurrent() +
-            0.5 * coil2.computeAndSetSelfInductance(PrecisionFactor(12)) * coil2.getCurrent() * coil2.getCurrent() +
-            0.5 * coil3.computeAndSetSelfInductance(PrecisionFactor(12)) * coil3.getCurrent() * coil3.getCurrent() +
+           (0.5 * coil1.computeAndSetSelfInductance(PrecisionFactor(12.0)) * coil1.getCurrent() * coil1.getCurrent() +
+            0.5 * coil2.computeAndSetSelfInductance(PrecisionFactor(12.0)) * coil2.getCurrent() * coil2.getCurrent() +
+            0.5 * coil3.computeAndSetSelfInductance(PrecisionFactor(12.0)) * coil3.getCurrent() * coil3.getCurrent() +
            Coil::computeMutualInductance(coil1, coil2) * coil1.getCurrent() * coil2.getCurrent() +
            Coil::computeMutualInductance(coil2, coil3) * coil2.getCurrent() * coil3.getCurrent() +
            Coil::computeMutualInductance(coil1, coil3) * coil1.getCurrent() * coil3.getCurrent()

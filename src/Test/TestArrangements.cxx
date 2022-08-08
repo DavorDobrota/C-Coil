@@ -121,10 +121,11 @@ void testGroupMInductanceArrangements()
 
     for (int i = 0; i < coilCount; ++i)
     {
-        Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000, 10);
-        tempCoil.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.2 * double(i)));
-
-        coilGroup.addCoil(tempCoil);
+        coilGroup.addCoil(
+            0.1, 0.1, 0.1, 10000, 10,
+            PrecisionFactor(), 8,
+            vec3::Vector3(0.0, 0.0, 0.2 * double(i))
+        );
     }
 
     coilGroup.setDefaultPrecisionFactor(PrecisionFactor(5.0));
@@ -177,10 +178,11 @@ void testGroupForceArrangements()
 
     for (int i = 0; i < coilCount; ++i)
     {
-        Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000, 10);
-        tempCoil.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.2 * double(i)));
-
-        coilGroup.addCoil(tempCoil);
+        coilGroup.addCoil(
+            0.1, 0.1, 0.1, 10000, 10,
+            PrecisionFactor(), 8,
+            vec3::Vector3(0.0, 0.0, 0.2 * double(i))
+        );
     }
 
     coilGroup.setDefaultPrecisionFactor(PrecisionFactor(5.0));

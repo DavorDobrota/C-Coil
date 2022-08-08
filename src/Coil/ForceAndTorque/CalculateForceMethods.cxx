@@ -14,7 +14,7 @@ namespace
 
 
 double Coil::calculateAmpereForceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                           CoilPairArguments forceArguments, ComputeMethod computeMethod)
+                                           const CoilPairArguments &forceArguments, ComputeMethod computeMethod)
 {
     PrecisionArguments primaryPrecisionArguments = forceArguments.primaryPrecision;
 
@@ -78,7 +78,7 @@ double Coil::calculateAmpereForceZAxisSlow(const Coil &primary, const Coil &seco
 }
 
 double Coil::calculateAmpereForceZAxisFast(const Coil &primary, const Coil &secondary, double zDisplacement,
-                                           CoilPairArguments forceArguments, ComputeMethod computeMethod)
+                                           const CoilPairArguments &forceArguments, ComputeMethod computeMethod)
 {
 
     double ampereForce = 0.0;
@@ -236,7 +236,7 @@ double Coil::calculateAmpereForceZAxisFast(const Coil &primary, const Coil &seco
 
 std::pair<vec3::Vector3, vec3::Vector3>
 Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
-                                  CoilPairArguments forceArguments, ComputeMethod computeMethod)
+                                  const CoilPairArguments &forceArguments, ComputeMethod computeMethod)
 {
     std::vector<double> forceAndTorqueComponents(6);
 

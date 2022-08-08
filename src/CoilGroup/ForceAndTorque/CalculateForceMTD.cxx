@@ -34,12 +34,12 @@ CoilGroup::calculateAmpereForceMTD(const Coil &secondary, PrecisionFactor precis
 
     for (int i = 0; i < memberCoils.size(); i++)
     {
-        if (memberCoils[i].getId() != secondary.getId())
+        if (memberCoils[i]->getId() != secondary.getId())
         {
             g_threadPool.push
             (
                 calcThread,
-                std::ref(memberCoils[i]),
+                std::ref(*memberCoils[i]),
                 std::ref(secondary),
                 precisionFactor,
                 std::ref(intermediateValues[i])
@@ -60,7 +60,7 @@ CoilGroup::calculateAmpereForceMTD(const Coil &secondary, PrecisionFactor precis
 }
 
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-CoilGroup::calculateAllAmpereForceArrangementsMTD(Coil secondary, const vec3::Vector3Array &secondaryPositions,
+CoilGroup::calculateAllAmpereForceArrangementsMTD(const Coil &secondary, const vec3::Vector3Array &secondaryPositions,
                                                   const std::vector<double> &secondaryYAngles,
                                                   const std::vector<double> &secondaryZAngles,
                                                   PrecisionFactor precisionFactor) const
@@ -75,8 +75,8 @@ CoilGroup::calculateAllAmpereForceArrangementsMTD(Coil secondary, const vec3::Ve
     auto calcThread = []
     (
             int idx,
-            const std::vector<Coil> &group,
-            Coil secondary,
+            const std::vector<std::shared_ptr<Coil>> &group,
+            const Coil &secondary,
             vec3::Vector3 secondaryPosition,
             double secondaryYAngle,
             double secondaryZAngle,
@@ -85,13 +85,14 @@ CoilGroup::calculateAllAmpereForceArrangementsMTD(Coil secondary, const vec3::Ve
     ){
         std::pair<vec3::Vector3, vec3::Vector3> forceTorque;
 
-        secondary.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
+        Coil sec = Coil(secondary);
+        sec.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
 
         for (const auto& memberCoil : group)
-            if (memberCoil.getId() != secondary.getId())
+            if (memberCoil->getId() != secondary.getId())
             {
                 std::pair<vec3::Vector3, vec3::Vector3> tempPair;
-                tempPair = Coil::computeAmpereForce(memberCoil, secondary, precisionFactor, CPU_ST);
+                tempPair = Coil::computeAmpereForce(*memberCoil, sec, precisionFactor, CPU_ST);
                 forceTorque.first += tempPair.first;
                 forceTorque.second += tempPair.second;
             }
@@ -107,7 +108,7 @@ CoilGroup::calculateAllAmpereForceArrangementsMTD(Coil secondary, const vec3::Ve
         (
             calcThread,
             std::ref(this->memberCoils),
-            secondary,
+            std::ref(secondary),
             secondaryPositions[i],
             secondaryYAngles[i],
             secondaryZAngles[i],

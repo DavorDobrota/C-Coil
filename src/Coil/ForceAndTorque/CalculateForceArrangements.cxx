@@ -14,7 +14,7 @@ namespace
 
 
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-Coil::calculateAllAmpereForceArrangementsMTD(Coil primary, Coil secondary,
+Coil::calculateAllAmpereForceArrangementsMTD(const Coil &primary, const Coil &secondary,
                                              const vec3::Vector3Array &primaryPositions,
                                              const vec3::Vector3Array &secondaryPositions,
                                              const std::vector<double> &primaryYAngles,
@@ -31,10 +31,10 @@ Coil::calculateAllAmpereForceArrangementsMTD(Coil primary, Coil secondary,
     g_threadPool.getCompletedTasks().store(0ull);
 
     auto calcThread = []
-        (
+    (
             int idx,
-            Coil primary,
-            Coil secondary,
+            const Coil &primary,
+            const Coil &secondary,
             vec3::Vector3 primaryPosition,
             vec3::Vector3 secondaryPosition,
             double primaryYAngle,
@@ -43,34 +43,35 @@ Coil::calculateAllAmpereForceArrangementsMTD(Coil primary, Coil secondary,
             double secondaryZAngle,
             PrecisionFactor precisionFactor,
             std::pair<vec3::Vector3, vec3::Vector3> &ampereForce
-        )
-    {
-        primary.setPositionAndOrientation(primaryPosition, primaryYAngle, primaryZAngle);
-        secondary.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
+    ){
+        Coil prim = Coil(primary);
+        Coil sec = Coil(secondary);
 
-        ampereForce = Coil::computeAmpereForce(primary, secondary, precisionFactor);
+        prim.setPositionAndOrientation(primaryPosition, primaryYAngle, primaryZAngle);
+        sec.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
+
+        ampereForce = Coil::computeAmpereForce(prim, sec, precisionFactor);
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
 
     for (int i = 0; i < arrangementCount; ++i)
     {
-        primary.setPositionAndOrientation(primaryPositions[i], primaryYAngles[i], primaryZAngles[i]);
-        secondary.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
-
-        g_threadPool.push(calcThread,
-                          std::ref(primary),
-                          std::ref(secondary),
-                          primaryPositions[i],
-                          secondaryPositions[i],
-                          primaryYAngles[i],
-                          primaryZAngles[i],
-                          secondaryYAngles[i],
-                          secondaryZAngles[i],
-                          precisionFactor,
-                          std::ref(outputForcesAndTorques[i]));
+        g_threadPool.push
+        (
+            calcThread,
+            std::ref(primary),
+            std::ref(secondary),
+            primaryPositions[i],
+            secondaryPositions[i],
+            primaryYAngles[i],
+            primaryZAngles[i],
+            secondaryYAngles[i],
+            secondaryZAngles[i],
+            precisionFactor,
+            std::ref(outputForcesAndTorques[i])
+        );
     }
-
     g_threadPool.synchronizeThreads();
 
     return outputForcesAndTorques;
@@ -80,7 +81,7 @@ Coil::calculateAllAmpereForceArrangementsMTD(Coil primary, Coil secondary,
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-Coil::calculateAllAmpereForceArrangementsGPU(Coil primary, Coil secondary,
+Coil::calculateAllAmpereForceArrangementsGPU(const Coil &primary, const Coil &secondary,
                                              const vec3::Vector3Array &primaryPositions,
                                              const vec3::Vector3Array &secondaryPositions,
                                              const std::vector<double> &primaryYAngles,

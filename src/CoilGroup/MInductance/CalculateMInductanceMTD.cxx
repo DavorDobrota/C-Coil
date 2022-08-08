@@ -33,11 +33,11 @@ double CoilGroup::calculateMutualInductanceMTD(const Coil &secondary, PrecisionF
 
     for (int i = 0; i < memberCoils.size(); i++)
     {
-        if (memberCoils[i].getId() != secondary.getId()) {
+        if (memberCoils[i]->getId() != secondary.getId()) {
             g_threadPool.push
             (
                 calcThread,
-                std::ref(memberCoils[i]),
+                std::ref(*memberCoils[i]),
                 std::ref(secondary),
                 precisionFactor,
                 std::ref(intermediateValues[i])
@@ -53,7 +53,7 @@ double CoilGroup::calculateMutualInductanceMTD(const Coil &secondary, PrecisionF
 }
 
 
-std::vector<double> CoilGroup::calculateAllMutualInductanceArrangementsMTD(Coil secondary,
+std::vector<double> CoilGroup::calculateAllMutualInductanceArrangementsMTD(const Coil &secondary,
                                                                            const vec3::Vector3Array &secondaryPositions,
                                                                            const std::vector<double> &secondaryYAngles,
                                                                            const std::vector<double> &secondaryZAngles,
@@ -69,8 +69,8 @@ std::vector<double> CoilGroup::calculateAllMutualInductanceArrangementsMTD(Coil 
     auto calcThread = []
     (
             int idx,
-            const std::vector<Coil> &group,
-            Coil secondary,
+            const std::vector<std::shared_ptr<Coil>> &group,
+            const Coil &secondary,
             vec3::Vector3 secondaryPosition,
             double secondaryYAngle,
             double secondaryZAngle,
@@ -79,11 +79,12 @@ std::vector<double> CoilGroup::calculateAllMutualInductanceArrangementsMTD(Coil 
     ){
         double inductance = 0.0;
 
-        secondary.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
+        Coil sec = Coil(secondary);
+        sec.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
 
         for (const auto& memberCoil : group)
-            if (memberCoil.getId() != secondary.getId())
-                inductance += Coil::computeMutualInductance(memberCoil, secondary, precisionFactor, CPU_ST);
+            if (memberCoil->getId() != secondary.getId())
+                inductance += Coil::computeMutualInductance(*memberCoil, sec, precisionFactor, CPU_ST);
 
         mutualInductance = inductance;
 
@@ -96,7 +97,7 @@ std::vector<double> CoilGroup::calculateAllMutualInductanceArrangementsMTD(Coil 
         (
             calcThread,
             std::ref(this->memberCoils),
-            secondary,
+            std::ref(secondary),
             secondaryPositions[i],
             secondaryYAngles[i],
             secondaryZAngles[i],

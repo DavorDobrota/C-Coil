@@ -4,27 +4,31 @@
 #include "Coil.h"
 
 #include <string>
-
+#include <memory>
 
 class CoilGroup
 {
     private:
-        std::vector<Coil> memberCoils;
+        std::vector<std::shared_ptr<Coil>> memberCoils;
         PrecisionFactor defaultPrecisionFactor;
         int threadCount{};
         
     public:
-        explicit CoilGroup(std::vector<Coil> memberCoils = std::vector<Coil>(),
+        explicit CoilGroup(std::vector<std::shared_ptr<Coil>> memberCoils = std::vector<std::shared_ptr<Coil>>(),
                            PrecisionFactor precisionFactor = PrecisionFactor(),
                            int threadCount = defaultThreadCount);
         
         [[nodiscard]] PrecisionFactor getDefaultPrecisionFactor() const;
         [[nodiscard]] int getThreadCount() const;
-        [[nodiscard]] const std::vector<Coil> &getMemberCoils() const;
+        [[nodiscard]] const std::vector<std::shared_ptr<Coil>> &getMemberCoils() const;
 
         void setDefaultPrecisionFactor(PrecisionFactor precisionFactor = PrecisionFactor());
         void setThreadCount(int threadCount);
-        void addCoil(const Coil &coil);
+        void addCoil(double innerRadius, double thickness, double length, int numOfTurns, double current = 1.0,
+                     PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount,
+                     vec3::Vector3 coordinatePosition = vec3::Vector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
+
+        Coil& operator[](size_t index) const;
 
         [[nodiscard]] vec3::Vector3 computeBFieldVector(vec3::Vector3 pointVector) const;
         [[nodiscard]] vec3::Vector3 computeAPotentialVector(vec3::Vector3 pointVector) const;
@@ -84,7 +88,7 @@ class CoilGroup
                                    bool removeSpecificCoil = false,
                                    unsigned long long specificCoilId = 0) const;
         static void generateSecondaryData(const Coil &secondary, SecondaryCoilData &secondaryData,
-                                          bool forceCalculation = false);
+                                          const PrecisionArguments &precision, bool forceCalculation);
 
         [[nodiscard]] vec3::Vector3Array calculateAllAPotentialGPU(const vec3::Vector3Array &pointVectors) const;
         [[nodiscard]] vec3::Vector3Array calculateAllBFieldGPU(const vec3::Vector3Array &pointVectors) const;
@@ -99,27 +103,27 @@ class CoilGroup
         calculateAmpereForceMTD(const Coil &secondary, PrecisionFactor precisionFactor = PrecisionFactor()) const;
 
         [[nodiscard]] std::vector<double>
-        calculateAllMutualInductanceArrangementsMTD(Coil secondary,
+        calculateAllMutualInductanceArrangementsMTD(const Coil &secondary,
                                                     const vec3::Vector3Array &secondaryPositions,
                                                     const std::vector<double> &secondaryYAngles,
                                                     const std::vector<double> &secondaryZAngles,
                                                     PrecisionFactor precisionFactor = PrecisionFactor()) const;
         [[nodiscard]] std::vector<double>
-        calculateAllMutualInductanceArrangementsGPU(Coil secondary,
+        calculateAllMutualInductanceArrangementsGPU(const Coil &secondary,
                                                     const vec3::Vector3Array &secondaryPositions,
                                                     const std::vector<double> &secondaryYAngles,
                                                     const std::vector<double> &secondaryZAngles,
                                                     PrecisionFactor precisionFactor = PrecisionFactor()) const;
 
         [[nodiscard]] std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-        calculateAllAmpereForceArrangementsMTD(Coil secondary,
+        calculateAllAmpereForceArrangementsMTD(const Coil &secondary,
                                                const vec3::Vector3Array &secondaryPositions,
                                                const std::vector<double> &secondaryYAngles,
                                                const std::vector<double> &secondaryZAngles,
                                                PrecisionFactor precisionFactor = PrecisionFactor()) const;
 
         [[nodiscard]] std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-        calculateAllAmpereForceArrangementsGPU(Coil secondary,
+        calculateAllAmpereForceArrangementsGPU(const Coil &secondary,
                                                const vec3::Vector3Array &secondaryPositions,
                                                const std::vector<double> &secondaryYAngles,
                                                const std::vector<double> &secondaryZAngles,

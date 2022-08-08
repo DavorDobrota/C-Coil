@@ -9,13 +9,13 @@
 
 
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-CoilGroup::calculateAllAmpereForceArrangementsGPU(Coil secondary, const vec3::Vector3Array &secondaryPositions,
+CoilGroup::calculateAllAmpereForceArrangementsGPU(const Coil &secondary, const vec3::Vector3Array &secondaryPositions,
                                                   const std::vector<double> &secondaryYAngles,
                                                   const std::vector<double> &secondaryZAngles,
                                                   PrecisionFactor precisionFactor) const
 {
     size_t size = secondaryPositions.size();
-    secondary.setDefaultPrecisionGPU(precisionFactor);
+    auto secPrecision = PrecisionArguments::getCoilPrecisionArgumentsGPU(secondary, precisionFactor);
 
     auto *configArr = static_cast<SecondaryCoilPositionData *>(calloc(size, sizeof(SecondaryCoilPositionData)));
     auto *resultArr = static_cast<ForceTorqueData *>(calloc(size, sizeof(ForceTorqueData)));
@@ -38,7 +38,7 @@ CoilGroup::calculateAllAmpereForceArrangementsGPU(Coil secondary, const vec3::Ve
     size_t coilArrSize = memberCoils.size();
     bool removeSpecificCoil = false;
     for (const auto& memberCoil : memberCoils)
-        if (memberCoil.getId() == secondary.getId())
+        if (memberCoil->getId() == secondary.getId())
         {
             --coilArrSize; removeSpecificCoil = true;
             break;
@@ -48,12 +48,11 @@ CoilGroup::calculateAllAmpereForceArrangementsGPU(Coil secondary, const vec3::Ve
     generateCoilDataArray(coilArr, removeSpecificCoil, secondary.getId());
 
     SecondaryCoilData secondaryData;
-    generateSecondaryData(secondary, secondaryData, true);
+    generateSecondaryData(secondary, secondaryData, secPrecision, true);
 
-    PrecisionArguments precisionArguments = secondary.getPrecisionSettingsGPU();
-    long long pointCount = precisionArguments.lengthIncrementCount *
-                           precisionArguments.thicknessIncrementCount *
-                           precisionArguments.angularIncrementCount;
+    long long pointCount = secPrecision.lengthIncrementCount *
+                           secPrecision.thicknessIncrementCount *
+                           secPrecision.angularIncrementCount;
 
     #if USE_GPU == 1
         Calculate_force_and_torque_configurations_group(

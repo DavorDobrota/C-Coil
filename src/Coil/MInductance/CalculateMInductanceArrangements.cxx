@@ -15,7 +15,7 @@ namespace
 }
 
 
-std::vector<double> Coil::calculateAllMutualInductanceArrangementsMTD(Coil primary, Coil secondary,
+std::vector<double> Coil::calculateAllMutualInductanceArrangementsMTD(const Coil &primary, const Coil &secondary,
                                                                       const vec3::Vector3Array &primaryPositions,
                                                                       const vec3::Vector3Array &secondaryPositions,
                                                                       const std::vector<double> &primaryYAngles,
@@ -32,10 +32,10 @@ std::vector<double> Coil::calculateAllMutualInductanceArrangementsMTD(Coil prima
     g_threadPool.getCompletedTasks().store(0ull);
 
     auto calcThread = []
-        (
+    (
             int idx,
-            Coil primary,
-            Coil secondary,
+            const Coil &primary,
+            const Coil &secondary,
             vec3::Vector3 primaryPosition,
             vec3::Vector3 secondaryPosition,
             double primaryYAngle,
@@ -44,31 +44,35 @@ std::vector<double> Coil::calculateAllMutualInductanceArrangementsMTD(Coil prima
             double secondaryZAngle,
             PrecisionFactor precisionFactor,
             double &mutualInductance
-        )
-    {
-        primary.setPositionAndOrientation(primaryPosition, primaryYAngle, primaryZAngle);
-        secondary.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
+    ){
+        Coil prim = Coil(primary);
+        Coil sec = Coil(secondary);
 
-        mutualInductance = Coil::computeMutualInductance(primary, secondary, precisionFactor);
+        prim.setPositionAndOrientation(primaryPosition, primaryYAngle, primaryZAngle);
+        sec.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
+
+        mutualInductance = Coil::computeMutualInductance(prim, sec, precisionFactor);
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
 
     for (int i = 0; i < arrangementCount; ++i)
     {
-        g_threadPool.push(calcThread,
-                          std::ref(primary),
-                          std::ref(secondary),
-                          primaryPositions[i],
-                          secondaryPositions[i],
-                          primaryYAngles[i],
-                          primaryZAngles[i],
-                          secondaryYAngles[i],
-                          secondaryZAngles[i],
-                          precisionFactor,
-                          std::ref(outputMInductances[i]));
+        g_threadPool.push
+        (
+            calcThread,
+            std::ref(primary),
+            std::ref(secondary),
+            primaryPositions[i],
+            secondaryPositions[i],
+            primaryYAngles[i],
+            primaryZAngles[i],
+            secondaryYAngles[i],
+            secondaryZAngles[i],
+            precisionFactor,
+            std::ref(outputMInductances[i])
+        );
     }
-
     g_threadPool.synchronizeThreads();
 
     return outputMInductances;
@@ -77,7 +81,7 @@ std::vector<double> Coil::calculateAllMutualInductanceArrangementsMTD(Coil prima
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-std::vector<double> Coil::calculateAllMutualInductanceArrangementsGPU(Coil primary, Coil secondary,
+std::vector<double> Coil::calculateAllMutualInductanceArrangementsGPU(const Coil &primary, const Coil &secondary,
                                                                       const vec3::Vector3Array &primaryPositions,
                                                                       const vec3::Vector3Array &secondaryPositions,
                                                                       const std::vector<double> &primaryYAngles,

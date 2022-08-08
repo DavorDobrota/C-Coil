@@ -1,5 +1,8 @@
 #include "Coil.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 
 double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
                                      CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
@@ -129,7 +132,7 @@ std::vector<double> Coil::computeAllMutualInductanceArrangements(const Coil &pri
                     secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]
                 );
 
-                outputMInductances.emplace_back(Coil::computeMutualInductance(primary, secondary, precisionFactor, computeMethod));
+                outputMInductances.emplace_back(Coil::computeMutualInductance(prim, sec, precisionFactor, computeMethod));
             }
             return outputMInductances;
         }

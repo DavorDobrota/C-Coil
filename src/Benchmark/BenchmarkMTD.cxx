@@ -67,22 +67,24 @@ void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor, int coilCou
 
     for (int i = 0; i < coilCount; ++i)
     {
-        Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, torusRadius / 100.0, 10000, 10);
-        tempCoil.setPositionAndOrientation(
-                vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / coilCount),
-                M_PI_2, 2*M_PI * i / coilCount + M_PI_2);
-        torusGroupThick.addCoil(tempCoil);
+        torusGroupThick.addCoil(
+            torusRadius / 10.0, torusRadius / 100.0, torusRadius / 100.0, 10000,
+            10, PrecisionFactor(), 8,
+            vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / coilCount),
+            M_PI_2, 2*M_PI * i / coilCount + M_PI_2
+        );
     }
     torusGroupThick.setThreadCount(threadCount);
     torusGroupThick.setDefaultPrecisionFactor(precisionFactor);
 
     for (int i = 0; i < coilCount; ++i)
     {
-        Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, 0.0, 100, 10);
-        tempCoil.setPositionAndOrientation(
+        torusGroupFlat.addCoil(
+                torusRadius / 10.0, torusRadius / 100.0, 0.0, 10000,
+                10, PrecisionFactor(), 8,
                 vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / coilCount),
-                M_PI_2, 2*M_PI * i / coilCount + M_PI_2);
-        torusGroupFlat.addCoil(tempCoil);
+                M_PI_2, 2*M_PI * i / coilCount + M_PI_2
+        );
     }
     torusGroupFlat.setThreadCount(threadCount);
     torusGroupFlat.setDefaultPrecisionFactor(precisionFactor);
@@ -199,20 +201,22 @@ void benchCoilGroupComputeAllFieldsGPU(int coilCount, int opCount)
 
     for (int i = 0; i < coilCount; ++i)
     {
-        Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, torusRadius / 100.0, 10000, 10);
-        tempCoil.setPositionAndOrientation(
+        torusGroupThick.addCoil(
+                torusRadius / 10.0, torusRadius / 100.0, torusRadius / 100.0, 10000,
+                10, PrecisionFactor(), 8,
                 vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / coilCount),
-                M_PI_2, 2*M_PI * i / coilCount + M_PI_2);
-        torusGroupThick.addCoil(tempCoil);
+                M_PI_2, 2*M_PI * i / coilCount + M_PI_2
+        );
     }
 
     for (int i = 0; i < coilCount; ++i)
     {
-        Coil tempCoil = Coil(torusRadius / 10.0, torusRadius / 100.0, 0.0, 100, 10);
-        tempCoil.setPositionAndOrientation(
+        torusGroupFlat.addCoil(
+                torusRadius / 10.0, torusRadius / 100.0, 0.0, 10000,
+                10, PrecisionFactor(), 8,
                 vec3::Vector3::getFromCylindricalCoords(0.0, torusRadius, 2*M_PI * i / coilCount),
-                M_PI_2, 2*M_PI * i / coilCount + M_PI_2);
-        torusGroupFlat.addCoil(tempCoil);
+                M_PI_2, 2*M_PI * i / coilCount + M_PI_2
+        );
     }
 
     computedAPotential = torusGroupThick.computeAllAPotentialVectors(fieldPoints, GPU); // warmup
@@ -281,16 +285,20 @@ void benchCoilGroupMInductanceAndForce(int opCount, int threadCount)
 
     for (int i = 1; i <= coilCountMTD; ++i)
     {
-        Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000);
-        tempCoil.setPositionAndOrientation(vec3::Vector3(1e-8, 0.0, 0.15*i),0.0, 0.0);
-        coilGroupMTD.addCoil(tempCoil);
+        coilGroupMTD.addCoil(
+            0.1, 0.1, 0.1, 10000, 10,
+            PrecisionFactor(), 8,
+            vec3::Vector3(1e-8, 0.0, 0.15*i),0.0, 0.0
+        );
     }
 
     for (int i = 0; i <= coilCount; ++i)
     {
-        Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000);
-        tempCoil.setPositionAndOrientation(vec3::Vector3(1e-8, 0.0, 0.15*i),0.0, 0.0);
-        coilGroup.addCoil(tempCoil);
+        coilGroup.addCoil(
+            0.1, 0.1, 0.1, 10000, 10,
+            PrecisionFactor(), 8,
+            vec3::Vector3(1e-8, 0.0, 0.15*i),0.0, 0.0
+        );
     }
 
     printf("Benchmarking mutual inductance and force performance for various compute methods\n\n");
@@ -395,7 +403,11 @@ void benchCoilGroupMInductanceAndForceAll(int coilCount, int opCount, int thread
         Coil tempCoil = Coil(0.1, 0.1, 0.1, 10000, 10);
         tempCoil.setPositionAndOrientation(vec3::Vector3(0.0, 0.0, 0.2 * double(i)));
 
-        coilGroup.addCoil(tempCoil);
+        coilGroup.addCoil(
+            0.1, 0.1, 0.1, 10000, 10,
+            PrecisionFactor(), 8,
+            vec3::Vector3(0.0, 0.0, 0.2 * double(i))
+        );
     }
 
     coilGroup.setDefaultPrecisionFactor(PrecisionFactor(5.0));

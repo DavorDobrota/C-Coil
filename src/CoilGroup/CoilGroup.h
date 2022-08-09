@@ -25,7 +25,7 @@ class CoilGroup
         void setDefaultPrecisionFactor(PrecisionFactor precisionFactor = PrecisionFactor());
         void setThreadCount(int threadCount);
         void addCoil(double innerRadius, double thickness, double length, int numOfTurns, double current = 1.0,
-                     PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount,
+                     PrecisionFactor precisionFactor = PrecisionFactor(), int coilThreads = defaultThreadCount,
                      vec3::Vector3 coordinatePosition = vec3::Vector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
 
         Coil& operator[](size_t index) const;

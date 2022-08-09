@@ -1,6 +1,5 @@
 #include "Benchmark.h"
 #include "Coil.h"
-#include "Coil/EnumsAndConstants/ComputeMethod.h"
 #include "Tensor.h"
 #include "Compare.h"
 #include "CoilGroup.h"
@@ -288,7 +287,7 @@ void benchCoilGroupMInductanceAndForce(int opCount, int threadCount)
         coilGroupMTD.addCoil(
             0.1, 0.1, 0.1, 10000, 10,
             PrecisionFactor(), 8,
-            vec3::Vector3(1e-8, 0.0, 0.15*i),0.0, 0.0
+            vec3::Vector3(1e-8, 0.0, 0.15*double(i)),0.0, 0.0
         );
     }
 
@@ -297,7 +296,7 @@ void benchCoilGroupMInductanceAndForce(int opCount, int threadCount)
         coilGroup.addCoil(
             0.1, 0.1, 0.1, 10000, 10,
             PrecisionFactor(), 8,
-            vec3::Vector3(1e-8, 0.0, 0.15*i),0.0, 0.0
+            vec3::Vector3(1e-8, 0.0, 0.15*double(i)),0.0, 0.0
         );
     }
 

@@ -16,7 +16,7 @@ void compMutualInductanceZAxis()
 
     printf("%.20f\n\n", Coil::computeMutualInductance(primary, secondary));
 
-    FILE *input = fopen("values_MInductance_zAxis.txt", "r");
+    FILE *input = fopen("../data/values_MInductance_zAxis.txt", "r");
     FILE *output = fopen("output.txt", "w");
 
     if(!input || !output)

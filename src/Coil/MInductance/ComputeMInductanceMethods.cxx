@@ -5,7 +5,7 @@
 
 
 double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                     CoilPairArguments inductanceArguments, ComputeMethod computeMethod)
+                                     const CoilPairArguments &inductanceArguments, ComputeMethod computeMethod)
 {
     if (isZAxisCase(primary, secondary))
     {
@@ -39,7 +39,7 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
     return computeMutualInductance(primary, secondary, args, computeMethod);
 }
 
-double Coil::computeSecondaryInducedVoltage(const Coil &secondary, CoilPairArguments inductanceArguments,
+double Coil::computeSecondaryInducedVoltage(const Coil &secondary, const CoilPairArguments &inductanceArguments,
                                             ComputeMethod computeMethod) const
 {
     return computeMutualInductance(*this, secondary, inductanceArguments, computeMethod) * 2*M_PI * sineFrequency;

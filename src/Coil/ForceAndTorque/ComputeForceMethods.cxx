@@ -3,7 +3,7 @@
 
 std::pair<vec3::Vector3, vec3::Vector3>
 Coil::computeAmpereForce(const Coil &primary, const Coil &secondary,
-                         CoilPairArguments forceArguments, ComputeMethod computeMethod)
+                         const CoilPairArguments &forceArguments, ComputeMethod computeMethod)
 {
     if (isZAxisCase(primary, secondary))
     {

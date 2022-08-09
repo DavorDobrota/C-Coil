@@ -255,11 +255,11 @@ class Coil
                                               PrecisionFactor precisionFactor = PrecisionFactor(),
                                               ComputeMethod computeMethod = CPU_ST);
         static double computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                              CoilPairArguments inductanceArguments, ComputeMethod computeMethod = CPU_ST);
+                                              const CoilPairArguments &inductanceArguments, ComputeMethod computeMethod = CPU_ST);
 
         [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, PrecisionFactor precisionFactor = PrecisionFactor(),
                                                             ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, CoilPairArguments inductanceArguments,
+        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, const CoilPairArguments &inductanceArguments,
                                                             ComputeMethod computeMethod = CPU_ST) const;
 
         double computeAndSetSelfInductance(PrecisionFactor precisionFactor);
@@ -270,7 +270,7 @@ class Coil
                            PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod computeMethod = CPU_ST);
         static std::pair<vec3::Vector3, vec3::Vector3>
         computeAmpereForce(const Coil &primary, const Coil &secondary,
-                           CoilPairArguments forceArguments, ComputeMethod computeMethod = CPU_ST);
+                           const CoilPairArguments &forceArguments, ComputeMethod computeMethod = CPU_ST);
 
         [[nodiscard]] std::pair<vec3::Vector3, vec3::Vector3>
         computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 dipoleMoment) const;

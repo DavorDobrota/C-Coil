@@ -45,13 +45,13 @@ void CoilGroup::setThreadCount(int threadCount)
 }
 
 void CoilGroup::addCoil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-                        PrecisionFactor precisionFactor, int threadCount, vec3::Vector3 coordinatePosition,
+                        PrecisionFactor precisionFactor, int coilThreads, vec3::Vector3 coordinatePosition,
                         double yAxisAngle, double zAxisAngle)
 {
-    this->memberCoils.emplace_back(
+    this->memberCoils.push_back(
         std::make_shared<Coil>(
-            innerRadius, thickness, length, numOfTurns, current,
-            precisionFactor, threadCount, coordinatePosition, yAxisAngle, zAxisAngle
+                innerRadius, thickness, length, numOfTurns, current,
+                precisionFactor, coilThreads, coordinatePosition, yAxisAngle, zAxisAngle
         )
     );
 }

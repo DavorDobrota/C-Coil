@@ -63,7 +63,7 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor)
     setPositionAndOrientation();
 
     auto arguments = CoilPairArguments::getAppropriateCoilPairArguments(
-            *this, *this, precisionFactor
+            *this, *this, precisionFactor, CPU_ST, true
     );
     double inductance;
 

@@ -58,9 +58,10 @@ double Coil::calculateAmpereForceZAxisSlow(const Coil &primary, const Coil &seco
                     positionVectors.append(incrementPositionR, 0.0, incrementPositionZ);
 
                     weights.emplace_back(
-                            incrementPositionR * 0.25 *
-                            Legendre::weightsMatrix[maxLengthIndex][zIndex] *
-                            Legendre::weightsMatrix[maxThicknessIndex][rIndex]);
+                        incrementPositionR * 0.25 *
+                        Legendre::weightsMatrix[maxLengthIndex][zIndex] *
+                        Legendre::weightsMatrix[maxThicknessIndex][rIndex]
+                    );
                 }
             }
         }
@@ -70,9 +71,8 @@ double Coil::calculateAmpereForceZAxisSlow(const Coil &primary, const Coil &seco
     vec3::Vector3Array fieldH = primary.computeAllBFieldVectors(positionVectors, primaryPrecisionArguments, computeMethod);
 
     for (int i = 0; i < fieldH.size(); ++i)
-    {
         ampereForce += fieldH[i].x * weights[i];
-    }
+
     ampereForce /= (lengthBlocks * thicknessBlocks);
     return (-1.0) * ampereForce * 2*M_PI * secondary.numOfTurns * secondary.current;
 }
@@ -208,18 +208,18 @@ double Coil::calculateAmpereForceZAxisFast(const Coil &primary, const Coil &seco
             if(remainingIncrements % (threadCount - i) == 0)
             {
                 g_threadPool.push(
-                        calculate,
-                        delegatedIncrements, delegatedIncrements + mean,
-                        std::ref(results[i])
+                    calculate,
+                    delegatedIncrements, delegatedIncrements + mean,
+                    std::ref(results[i])
                 );
                 delegatedIncrements += mean;
             }
             else
             {
                 g_threadPool.push(
-                        calculate,
-                        delegatedIncrements, delegatedIncrements + mean + 1,
-                        std::ref(results[i])
+                    calculate,
+                    delegatedIncrements, delegatedIncrements + mean + 1,
+                    std::ref(results[i])
                 );
                 delegatedIncrements += mean + 1;
             }
@@ -327,9 +327,9 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
             }
         }
     }
-    vec3::Vector3Array magneticFields = primary.computeAllBFieldVectors(positionVectors,
-                                                                        primaryPrecisionArguments,
-                                                                        computeMethod);
+    vec3::Vector3Array magneticFields = primary.computeAllBFieldVectors(
+            positionVectors,primaryPrecisionArguments, computeMethod
+    );
 
     vec3::Vector3 forceVector;
     vec3::Vector3 torqueVector;

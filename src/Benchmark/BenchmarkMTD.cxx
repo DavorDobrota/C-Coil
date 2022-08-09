@@ -218,7 +218,7 @@ void benchCoilGroupComputeAllFieldsGPU(int coilCount, int opCount)
         );
     }
 
-    computedAPotential = torusGroupThick.computeAllAPotentialVectors(fieldPoints, GPU); // warmup
+    computedAPotential = torusGroupFlat.computeAllAPotentialVectors(fieldPoints, GPU); // warmup
 
     for (int i = 1; i <= 7; ++i)
     {

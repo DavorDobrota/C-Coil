@@ -29,7 +29,7 @@ vec3::Vector3Array CoilGroup::calculateAllAPotentialGPU(const vec3::Vector3Array
         coordinateArr[i].z = tempVec.z;
     }
 
-    generateCoilDataArray(coilDataArr);
+    generateCoilDataArray(coilDataArr, this->defaultPrecisionFactor);
 
     #if USE_GPU == 1
         Calculate_hardware_accelerated_a_group(coils, size, coilDataArr, coordinateArr, resultArr);
@@ -74,7 +74,7 @@ vec3::Vector3Array CoilGroup::calculateAllBFieldGPU(const vec3::Vector3Array &po
         coordinateArr[i].z = tempVec.z;
     }
 
-    generateCoilDataArray(coilDataArr);
+    generateCoilDataArray(coilDataArr, this->defaultPrecisionFactor);
 
     #if USE_GPU == 1
         Calculate_hardware_accelerated_b_group(coils, size, coilDataArr, coordinateArr, resultArr);
@@ -120,7 +120,7 @@ vec3::Vector3Array CoilGroup::calculateAllEFieldGPU(const vec3::Vector3Array &po
         coordinateArr[i].z = tempVec.z;
     }
 
-    generateCoilDataArray(coilDataArr);
+    generateCoilDataArray(coilDataArr, this->defaultPrecisionFactor);
 
     #if USE_GPU == 1
         Calculate_hardware_accelerated_e_group(coils, size, coilDataArr, coordinateArr, resultArr);
@@ -166,7 +166,7 @@ vec3::Matrix3Array CoilGroup::calculateAllBGradientGPU(const vec3::Vector3Array 
         coordinateArr[i].z = tempVec.z;
     }
 
-    generateCoilDataArray(coilDataArr);
+    generateCoilDataArray(coilDataArr, this->defaultPrecisionFactor);
 
     #if USE_GPU == 1
         Calculate_hardware_accelerated_g_group(coils, size, coilDataArr, coordinateArr, resultArr);

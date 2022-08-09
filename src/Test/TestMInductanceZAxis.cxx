@@ -21,10 +21,14 @@ void testMInductanceZAxisArgumentGeneration()
     for (double i = 1.0; i <= 9.0; i += 1.0)
     {
         printf("precision = %.1f\n", i);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil1, PrecisionFactor(i), CPU_ST, true);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil2, PrecisionFactor(i), CPU_ST, true);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil3, PrecisionFactor(i), CPU_ST, true);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil4, PrecisionFactor(i), CPU_ST, true);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil1, PrecisionFactor(i), CPU_ST, true,
+                                                                  false);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil2, PrecisionFactor(i), CPU_ST, true,
+                                                                  false);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil3, PrecisionFactor(i), CPU_ST, true,
+                                                                  false);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil4, PrecisionFactor(i), CPU_ST, true,
+                                                                  false);
         printf("\n");
     }
 
@@ -32,10 +36,10 @@ void testMInductanceZAxisArgumentGeneration()
     for (double i = 1.0; i <= 9.0; i += 1.0)
     {
         printf("precision = %.1f\n", i);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil1, PrecisionFactor(i), GPU, true);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil2, PrecisionFactor(i), GPU, true);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil3, PrecisionFactor(i), GPU, true);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil4, PrecisionFactor(i), GPU, true);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil1, PrecisionFactor(i), GPU, true, false);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil2, PrecisionFactor(i), GPU, true, false);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil3, PrecisionFactor(i), GPU, true, false);
+        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil4, PrecisionFactor(i), GPU, true, false);
         printf("\n");
     }
 

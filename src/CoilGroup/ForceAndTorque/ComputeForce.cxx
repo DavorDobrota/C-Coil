@@ -58,13 +58,13 @@ CoilGroup::computeAllAmpereForceArrangements(const Coil &secondary, const vec3::
         if (computeMethod == GPU)
         {
             return calculateAllAmpereForceArrangementsGPU(
-                    secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
+                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
             );
         }
         else if (arrangementCount >= 2 * this->threadCount && computeMethod == CPU_MT)
         {
             return calculateAllAmpereForceArrangementsMTD(
-                    secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
+                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
             );
         }
         else
@@ -76,7 +76,9 @@ CoilGroup::computeAllAmpereForceArrangements(const Coil &secondary, const vec3::
 
             for (int i = 0; i < arrangementCount; ++i)
             {
-                sec.setPositionAndOrientation(secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]);
+                sec.setPositionAndOrientation(
+                    secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]
+                );
                 outputMInductances.emplace_back(computeAmpereForce(sec, precisionFactor, computeMethod));
             }
             return outputMInductances;

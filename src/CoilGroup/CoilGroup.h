@@ -84,9 +84,9 @@ class CoilGroup
         [[nodiscard]] vec3::Vector3Array calculateAllEFieldMTD(const vec3::Vector3Array &pointVectors) const;
         [[nodiscard]] vec3::Matrix3Array calculateAllBGradientMTD(const vec3::Vector3Array &pointVectors) const;
 
-        void generateCoilDataArray(CoilData *coilDataArr,
-                                   bool removeSpecificCoil = false,
-                                   unsigned long long specificCoilId = 0) const;
+        void
+        generateCoilDataArray(CoilData *coilDataArr, PrecisionFactor precisionFactor, bool removeSpecificCoil = false,
+                              unsigned long long int specificCoilId = 0) const;
         static void generateSecondaryData(const Coil &secondary, SecondaryCoilData &secondaryData,
                                           const PrecisionArguments &precision, bool forceCalculation);
 

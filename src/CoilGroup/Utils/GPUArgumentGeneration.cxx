@@ -14,8 +14,8 @@ namespace
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 
 
-void CoilGroup::generateCoilDataArray(CoilData *coilDataArr, bool removeSpecificCoil,
-                                      unsigned long long specificCoilId) const
+void CoilGroup::generateCoilDataArray(CoilData *coilDataArr, PrecisionFactor precisionFactor, bool removeSpecificCoil,
+                                      unsigned long long int specificCoilId) const
 {
     int i = 0;
 
@@ -40,7 +40,7 @@ void CoilGroup::generateCoilDataArray(CoilData *coilDataArr, bool removeSpecific
         coilDataArr[i].thickness = memberCoil->getThickness();
         coilDataArr[i].length = memberCoil->getLength();
 
-        PrecisionArguments coilPrecision = memberCoil->getPrecisionSettingsGPU();
+        PrecisionArguments coilPrecision = PrecisionArguments::getCoilPrecisionArgumentsGPU(*memberCoil, precisionFactor);
 
         coilDataArr[i].lengthIncrements = coilPrecision.lengthIncrementCount;
         coilDataArr[i].thicknessIncrements = coilPrecision.thicknessIncrementCount;

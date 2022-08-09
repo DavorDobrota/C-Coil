@@ -117,10 +117,13 @@ Coil::calculateAllAmpereForceArrangementsGPU(const Coil &primary, const Coil &se
         configArr[i].secBetaAngle = secondaryZAngles[i];
     }
 
-    CoilPairArguments inductanceArguments = CoilPairArguments::getAppropriateCoilPairArguments(primary, secondary, precisionFactor,GPU);
-    CoilPairArgumentsData coilPairArgumentsData;
+    CoilPairArguments inductanceArguments = CoilPairArguments::getAppropriateCoilPairArguments(
+        primary, secondary, precisionFactor,GPU, false, true
+    );
 
+    CoilPairArgumentsData coilPairArgumentsData;
     generateCoilPairArgumentsData(primary, secondary, coilPairArgumentsData, inductanceArguments, false);
+
     long long pointCount = inductanceArguments.secondaryPrecision.lengthIncrementCount *
                           inductanceArguments.secondaryPrecision.thicknessIncrementCount *
                           inductanceArguments.secondaryPrecision.angularIncrementCount;

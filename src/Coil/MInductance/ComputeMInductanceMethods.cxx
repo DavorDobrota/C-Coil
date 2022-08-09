@@ -15,13 +15,13 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
             (secondary.coilType == CoilType::THIN || secondary.coilType == CoilType::RECTANGULAR))
         {
             return calculateMutualInductanceZAxisFast(
-                    primary, secondary, secPositionVec.z, inductanceArguments, computeMethod
+                primary, secondary, secPositionVec.z, inductanceArguments, computeMethod
             );
         }
         else
         {
             return calculateMutualInductanceZAxisSlow(
-                    primary, secondary, secPositionVec.z, inductanceArguments, computeMethod
+                primary, secondary, secPositionVec.z, inductanceArguments, computeMethod
             );
         }
     }
@@ -33,7 +33,7 @@ double Coil::computeMutualInductance(const Coil &primary, const Coil &secondary,
                                      PrecisionFactor precisionFactor, ComputeMethod computeMethod)
 {
     auto args = CoilPairArguments::getAppropriateCoilPairArguments(
-            primary, secondary, precisionFactor, computeMethod,isZAxisCase(primary, secondary)
+        primary, secondary, precisionFactor, computeMethod, isZAxisCase(primary, secondary), false
     );
 
     return computeMutualInductance(primary, secondary, args, computeMethod);
@@ -63,8 +63,9 @@ double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor)
     setPositionAndOrientation();
 
     auto arguments = CoilPairArguments::getAppropriateCoilPairArguments(
-            *this, *this, precisionFactor, CPU_ST, true
+        *this, *this, precisionFactor, CPU_ST, true, false
     );
+
     double inductance;
 
     if (coilType == CoilType::FLAT)

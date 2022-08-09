@@ -15,9 +15,17 @@ namespace
     const int g_defaultBlockCount = 1;
 }
 
+
 PrecisionArguments::PrecisionArguments() :
-        PrecisionArguments(g_defaultBlockCount, g_defaultBlockCount, g_defaultBlockCount,
-                           g_defaultLegendreOrder, g_defaultLegendreOrder, g_defaultLegendreOrder) {}
+    PrecisionArguments
+    (
+        g_defaultBlockCount,
+        g_defaultBlockCount,
+        g_defaultBlockCount,
+        g_defaultLegendreOrder,
+        g_defaultLegendreOrder,
+        g_defaultLegendreOrder
+    ) {}
 
 PrecisionArguments::PrecisionArguments(
         int angularBlocks, int thicknessBlocks, int lengthBlocks,
@@ -45,6 +53,7 @@ PrecisionArguments::PrecisionArguments(
     if (lengthIncrements < 1)
         PrecisionArguments::lengthBlockCount = g_defaultBlockCount;
 }
+
 
 PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &coil, PrecisionFactor precisionFactor)
 {
@@ -134,6 +143,7 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsCPU(const Coil &
                               incrementPrecisionCPUArray[thicknessArrayIndex],
                               incrementPrecisionCPUArray[lengthArrayIndex]);
 }
+
 
 PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &coil, PrecisionFactor precisionFactor)
 {
@@ -249,6 +259,132 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
 
     return PrecisionArguments(1,1,1, angularIncrements, thicknessIncrements, lengthIncrements);
 }
+
+
+PrecisionArguments PrecisionArguments::getSecondaryCoilPrecisionArgumentsGPU(const Coil &coil,
+                                                                             PrecisionFactor precisionFactor)
+{
+    int lengthIncrements, thicknessIncrements, angularIncrements;
+
+    double angularRoot = std::sqrt(M_PI * (coil.getInnerRadius() + 0.5 * coil.getThickness()));
+    double thicknessRoot = std::sqrt(coil.getThickness());
+    double lengthRoot = std::sqrt(coil.getLength());
+
+    int totalIncrements = g_baseLayerIncrementsGPU;
+    int currentIncrements;
+
+    auto coilType = coil.getCoilType();
+
+    switch (coilType)
+    {
+        case CoilType::RECTANGULAR:
+        {
+            totalIncrements *= g_baseLayerIncrementsGPU * g_baseLayerIncrementsGPU;
+            thicknessIncrements = g_minPrimThicknessIncrements;
+            lengthIncrements = g_minPrimLengthIncrements;
+            break;
+        }
+        case CoilType::THIN:
+        {
+            totalIncrements *= g_baseLayerIncrementsGPU;
+            thicknessIncrements = 1;
+            lengthIncrements = g_minPrimLengthIncrements;
+            break;
+        }
+        case CoilType::FLAT:
+        {
+            totalIncrements *= g_baseLayerIncrementsGPU;
+            thicknessIncrements = g_minPrimThicknessIncrements;
+            lengthIncrements = 1;
+            break;
+        }
+        case CoilType::FILAMENT:
+        {
+            thicknessIncrements = 1;
+            lengthIncrements = 1;
+            break;
+        }
+    }
+    angularIncrements = g_minPrimAngularIncrements;
+
+    totalIncrements *= std::pow(2, precisionFactor.relativePrecision - 1.0);
+
+    double angularStep, lengthStep, thicknessStep;
+    bool exitLoop = false;
+
+    do
+    {
+        if (angularIncrements >= GPU_INCREMENTS)
+            angularStep = 0.0;
+        else
+            angularStep = angularRoot / angularIncrements;
+
+        if (thicknessIncrements >= GPU_INCREMENTS)
+            thicknessStep = 0.0;
+        else
+            thicknessStep = thicknessRoot / thicknessIncrements;
+
+        if (lengthIncrements >= GPU_INCREMENTS)
+            lengthStep = 0.0;
+        else
+            lengthStep = lengthRoot / lengthIncrements;
+
+
+        if (angularStep >= std::max(lengthStep, thicknessStep))
+            angularIncrements++;
+        else
+        {
+            if (thicknessStep >= lengthStep)
+                thicknessIncrements++;
+            else
+                lengthIncrements++;
+        }
+
+        currentIncrements = angularIncrements * thicknessIncrements * lengthIncrements;
+
+        if (currentIncrements > totalIncrements)
+            exitLoop = true;
+
+        switch (coilType) {
+            case CoilType::RECTANGULAR:
+            {
+                if (angularIncrements >= GPU_INCREMENTS &&
+                    thicknessIncrements >= GPU_INCREMENTS &&
+                    lengthIncrements >= GPU_INCREMENTS)
+                {
+                    exitLoop = true;
+                }
+                break;
+            }
+            case CoilType::THIN:
+            {
+                if (angularIncrements >= GPU_INCREMENTS && lengthIncrements >= GPU_INCREMENTS)
+                    exitLoop = true;
+                break;
+            }
+            case CoilType::FLAT:
+            {
+                if (angularIncrements >= GPU_INCREMENTS && thicknessIncrements >= GPU_INCREMENTS)
+                    exitLoop = true;
+                break;
+            }
+            case CoilType::FILAMENT:
+            {
+                if (angularIncrements >= GPU_INCREMENTS)
+                    exitLoop = true;
+                break;
+            }
+        }
+    }
+    while (!exitLoop);
+
+    #if PRINT_ENABLED
+        printf("%d : %d %d %d\n", currentIncrements, lengthIncrements, thicknessIncrements, angularIncrements);
+    #endif // PRINT_ENABLED
+
+    return PrecisionArguments(1,1,1, angularIncrements, thicknessIncrements, lengthIncrements);
+}
+
 
 PrecisionArguments::operator std::string() const
 {

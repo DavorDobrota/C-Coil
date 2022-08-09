@@ -53,6 +53,8 @@ struct PrecisionArguments
 
     static PrecisionArguments getCoilPrecisionArgumentsGPU(const Coil &coil, PrecisionFactor precisionFactor);
 
+    static PrecisionArguments getSecondaryCoilPrecisionArgumentsGPU(const Coil &coil, PrecisionFactor precisionFactor);
+
     explicit operator std::string() const;
 };
 
@@ -65,9 +67,9 @@ struct CoilPairArguments
     PrecisionArguments primaryPrecision;
     PrecisionArguments secondaryPrecision;
 
-    static CoilPairArguments getAppropriateCoilPairArguments(const Coil &primary, const Coil &secondary,
-                                                             PrecisionFactor precisionFactor,
-                                                             ComputeMethod computeMethod = CPU_ST, bool zAxisCase = false);
+    static CoilPairArguments
+    getAppropriateCoilPairArguments(const Coil &primary, const Coil &secondary, PrecisionFactor precisionFactor,
+                                    ComputeMethod computeMethod = CPU_ST, bool zAxisCase = false, bool pureGPU = false);
 
     explicit operator std::string() const;
 
@@ -77,6 +79,9 @@ struct CoilPairArguments
 
         static CoilPairArguments calculateCoilPairArgumentsGPU(const Coil &primary, const Coil &secondary,
                                                                PrecisionFactor precisionFactor, bool zAxisCase = false);
+
+        static CoilPairArguments calculateCoilPairArgumentsGPUPure(const Coil &primary, const Coil &secondary,
+                                                                   PrecisionFactor precisionFactor, bool zAxisCase = false);
 };
 
 class CoilGroup;

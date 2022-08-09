@@ -28,7 +28,7 @@ Coil::computeAmpereForce(const Coil &primary, const Coil &secondary,
                          PrecisionFactor precisionFactor, ComputeMethod computeMethod)
 {
     auto args = CoilPairArguments::getAppropriateCoilPairArguments(
-            primary, secondary, precisionFactor, computeMethod, isZAxisCase(primary, secondary)
+        primary, secondary, precisionFactor, computeMethod, isZAxisCase(primary, secondary), false
     );
 
     return computeAmpereForce(primary, secondary, args, computeMethod);

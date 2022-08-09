@@ -17,32 +17,30 @@ namespace
 void CoilGroup::generateCoilDataArray(CoilData *coilDataArr, bool removeSpecificCoil,
                                       unsigned long long specificCoilId) const
 {
-    size_t maxNum = memberCoils.size();
+    int i = 0;
 
-    for (int i = 0; i < maxNum; ++i)
+    for (const auto &memberCoil: memberCoils)
     {
-        if (removeSpecificCoil && specificCoilId == memberCoils[i]->getId())
-        {
-            --i; --maxNum;
+
+        if (removeSpecificCoil && specificCoilId == memberCoil->getId())
             continue;
-        }
 
-        if (memberCoils[i]->isUsingFastMethod())
-            coilDataArr[i].constFactor = g_MiReduced * memberCoils[i]->getCurrentDensity() *
-                                         memberCoils[i]->getThickness() * M_PI * 0.5;
+        if (memberCoil->isUsingFastMethod())
+            coilDataArr[i].constFactor = g_MiReduced * memberCoil->getCurrentDensity() *
+                                         memberCoil->getThickness() * M_PI * 0.5;
         else
-            coilDataArr[i].constFactor = g_MiReduced * memberCoils[i]->getCurrentDensity() *
-                                         memberCoils[i]->getThickness() * memberCoils[i]->getLength() * M_PI * 0.5;
+            coilDataArr[i].constFactor = g_MiReduced * memberCoil->getCurrentDensity() *
+                                         memberCoil->getThickness() * memberCoil->getLength() * M_PI * 0.5;
 
-        coilDataArr[i].current = memberCoils[i]->getCurrent();
-        coilDataArr[i].frequency = memberCoils[i]->getSineFrequency();
-        coilDataArr[i].useFastMethod = memberCoils[i]->isUsingFastMethod();
+        coilDataArr[i].current = memberCoil->getCurrent();
+        coilDataArr[i].frequency = memberCoil->getSineFrequency();
+        coilDataArr[i].useFastMethod = memberCoil->isUsingFastMethod();
 
-        coilDataArr[i].innerRadius = memberCoils[i]->getInnerRadius();
-        coilDataArr[i].thickness = memberCoils[i]->getThickness();
-        coilDataArr[i].length = memberCoils[i]->getLength();
+        coilDataArr[i].innerRadius = memberCoil->getInnerRadius();
+        coilDataArr[i].thickness = memberCoil->getThickness();
+        coilDataArr[i].length = memberCoil->getLength();
 
-        PrecisionArguments coilPrecision = memberCoils[i]->getPrecisionSettingsGPU();
+        PrecisionArguments coilPrecision = memberCoil->getPrecisionSettingsGPU();
 
         coilDataArr[i].lengthIncrements = coilPrecision.lengthIncrementCount;
         coilDataArr[i].thicknessIncrements = coilPrecision.thicknessIncrementCount;
@@ -62,13 +60,13 @@ void CoilGroup::generateCoilDataArray(CoilData *coilDataArr, bool removeSpecific
             coilDataArr[i].thicknessWeightArray[j] = Legendre::weightsMatrix[coilDataArr[i].thicknessIncrements - 1][j];
         }
 
-        vec3::Vector3 tempVec = memberCoils[i]->getPositionVector();
+        vec3::Vector3 tempVec = memberCoil->getPositionVector();
 
         coilDataArr[i].positionVector[0] = tempVec.x;
         coilDataArr[i].positionVector[1] = tempVec.y;
         coilDataArr[i].positionVector[2] = tempVec.z;
 
-        vec3::Matrix3 transformMatrix = memberCoils[i]->getTransformationMatrix();
+        vec3::Matrix3 transformMatrix = memberCoil->getTransformationMatrix();
 
         coilDataArr[i].transformArray[0] = transformMatrix.xx;
         coilDataArr[i].transformArray[1] = transformMatrix.xy;
@@ -80,7 +78,7 @@ void CoilGroup::generateCoilDataArray(CoilData *coilDataArr, bool removeSpecific
         coilDataArr[i].transformArray[7] = transformMatrix.zy;
         coilDataArr[i].transformArray[8] = transformMatrix.zz;
 
-        vec3::Matrix3 invTransformMatrix = memberCoils[i]->getInverseTransformationMatrix();
+        vec3::Matrix3 invTransformMatrix = memberCoil->getInverseTransformationMatrix();
 
         coilDataArr[i].invTransformArray[0] = invTransformMatrix.xx;
         coilDataArr[i].invTransformArray[1] = invTransformMatrix.xy;
@@ -91,6 +89,8 @@ void CoilGroup::generateCoilDataArray(CoilData *coilDataArr, bool removeSpecific
         coilDataArr[i].invTransformArray[6] = invTransformMatrix.zx;
         coilDataArr[i].invTransformArray[7] = invTransformMatrix.zy;
         coilDataArr[i].invTransformArray[8] = invTransformMatrix.zz;
+
+        ++i;
     }
 }
 

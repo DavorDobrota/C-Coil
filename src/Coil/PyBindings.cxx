@@ -293,7 +293,7 @@ void initCoil(py::module_ &mainModule)
             py::arg("precision_factor") = PrecisionFactor(), py::arg("compute_method") = CPU_ST)
         .def_static(
             "compute_mutual_inductance",
-            static_cast<double (*)(const Coil&, const Coil&, CoilPairArguments, ComputeMethod)>(&Coil::computeMutualInductance),
+            static_cast<double (*)(const Coil&, const Coil&, const CoilPairArguments&, ComputeMethod)>(&Coil::computeMutualInductance),
             py::arg("primary"), py::arg("secondary"), py::arg("inductance_arguments"), py::arg("compute_method") = CPU_ST);
 
     coil.def(
@@ -302,7 +302,7 @@ void initCoil(py::module_ &mainModule)
             py::arg("secondary"), py::arg("precision_factor") = PrecisionFactor(), py::arg("compute_method") = CPU_ST)
         .def(
             "compute_secondary_induced_voltage",
-            static_cast<double (Coil::*)(const Coil&, CoilPairArguments, ComputeMethod) const>(&Coil::computeSecondaryInducedVoltage),
+            static_cast<double (Coil::*)(const Coil&, const CoilPairArguments&, ComputeMethod) const>(&Coil::computeSecondaryInducedVoltage),
             py::arg("secondary"), py::arg("inductance_arguments"), py::arg("compute_method") = CPU_ST);
 
     coil.def(
@@ -319,7 +319,7 @@ void initCoil(py::module_ &mainModule)
         .def_static(
             "compute_ampere_force",
             static_cast<std::pair<vec3::Vector3, vec3::Vector3> (*)(
-                    const Coil&, const Coil&, CoilPairArguments, ComputeMethod
+                    const Coil&, const Coil&, const CoilPairArguments&, ComputeMethod
             )>(&Coil::computeAmpereForce),
             py::arg("primary"), py::arg("secondary"), py::arg("force_arguments"), py::arg("compute_method") = CPU_ST);
 

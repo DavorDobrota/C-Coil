@@ -130,8 +130,6 @@ void testGroupMInductanceArrangements()
 
     coilGroup.setDefaultPrecisionFactor(PrecisionFactor(5.0));
 
-    Coil secondary = Coil(0.1, 0.1, 0.1, 10000, 5);
-
     for (int i = 0; i < configCount; ++i)
     {
         secPositions[i] = vec3::Vector3(0.5, 0.0, 0.1 * double(i));
@@ -146,12 +144,12 @@ void testGroupMInductanceArrangements()
     std::vector<double> mutualInductanceGPU(configCount);
 
     mutualInductanceCPU = coilGroup.computeAllMutualInductanceArrangements(
-            secondary, secPositions,secYAxisAngle, secZAxisAngle,
+            coilGroup[0], secPositions,secYAxisAngle, secZAxisAngle,
             precision, CPU_ST
     );
 
     mutualInductanceGPU = coilGroup.computeAllMutualInductanceArrangements(
-            secondary, secPositions,secYAxisAngle, secZAxisAngle,
+            coilGroup[0], secPositions,secYAxisAngle, secZAxisAngle,
             precision, GPU
     );
 
@@ -187,8 +185,6 @@ void testGroupForceArrangements()
 
     coilGroup.setDefaultPrecisionFactor(PrecisionFactor(5.0));
 
-    Coil secondary = Coil(0.1, 0.1, 0.1, 10000, 5);
-
     for (int i = 0; i < configCount; ++i)
     {
         secPositions[i] = vec3::Vector3(0.5, 0.0, 0.1 * double(i));
@@ -203,12 +199,12 @@ void testGroupForceArrangements()
     std::vector<std::pair<vec3::Vector3, vec3::Vector3>> forceTorqueGPU(configCount);
 
     forceTorqueCPU = coilGroup.computeAllAmpereForceArrangements(
-            secondary, secPositions,secYAxisAngle, secZAxisAngle,
+            coilGroup[0], secPositions,secYAxisAngle, secZAxisAngle,
             precision, CPU_ST
     );
 
     forceTorqueGPU = coilGroup.computeAllAmpereForceArrangements(
-            secondary, secPositions,secYAxisAngle, secZAxisAngle,
+            coilGroup[0], secPositions,secYAxisAngle, secZAxisAngle,
             precision, GPU
     );
 

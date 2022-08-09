@@ -605,15 +605,67 @@ CoilPairArguments CoilPairArguments::calculateCoilPairArgumentsGPUPure(const Coi
         if (!zAxisCase)
             currentIncrements *= secAngularIncrements * secLengthIncrements;
 
-        if (primAngularIncrements >= GPU_INCREMENTS &&
-            primThicknessIncrements >= GPU_INCREMENTS &&
-            primLengthIncrements >= GPU_INCREMENTS &&
-            secAngularIncrements >= GPU_INCREMENTS &&
-            secThicknessIncrements >= GPU_INCREMENTS &&
-            secLengthIncrements >= GPU_INCREMENTS)
-        {
-            exitLoop = true;
+        bool primExit = false, secExit = false;
+
+        switch (primType) {
+            case CoilType::RECTANGULAR:
+            {
+                if (primAngularIncrements >= GPU_INCREMENTS && primThicknessIncrements >= GPU_INCREMENTS)
+                    primExit = true;
+                break;
+            }
+            case CoilType::THIN:
+            {
+                if (primAngularIncrements >= GPU_INCREMENTS)
+                    primExit = true;
+                break;
+            }
+            case CoilType::FLAT:
+            {
+                if (primAngularIncrements >= GPU_INCREMENTS && primThicknessIncrements >= GPU_INCREMENTS)
+                    primExit = true;
+                break;
+            }
+            case CoilType::FILAMENT:
+            {
+                if (primAngularIncrements >= GPU_INCREMENTS)
+                    primExit = true;
+                break;
+            }
         }
+
+        switch (secType) {
+            case CoilType::RECTANGULAR:
+            {
+                if (secAngularIncrements >= GPU_INCREMENTS &&
+                    secThicknessIncrements >= GPU_INCREMENTS &&
+                    secLengthIncrements >= GPU_INCREMENTS)
+                {
+                    secExit = true;
+                }
+                break;
+            }
+            case CoilType::THIN:
+            {
+                if (secAngularIncrements >= GPU_INCREMENTS && secLengthIncrements >= GPU_INCREMENTS)
+                    secExit = true;
+                break;
+            }
+            case CoilType::FLAT:
+            {
+                if (secAngularIncrements >= GPU_INCREMENTS && secThicknessIncrements >= GPU_INCREMENTS)
+                    secExit = true;
+                break;
+            }
+            case CoilType::FILAMENT:
+            {
+                if (secAngularIncrements >= GPU_INCREMENTS)
+                    secExit = true;
+                break;
+            }
+        }
+
+        exitLoop = primExit && secExit;
 
         if (currentIncrements > totalIncrements)
             exitLoop = true;

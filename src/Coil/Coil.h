@@ -78,10 +78,11 @@ struct CoilPairArguments
                                                                PrecisionFactor precisionFactor, bool zAxisCase = false);
 
         static CoilPairArguments calculateCoilPairArgumentsGPU(const Coil &primary, const Coil &secondary,
-                                                               PrecisionFactor precisionFactor, bool zAxisCase = false);
+                                                               PrecisionFactor precisionFactor,
+                                                               bool zAxisCase, bool pureGPU);
 
-        static CoilPairArguments calculateCoilPairArgumentsGPUPure(const Coil &primary, const Coil &secondary,
-                                                                   PrecisionFactor precisionFactor, bool zAxisCase = false);
+        static std::vector<std::pair<int, int>> balanceIncrements(int totalIncrements,
+                                                                  const std::vector<std::pair<int, double>>& components);
 };
 
 class CoilGroup;

@@ -61,12 +61,14 @@ int main()
 
 //    benchCoilGroupMInductanceAndForceAll();
 
-    testCoilMInductanceArrangements();
-    testCoilForceArrangements();
+//    testCoilMInductanceArrangements();
+//    testCoilForceArrangements();
 
-    testGroupMInductanceArrangements();
-    testGroupForceArrangements();
+//    testGroupMInductanceArrangements();
+//    testGroupForceArrangements();
 
+    testMInductanceZAxisArgumentGeneration();
+    testMInductanceGeneralArgumentGeneration();
 
     return 0;
 }

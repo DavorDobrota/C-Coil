@@ -1,6 +1,5 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
-#include "CUDAUtils/ConstantsAndStructs/CoilDataStructs.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -153,7 +152,7 @@ PrecisionArguments PrecisionArguments::getCoilPrecisionArgumentsGPU(const Coil &
     double thicknessRoot = std::sqrt(coil.getThickness());
     double lengthRoot = std::sqrt(coil.getLength());
 
-    int totalIncrements = g_baseLayerIncrementsGPU;
+    int totalIncrements = 1;
     int currentIncrements;
 
     auto coilType = coil.getCoilType();

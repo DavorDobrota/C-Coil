@@ -18,28 +18,161 @@ void testMInductanceZAxisArgumentGeneration()
     printf("Testing mutual inductance z-axis argument generation\n\n");
 
     printf("CPU z axis\n");
-    for (double i = 1.0; i <= 9.0; i += 1.0)
+    for (int i = 1; i <= 15; ++i)
     {
-        printf("precision = %.1f\n", i);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil1, PrecisionFactor(i), CPU_ST, true,
-                                                                  false);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil2, PrecisionFactor(i), CPU_ST, true,
-                                                                  false);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil3, PrecisionFactor(i), CPU_ST, true,
-                                                                  false);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil4, PrecisionFactor(i), CPU_ST, true,
-                                                                  false);
+        auto precisionFactor = PrecisionFactor(double(i));
+        printf("precision = %.1f\n", double(i));
+
+        args = CoilPairArguments::getAppropriateCoilPairArguments(
+            coil1, coil1, precisionFactor, CPU_ST, true, false
+        );
+        printf("%d %d %d | %d %d %d\n",
+               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
+               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
+               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
+               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
+               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
+               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        );
+        args = CoilPairArguments::getAppropriateCoilPairArguments(
+            coil1, coil2, precisionFactor, CPU_ST, true, false
+        );
+        printf("%d %d %d | %d %d %d\n",
+               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
+               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
+               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
+               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
+               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
+               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        );
+        args = CoilPairArguments::getAppropriateCoilPairArguments(
+            coil1, coil3, precisionFactor, CPU_ST, true, false
+        );
+        printf("%d %d %d | %d %d %d\n",
+               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
+               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
+               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
+               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
+               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
+               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        );
+        args = CoilPairArguments::getAppropriateCoilPairArguments(
+            coil1, coil4, precisionFactor, CPU_ST, true, false
+        );
+        printf("%d %d %d | %d %d %d\n",
+               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
+               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
+               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
+               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
+               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
+               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        );
         printf("\n");
     }
 
     printf("GPU z axis\n");
-    for (double i = 1.0; i <= 9.0; i += 1.0)
+    for (int i = 1; i <= 15; ++i)
     {
-        printf("precision = %.1f\n", i);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil1, PrecisionFactor(i), GPU, true, false);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil2, PrecisionFactor(i), GPU, true, false);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil3, PrecisionFactor(i), GPU, true, false);
-        args = CoilPairArguments::getAppropriateCoilPairArguments(coil1, coil4, PrecisionFactor(i), GPU, true, false);
+        auto precisionFactor = PrecisionFactor(double(i));
+        printf("precision = %.1f\n", double(i));
+
+        args = CoilPairArguments::getAppropriateCoilPairArguments(
+            coil1, coil1, precisionFactor, GPU, true, false
+        );
+        printf("%d %d %d | %d %d %d\n",
+               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
+               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
+               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
+               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
+               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
+               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        );
+        args = CoilPairArguments::getAppropriateCoilPairArguments(
+            coil1, coil2, precisionFactor, GPU, true, false
+        );
+        printf("%d %d %d | %d %d %d\n",
+               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
+               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
+               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
+               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
+               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
+               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        );
+        args = CoilPairArguments::getAppropriateCoilPairArguments(
+            coil1, coil3, precisionFactor, GPU, true, false
+        );
+        printf("%d %d %d | %d %d %d\n",
+               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
+               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
+               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
+               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
+               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
+               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        );
+        args = CoilPairArguments::getAppropriateCoilPairArguments(
+            coil1, coil4, precisionFactor, GPU, true, false
+        );
+        printf("%d %d %d | %d %d %d\n",
+               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
+               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
+               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
+               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
+               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
+               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        );
+        printf("\n");
+    }
+
+    printf("Pure GPU z axis\n");
+    for (int i = 1; i <= 15; ++i)
+    {
+        auto precisionFactor = PrecisionFactor(double(i));
+        printf("precision = %.1f\n", double(i));
+
+        args = CoilPairArguments::getAppropriateCoilPairArguments(
+                coil1, coil1, precisionFactor, GPU, true, true
+        );
+        printf("%d %d %d | %d %d %d\n",
+               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
+               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
+               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
+               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
+               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
+               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        );
+        args = CoilPairArguments::getAppropriateCoilPairArguments(
+                coil1, coil2, precisionFactor, GPU, true, true
+        );
+        printf("%d %d %d | %d %d %d\n",
+               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
+               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
+               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
+               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
+               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
+               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        );
+        args = CoilPairArguments::getAppropriateCoilPairArguments(
+                coil1, coil3, precisionFactor, GPU, true, true
+        );
+        printf("%d %d %d | %d %d %d\n",
+               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
+               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
+               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
+               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
+               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
+               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        );
+        args = CoilPairArguments::getAppropriateCoilPairArguments(
+                coil1, coil4, precisionFactor, GPU, true, true
+        );
+        printf("%d %d %d | %d %d %d\n",
+               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
+               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
+               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
+               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
+               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
+               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        );
         printf("\n");
     }
 

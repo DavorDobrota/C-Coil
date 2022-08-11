@@ -18,11 +18,11 @@ double Coil::calculateAmpereForceZAxisSlow(const Coil &primary, const Coil &seco
 {
     PrecisionArguments primaryPrecisionArguments = forceArguments.primaryPrecision;
 
-    int lengthBlocks = forceArguments.secondaryPrecision.lengthBlockCount;
-    int lengthIncrements = forceArguments.secondaryPrecision.lengthIncrementCount;
+    int lengthBlocks = forceArguments.secondaryPrecision.lengthBlocks;
+    int lengthIncrements = forceArguments.secondaryPrecision.lengthIncrements;
 
-    int thicknessBlocks = forceArguments.secondaryPrecision.thicknessBlockCount;
-    int thicknessIncrements = forceArguments.secondaryPrecision.thicknessIncrementCount;
+    int thicknessBlocks = forceArguments.secondaryPrecision.thicknessBlocks;
+    int thicknessIncrements = forceArguments.secondaryPrecision.thicknessIncrements;
 
     int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements;
 
@@ -83,21 +83,21 @@ double Coil::calculateAmpereForceZAxisFast(const Coil &primary, const Coil &seco
 
     double ampereForce = 0.0;
 
-    double thicknessBlock = primary.thickness / forceArguments.primaryPrecision.thicknessBlockCount;
-    double angularBlock = M_PI / forceArguments.primaryPrecision.angularBlockCount;
-    double radialBlock = secondary.thickness / forceArguments.secondaryPrecision.thicknessBlockCount;
+    double thicknessBlock = primary.thickness / forceArguments.primaryPrecision.thicknessBlocks;
+    double angularBlock = M_PI / forceArguments.primaryPrecision.angularBlocks;
+    double radialBlock = secondary.thickness / forceArguments.secondaryPrecision.thicknessBlocks;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int thicknessIncrements = forceArguments.primaryPrecision.thicknessIncrementCount - 1;
-    int angularIncrements = forceArguments.primaryPrecision.angularIncrementCount - 1;
-    int radialIncrements = forceArguments.secondaryPrecision.thicknessIncrementCount - 1;
+    int thicknessIncrements = forceArguments.primaryPrecision.thicknessIncrements - 1;
+    int angularIncrements = forceArguments.primaryPrecision.angularIncrements - 1;
+    int radialIncrements = forceArguments.secondaryPrecision.thicknessIncrements - 1;
 
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * primary.currentDensity * secondary.currentDensity * thicknessBlock * angularBlock * radialBlock * 0.125;
 
-    std::vector<std::vector<double>> cosPhiPrecomputeMat(forceArguments.primaryPrecision.angularBlockCount);
+    std::vector<std::vector<double>> cosPhiPrecomputeMat(forceArguments.primaryPrecision.angularBlocks);
 
-    for (int indBlockPhi = 0; indBlockPhi < forceArguments.primaryPrecision.angularBlockCount; ++indBlockPhi)
+    for (int indBlockPhi = 0; indBlockPhi < forceArguments.primaryPrecision.angularBlocks; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
         cosPhiPrecomputeMat[indBlockPhi].resize(angularIncrements + 1);
@@ -119,7 +119,7 @@ double Coil::calculateAmpereForceZAxisFast(const Coil &primary, const Coil &seco
 
     auto calculate = [&](int threadIndex, int startIndex, int endIndex, double &result)
     {
-        for (int indBlockR = 0; indBlockR < forceArguments.secondaryPrecision.thicknessBlockCount; ++indBlockR)
+        for (int indBlockR = 0; indBlockR < forceArguments.secondaryPrecision.thicknessBlocks; ++indBlockR)
         {
             double blockPositionR = secondary.innerRadius + radialBlock * (indBlockR + 0.5);
 
@@ -131,7 +131,7 @@ double Coil::calculateAmpereForceZAxisFast(const Coil &primary, const Coil &seco
 
                 double incrementWeightR = Legendre::weightsMatrix[radialIncrements][incR];
 
-                for (int indBlockT = 0; indBlockT < forceArguments.primaryPrecision.thicknessBlockCount; ++indBlockT)
+                for (int indBlockT = 0; indBlockT < forceArguments.primaryPrecision.thicknessBlocks; ++indBlockT)
                 {
                     double blockPositionT = primary.innerRadius + thicknessBlock * (indBlockT + 0.5);
 
@@ -147,7 +147,7 @@ double Coil::calculateAmpereForceZAxisFast(const Coil &primary, const Coil &seco
                         double tempConstA = 2.0 * incrementPositionT * incrementPositionR;
                         double tempConstB = incrementPositionT * incrementPositionT + incrementPositionR * incrementPositionR;
 
-                        for (int indBlockPhi = 0; indBlockPhi < forceArguments.primaryPrecision.angularBlockCount; ++indBlockPhi)
+                        for (int indBlockPhi = 0; indBlockPhi < forceArguments.primaryPrecision.angularBlocks; ++indBlockPhi)
                         {
                             for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
                             {
@@ -250,14 +250,14 @@ Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
 
     PrecisionArguments primaryPrecisionArguments = forceArguments.primaryPrecision;
 
-    int lengthBlocks = forceArguments.secondaryPrecision.lengthBlockCount;
-    int lengthIncrements = forceArguments.secondaryPrecision.lengthIncrementCount;
+    int lengthBlocks = forceArguments.secondaryPrecision.lengthBlocks;
+    int lengthIncrements = forceArguments.secondaryPrecision.lengthIncrements;
 
-    int thicknessBlocks = forceArguments.secondaryPrecision.thicknessBlockCount;
-    int thicknessIncrements = forceArguments.secondaryPrecision.thicknessIncrementCount;
+    int thicknessBlocks = forceArguments.secondaryPrecision.thicknessBlocks;
+    int thicknessIncrements = forceArguments.secondaryPrecision.thicknessIncrements;
 
-    int angularBlocks = forceArguments.secondaryPrecision.angularBlockCount;
-    int angularIncrements = forceArguments.secondaryPrecision.angularIncrementCount;
+    int angularBlocks = forceArguments.secondaryPrecision.angularBlocks;
+    int angularIncrements = forceArguments.secondaryPrecision.angularIncrements;
 
     int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements * angularBlocks * angularIncrements;
 

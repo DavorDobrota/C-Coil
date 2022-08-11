@@ -19,11 +19,11 @@ double Coil::calculateMutualInductanceZAxisSlow(const Coil &primary, const Coil 
 {
     PrecisionArguments primaryPrecisionArguments = inductanceArguments.primaryPrecision;
 
-    int lengthBlocks = inductanceArguments.secondaryPrecision.lengthBlockCount;
-    int lengthIncrements = inductanceArguments.secondaryPrecision.lengthIncrementCount;
+    int lengthBlocks = inductanceArguments.secondaryPrecision.lengthBlocks;
+    int lengthIncrements = inductanceArguments.secondaryPrecision.lengthIncrements;
 
-    int thicknessBlocks = inductanceArguments.secondaryPrecision.thicknessBlockCount;
-    int thicknessIncrements = inductanceArguments.secondaryPrecision.thicknessIncrementCount;
+    int thicknessBlocks = inductanceArguments.secondaryPrecision.thicknessBlocks;
+    int thicknessIncrements = inductanceArguments.secondaryPrecision.thicknessIncrements;
 
     int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements;
 
@@ -84,21 +84,21 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
 {
     double mutualInductance = 0.0;
 
-    double thicknessBlock = primary.thickness / inductanceArguments.primaryPrecision.thicknessBlockCount;
-    double angularBlock = M_PI / inductanceArguments.primaryPrecision.angularBlockCount;
-    double radialBlock = secondary.thickness / inductanceArguments.secondaryPrecision.thicknessBlockCount;
+    double thicknessBlock = primary.thickness / inductanceArguments.primaryPrecision.thicknessBlocks;
+    double angularBlock = M_PI / inductanceArguments.primaryPrecision.angularBlocks;
+    double radialBlock = secondary.thickness / inductanceArguments.secondaryPrecision.thicknessBlocks;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int thicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrementCount - 1;
-    int angularIncrements = inductanceArguments.primaryPrecision.angularIncrementCount - 1;
-    int radialIncrements = inductanceArguments.secondaryPrecision.thicknessIncrementCount - 1;
+    int thicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrements - 1;
+    int angularIncrements = inductanceArguments.primaryPrecision.angularIncrements - 1;
+    int radialIncrements = inductanceArguments.secondaryPrecision.thicknessIncrements - 1;
 
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * primary.currentDensity * secondary.currentDensity * thicknessBlock * angularBlock * radialBlock * 0.125;
 
-    std::vector<std::vector<double>> cosPhiPrecomputeMat(inductanceArguments.primaryPrecision.angularBlockCount);
+    std::vector<std::vector<double>> cosPhiPrecomputeMat(inductanceArguments.primaryPrecision.angularBlocks);
 
-    for (int indBlockPhi = 0; indBlockPhi < inductanceArguments.primaryPrecision.angularBlockCount; ++indBlockPhi)
+    for (int indBlockPhi = 0; indBlockPhi < inductanceArguments.primaryPrecision.angularBlocks; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
         cosPhiPrecomputeMat[indBlockPhi].resize(angularIncrements + 1);
@@ -125,7 +125,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
 
     auto calculate = [&](int threadIndex, int startIndex, int endIndex, double &result)
     {
-        for (int indBlockR = 0; indBlockR < inductanceArguments.secondaryPrecision.thicknessBlockCount; ++indBlockR)
+        for (int indBlockR = 0; indBlockR < inductanceArguments.secondaryPrecision.thicknessBlocks; ++indBlockR)
         {
             double blockPositionR = secondary.innerRadius + radialBlock * (indBlockR + 0.5);
 
@@ -136,7 +136,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
 
                 double incrementWeightR = Legendre::weightsMatrix[radialIncrements][incR];
 
-                for (int indBlockT = 0; indBlockT < inductanceArguments.primaryPrecision.thicknessBlockCount; ++indBlockT)
+                for (int indBlockT = 0; indBlockT < inductanceArguments.primaryPrecision.thicknessBlocks; ++indBlockT)
                 {
                     double blockPositionT = primary.innerRadius + thicknessBlock * (indBlockT + 0.5);
 
@@ -152,7 +152,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
                         double tempConstA = 2.0 * incrementPositionT * incrementPositionR;
                         double tempConstB = incrementPositionT * incrementPositionT + incrementPositionR * incrementPositionR;
 
-                        for (int indBlockPhi = 0; indBlockPhi < inductanceArguments.primaryPrecision.angularBlockCount; ++indBlockPhi)
+                        for (int indBlockPhi = 0; indBlockPhi < inductanceArguments.primaryPrecision.angularBlocks; ++indBlockPhi)
                         {
                             for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
                             {
@@ -258,14 +258,14 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
 
     PrecisionArguments primaryPrecisionArguments = inductanceArguments.primaryPrecision;
 
-    int lengthBlocks = inductanceArguments.secondaryPrecision.lengthBlockCount;
-    int lengthIncrements = inductanceArguments.secondaryPrecision.lengthIncrementCount;
+    int lengthBlocks = inductanceArguments.secondaryPrecision.lengthBlocks;
+    int lengthIncrements = inductanceArguments.secondaryPrecision.lengthIncrements;
 
-    int thicknessBlocks = inductanceArguments.secondaryPrecision.thicknessBlockCount;
-    int thicknessIncrements = inductanceArguments.secondaryPrecision.thicknessIncrementCount;
+    int thicknessBlocks = inductanceArguments.secondaryPrecision.thicknessBlocks;
+    int thicknessIncrements = inductanceArguments.secondaryPrecision.thicknessIncrements;
 
-    int angularBlocks = inductanceArguments.secondaryPrecision.angularBlockCount;
-    int angularIncrements = inductanceArguments.secondaryPrecision.angularIncrementCount;
+    int angularBlocks = inductanceArguments.secondaryPrecision.angularBlocks;
+    int angularIncrements = inductanceArguments.secondaryPrecision.angularIncrements;
 
     int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements * angularBlocks * angularIncrements;
 
@@ -350,22 +350,22 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments) cons
 {
     double calculatedSelfInductance = 0.0;
 
-    double thicknessBlock = thickness / inductanceArguments.primaryPrecision.thicknessBlockCount;
-    double angularBlock = M_PI / inductanceArguments.primaryPrecision.angularBlockCount;
-    double radialBlock = 1.0 / inductanceArguments.secondaryPrecision.thicknessBlockCount;
+    double thicknessBlock = thickness / inductanceArguments.primaryPrecision.thicknessBlocks;
+    double angularBlock = M_PI / inductanceArguments.primaryPrecision.angularBlocks;
+    double radialBlock = 1.0 / inductanceArguments.secondaryPrecision.thicknessBlocks;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int thicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrementCount - 1;
-    int angularIncrements = inductanceArguments.primaryPrecision.angularIncrementCount - 1;
-    int radialIncrements = inductanceArguments.secondaryPrecision.thicknessIncrementCount - 1;
+    int thicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrements - 1;
+    int angularIncrements = inductanceArguments.primaryPrecision.angularIncrements - 1;
+    int radialIncrements = inductanceArguments.secondaryPrecision.thicknessIncrements - 1;
 
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * currentDensity * thicknessBlock * angularBlock * radialBlock * 2 * 0.125;
     double lengthSquared = length * length;
 
-    std::vector<std::vector<double>> cosPhiPrecomputeMat(inductanceArguments.primaryPrecision.angularBlockCount);
+    std::vector<std::vector<double>> cosPhiPrecomputeMat(inductanceArguments.primaryPrecision.angularBlocks);
 
-    for (int indBlockPhi = 0; indBlockPhi < inductanceArguments.primaryPrecision.angularBlockCount; ++indBlockPhi)
+    for (int indBlockPhi = 0; indBlockPhi < inductanceArguments.primaryPrecision.angularBlocks; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
         cosPhiPrecomputeMat[indBlockPhi].resize(angularIncrements + 1);
@@ -378,7 +378,7 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments) cons
         }
     }
 
-    for (int indBlockR = 0; indBlockR < inductanceArguments.secondaryPrecision.thicknessBlockCount; ++indBlockR)
+    for (int indBlockR = 0; indBlockR < inductanceArguments.secondaryPrecision.thicknessBlocks; ++indBlockR)
     {
         double blockPositionR = innerRadius + radialBlock * thickness * (indBlockR + 0.5);
 
@@ -389,7 +389,7 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments) cons
 
             double incrementWeightR = Legendre::weightsMatrix[radialIncrements][incR];
 
-            for (int indBlockT = 0; indBlockT < inductanceArguments.primaryPrecision.thicknessBlockCount; ++indBlockT)
+            for (int indBlockT = 0; indBlockT < inductanceArguments.primaryPrecision.thicknessBlocks; ++indBlockT)
             {
                 double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
 
@@ -405,7 +405,7 @@ double Coil::calculateSelfInductance(CoilPairArguments inductanceArguments) cons
                     double tempConstA = 2 * incrementPositionT * incrementPositionR;
                     double tempConstB = incrementPositionT * incrementPositionT + incrementPositionR * incrementPositionR;
 
-                    for (int indBlockFi = 0; indBlockFi < inductanceArguments.primaryPrecision.angularBlockCount; ++indBlockFi)
+                    for (int indBlockFi = 0; indBlockFi < inductanceArguments.primaryPrecision.angularBlocks; ++indBlockFi)
                     {
                         for (int incFi = 0; incFi <= angularIncrements; ++incFi)
                         {

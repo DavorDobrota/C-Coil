@@ -50,9 +50,9 @@ CoilGroup::calculateAllAmpereForceArrangementsGPU(const Coil &secondary, const v
     SecondaryCoilData secondaryData;
     generateSecondaryData(secondary, secondaryData, secPrecision, true);
 
-    long long pointCount = secPrecision.lengthIncrementCount *
-                           secPrecision.thicknessIncrementCount *
-                           secPrecision.angularIncrementCount;
+    long long pointCount = secPrecision.lengthIncrements *
+                           secPrecision.thicknessIncrements *
+                           secPrecision.angularIncrements;
 
     #if USE_GPU == 1
         Calculate_force_and_torque_configurations_group(

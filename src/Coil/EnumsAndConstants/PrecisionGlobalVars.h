@@ -12,8 +12,8 @@ const int g_minSecAngularIncrements = 2;
 const int g_baseLayerIncrementsCPU = 10;
 const int g_baseLayerIncrementsGPU = 10;
 
-const double g_primAngularWeightModifier = 1.41;
-const double g_primLinearWeightModifier = 1.41;
+const double g_primAngularWeightModifier = 1.414213562;
+const double g_primLinearWeightModifier = 1.414213562;
 
 const double g_secAngularWeightModifier = 1;
 const double g_secLinearWeightModifier = 1;

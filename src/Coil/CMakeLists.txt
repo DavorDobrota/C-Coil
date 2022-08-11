@@ -2,7 +2,6 @@ add_library(
         Coil OBJECT
 
         Coil.cxx
-        PrecisionArguments/PrecisionArrays.cxx
         PrecisionArguments/PrecisionFactor.cxx
         PrecisionArguments/PrecisionArguments.cxx
         PrecisionArguments/CoilPairArguments.cxx

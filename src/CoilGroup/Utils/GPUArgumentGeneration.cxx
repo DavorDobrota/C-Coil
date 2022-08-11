@@ -42,9 +42,9 @@ void CoilGroup::generateCoilDataArray(CoilData *coilDataArr, PrecisionFactor pre
 
         PrecisionArguments coilPrecision = PrecisionArguments::getCoilPrecisionArgumentsGPU(*memberCoil, precisionFactor);
 
-        coilDataArr[i].lengthIncrements = coilPrecision.lengthIncrementCount;
-        coilDataArr[i].thicknessIncrements = coilPrecision.thicknessIncrementCount;
-        coilDataArr[i].angularIncrements = coilPrecision.angularIncrementCount;
+        coilDataArr[i].lengthIncrements = coilPrecision.lengthIncrements;
+        coilDataArr[i].thicknessIncrements = coilPrecision.thicknessIncrements;
+        coilDataArr[i].angularIncrements = coilPrecision.angularIncrements;
 
         for (int j = 0; j < coilDataArr[i].angularIncrements; ++j)
         {
@@ -106,26 +106,26 @@ void CoilGroup::generateSecondaryData(const Coil &secondary, SecondaryCoilData &
     else
         secondaryData.correctionFactor = 2*M_PI * secondary.getNumOfTurns() * secondary.getCurrent();
 
-    secondaryData.lengthIncrements = precision.lengthIncrementCount;
-    secondaryData.thicknessIncrements = precision.thicknessIncrementCount;
-    secondaryData.angularIncrements = precision.angularIncrementCount;
+    secondaryData.lengthIncrements = precision.lengthIncrements;
+    secondaryData.thicknessIncrements = precision.thicknessIncrements;
+    secondaryData.angularIncrements = precision.angularIncrements;
 
-    for (int i = 0; i < precision.lengthIncrementCount; ++i)
+    for (int i = 0; i < precision.lengthIncrements; ++i)
     {
-        secondaryData.lengthPositionArray[i] = Legendre::positionMatrix[precision.lengthIncrementCount - 1][i];
-        secondaryData.lengthWeightArray[i] = Legendre::weightsMatrix[precision.lengthIncrementCount - 1][i];
+        secondaryData.lengthPositionArray[i] = Legendre::positionMatrix[precision.lengthIncrements - 1][i];
+        secondaryData.lengthWeightArray[i] = Legendre::weightsMatrix[precision.lengthIncrements - 1][i];
     }
 
-    for (int i = 0; i < precision.thicknessIncrementCount; ++i)
+    for (int i = 0; i < precision.thicknessIncrements; ++i)
     {
-        secondaryData.thicknessPositionArray[i] = Legendre::positionMatrix[precision.thicknessIncrementCount - 1][i];
-        secondaryData.thicknessWeightArray[i] = Legendre::weightsMatrix[precision.thicknessIncrementCount - 1][i];
+        secondaryData.thicknessPositionArray[i] = Legendre::positionMatrix[precision.thicknessIncrements - 1][i];
+        secondaryData.thicknessWeightArray[i] = Legendre::weightsMatrix[precision.thicknessIncrements - 1][i];
     }
 
-    for (int i = 0; i < precision.angularIncrementCount; ++i)
+    for (int i = 0; i < precision.angularIncrements; ++i)
     {
-        secondaryData.angularPositionArray[i] = Legendre::positionMatrix[precision.angularIncrementCount - 1][i];
-        secondaryData.angularWeightArray[i] = Legendre::weightsMatrix[precision.angularIncrementCount - 1][i];
+        secondaryData.angularPositionArray[i] = Legendre::positionMatrix[precision.angularIncrements - 1][i];
+        secondaryData.angularWeightArray[i] = Legendre::weightsMatrix[precision.angularIncrements - 1][i];
     }
 }
 

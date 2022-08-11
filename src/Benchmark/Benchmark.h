@@ -4,8 +4,8 @@
 #include "Coil.h"
 
 
-const int g_defaultThreadCount = 8;
 const int g_maxPot = 22;
+
 
 void benchMathFunctions();
 

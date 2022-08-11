@@ -1,13 +1,17 @@
 #include "Test.h"
 #include "Coil.h"
 
-#define _USE_MATH_DEFINES
-#include <math.h>
 #include <cstdio>
+#include <chrono>
 
 
 void testMInductanceZAxisArgumentGeneration()
 {
+    using namespace std::chrono;
+
+    high_resolution_clock::time_point begin_time;
+    double interval;
+
     Coil coil1 = Coil(0.05, 0.1, 0.1, 100);
     Coil coil2 = Coil(0.05, 0.1, 0.0, 10);
     Coil coil3 = Coil(0.05, 0.0, 0.1, 10);
@@ -23,50 +27,66 @@ void testMInductanceZAxisArgumentGeneration()
         auto precisionFactor = PrecisionFactor(double(i));
         printf("precision = %.1f\n", double(i));
 
+        begin_time = high_resolution_clock::now();
         args = CoilPairArguments::getAppropriateCoilPairArguments(
             coil1, coil1, precisionFactor, CPU_ST, true, false
         );
-        printf("%d %d %d | %d %d %d\n",
-               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
-               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
-               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
-               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
-               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
-               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("%d %d %d | %d %d %d Time: %.0f ns\n",
+               args.primaryPrecision.angularBlocks * args.primaryPrecision.angularIncrements,
+               args.primaryPrecision.thicknessBlocks * args.primaryPrecision.thicknessIncrements,
+               args.primaryPrecision.lengthBlocks * args.primaryPrecision.lengthIncrements,
+               args.secondaryPrecision.angularBlocks * args.secondaryPrecision.angularIncrements,
+               args.secondaryPrecision.thicknessBlocks * args.secondaryPrecision.thicknessIncrements,
+               args.secondaryPrecision.lengthBlocks * args.secondaryPrecision.lengthIncrements,
+               1e9 * interval
         );
+
+        begin_time = high_resolution_clock::now();
         args = CoilPairArguments::getAppropriateCoilPairArguments(
             coil1, coil2, precisionFactor, CPU_ST, true, false
         );
-        printf("%d %d %d | %d %d %d\n",
-               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
-               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
-               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
-               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
-               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
-               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("%d %d %d | %d %d %d Time: %.0f ns\n",
+               args.primaryPrecision.angularBlocks * args.primaryPrecision.angularIncrements,
+               args.primaryPrecision.thicknessBlocks * args.primaryPrecision.thicknessIncrements,
+               args.primaryPrecision.lengthBlocks * args.primaryPrecision.lengthIncrements,
+               args.secondaryPrecision.angularBlocks * args.secondaryPrecision.angularIncrements,
+               args.secondaryPrecision.thicknessBlocks * args.secondaryPrecision.thicknessIncrements,
+               args.secondaryPrecision.lengthBlocks * args.secondaryPrecision.lengthIncrements,
+               1e9 * interval
         );
+
+        begin_time = high_resolution_clock::now();
         args = CoilPairArguments::getAppropriateCoilPairArguments(
             coil1, coil3, precisionFactor, CPU_ST, true, false
         );
-        printf("%d %d %d | %d %d %d\n",
-               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
-               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
-               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
-               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
-               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
-               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("%d %d %d | %d %d %d Time: %.0f ns\n",
+               args.primaryPrecision.angularBlocks * args.primaryPrecision.angularIncrements,
+               args.primaryPrecision.thicknessBlocks * args.primaryPrecision.thicknessIncrements,
+               args.primaryPrecision.lengthBlocks * args.primaryPrecision.lengthIncrements,
+               args.secondaryPrecision.angularBlocks * args.secondaryPrecision.angularIncrements,
+               args.secondaryPrecision.thicknessBlocks * args.secondaryPrecision.thicknessIncrements,
+               args.secondaryPrecision.lengthBlocks * args.secondaryPrecision.lengthIncrements,
+               1e9 * interval
         );
+
+        begin_time = high_resolution_clock::now();
         args = CoilPairArguments::getAppropriateCoilPairArguments(
             coil1, coil4, precisionFactor, CPU_ST, true, false
         );
-        printf("%d %d %d | %d %d %d\n",
-               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
-               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
-               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
-               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
-               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
-               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("%d %d %d | %d %d %d Time: %.0f ns\n",
+               args.primaryPrecision.angularBlocks * args.primaryPrecision.angularIncrements,
+               args.primaryPrecision.thicknessBlocks * args.primaryPrecision.thicknessIncrements,
+               args.primaryPrecision.lengthBlocks * args.primaryPrecision.lengthIncrements,
+               args.secondaryPrecision.angularBlocks * args.secondaryPrecision.angularIncrements,
+               args.secondaryPrecision.thicknessBlocks * args.secondaryPrecision.thicknessIncrements,
+               args.secondaryPrecision.lengthBlocks * args.secondaryPrecision.lengthIncrements,
+               1e9 * interval
         );
+
         printf("\n");
     }
 
@@ -76,50 +96,66 @@ void testMInductanceZAxisArgumentGeneration()
         auto precisionFactor = PrecisionFactor(double(i));
         printf("precision = %.1f\n", double(i));
 
+        begin_time = high_resolution_clock::now();
         args = CoilPairArguments::getAppropriateCoilPairArguments(
             coil1, coil1, precisionFactor, GPU, true, false
         );
-        printf("%d %d %d | %d %d %d\n",
-               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
-               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
-               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
-               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
-               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
-               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("%d %d %d | %d %d %d Time: %.0f ns\n",
+               args.primaryPrecision.angularBlocks * args.primaryPrecision.angularIncrements,
+               args.primaryPrecision.thicknessBlocks * args.primaryPrecision.thicknessIncrements,
+               args.primaryPrecision.lengthBlocks * args.primaryPrecision.lengthIncrements,
+               args.secondaryPrecision.angularBlocks * args.secondaryPrecision.angularIncrements,
+               args.secondaryPrecision.thicknessBlocks * args.secondaryPrecision.thicknessIncrements,
+               args.secondaryPrecision.lengthBlocks * args.secondaryPrecision.lengthIncrements,
+               1e9 * interval
         );
+
+        begin_time = high_resolution_clock::now();
         args = CoilPairArguments::getAppropriateCoilPairArguments(
             coil1, coil2, precisionFactor, GPU, true, false
         );
-        printf("%d %d %d | %d %d %d\n",
-               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
-               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
-               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
-               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
-               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
-               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("%d %d %d | %d %d %d Time: %.0f ns\n",
+               args.primaryPrecision.angularBlocks * args.primaryPrecision.angularIncrements,
+               args.primaryPrecision.thicknessBlocks * args.primaryPrecision.thicknessIncrements,
+               args.primaryPrecision.lengthBlocks * args.primaryPrecision.lengthIncrements,
+               args.secondaryPrecision.angularBlocks * args.secondaryPrecision.angularIncrements,
+               args.secondaryPrecision.thicknessBlocks * args.secondaryPrecision.thicknessIncrements,
+               args.secondaryPrecision.lengthBlocks * args.secondaryPrecision.lengthIncrements,
+               1e9 * interval
         );
+
+        begin_time = high_resolution_clock::now();
         args = CoilPairArguments::getAppropriateCoilPairArguments(
             coil1, coil3, precisionFactor, GPU, true, false
         );
-        printf("%d %d %d | %d %d %d\n",
-               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
-               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
-               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
-               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
-               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
-               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("%d %d %d | %d %d %d Time: %.0f ns\n",
+               args.primaryPrecision.angularBlocks * args.primaryPrecision.angularIncrements,
+               args.primaryPrecision.thicknessBlocks * args.primaryPrecision.thicknessIncrements,
+               args.primaryPrecision.lengthBlocks * args.primaryPrecision.lengthIncrements,
+               args.secondaryPrecision.angularBlocks * args.secondaryPrecision.angularIncrements,
+               args.secondaryPrecision.thicknessBlocks * args.secondaryPrecision.thicknessIncrements,
+               args.secondaryPrecision.lengthBlocks * args.secondaryPrecision.lengthIncrements,
+               1e9 * interval
         );
+
+        begin_time = high_resolution_clock::now();
         args = CoilPairArguments::getAppropriateCoilPairArguments(
             coil1, coil4, precisionFactor, GPU, true, false
         );
-        printf("%d %d %d | %d %d %d\n",
-               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
-               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
-               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
-               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
-               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
-               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("%d %d %d | %d %d %d Time: %.0f ns\n",
+               args.primaryPrecision.angularBlocks * args.primaryPrecision.angularIncrements,
+               args.primaryPrecision.thicknessBlocks * args.primaryPrecision.thicknessIncrements,
+               args.primaryPrecision.lengthBlocks * args.primaryPrecision.lengthIncrements,
+               args.secondaryPrecision.angularBlocks * args.secondaryPrecision.angularIncrements,
+               args.secondaryPrecision.thicknessBlocks * args.secondaryPrecision.thicknessIncrements,
+               args.secondaryPrecision.lengthBlocks * args.secondaryPrecision.lengthIncrements,
+               1e9 * interval
         );
+
         printf("\n");
     }
 
@@ -129,50 +165,66 @@ void testMInductanceZAxisArgumentGeneration()
         auto precisionFactor = PrecisionFactor(double(i));
         printf("precision = %.1f\n", double(i));
 
+        begin_time = high_resolution_clock::now();
         args = CoilPairArguments::getAppropriateCoilPairArguments(
-                coil1, coil1, precisionFactor, GPU, true, true
+            coil1, coil1, precisionFactor, GPU, true, true
         );
-        printf("%d %d %d | %d %d %d\n",
-               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
-               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
-               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
-               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
-               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
-               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("%d %d %d | %d %d %d Time: %.0f ns\n",
+               args.primaryPrecision.angularBlocks * args.primaryPrecision.angularIncrements,
+               args.primaryPrecision.thicknessBlocks * args.primaryPrecision.thicknessIncrements,
+               args.primaryPrecision.lengthBlocks * args.primaryPrecision.lengthIncrements,
+               args.secondaryPrecision.angularBlocks * args.secondaryPrecision.angularIncrements,
+               args.secondaryPrecision.thicknessBlocks * args.secondaryPrecision.thicknessIncrements,
+               args.secondaryPrecision.lengthBlocks * args.secondaryPrecision.lengthIncrements,
+               1e9 * interval
         );
+
+        begin_time = high_resolution_clock::now();
         args = CoilPairArguments::getAppropriateCoilPairArguments(
-                coil1, coil2, precisionFactor, GPU, true, true
+            coil1, coil2, precisionFactor, GPU, true, true
         );
-        printf("%d %d %d | %d %d %d\n",
-               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
-               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
-               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
-               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
-               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
-               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("%d %d %d | %d %d %d Time: %.0f ns\n",
+               args.primaryPrecision.angularBlocks * args.primaryPrecision.angularIncrements,
+               args.primaryPrecision.thicknessBlocks * args.primaryPrecision.thicknessIncrements,
+               args.primaryPrecision.lengthBlocks * args.primaryPrecision.lengthIncrements,
+               args.secondaryPrecision.angularBlocks * args.secondaryPrecision.angularIncrements,
+               args.secondaryPrecision.thicknessBlocks * args.secondaryPrecision.thicknessIncrements,
+               args.secondaryPrecision.lengthBlocks * args.secondaryPrecision.lengthIncrements,
+               1e9 * interval
         );
+
+        begin_time = high_resolution_clock::now();
         args = CoilPairArguments::getAppropriateCoilPairArguments(
-                coil1, coil3, precisionFactor, GPU, true, true
+            coil1, coil3, precisionFactor, GPU, true, true
         );
-        printf("%d %d %d | %d %d %d\n",
-               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
-               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
-               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
-               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
-               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
-               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("%d %d %d | %d %d %d Time: %.0f ns\n",
+               args.primaryPrecision.angularBlocks * args.primaryPrecision.angularIncrements,
+               args.primaryPrecision.thicknessBlocks * args.primaryPrecision.thicknessIncrements,
+               args.primaryPrecision.lengthBlocks * args.primaryPrecision.lengthIncrements,
+               args.secondaryPrecision.angularBlocks * args.secondaryPrecision.angularIncrements,
+               args.secondaryPrecision.thicknessBlocks * args.secondaryPrecision.thicknessIncrements,
+               args.secondaryPrecision.lengthBlocks * args.secondaryPrecision.lengthIncrements,
+               1e9 * interval
         );
+
+        begin_time = high_resolution_clock::now();
         args = CoilPairArguments::getAppropriateCoilPairArguments(
-                coil1, coil4, precisionFactor, GPU, true, true
+            coil1, coil4, precisionFactor, GPU, true, true
         );
-        printf("%d %d %d | %d %d %d\n",
-               args.primaryPrecision.lengthBlockCount * args.primaryPrecision.lengthIncrementCount,
-               args.primaryPrecision.thicknessBlockCount * args.primaryPrecision.thicknessIncrementCount,
-               args.primaryPrecision.angularBlockCount * args.primaryPrecision.angularIncrementCount,
-               args.secondaryPrecision.lengthBlockCount * args.secondaryPrecision.lengthIncrementCount,
-               args.secondaryPrecision.thicknessBlockCount * args.secondaryPrecision.thicknessIncrementCount,
-               args.secondaryPrecision.angularBlockCount * args.secondaryPrecision.angularIncrementCount
+        interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+        printf("%d %d %d | %d %d %d Time: %.0f ns\n",
+               args.primaryPrecision.angularBlocks * args.primaryPrecision.angularIncrements,
+               args.primaryPrecision.thicknessBlocks * args.primaryPrecision.thicknessIncrements,
+               args.primaryPrecision.lengthBlocks * args.primaryPrecision.lengthIncrements,
+               args.secondaryPrecision.angularBlocks * args.secondaryPrecision.angularIncrements,
+               args.secondaryPrecision.thicknessBlocks * args.secondaryPrecision.thicknessIncrements,
+               args.secondaryPrecision.lengthBlocks * args.secondaryPrecision.lengthIncrements,
+               1e9 * interval
         );
+
         printf("\n");
     }
 

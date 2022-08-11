@@ -11,16 +11,11 @@
 #include <vector>
 #include <string>
 
-#define PRINT_ENABLED 0
+#define PRINT_PRECISION 0
 
 
-const int precisionArraySize = 864;
-const int defaultThreadCount = 8;
+const int g_defaultThreadCount = 8;
 
-const extern int blockPrecisionCPUArray[precisionArraySize];
-const extern int incrementPrecisionCPUArray[precisionArraySize];
-
-void generatePrecisionArrays();
 
 class Coil;
 
@@ -41,25 +36,31 @@ struct PrecisionArguments
     explicit PrecisionArguments(int angularBlocks, int thicknessBlocks, int lengthBlocks,
                                 int angularIncrements, int thicknessIncrements, int lengthIncrements);
 
-    int angularBlockCount;
-    int thicknessBlockCount;
-    int lengthBlockCount;
+    int angularBlocks;
+    int thicknessBlocks;
+    int lengthBlocks;
 
-    int angularIncrementCount;
-    int thicknessIncrementCount;
-    int lengthIncrementCount;
+    int angularIncrements;
+    int thicknessIncrements;
+    int lengthIncrements;
 
     static PrecisionArguments getCoilPrecisionArgumentsCPU(const Coil &coil, PrecisionFactor precisionFactor);
-
     static PrecisionArguments getCoilPrecisionArgumentsGPU(const Coil &coil, PrecisionFactor precisionFactor);
 
     static PrecisionArguments getSecondaryCoilPrecisionArgumentsGPU(const Coil &coil, PrecisionFactor precisionFactor);
 
     explicit operator std::string() const;
+
+    private:
+
+        static PrecisionArguments calculatePrecisionArguments(const Coil &coil, PrecisionFactor precisionFactor,
+                                                              bool useGPU = false);
 };
 
 struct CoilPairArguments
 {
+    friend PrecisionArguments;
+
     CoilPairArguments();
     explicit CoilPairArguments(const PrecisionArguments &primaryPrecision,
                                const PrecisionArguments &secondaryPrecision);
@@ -74,16 +75,11 @@ struct CoilPairArguments
     explicit operator std::string() const;
 
     private:
-        static CoilPairArguments calculateCoilPairArgumentsCPU(const Coil &primary, const Coil &secondary,
-                                                               PrecisionFactor precisionFactor, bool zAxisCase = false);
-
-        static CoilPairArguments calculateCoilPairArgumentsGPU(const Coil &primary, const Coil &secondary,
-                                                               PrecisionFactor precisionFactor,
-                                                               bool zAxisCase, bool pureGPU);
 
         static std::vector<std::pair<int, int>> balanceIncrements(int totalIncrements,
-                                                                  const std::vector<std::pair<int, double>>& components);
+                                                                  const std::vector<std::pair<int, double>> &components);
 };
+
 
 class CoilGroup;
 
@@ -132,36 +128,36 @@ class Coil
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
              double current, double wireResistivity, double sineFrequency,
-             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount,
+             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = g_defaultThreadCount,
              vec3::Vector3 coordinatePosition = vec3::Vector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
              double wireResistivity, double sineFrequency,
              const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU,
-             int threadCount = defaultThreadCount, vec3::Vector3 coordinatePosition = vec3::Vector3(),
+             int threadCount = g_defaultThreadCount, vec3::Vector3 coordinatePosition = vec3::Vector3(),
              double yAxisAngle = 0.0, double zAxisAngle = 0.0);
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
-             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount,
+             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = g_defaultThreadCount,
              vec3::Vector3 coordinatePosition = vec3::Vector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
              const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU,
-             int threadCount = defaultThreadCount, vec3::Vector3 coordinatePosition = vec3::Vector3(),
+             int threadCount = g_defaultThreadCount, vec3::Vector3 coordinatePosition = vec3::Vector3(),
              double yAxisAngle = 0.0, double zAxisAngle = 0.0);
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount,
+             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = g_defaultThreadCount,
              vec3::Vector3 coordinatePosition = vec3::Vector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
         Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
              const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU,
-             int threadCount = defaultThreadCount, vec3::Vector3 coordinatePosition = vec3::Vector3(),
+             int threadCount = g_defaultThreadCount, vec3::Vector3 coordinatePosition = vec3::Vector3(),
              double yAxisAngle = 0.0, double zAxisAngle = 0.0);
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
-             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = defaultThreadCount,
+             PrecisionFactor precisionFactor = PrecisionFactor(), int threadCount = g_defaultThreadCount,
              vec3::Vector3 coordinatePosition = vec3::Vector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
              const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU,
-             int threadCount = defaultThreadCount, vec3::Vector3 coordinatePosition = vec3::Vector3(),
+             int threadCount = g_defaultThreadCount, vec3::Vector3 coordinatePosition = vec3::Vector3(),
              double yAxisAngle = 0.0, double zAxisAngle = 0.0);
 
         [[nodiscard]] unsigned long long getId() const;
@@ -261,11 +257,14 @@ class Coil
                                               PrecisionFactor precisionFactor = PrecisionFactor(),
                                               ComputeMethod computeMethod = CPU_ST);
         static double computeMutualInductance(const Coil &primary, const Coil &secondary,
-                                              const CoilPairArguments &inductanceArguments, ComputeMethod computeMethod = CPU_ST);
+                                              const CoilPairArguments &inductanceArguments,
+                                              ComputeMethod computeMethod = CPU_ST);
 
-        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, PrecisionFactor precisionFactor = PrecisionFactor(),
+        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary,
+                                                            PrecisionFactor precisionFactor = PrecisionFactor(),
                                                             ComputeMethod computeMethod = CPU_ST) const;
-        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary, const CoilPairArguments &inductanceArguments,
+        [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary,
+                                                            const CoilPairArguments &inductanceArguments,
                                                             ComputeMethod computeMethod = CPU_ST) const;
 
         double computeAndSetSelfInductance(PrecisionFactor precisionFactor);
@@ -383,7 +382,8 @@ class Coil
                                                          ComputeMethod computeMethod = CPU_ST);
 
         static double calculateMutualInductanceGeneral(const Coil &primary, const Coil &secondary,
-                                                       const CoilPairArguments &inductanceArguments, ComputeMethod computeMethod = CPU_ST);
+                                                       const CoilPairArguments &inductanceArguments,
+                                                       ComputeMethod computeMethod = CPU_ST);
 
         static double calculateAmpereForceZAxisSlow(const Coil &primary, const Coil &secondary, double zDisplacement,
                                                     const CoilPairArguments &forceArguments,

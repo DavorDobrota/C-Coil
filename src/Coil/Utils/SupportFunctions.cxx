@@ -130,9 +130,9 @@ void Coil::generateCoilData(CoilData &coilData, const PrecisionArguments &usedPr
     coilData.thickness = thickness;
     coilData.length = length;
 
-    coilData.lengthIncrements = usedPrecision.lengthIncrementCount;
-    coilData.thicknessIncrements = usedPrecision.thicknessIncrementCount;
-    coilData.angularIncrements = usedPrecision.angularIncrementCount;
+    coilData.lengthIncrements = usedPrecision.lengthIncrements;
+    coilData.thicknessIncrements = usedPrecision.thicknessIncrements;
+    coilData.angularIncrements = usedPrecision.angularIncrements;
 
     for (int i = 0; i < coilData.angularIncrements; ++i)
     {
@@ -195,55 +195,55 @@ void Coil::generateCoilPairArgumentsData(const Coil &primary, const Coil &second
     coilPairArgumentsData.primThickness = primary.thickness;
     coilPairArgumentsData.primLength = primary.length;
 
-    coilPairArgumentsData.primLengthIncrements = inductanceArguments.primaryPrecision.lengthIncrementCount;
-    coilPairArgumentsData.primThicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrementCount;
-    coilPairArgumentsData.primAngularIncrements = inductanceArguments.primaryPrecision.angularIncrementCount;
+    coilPairArgumentsData.primLengthIncrements = inductanceArguments.primaryPrecision.lengthIncrements;
+    coilPairArgumentsData.primThicknessIncrements = inductanceArguments.primaryPrecision.thicknessIncrements;
+    coilPairArgumentsData.primAngularIncrements = inductanceArguments.primaryPrecision.angularIncrements;
 
     coilPairArgumentsData.secInnerRadius = secondary.innerRadius;
     coilPairArgumentsData.secThickness = secondary.thickness;
     coilPairArgumentsData.secLength = secondary.length;
 
-    coilPairArgumentsData.secLengthIncrements = inductanceArguments.secondaryPrecision.lengthIncrementCount;
-    coilPairArgumentsData.secThicknessIncrements = inductanceArguments.secondaryPrecision.thicknessIncrementCount;
-    coilPairArgumentsData.secAngularIncrements = inductanceArguments.secondaryPrecision.angularIncrementCount;
+    coilPairArgumentsData.secLengthIncrements = inductanceArguments.secondaryPrecision.lengthIncrements;
+    coilPairArgumentsData.secThicknessIncrements = inductanceArguments.secondaryPrecision.thicknessIncrements;
+    coilPairArgumentsData.secAngularIncrements = inductanceArguments.secondaryPrecision.angularIncrements;
 
-    for (int i = 0; i < inductanceArguments.primaryPrecision.angularIncrementCount; ++i)
+    for (int i = 0; i < inductanceArguments.primaryPrecision.angularIncrements; ++i)
     {
         double phiPosition =
-                M_PI_2 * (1.0 + Legendre::positionMatrix[inductanceArguments.primaryPrecision.angularIncrementCount - 1][i]);
+                M_PI_2 * (1.0 + Legendre::positionMatrix[inductanceArguments.primaryPrecision.angularIncrements - 1][i]);
 
         coilPairArgumentsData.primCosPrecomputeArray[i] = std::cos(phiPosition);
         coilPairArgumentsData.primAngularWeightArray[i] =
-                Legendre::weightsMatrix[inductanceArguments.primaryPrecision.angularIncrementCount - 1][i];
+                Legendre::weightsMatrix[inductanceArguments.primaryPrecision.angularIncrements - 1][i];
     }
-    for (int i = 0; i < inductanceArguments.primaryPrecision.thicknessIncrementCount; ++i)
+    for (int i = 0; i < inductanceArguments.primaryPrecision.thicknessIncrements; ++i)
     {
         coilPairArgumentsData.primThicknessPositionArray[i] =
-                Legendre::positionMatrix[inductanceArguments.primaryPrecision.thicknessIncrementCount - 1][i];
+                Legendre::positionMatrix[inductanceArguments.primaryPrecision.thicknessIncrements - 1][i];
         coilPairArgumentsData.primThicknessWeightArray[i] =
-                Legendre::weightsMatrix[inductanceArguments.primaryPrecision.thicknessIncrementCount - 1][i];
+                Legendre::weightsMatrix[inductanceArguments.primaryPrecision.thicknessIncrements - 1][i];
     }
 
-    for (int i = 0; i < inductanceArguments.secondaryPrecision.angularIncrementCount; ++i)
+    for (int i = 0; i < inductanceArguments.secondaryPrecision.angularIncrements; ++i)
     {
         coilPairArgumentsData.secAngularPositionArray[i] =
-                Legendre::positionMatrix[inductanceArguments.secondaryPrecision.angularIncrementCount - 1][i];
+                Legendre::positionMatrix[inductanceArguments.secondaryPrecision.angularIncrements - 1][i];
         coilPairArgumentsData.secAngularWeightArray[i] =
-                Legendre::weightsMatrix[inductanceArguments.secondaryPrecision.angularIncrementCount - 1][i];
+                Legendre::weightsMatrix[inductanceArguments.secondaryPrecision.angularIncrements - 1][i];
     }
-    for (int i = 0; i < inductanceArguments.secondaryPrecision.thicknessIncrementCount; ++i)
+    for (int i = 0; i < inductanceArguments.secondaryPrecision.thicknessIncrements; ++i)
     {
         coilPairArgumentsData.secThicknessPositionArray[i] =
-                Legendre::positionMatrix[inductanceArguments.secondaryPrecision.thicknessIncrementCount - 1][i];
+                Legendre::positionMatrix[inductanceArguments.secondaryPrecision.thicknessIncrements - 1][i];
         coilPairArgumentsData.secThicknessWeightArray[i] =
-                Legendre::weightsMatrix[inductanceArguments.secondaryPrecision.thicknessIncrementCount - 1][i];
+                Legendre::weightsMatrix[inductanceArguments.secondaryPrecision.thicknessIncrements - 1][i];
     }
-    for (int i = 0; i < inductanceArguments.secondaryPrecision.lengthIncrementCount; ++i)
+    for (int i = 0; i < inductanceArguments.secondaryPrecision.lengthIncrements; ++i)
     {
         coilPairArgumentsData.secLengthPositionArray[i] =
-                Legendre::positionMatrix[inductanceArguments.secondaryPrecision.lengthIncrementCount - 1][i];
+                Legendre::positionMatrix[inductanceArguments.secondaryPrecision.lengthIncrements - 1][i];
         coilPairArgumentsData.secLengthWeightArray[i] =
-                Legendre::weightsMatrix[inductanceArguments.secondaryPrecision.lengthIncrementCount - 1][i];
+                Legendre::weightsMatrix[inductanceArguments.secondaryPrecision.lengthIncrements - 1][i];
     }
 }
 #pragma clang diagnostic pop

@@ -14,24 +14,24 @@ double Coil::calculateAPotentialSlow(double zCoord, double rCoord, const Precisi
 {
     double magneticPotential = 0.0;
 
-    double lengthBlock = length / usedPrecision.lengthBlockCount;
-    double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
-    double angularBlock = M_PI / usedPrecision.angularBlockCount;
+    double lengthBlock = length / usedPrecision.lengthBlocks;
+    double thicknessBlock = thickness / usedPrecision.thicknessBlocks;
+    double angularBlock = M_PI / usedPrecision.angularBlocks;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int lengthIncrements = usedPrecision.lengthIncrementCount - 1;
-    int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
-    int angularIncrements = usedPrecision.angularIncrementCount - 1;
+    int lengthIncrements = usedPrecision.lengthIncrements - 1;
+    int thicknessIncrements = usedPrecision.thicknessIncrements - 1;
+    int angularIncrements = usedPrecision.angularIncrements - 1;
 
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
-    std::vector<std::vector<double>> cosPhiPrecomputeMat(usedPrecision.angularBlockCount);
+    std::vector<std::vector<double>> cosPhiPrecomputeMat(usedPrecision.angularBlocks);
 
-    for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlockCount; ++indBlockPhi)
+    for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlocks; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
-        cosPhiPrecomputeMat[indBlockPhi].resize(usedPrecision.angularIncrementCount);
+        cosPhiPrecomputeMat[indBlockPhi].resize(usedPrecision.angularIncrements);
 
         for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
         {
@@ -41,9 +41,9 @@ double Coil::calculateAPotentialSlow(double zCoord, double rCoord, const Precisi
         }
     }
 
-    for (int indBlockL = 0; indBlockL < usedPrecision.lengthBlockCount; ++indBlockL)
+    for (int indBlockL = 0; indBlockL < usedPrecision.lengthBlocks; ++indBlockL)
     {
-        for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlockCount; ++indBlockT)
+        for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlocks; ++indBlockT)
         {
             double blockPositionL = (-1.0) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
@@ -65,7 +65,7 @@ double Coil::calculateAPotentialSlow(double zCoord, double rCoord, const Precisi
                     double tempConstB = incrementPositionT * incrementPositionT + rCoord * rCoord +
                                         (incrementPositionL + zCoord) * (incrementPositionL + zCoord);
 
-                    for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlockCount; ++indBlockFi)
+                    for (int indBlockFi = 0; indBlockFi < usedPrecision.angularBlocks; ++indBlockFi)
                     {
                         for (int incFi = 0; incFi <= angularIncrements; ++incFi)
                         {
@@ -88,24 +88,24 @@ std::pair<double, double> Coil::calculateBFieldSlow(double zCoord, double rCoord
     double magneticFieldZ = 0.0;
     double magneticFieldH = 0.0;
 
-    double lengthBlock = length / usedPrecision.lengthBlockCount;
-    double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
-    double angularBlock = M_PI / usedPrecision.angularBlockCount;
+    double lengthBlock = length / usedPrecision.lengthBlocks;
+    double thicknessBlock = thickness / usedPrecision.thicknessBlocks;
+    double angularBlock = M_PI / usedPrecision.angularBlocks;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int lengthIncrements = usedPrecision.lengthIncrementCount - 1;
-    int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
-    int angularIncrements = usedPrecision.angularIncrementCount - 1;
+    int lengthIncrements = usedPrecision.lengthIncrements - 1;
+    int thicknessIncrements = usedPrecision.thicknessIncrements - 1;
+    int angularIncrements = usedPrecision.angularIncrements - 1;
 
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
-    std::vector<std::vector<double>> cosPhiPrecomputeMat(usedPrecision.angularBlockCount);
+    std::vector<std::vector<double>> cosPhiPrecomputeMat(usedPrecision.angularBlocks);
 
-    for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlockCount; ++indBlockPhi)
+    for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlocks; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
-        cosPhiPrecomputeMat[indBlockPhi].resize(usedPrecision.angularIncrementCount);
+        cosPhiPrecomputeMat[indBlockPhi].resize(usedPrecision.angularIncrements);
 
         for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
         {
@@ -115,9 +115,9 @@ std::pair<double, double> Coil::calculateBFieldSlow(double zCoord, double rCoord
         }
     }
 
-    for (int indBlockL = 0; indBlockL < usedPrecision.lengthBlockCount; ++indBlockL)
+    for (int indBlockL = 0; indBlockL < usedPrecision.lengthBlocks; ++indBlockL)
     {
-        for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlockCount; ++indBlockT)
+        for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlocks; ++indBlockT)
         {
             double blockPositionL = (-1.0) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
@@ -142,7 +142,7 @@ std::pair<double, double> Coil::calculateBFieldSlow(double zCoord, double rCoord
                                         (incrementPositionL + zCoord) * (incrementPositionL + zCoord);
                     double tempConstE = constant * incrementWeightS;
 
-                    for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlockCount; ++indBlockPhi)
+                    for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlocks; ++indBlockPhi)
                     {
                         for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
                         {
@@ -171,24 +171,24 @@ std::vector<double> Coil::calculateBGradientSlow(double zCoord, double rCoord, c
     double bufferValueZZ = 0.0;
     double bufferValueRZ = 0.0;
 
-    double lengthBlock = length / usedPrecision.lengthBlockCount;
-    double thicknessBlock = thickness / usedPrecision.thicknessBlockCount;
-    double angularBlock = M_PI / usedPrecision.angularBlockCount;
+    double lengthBlock = length / usedPrecision.lengthBlocks;
+    double thicknessBlock = thickness / usedPrecision.thicknessBlocks;
+    double angularBlock = M_PI / usedPrecision.angularBlocks;
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    int lengthIncrements = usedPrecision.lengthIncrementCount - 1;
-    int thicknessIncrements = usedPrecision.thicknessIncrementCount - 1;
-    int angularIncrements = usedPrecision.angularIncrementCount - 1;
+    int lengthIncrements = usedPrecision.lengthIncrements - 1;
+    int thicknessIncrements = usedPrecision.thicknessIncrements - 1;
+    int angularIncrements = usedPrecision.angularIncrements - 1;
 
     // multiplication by 2 because cosine is an even function and by 0.125 for a triple change of interval (3 times 1/2)
     double constant = g_MiReduced * currentDensity * lengthBlock * thicknessBlock * angularBlock * 2 * 0.125;
 
-    std::vector<std::vector<double>> cosPhiPrecomputeMat(usedPrecision.angularBlockCount);
+    std::vector<std::vector<double>> cosPhiPrecomputeMat(usedPrecision.angularBlocks);
 
-    for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlockCount; ++indBlockPhi)
+    for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlocks; ++indBlockPhi)
     {
         double blockPositionPhi = angularBlock * (indBlockPhi + 0.5);
-        cosPhiPrecomputeMat[indBlockPhi].resize(usedPrecision.angularIncrementCount);
+        cosPhiPrecomputeMat[indBlockPhi].resize(usedPrecision.angularIncrements);
 
         for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
         {
@@ -198,9 +198,9 @@ std::vector<double> Coil::calculateBGradientSlow(double zCoord, double rCoord, c
         }
     }
 
-    for (int indBlockL = 0; indBlockL < usedPrecision.lengthBlockCount; ++indBlockL)
+    for (int indBlockL = 0; indBlockL < usedPrecision.lengthBlocks; ++indBlockL)
     {
-        for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlockCount; ++indBlockT)
+        for (int indBlockT = 0; indBlockT < usedPrecision.thicknessBlocks; ++indBlockT)
         {
             double blockPositionL = (-1.0) * (length * 0.5) + lengthBlock * (indBlockL + 0.5);
             double blockPositionT = innerRadius + thicknessBlock * (indBlockT + 0.5);
@@ -229,7 +229,7 @@ std::vector<double> Coil::calculateBGradientSlow(double zCoord, double rCoord, c
                     double tempConstH = tempConstA + tempConstB + tempConstC;
                     double tempConstI = constant * incrementWeightS;
 
-                    for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlockCount; ++indBlockPhi)
+                    for (int indBlockPhi = 0; indBlockPhi < usedPrecision.angularBlocks; ++indBlockPhi)
                     {
                         for (int incPhi = 0; incPhi <= angularIncrements; ++incPhi)
                         {

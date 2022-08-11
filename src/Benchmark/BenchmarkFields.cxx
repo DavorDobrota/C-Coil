@@ -22,9 +22,9 @@ void benchComputeFieldsST(int opCount)
     PrecisionArguments precision = testCoil.getPrecisionSettingsCPU();
 
     int numOperations = opCount *
-                        precision.thicknessBlockCount * precision.thicknessIncrementCount *
-                        precision.lengthBlockCount * precision.lengthIncrementCount *
-                        precision.angularBlockCount * precision.angularIncrementCount;
+                        precision.thicknessBlocks * precision.thicknessIncrements *
+                        precision.lengthBlocks * precision.lengthIncrements *
+                        precision.angularBlocks * precision.angularIncrements;
 
     begin_time = high_resolution_clock::now();
     for (int i = 0; i < opCount; ++i){
@@ -67,19 +67,19 @@ void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int rep
     PrecisionArguments precisionFastGPU = testCoilFast.getPrecisionSettingsGPU();
 
     const long long numOperationsSlowCPU = (long long) opCount *
-                                           precisionSlowCPU.thicknessBlockCount * precisionSlowCPU.thicknessIncrementCount *
-                                           precisionSlowCPU.angularBlockCount * precisionSlowCPU.angularIncrementCount;
+                                           precisionSlowCPU.thicknessBlocks * precisionSlowCPU.thicknessIncrements *
+                                           precisionSlowCPU.angularBlocks * precisionSlowCPU.angularIncrements;
 
     const long long numOperationsFastCPU1 = (long long) opCount *
-                                            precisionFastCPU.thicknessBlockCount * precisionFastCPU.thicknessIncrementCount *
-                                            precisionFastCPU.angularBlockCount * precisionFastCPU.angularIncrementCount;
-    const long long numOperationsFastCPU2 = numOperationsFastCPU1 * precisionFastCPU.lengthBlockCount * precisionFastCPU.lengthIncrementCount;
+                                            precisionFastCPU.thicknessBlocks * precisionFastCPU.thicknessIncrements *
+                                            precisionFastCPU.angularBlocks * precisionFastCPU.angularIncrements;
+    const long long numOperationsFastCPU2 = numOperationsFastCPU1 * precisionFastCPU.lengthBlocks * precisionFastCPU.lengthIncrements;
 
     const long long numOperationsSlowGPU = (long long) opCount *
-                                           precisionSlowGPU.thicknessIncrementCount * precisionSlowGPU.angularIncrementCount;
+                                           precisionSlowGPU.thicknessIncrements * precisionSlowGPU.angularIncrements;
 
-    const long long numOperationsFastGPU1 = opCount * precisionFastGPU.thicknessIncrementCount * precisionFastGPU.angularIncrementCount;
-    const long long numOperationsFastGPU2 = numOperationsFastGPU1 * precisionFastGPU.lengthIncrementCount;
+    const long long numOperationsFastGPU1 = opCount * precisionFastGPU.thicknessIncrements * precisionFastGPU.angularIncrements;
+    const long long numOperationsFastGPU2 = numOperationsFastGPU1 * precisionFastGPU.lengthIncrements;
 
     vec3::Vector3Array positionValues(opCount);
 
@@ -292,7 +292,7 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     for(int i = 1; i <= 8; ++i)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(loop, PrecisionFactor(i));
-        int numIterations = precision.angularBlockCount * precision.angularIncrementCount;
+        int numIterations = precision.angularBlocks * precision.angularIncrements;
         long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
@@ -312,7 +312,7 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
         for (int i = 1; i <= 8; ++i)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(loop, PrecisionFactor(i));
-            int numIterations = precision.angularBlockCount * precision.angularIncrementCount;
+            int numIterations = precision.angularBlocks * precision.angularIncrements;
             long long totalIterations = (long long) opCount * numIterations;
             loop.setThreadCount(t);
 
@@ -335,7 +335,7 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     for (int i = 1; i <= 8; ++i)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(loop, PrecisionFactor(i));
-        int numIterations = precision.angularBlockCount * precision.angularIncrementCount;
+        int numIterations = precision.angularBlocks * precision.angularIncrements;
         long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
@@ -355,7 +355,7 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
         for (int i = 1; i <= 8; ++i)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(loop, PrecisionFactor(i));
-            int numIterations = precision.angularBlockCount * precision.angularIncrementCount;
+            int numIterations = precision.angularBlocks * precision.angularIncrements;
             long long totalIterations = (long long) opCount * numIterations;
             loop.setThreadCount(t);
 
@@ -378,7 +378,7 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     for (int i = 1; i <= 8; ++i)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(loop, PrecisionFactor(i));
-        int numIterations = precision.angularBlockCount * precision.angularIncrementCount;
+        int numIterations = precision.angularBlocks * precision.angularIncrements;
         long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
@@ -398,7 +398,7 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
         for (int i = 1; i <= 8; ++i)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(loop, PrecisionFactor(i));
-            int numIterations = precision.angularBlockCount * precision.angularIncrementCount;
+            int numIterations = precision.angularBlocks * precision.angularIncrements;
             long long totalIterations = (long long) opCount * numIterations;
             loop.setThreadCount(t);
 
@@ -422,8 +422,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(pancake, PrecisionFactor(i));
         int numIterations =
-                precision.angularBlockCount * precision.angularIncrementCount
-                * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                precision.angularBlocks * precision.angularIncrements
+                * precision.thicknessBlocks * precision.thicknessIncrements;
         long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
@@ -444,8 +444,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(pancake, PrecisionFactor(i));
             int numIterations =
-                    precision.angularBlockCount * precision.angularIncrementCount
-                    * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                    precision.angularBlocks * precision.angularIncrements
+                    * precision.thicknessBlocks * precision.thicknessIncrements;
             long long totalIterations = (long long) opCount * numIterations;
             pancake.setThreadCount(t);
 
@@ -469,8 +469,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(pancake, PrecisionFactor(i));
         int numIterations =
-                precision.angularBlockCount * precision.angularIncrementCount
-                * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                precision.angularBlocks * precision.angularIncrements
+                * precision.thicknessBlocks * precision.thicknessIncrements;
         long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
@@ -491,8 +491,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(pancake, PrecisionFactor(i));
             int numIterations =
-                    precision.angularBlockCount * precision.angularIncrementCount
-                    * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                    precision.angularBlocks * precision.angularIncrements
+                    * precision.thicknessBlocks * precision.thicknessIncrements;
             long long totalIterations = (long long) opCount * numIterations;
             pancake.setThreadCount(t);
 
@@ -516,8 +516,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(pancake, PrecisionFactor(i));
         int numIterations =
-                precision.angularBlockCount * precision.angularIncrementCount
-                * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                precision.angularBlocks * precision.angularIncrements
+                * precision.thicknessBlocks * precision.thicknessIncrements;
         long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
@@ -538,8 +538,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(pancake, PrecisionFactor(i));
             int numIterations =
-                    precision.angularBlockCount * precision.angularIncrementCount
-                    * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                    precision.angularBlocks * precision.angularIncrements
+                    * precision.thicknessBlocks * precision.thicknessIncrements;
             long long totalIterations = (long long) opCount * numIterations;
             pancake.setThreadCount(t);
 
@@ -563,8 +563,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(thin, PrecisionFactor(i));
         int numIterations =
-                precision.angularBlockCount * precision.angularIncrementCount
-                * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                precision.angularBlocks * precision.angularIncrements
+                * precision.thicknessBlocks * precision.thicknessIncrements;
         long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
@@ -585,8 +585,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(thin, PrecisionFactor(i));
             int numIterations =
-                    precision.angularBlockCount * precision.angularIncrementCount
-                    * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                    precision.angularBlocks * precision.angularIncrements
+                    * precision.thicknessBlocks * precision.thicknessIncrements;
             long long totalIterations = (long long) opCount * numIterations;
             thin.setThreadCount(t);
 
@@ -610,8 +610,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(thin, PrecisionFactor(i));
         int numIterations =
-                precision.angularBlockCount * precision.angularIncrementCount
-                * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                precision.angularBlocks * precision.angularIncrements
+                * precision.thicknessBlocks * precision.thicknessIncrements;
         long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
@@ -632,8 +632,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(thin, PrecisionFactor(i));
             int numIterations =
-                    precision.angularBlockCount * precision.angularIncrementCount
-                    * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                    precision.angularBlocks * precision.angularIncrements
+                    * precision.thicknessBlocks * precision.thicknessIncrements;
             long long totalIterations = (long long) opCount * numIterations;
             thin.setThreadCount(t);
 
@@ -657,8 +657,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(thin, PrecisionFactor(i));
         int numIterations =
-                precision.angularBlockCount * precision.angularIncrementCount
-                * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                precision.angularBlocks * precision.angularIncrements
+                * precision.thicknessBlocks * precision.thicknessIncrements;
         long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
@@ -679,8 +679,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(thin, PrecisionFactor(i));
             int numIterations =
-                    precision.angularBlockCount * precision.angularIncrementCount
-                    * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                    precision.angularBlocks * precision.angularIncrements
+                    * precision.thicknessBlocks * precision.thicknessIncrements;
             long long totalIterations = (long long) opCount * numIterations;
             thin.setThreadCount(t);
 
@@ -704,8 +704,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(thick, PrecisionFactor(i));
         int numIterations =
-                precision.angularBlockCount * precision.angularIncrementCount
-                * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                precision.angularBlocks * precision.angularIncrements
+                * precision.thicknessBlocks * precision.thicknessIncrements;
         long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
@@ -726,8 +726,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(thick, PrecisionFactor(i));
             int numIterations =
-                    precision.angularBlockCount * precision.angularIncrementCount
-                    * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                    precision.angularBlocks * precision.angularIncrements
+                    * precision.thicknessBlocks * precision.thicknessIncrements;
             long long totalIterations = (long long) opCount * numIterations;
             thick.setThreadCount(t);
 
@@ -751,8 +751,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(thick, PrecisionFactor(i));
         int numIterations =
-                precision.angularBlockCount * precision.angularIncrementCount
-                * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                precision.angularBlocks * precision.angularIncrements
+                * precision.thicknessBlocks * precision.thicknessIncrements;
         long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
@@ -773,8 +773,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(thick, PrecisionFactor(i));
             int numIterations =
-                    precision.angularBlockCount * precision.angularIncrementCount
-                    * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                    precision.angularBlocks * precision.angularIncrements
+                    * precision.thicknessBlocks * precision.thicknessIncrements;
             long long totalIterations = (long long) opCount * numIterations;
             thick.setThreadCount(t);
 
@@ -798,8 +798,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
     {
         auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(thick, PrecisionFactor(i));
         int numIterations =
-                precision.angularBlockCount * precision.angularIncrementCount
-                * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                precision.angularBlocks * precision.angularIncrements
+                * precision.thicknessBlocks * precision.thicknessIncrements;
         long long totalIterations = (long long) opCount * numIterations;
 
         beginTime = high_resolution_clock::now();
@@ -820,8 +820,8 @@ void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
         {
             auto precision = PrecisionArguments::getCoilPrecisionArgumentsCPU(thick, PrecisionFactor(i));
             int numIterations =
-                    precision.angularBlockCount * precision.angularIncrementCount
-                    * precision.thicknessBlockCount * precision.thicknessIncrementCount;
+                    precision.angularBlocks * precision.angularIncrements
+                    * precision.thicknessBlocks * precision.thicknessIncrements;
             long long totalIterations = (long long) opCount * numIterations;
             thick.setThreadCount(t);
 

@@ -50,9 +50,9 @@ std::vector<double> CoilGroup::calculateAllMutualInductanceArrangementsGPU(const
     SecondaryCoilData secondaryData;
     generateSecondaryData(secondary, secondaryData, secPrecision, false);
 
-    long long pointCount = secPrecision.lengthIncrementCount *
-                           secPrecision.thicknessIncrementCount *
-                           secPrecision.angularIncrementCount;
+    long long pointCount = secPrecision.lengthIncrements *
+                           secPrecision.thicknessIncrements *
+                           secPrecision.angularIncrements;
 
     #if USE_GPU == 1
         Calculate_mutual_inductance_configurations_group(

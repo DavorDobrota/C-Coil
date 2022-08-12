@@ -3,7 +3,6 @@
 
 #include "Coil.h"
 
-
 const int g_maxPot = 22;
 
 
@@ -12,7 +11,9 @@ void benchMathFunctions();
 void benchComputeFieldsST(int opCount = 50'000);
 void benchComputeAllFields(PrecisionFactor precisionFactor = PrecisionFactor(),
                            int opCount = 20'000, int repeatCount = 1, int threadCount = g_defaultThreadCount);
+
 void benchComputeAllFieldsEveryCoilType(int opCount = 100'000, int threadCount = g_defaultThreadCount);
+
 void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor = PrecisionFactor(),
                                             int threadCount = g_defaultThreadCount, int maxPointsLog2 = g_maxPot);
 void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor = PrecisionFactor(), int maxPointsLog2 = g_maxPot);

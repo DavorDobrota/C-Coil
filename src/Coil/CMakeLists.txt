@@ -7,15 +7,15 @@ add_library(
         PrecisionArguments/CoilPairArguments.cxx
         Fields/CalculateFieldsMethods.cxx
         Fields/CalculateAllFieldsMethods.cxx
-        MInductance/CalculateMInductanceMethods.cxx
+        MInductance/CalculateMInductanceZAxis.cxx
         MInductance/CalculateMInductanceArrangements.cxx
-        ForceAndTorque/CalculateForceMethods.cxx
+        ForceAndTorque/CalculateForceZAxis.cxx
         ForceAndTorque/CalculateForceArrangements.cxx
         Fields/CalculateFieldsSlow.cxx
         Fields/CalculateFieldsFast.cxx
         Utils/SupportFunctions.cxx
         Utils/CalculateAttributes.cxx
-        Fields/ComputeFieldsMethods.cxx ForceAndTorque/ComputeForceMethods.cxx MInductance/ComputeMInductanceMethods.cxx)
+        Fields/ComputeFieldsMethods.cxx ForceAndTorque/ComputeForceMethods.cxx MInductance/ComputeMInductanceMethods.cxx MInductance/CalculateMInductanceGeneral.cxx ForceAndTorque/CalculateForceGeneral.cxx)
 set_property(TARGET Coil PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(Coil PRIVATE -fpic)

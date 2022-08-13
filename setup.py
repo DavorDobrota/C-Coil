@@ -21,7 +21,7 @@ else:
     os.environ["CPPFLAGS"] = "-std=c++17 -Ofast -mavx2 -ffast-math -flto=auto"
 
 if use_GPU:
-    cuda_compile_args = ["--use_fast_math", "-O3"]
+    cuda_compile_args = ["--use_fast_math", "-O3", "-std=c++17"]
 
 
 # Set macros
@@ -109,14 +109,30 @@ if use_GPU:
         *glob("src/CUDAUtils/MemoryManagement/*.cu"),
     ]
     header_include_dirs += CUDA['include']
+
+    library_dirs = []
+    library_dirs += [CUDA['lib'] + '/x64'] if os.name == "nt" else []
+    library_dirs += [CUDA['lib64']] if os.name != "nt" else []
+
+    # extra_link_args = []
+    # extra_link_args += ['cudadevrt.lib', 'cudart.lib'] if os.name == "nt" else []
+    # extra_link_args += ['-lcudadevrt', '-lcudart'] if os.name != "nt" else []
+
     extra_kwargs = {
-        'library_dirs': [CUDA['lib64']],
-        'libraries': ['cudart'],
-        'runtime_library_dirs': [CUDA['lib64']],
-        'extra_link_args': ['-lcudadevrt', '-lcudart'],
+        'library_dirs': library_dirs,
+        'libraries': ['cudart', 'cudadevrt'],
+        # 'extra_link_args': extra_link_args,
     }
 
-    CudaBuildExt.setup(CUDA, cuda_compile_args)
+    if os.name != "nt":
+        extra_kwargs['runtime_library_dirs'] = library_dirs
+
+    if os.name == "nt":
+        cuda_compile_args += ["--compiler-options=/MD"]
+
+    cuda_macros = [("GPU_INCREMENTS", GPU_increments), ("TYPE", float_type)]
+
+    CudaBuildExt.setup(CUDA, cuda_compile_args, header_include_dirs, cuda_macros)
     cmdclass = {'build_ext': CudaBuildExt}
 else:
     cmdclass = {}

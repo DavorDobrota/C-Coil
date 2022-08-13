@@ -15,7 +15,10 @@ CoilGroup::calculateAllAmpereForceArrangementsGPU(const Coil &secondary, const v
                                                   PrecisionFactor precisionFactor) const
 {
     size_t size = secondaryPositions.size();
-    auto secPrecision = PrecisionArguments::getSecondaryCoilPrecisionArgumentsGPU(secondary, precisionFactor);
+    auto precision = PrecisionFactor(((precisionFactor.relativePrecision - 1.0) / 2.0) + 1.0);
+
+    auto secPrecision =
+            PrecisionArguments::getSecondaryCoilPrecisionArgumentsGPU(secondary, precision);
 
     auto *configArr = static_cast<SecondaryCoilPositionData *>(calloc(size, sizeof(SecondaryCoilPositionData)));
     auto *resultArr = static_cast<ForceTorqueData *>(calloc(size, sizeof(ForceTorqueData)));
@@ -45,7 +48,7 @@ CoilGroup::calculateAllAmpereForceArrangementsGPU(const Coil &secondary, const v
         }
 
     auto *coilArr = static_cast<CoilData *>(calloc(coilArrSize, sizeof(CoilData)));
-    generateCoilDataArray(coilArr, precisionFactor, removeSpecificCoil, secondary.getId());
+    generateCoilDataArray(coilArr, precision, removeSpecificCoil, secondary.getId());
 
     SecondaryCoilData secondaryData;
     generateSecondaryData(secondary, secondaryData, secPrecision, true);

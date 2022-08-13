@@ -35,13 +35,13 @@ std::vector<double> CoilGroup::computeAllMutualInductanceArrangements(const Coil
         if (computeMethod == GPU)
         {
             return calculateAllMutualInductanceArrangementsGPU(
-                    secondary, secondaryPositions, secondaryYAngles, secondaryZAngles,precisionFactor
+                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles,precisionFactor
             );
         }
         else if (arrangementCount >= 2 * this->threadCount && computeMethod == CPU_MT)
         {
             return calculateAllMutualInductanceArrangementsMTD(
-                    secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
+                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
             );
         }
         else

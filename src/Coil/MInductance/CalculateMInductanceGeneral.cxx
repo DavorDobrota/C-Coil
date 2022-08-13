@@ -1,6 +1,7 @@
 #include "Coil.h"
 #include "LegendreMatrix.h"
 
+#define _USE_MATH_DEFINES
 #include <math.h>
 
 

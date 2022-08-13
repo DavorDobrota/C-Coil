@@ -3,7 +3,6 @@ from distutils.errors import DistutilsExecError, CompileError
 from distutils.msvccompiler import MSVCCompiler
 from distutils.unixccompiler import UnixCCompiler
 from os.path import join
-from turtle import st
 import types
 from typing import List, Optional, Union
 

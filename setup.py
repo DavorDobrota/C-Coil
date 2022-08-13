@@ -36,6 +36,9 @@ if os.name == "nt":
 else:
     macros += [("USE_GPU", use_GPU), ("GPU_INCREMENTS", GPU_increments), ("TYPE", float_type)]
 
+if use_GPU:
+    cuda_macros = [("GPU_INCREMENTS", GPU_increments), ("TYPE", float_type)]
+
 
 # Define source paths
 
@@ -114,14 +117,9 @@ if use_GPU:
     library_dirs += [CUDA['lib'] + '/x64'] if os.name == "nt" else []
     library_dirs += [CUDA['lib64']] if os.name != "nt" else []
 
-    # extra_link_args = []
-    # extra_link_args += ['cudadevrt.lib', 'cudart.lib'] if os.name == "nt" else []
-    # extra_link_args += ['-lcudadevrt', '-lcudart'] if os.name != "nt" else []
-
     extra_kwargs = {
         'library_dirs': library_dirs,
         'libraries': ['cudart', 'cudadevrt'],
-        # 'extra_link_args': extra_link_args,
     }
 
     if os.name != "nt":
@@ -129,8 +127,6 @@ if use_GPU:
 
     if os.name == "nt":
         cuda_compile_args += ["--compiler-options=/MD"]
-
-    cuda_macros = [("GPU_INCREMENTS", GPU_increments), ("TYPE", float_type)]
 
     CudaBuildExt.setup(CUDA, cuda_compile_args, header_include_dirs, cuda_macros)
     cmdclass = {'build_ext': CudaBuildExt}

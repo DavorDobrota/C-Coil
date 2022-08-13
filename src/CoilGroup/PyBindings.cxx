@@ -20,10 +20,10 @@ void initCoilGroup(py::module_ &mainModule)
     // CoilGroup
 
     coilGroup.def(
-        py::init<std::vector<Coil>, PrecisionFactor, int>(),
-        py::arg("member_coils") = std::vector<Coil>(),
+        py::init<std::vector<std::shared_ptr<Coil>>, PrecisionFactor, int>(),
+        py::arg("member_coils") = std::vector<std::shared_ptr<Coil>>(),
         py::arg("precision_factor") = PrecisionFactor(),
-        py::arg("thread_count") = defaultThreadCount);
+        py::arg("thread_count") = g_defaultThreadCount);
 
     coilGroup.def("get_default_precision_factor", &CoilGroup::getDefaultPrecisionFactor)
         .def("get_thread_count", &CoilGroup::getThreadCount)
@@ -33,7 +33,13 @@ void initCoilGroup(py::module_ &mainModule)
             "set_default_precision_factor", &CoilGroup::setDefaultPrecisionFactor,
             py::arg("precision_factor") = PrecisionFactor())
         .def("set_thread_count", &CoilGroup::setThreadCount, py::arg("thread_count"))
-        .def("add_coil", &CoilGroup::addCoil, py::arg("coil"));
+        .def(
+            "add_coil", &CoilGroup::addCoil,
+            py::arg("inner_radius"), py::arg("thickness"), py::arg("length"),
+            py::arg("num_of_turns"), py::arg("current") = 1.0,
+            py::arg("precision_factor") = PrecisionFactor(), py::arg("coil_threads") = g_defaultThreadCount,
+            py::arg("coordinate_position") = vec3::Vector3(),
+            py::arg("y_axis_angle") = 0.0, py::arg("z_axis_angle") = 0.0);
 
     coilGroup.def("compute_B_field_vector", &CoilGroup::computeBFieldVector, py::arg("point_vector"))
         .def("compute_A_potential_vector", &CoilGroup::computeAPotentialVector, py::arg("point_vector"))

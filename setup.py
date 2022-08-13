@@ -62,7 +62,13 @@ header_include_dirs = [
 
 sources = [
     *glob("src/*.cxx"),
+
     *glob("src/Benchmark/*.cxx"),
+    *glob("src/Benchmark/Coil/Fields/*.cxx"),
+    *glob("src/Benchmark/Coil/MInductanceAndForce/*.cxx"),
+    *glob("src/Benchmark/CoilGroup/*.cxx"),
+    *glob("src/Benchmark/Other/*.cxx"),
+
     *glob("src/Compare/*.cxx"),
     *glob("src/Test/*.cxx"),
 

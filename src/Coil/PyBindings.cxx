@@ -55,12 +55,12 @@ void initCoil(py::module_ &mainModule)
             py::arg("angular_blocks"), py::arg("thickness_blocks"), py::arg("length_blocks"),
             py::arg("angular_increments"), py::arg("thickness_increments"), py::arg("length_increments"));
 
-    precisionArguments.def_readwrite("angular_block_count", &PrecisionArguments::angularBlockCount)
-        .def_readwrite("thickness_block_count", &PrecisionArguments::thicknessBlockCount)
-        .def_readwrite("length_block_count", &PrecisionArguments::lengthBlockCount)
-        .def_readwrite("angular_increment_count", &PrecisionArguments::angularIncrementCount)
-        .def_readwrite("thickness_increment_count", &PrecisionArguments::thicknessIncrementCount)
-        .def_readwrite("length_increment_count", &PrecisionArguments::lengthIncrementCount);
+    precisionArguments.def_readwrite("angular_block_count", &PrecisionArguments::angularBlocks)
+        .def_readwrite("thickness_block_count", &PrecisionArguments::thicknessBlocks)
+        .def_readwrite("length_block_count", &PrecisionArguments::lengthBlocks)
+        .def_readwrite("angular_increment_count", &PrecisionArguments::angularIncrements)
+        .def_readwrite("thickness_increment_count", &PrecisionArguments::thicknessIncrements)
+        .def_readwrite("length_increment_count", &PrecisionArguments::lengthIncrements);
 
     precisionArguments.def_static("get_coil_precision_arguments_CPU", &PrecisionArguments::getCoilPrecisionArgumentsCPU)
         .def_static("get_coil_precision_arguments_GPU", &PrecisionArguments::getCoilPrecisionArgumentsGPU);
@@ -82,7 +82,8 @@ void initCoil(py::module_ &mainModule)
         "get_appropriate_coil_pair_arguments", &CoilPairArguments::getAppropriateCoilPairArguments,
         py::arg("primary"), py::arg("secondary"),
         py::arg("precision_factor"),
-        py::arg("computeMethod") = CPU_ST, py::arg("z_axis_case") = true);
+        py::arg("computeMethod") = CPU_ST,
+        py::arg("z_axis_case") = false, py::arg("pure_GPU") = false);
 
     coilPairArguments.def("__repr__", &CoilPairArguments::operator std::string);
 
@@ -95,7 +96,7 @@ void initCoil(py::module_ &mainModule)
                      PrecisionFactor, int, vec3::Vector3, double, double>(),
             py::arg("inner_radius"), py::arg("thickness"), py::arg("length"), py::arg("num_of_turns"),
             py::arg("current"), py::arg("wire_resistivity"), py::arg("sine_frequency"),
-            py::arg("precision_factor") = PrecisionFactor(), py::arg("thread_count") = defaultThreadCount,
+            py::arg("precision_factor") = PrecisionFactor(), py::arg("thread_count") = g_defaultThreadCount,
             py::arg("coordinate_position") = vec3::Vector3(),
             py::arg("y_axis_angle") = 0.0, py::arg("z_axis_angle") = 0.0)
         .def(
@@ -104,14 +105,14 @@ void initCoil(py::module_ &mainModule)
             py::arg("inner_radius"), py::arg("thickness"), py::arg("length"), py::arg("num_of_turns"),
             py::arg("current"), py::arg("wire_resistivity"), py::arg("sine_frequency"),
             py::arg("precision_settings_CPU"), py::arg("precision_settings_GPU"),
-            py::arg("thread_count") = defaultThreadCount, py::arg("coordinate_position") = vec3::Vector3(),
+            py::arg("thread_count") = g_defaultThreadCount, py::arg("coordinate_position") = vec3::Vector3(),
             py::arg("y_axis_angle") = 0.0, py::arg("z_axis_angle") = 0.0)
         .def(
             py::init<double, double, double, int, double, double, PrecisionFactor, int,
                     vec3::Vector3, double, double>(),
             py::arg("inner_radius"), py::arg("thickness"), py::arg("length"),
             py::arg("num_of_turns"), py::arg("current"), py::arg("sine_frequency"),
-            py::arg("precision_factor") = PrecisionFactor(), py::arg("thread_count") = defaultThreadCount,
+            py::arg("precision_factor") = PrecisionFactor(), py::arg("thread_count") = g_defaultThreadCount,
             py::arg("coordinate_position") = vec3::Vector3(),
             py::arg("y_axis_angle") = 0.0, py::arg("z_axis_angle") = 0.0)
         .def(
@@ -120,33 +121,33 @@ void initCoil(py::module_ &mainModule)
             py::arg("inner_radius"), py::arg("thickness"), py::arg("length"), py::arg("num_of_turns"),
             py::arg("current"), py::arg("sine_frequency"),
             py::arg("precision_settings_CPU"), py::arg("precision_settings_GPU"),
-            py::arg("thread_count") = defaultThreadCount, py::arg("coordinate_position") = vec3::Vector3(),
+            py::arg("thread_count") = g_defaultThreadCount, py::arg("coordinate_position") = vec3::Vector3(),
             py::arg("y_axis_angle") = 0.0, py::arg("z_axis_angle") = 0.0)
         .def(
             py::init<double, double, double, int, double, PrecisionFactor, int, vec3::Vector3, double, double>(),
             py::arg("inner_radius"), py::arg("thickness"), py::arg("length"),
             py::arg("num_of_turns"), py::arg("current"), py::arg("precision_factor") = PrecisionFactor(),
-            py::arg("thread_count") = defaultThreadCount, py::arg("coordinate_position") = vec3::Vector3(),
+            py::arg("thread_count") = g_defaultThreadCount, py::arg("coordinate_position") = vec3::Vector3(),
             py::arg("y_axis_angle") = 0.0, py::arg("z_axis_angle") = 0.0)
         .def(
             py::init<double, double, double, int, double, PrecisionArguments, PrecisionArguments, int,
             vec3::Vector3, double, double>(),
             py::arg("inner_radius"), py::arg("thickness"), py::arg("length"), py::arg("num_of_turns"),
             py::arg("current"), py::arg("precision_settings_CPU"), py::arg("precision_settings_GPU"),
-            py::arg("thread_count") = defaultThreadCount, py::arg("coordinate_position") = vec3::Vector3(),
+            py::arg("thread_count") = g_defaultThreadCount, py::arg("coordinate_position") = vec3::Vector3(),
             py::arg("y_axis_angle") = 0.0, py::arg("z_axis_angle") = 0.0)
         .def(
             py::init<double, double, double, int, PrecisionFactor, int, vec3::Vector3, double, double>(),
             py::arg("inner_radius"), py::arg("thickness"), py::arg("length"),
             py::arg("num_of_turns"), py::arg("precision_factor") = PrecisionFactor(),
-            py::arg("thread_count") = defaultThreadCount, py::arg("coordinate_position") = vec3::Vector3(),
+            py::arg("thread_count") = g_defaultThreadCount, py::arg("coordinate_position") = vec3::Vector3(),
             py::arg("y_axis_angle") = 0.0, py::arg("z_axis_angle") = 0.0)
         .def(
             py::init<double, double, double, int, PrecisionArguments, PrecisionArguments, int,
             vec3::Vector3, double, double>(),
             py::arg("inner_radius"), py::arg("thickness"), py::arg("length"), py::arg("num_of_turns"),
             py::arg("precision_settings_CPU"), py::arg("precision_settings_GPU"),
-            py::arg("thread_count") = defaultThreadCount, py::arg("coordinate_position") = vec3::Vector3(),
+            py::arg("thread_count") = g_defaultThreadCount, py::arg("coordinate_position") = vec3::Vector3(),
             py::arg("y_axis_angle") = 0.0, py::arg("z_axis_angle") = 0.0);
 
     coil.def("get_id", &Coil::getId)

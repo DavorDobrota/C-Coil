@@ -48,20 +48,11 @@ void initBenchmark(py::module_ &mainModule)
             py::arg("max_thread_count") = g_defaultThreadCount);
 
     benchmarkModule.def(
-            "bench_force_Z_axis", benchForceZAxis,
-            py::arg("compute_method") = CPU_ST, py::arg("thread_count") = g_defaultThreadCount)
-        .def(
-            "bench_force_Z_axis_MT_scaling", benchForceZAxisMTScaling,
-            py::arg("max_thread_count") = g_defaultThreadCount)
-        .def("bench_self_inductance", benchSelfInductance);
-
-    benchmarkModule.def(
             "bench_force_general", benchForceGeneral,
             py::arg("compute_method") = CPU_ST, py::arg("thread_count") = g_defaultThreadCount)
         .def(
             "bench_force_general_MT_scaling", benchForceGeneralMTScaling,
             py::arg("max_thread_count") = g_defaultThreadCount);
-
 
     benchmarkModule.def(
             "bench_coil_m_inductance_and_force_compute_all_MT_vs_MTD", benchCoilMInductanceAndForceComputeAllMTvsMTD,

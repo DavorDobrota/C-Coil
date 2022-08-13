@@ -1,17 +1,16 @@
 import os
-from os.path import join
 from glob import glob
-from setuptools import setup
-from distutils.command.build_ext import build_ext
 
 from pybind11.setup_helpers import Pybind11Extension
+from setuptools import setup
 
+from cuda_build import locate_CUDA, CudaBuildExt
 
 # Load environment variables
 
 use_GPU = int(os.environ.get("USE_GPU", 0))
 GPU_increments = int(os.environ.get("GPU_INCREMENTS", 100))
-type = str(os.environ.get("TYPE", "float"))
+float_type = str(os.environ.get("TYPE", "float"))
 
 
 # Set compilation flags
@@ -33,9 +32,9 @@ if GPU_increments < 1 or GPU_increments > 100:
     raise ValueError("GPU_INCREMENTS must be set to an integer in the range [1, 100]!")
 
 if os.name == "nt":
-    os.environ["CL"] += f" /DUSE_GPU#{use_GPU} /DGPU_INCREMENTS#{GPU_increments} /DTYPE#{type}"
+    os.environ["CL"] += f" /DUSE_GPU#{use_GPU} /DGPU_INCREMENTS#{GPU_increments} /DTYPE#{float_type}"
 else:
-    macros += [("USE_GPU", use_GPU), ("GPU_INCREMENTS", GPU_increments), ("TYPE", type)]
+    macros += [("USE_GPU", use_GPU), ("GPU_INCREMENTS", GPU_increments), ("TYPE", float_type)]
 
 
 # Define source paths
@@ -96,32 +95,7 @@ sources = [
 ]
 
 
-def find_in_path(names, path):
-    for dir in path.split(os.pathsep):
-        print(f"Looking for NVCC in: {dir}")
-        for name in names:
-            binpath = join(dir, name)
-            if os.path.exists(binpath):
-                return os.path.abspath(binpath)
-    return None
-
-
-def locate_CUDA():
-    if 'CUDAHOME' in os.environ:
-        home = os.environ['CUDAHOME']
-        nvcc = join(home, 'bin', 'nvcc')
-    else:
-        nvcc = find_in_path(['nvcc', 'nvcc.exe'], os.environ['PATH'])
-        if nvcc is None:
-            raise EnvironmentError('The nvcc binary could not be located in your $PATH. Either add it to your path, or set $CUDAHOME')
-        home = os.path.dirname(os.path.dirname(nvcc))
-    cudaconfig = {'home': home, 'nvcc': nvcc, 'include': join(home, 'include'), 'lib64': join(home, 'lib64'), 'lib': join(home, 'lib')}
-    for k, v in cudaconfig.items():
-        if not os.path.exists(v):
-            print('Warning: The CUDA %s path could not be located in %s' % (k, v))
-
-    return cudaconfig
-
+# Set up GPU building
 
 extra_kwargs = {}
 
@@ -142,6 +116,14 @@ if use_GPU:
         'extra_link_args': ['-lcudadevrt', '-lcudart'],
     }
 
+    CudaBuildExt.setup(CUDA, cuda_compile_args)
+    cmdclass = {'build_ext': CudaBuildExt}
+else:
+    cmdclass = {}
+
+
+# Finish setting up the building environment and run the build
+
 ext_modules = [
     Pybind11Extension(
         name="coil_evolution",
@@ -153,34 +135,6 @@ ext_modules = [
 
 with open("README.md", "r") as f:
     long_description = f.read()
-
-
-def customize_compiler_for_nvcc(self):
-    self.src_extensions.append('.cu')
-
-    default_compiler_so = self.compiler_so
-    super = self._compile
-
-    nvcc_location = CUDA["nvcc"]
-
-    def _compile(obj, src, ext, cc_args, extra_postargs, pp_opts):
-        if os.path.splitext(src)[1] == '.cu':
-            self.set_executable('compiler_so', CUDA['nvcc'])
-            extra_postargs = cuda_compile_args + ["--compiler-options=-fpic"]
-
-        super(obj, src, ext, cc_args, extra_postargs, pp_opts)
-        self.compiler_so = default_compiler_so
-
-    self._compile = _compile
-
-
-class cuda_build_ext(build_ext):
-    def build_extensions(self):
-        customize_compiler_for_nvcc(self.compiler)
-        build_ext.build_extensions(self)
-
-
-cmdclass = {'build_ext': cuda_build_ext} if use_GPU else {}
 
 setup(
     cmdclass=cmdclass,

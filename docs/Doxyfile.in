@@ -1,6 +1,8 @@
-OUTPUT_DIRECTORY = @CMAKE_CURRENT_BINARY_DIR@/docs_doxygen/
-INPUT            = @CMAKE_CURRENT_SOURCE_DIR@/src/ @CMAKE_CURRENT_SOURCE_DIR@/docs/
-RECURSIVE        = YES
 PROJECT_NAME     = "Coil Evolution"
 PROJECT_NUMBER   = 1.2
 PROJECT_BRIEF    = "A library for performing various calculations using coils."
+
+OUTPUT_DIRECTORY = @CMAKE_CURRENT_BINARY_DIR@/docs_doxygen/
+INPUT            = @CMAKE_CURRENT_SOURCE_DIR@/src/ @CMAKE_CURRENT_SOURCE_DIR@/docs/
+RECURSIVE        = YES
+EXTRACT_PRIVATE  = NO

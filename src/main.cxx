@@ -62,6 +62,9 @@ int main()
     benchCoilGroupMInductanceAndForceAll();
     benchCoilGroupMInductanceAndForceAllGPU();
 
+    Coil coil = Coil(0.1, 0.1, 0.1, 10000);
+    coil.computeAllAPotentialVectors(vec3::Vector3Array());
+
 //    testCoilMInductanceArrangements();
 //    testCoilForceArrangements();
 

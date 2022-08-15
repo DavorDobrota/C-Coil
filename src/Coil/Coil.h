@@ -124,6 +124,12 @@ class Coil
         vec3::Matrix3 inverseTransformationMatrix{};
 
     public:
+
+        /// @name CoilConstructors
+        ///@{
+        /**
+         *
+         */
         Coil();
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
@@ -159,6 +165,7 @@ class Coil
              const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU,
              int threadCount = g_defaultThreadCount, vec3::Vector3 coordinatePosition = vec3::Vector3(),
              double yAxisAngle = 0.0, double zAxisAngle = 0.0);
+        /// @}
 
         [[nodiscard]] unsigned long long getId() const;
         [[nodiscard]] double getInnerRadius() const;
@@ -211,43 +218,167 @@ class Coil
         void setSelfInductance(double selfInductance);
 
 
+        /**
+         * @brief Calculates vector potential A of the magnetic field at the specified point.
+         * Uses precision internally defined by defaultPrecisionCPU.
+         * @param pointVector Radius vector from the origin to the point where the field is calculated.
+         * @return Cartesian vector which represents vector potential A.
+         */
         [[nodiscard]] vec3::Vector3 computeAPotentialVector(vec3::Vector3 pointVector) const;
+        /**
+         * @brief Calculates vector potential A of the magnetic field at the specified point.
+         * Uses provided PrecisionArguments for precision settings.
+         * @param pointVector Radius vector from the origin to the point where the field is calculated.
+         * @param usedPrecision Custom precision settings used for this particular calculation.
+         * @return Cartesian vector which represents vector potential A.
+         */
+
         [[nodiscard]] vec3::Vector3 computeAPotentialVector(vec3::Vector3 pointVector,
                                                             const PrecisionArguments &usedPrecision) const;
-
+        /**
+         * @brief Calculates magnetic flux density B (magnetic field) at the specified point.
+         * Uses precision internally defined by defaultPrecisionCPU.
+         * @param pointVector Radius vector from the origin to the point where the field is calculated.
+         * @return Cartesian vector which represents magnetic flux density B.
+         */
         [[nodiscard]] vec3::Vector3 computeBFieldVector(vec3::Vector3 pointVector) const;
+        /**
+         * @brief Calculates magnetic flux density B (magnetic field) at the specified point.
+         * Uses provided PrecisionArguments for precision settings.
+         * @param pointVector Radius vector from the origin to the point where the field is calculated.
+         * @param usedPrecision Custom precision settings used for this particular calculation.
+         * @return Cartesian vector which represents magnetic flux density B.
+         */
+
         [[nodiscard]] vec3::Vector3 computeBFieldVector(vec3::Vector3 pointVector,
                                                         const PrecisionArguments &usedPrecision) const;
-
+        /**
+         * @brief Calculates the amplitude vector of electric field E in sinusoidal steady-state at the specified point.
+         * Uses precision internally defined by defaultPrecisionCPU.
+         * @param pointVector Radius vector from the origin to the point where the field is calculated.
+         * @return Cartesian vector which represents the amplitude of electric field E.
+         */
         [[nodiscard]] vec3::Vector3 computeEFieldVector(vec3::Vector3 pointVector) const;
+
+        /**
+         * @brief Calculates the amplitude vector of electric field E in sinusoidal steady-state at the specified point.
+         * Uses provided PrecisionArguments for precision settings.
+         * @param pointVector Radius vector from the origin to the point where the field is calculated.
+         * @param usedPrecision Custom precision settings used for this particular calculation.
+         * @return Cartesian vector which represents the amplitude of electric field E.
+         */
         [[nodiscard]] vec3::Vector3 computeEFieldVector(vec3::Vector3 pointVector,
                                                         const PrecisionArguments &usedPrecision) const;
 
+        /**
+         * @brief Calculates the gradient G of the magnetic field (total derivative of B) at the specified point.
+         * Uses precision internally defined by defaultPrecisionCPU.
+         * @param pointVector Radius vector from the origin to the point where the field is calculated.
+         * @return 3x3 Matrix which represents the magnetic gradient matrix G.
+         */
         [[nodiscard]] vec3::Matrix3 computeBGradientMatrix(vec3::Vector3 pointVector) const;
+        /**
+         * @brief Calculates the gradient G of the magnetic field (total derivative of B) at the specified point.
+         * Uses provided PrecisionArguments for precision settings.
+         * @param pointVector Radius vector from the origin to the point where the field is calculated.
+         * @param usedPrecision Custom precision settings used for this particular calculation.
+         * @return 3x3 matrix which represents the magnetic gradient matrix G.
+         */
         [[nodiscard]] vec3::Matrix3 computeBGradientMatrix(vec3::Vector3 pointVector,
                                                            const PrecisionArguments &usedPrecision) const;
 
-
+        /**
+         * @brief Calculates vector potential A of the magnetic field for a number of specified points.
+         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
+         * Uses precision internally defined by defaultPrecisionCPU.
+         * @param pointVectors An array of radius vectors wrapped in class Vector3Array
+         * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+         * @return array of Cartesian vectors (wrapped in Vector3Array) which represent vector potential A at specified points.
+         */
         [[nodiscard]] vec3::Vector3Array computeAllAPotentialVectors(const vec3::Vector3Array &pointVectors,
                                                                      ComputeMethod computeMethod = CPU_ST) const;
+        /**
+         * @brief Calculates vector potential A of the magnetic field for a number of specified points.
+         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
+         * Uses provided PrecisionArguments for precision settings.
+         * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
+         * @param usedPrecision Custom precision settings used for this particular calculation.
+         * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+         * @return array of Cartesian vectors (wrapped in Vector3Array) which represent vector potential A at specified points.
+         */
         [[nodiscard]] vec3::Vector3Array computeAllAPotentialVectors(const vec3::Vector3Array &pointVectors,
                                                                      const PrecisionArguments &usedPrecision,
                                                                      ComputeMethod computeMethod = CPU_ST) const;
 
+        /**
+         * @brief Calculates magnetic flux density B (magnetic field) for a number of specified points.
+         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
+         * Uses precision internally defined by defaultPrecisionCPU.
+         * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
+         * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+         * @return array of Cartesian vectors (wrapped in Vector3Array) which represent magnetic flux B at specified points.
+         */
         [[nodiscard]] vec3::Vector3Array computeAllBFieldVectors(const vec3::Vector3Array &pointVectors,
                                                                  ComputeMethod computeMethod = CPU_ST) const;
+        /**
+         * @brief Calculates magnetic flux density B (magnetic field) for a number of specified points.
+         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
+         * Uses provided PrecisionArguments for precision settings.
+         * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
+         * @param usedPrecision Custom precision settings used for this particular calculation.
+         * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+         * @return array of Cartesian vectors (wrapped in Vector3Array) which represent magnetic flux B at specified points.
+         */
         [[nodiscard]] vec3::Vector3Array computeAllBFieldVectors(const vec3::Vector3Array &pointVectors,
                                                                  const PrecisionArguments &usedPrecision,
                                                                  ComputeMethod computeMethod = CPU_ST) const;
 
+        /**
+         * @brief Calculates the amplitude vector of electric field E in sinusoidal steady-state for a number of specified points.
+         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
+         * Uses precision internally defined by defaultPrecisionCPU.
+         * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
+         * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+         * @return array of Cartesian vectors (wrapped in Vector3Array)
+         * which represent the amplitude of electric field E at specified points.
+         */
         [[nodiscard]] vec3::Vector3Array computeAllEFieldVectors(const vec3::Vector3Array &pointVectors,
                                                                  ComputeMethod computeMethod = CPU_ST) const;
+        /**
+         * @brief Calculates the amplitude vector of electric field E in sinusoidal steady-state for a number of specified points.
+         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
+         * Uses provided PrecisionArguments for precision settings.
+         * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
+         * @param usedPrecision Custom precision settings used for this particular calculation.
+         * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+         * @return array of Cartesian vectors (wrapped in Vector3Array)
+         * which represent the amplitude of electric field E at specified points.
+         */
         [[nodiscard]] vec3::Vector3Array computeAllEFieldVectors(const vec3::Vector3Array &pointVectors,
                                                                  const PrecisionArguments &usedPrecision,
                                                                  ComputeMethod computeMethod = CPU_ST) const;
 
+        /**
+         * @brief Calculates the gradient G of the magnetic field (total derivative of B) for a number of specified points.
+         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
+         * Uses precision internally defined by defaultPrecisionCPU.
+         * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
+         * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+         * @return array of 3x3 matrices (wrapped in Matrix3Array)
+         * which represents the magnetic gradient matrix G at specified points.
+         */
         [[nodiscard]] vec3::Matrix3Array computeAllBGradientMatrices(const vec3::Vector3Array &pointVectors,
                                                                      ComputeMethod computeMethod = CPU_ST) const;
+        /**
+         * @brief Calculates the gradient G of the magnetic field (total derivative of B) for a number of specified points.
+         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
+         * Uses provided PrecisionArguments for precision settings.
+         * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
+         * @param usedPrecision Custom precision settings used for this particular calculation.
+         * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+         * @return array of 3x3 matrices (wrapped in Matrix3Array)
+         * which represents the magnetic gradient matrix G at specified points.
+         */
         [[nodiscard]] vec3::Matrix3Array computeAllBGradientMatrices(const vec3::Vector3Array &pointVectors,
                                                                      const PrecisionArguments &usedPrecision,
                                                                      ComputeMethod computeMethod = CPU_ST) const;

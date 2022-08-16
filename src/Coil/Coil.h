@@ -222,7 +222,7 @@ class Coil
          * @brief Calculates vector potential A of the magnetic field at the specified point.
          * Uses precision internally defined by defaultPrecisionCPU.
          * @param pointVector Radius vector from the origin to the point where the field is calculated.
-         * @return Cartesian vector which represents vector potential A.
+         * @return 3D Cartesian vector which represents vector potential A.
          */
         [[nodiscard]] vec3::Vector3 computeAPotentialVector(vec3::Vector3 pointVector) const;
         /**
@@ -230,7 +230,7 @@ class Coil
          * Uses provided PrecisionArguments for precision settings.
          * @param pointVector Radius vector from the origin to the point where the field is calculated.
          * @param usedPrecision Custom precision settings used for this particular calculation.
-         * @return Cartesian vector which represents vector potential A.
+         * @return 3D Cartesian vector which represents vector potential A.
          */
 
         [[nodiscard]] vec3::Vector3 computeAPotentialVector(vec3::Vector3 pointVector,
@@ -239,7 +239,7 @@ class Coil
          * @brief Calculates magnetic flux density B (magnetic field) at the specified point.
          * Uses precision internally defined by defaultPrecisionCPU.
          * @param pointVector Radius vector from the origin to the point where the field is calculated.
-         * @return Cartesian vector which represents magnetic flux density B.
+         * @return 3D Cartesian vector which represents magnetic flux density B.
          */
         [[nodiscard]] vec3::Vector3 computeBFieldVector(vec3::Vector3 pointVector) const;
         /**
@@ -247,7 +247,7 @@ class Coil
          * Uses provided PrecisionArguments for precision settings.
          * @param pointVector Radius vector from the origin to the point where the field is calculated.
          * @param usedPrecision Custom precision settings used for this particular calculation.
-         * @return Cartesian vector which represents magnetic flux density B.
+         * @return 3D Cartesian vector which represents magnetic flux density B.
          */
 
         [[nodiscard]] vec3::Vector3 computeBFieldVector(vec3::Vector3 pointVector,
@@ -256,7 +256,7 @@ class Coil
          * @brief Calculates the amplitude vector of electric field E in sinusoidal steady-state at the specified point.
          * Uses precision internally defined by defaultPrecisionCPU.
          * @param pointVector Radius vector from the origin to the point where the field is calculated.
-         * @return Cartesian vector which represents the amplitude of electric field E.
+         * @return 3D Cartesian vector which represents the amplitude of electric field E.
          */
         [[nodiscard]] vec3::Vector3 computeEFieldVector(vec3::Vector3 pointVector) const;
 
@@ -265,7 +265,7 @@ class Coil
          * Uses provided PrecisionArguments for precision settings.
          * @param pointVector Radius vector from the origin to the point where the field is calculated.
          * @param usedPrecision Custom precision settings used for this particular calculation.
-         * @return Cartesian vector which represents the amplitude of electric field E.
+         * @return 3D Cartesian vector which represents the amplitude of electric field E.
          */
         [[nodiscard]] vec3::Vector3 computeEFieldVector(vec3::Vector3 pointVector,
                                                         const PrecisionArguments &usedPrecision) const;
@@ -289,22 +289,22 @@ class Coil
 
         /**
          * @brief Calculates vector potential A of the magnetic field for a number of specified points.
-         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * Uses precision internally defined by defaultPrecisionCPU.
+         * @details There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * @param pointVectors An array of radius vectors wrapped in class Vector3Array
          * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
-         * @return array of Cartesian vectors (wrapped in Vector3Array) which represent vector potential A at specified points.
+         * @return Array of Cartesian vectors which represent vector potential A at specified points.
          */
         [[nodiscard]] vec3::Vector3Array computeAllAPotentialVectors(const vec3::Vector3Array &pointVectors,
                                                                      ComputeMethod computeMethod = CPU_ST) const;
         /**
          * @brief Calculates vector potential A of the magnetic field for a number of specified points.
-         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * Uses provided PrecisionArguments for precision settings.
+         * @details There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
          * @param usedPrecision Custom precision settings used for this particular calculation.
          * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
-         * @return array of Cartesian vectors (wrapped in Vector3Array) which represent vector potential A at specified points.
+         * @return Array of Cartesian vectors which represent vector potential A at specified points.
          */
         [[nodiscard]] vec3::Vector3Array computeAllAPotentialVectors(const vec3::Vector3Array &pointVectors,
                                                                      const PrecisionArguments &usedPrecision,
@@ -312,22 +312,22 @@ class Coil
 
         /**
          * @brief Calculates magnetic flux density B (magnetic field) for a number of specified points.
-         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * Uses precision internally defined by defaultPrecisionCPU.
+         * @details There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
          * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
-         * @return array of Cartesian vectors (wrapped in Vector3Array) which represent magnetic flux B at specified points.
+         * @return Array of Cartesian vectors which represent magnetic flux B at specified points.
          */
         [[nodiscard]] vec3::Vector3Array computeAllBFieldVectors(const vec3::Vector3Array &pointVectors,
                                                                  ComputeMethod computeMethod = CPU_ST) const;
         /**
          * @brief Calculates magnetic flux density B (magnetic field) for a number of specified points.
-         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * Uses provided PrecisionArguments for precision settings.
+         * @details There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
          * @param usedPrecision Custom precision settings used for this particular calculation.
          * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
-         * @return array of Cartesian vectors (wrapped in Vector3Array) which represent magnetic flux B at specified points.
+         * @return Array of Cartesian vectors which represent magnetic flux B at specified points.
          */
         [[nodiscard]] vec3::Vector3Array computeAllBFieldVectors(const vec3::Vector3Array &pointVectors,
                                                                  const PrecisionArguments &usedPrecision,
@@ -335,24 +335,22 @@ class Coil
 
         /**
          * @brief Calculates the amplitude vector of electric field E in sinusoidal steady-state for a number of specified points.
-         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * Uses precision internally defined by defaultPrecisionCPU.
+         * @details There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
          * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
-         * @return array of Cartesian vectors (wrapped in Vector3Array)
-         * which represent the amplitude of electric field E at specified points.
+         * @return Array of Cartesian vectors which represent the amplitude of electric field E at specified points.
          */
         [[nodiscard]] vec3::Vector3Array computeAllEFieldVectors(const vec3::Vector3Array &pointVectors,
                                                                  ComputeMethod computeMethod = CPU_ST) const;
         /**
          * @brief Calculates the amplitude vector of electric field E in sinusoidal steady-state for a number of specified points.
-         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * Uses provided PrecisionArguments for precision settings.
+         * @details There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
          * @param usedPrecision Custom precision settings used for this particular calculation.
          * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
-         * @return array of Cartesian vectors (wrapped in Vector3Array)
-         * which represent the amplitude of electric field E at specified points.
+         * @return Array of Cartesian vectors which represent the amplitude of electric field E at specified points.
          */
         [[nodiscard]] vec3::Vector3Array computeAllEFieldVectors(const vec3::Vector3Array &pointVectors,
                                                                  const PrecisionArguments &usedPrecision,
@@ -360,61 +358,171 @@ class Coil
 
         /**
          * @brief Calculates the gradient G of the magnetic field (total derivative of B) for a number of specified points.
-         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * Uses precision internally defined by defaultPrecisionCPU.
+         * @details There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
          * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
-         * @return array of 3x3 matrices (wrapped in Matrix3Array)
-         * which represents the magnetic gradient matrix G at specified points.
+         * @return Array of 3x3 matrices which represents the magnetic gradient matrix G at specified points.
          */
         [[nodiscard]] vec3::Matrix3Array computeAllBGradientMatrices(const vec3::Vector3Array &pointVectors,
                                                                      ComputeMethod computeMethod = CPU_ST) const;
         /**
          * @brief Calculates the gradient G of the magnetic field (total derivative of B) for a number of specified points.
-         * There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * Uses provided PrecisionArguments for precision settings.
+         * @details There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
          * @param usedPrecision Custom precision settings used for this particular calculation.
          * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
-         * @return array of 3x3 matrices (wrapped in Matrix3Array)
-         * which represents the magnetic gradient matrix G at specified points.
+         * @return Array of 3x3 matrices which represents the magnetic gradient matrix G at specified points.
          */
         [[nodiscard]] vec3::Matrix3Array computeAllBGradientMatrices(const vec3::Vector3Array &pointVectors,
                                                                      const PrecisionArguments &usedPrecision,
                                                                      ComputeMethod computeMethod = CPU_ST) const;
 
-
+        /**
+         * @brief Calculates the Mutual induction M between two given coils.
+         * Generates CoilPairArguments from given precisionFactor.
+         * @details For better precision, the primary coil should be the bigger one, length is the most important parameter.
+         * There are more performant implementations if both coils lie on the z-axis and have rotation angles set to 0.
+         * Using CPU_MT compute method is highly advisable, especially for higher precision factors.
+         * GPU is a good option when an error of 1e-5 is good enough for the application (usual error of order 1e-6).
+         * @param primary The coil that generates the vector potential.
+         * @param secondary The coil that is represented with a number of points for which the potential is calculated.
+         * @param precisionFactor Determines the precision of given calculation, increments = baseIncrements * 2^precision.
+         * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+         * @return Mutual inductance of the system of two coils.
+         */
         static double computeMutualInductance(const Coil &primary, const Coil &secondary,
                                               PrecisionFactor precisionFactor = PrecisionFactor(),
                                               ComputeMethod computeMethod = CPU_ST);
+        /**
+         * @brief Calculates the Mutual induction M between two given coils.
+         * Uses provided CoilPairArguments for precision settings.
+         * @details For better precision, the primary coil should be the bigger one, length is the most important parameter.
+         * There are more performant implementations if both coils lie on the z-axis and have rotation angles set to 0.
+         * Using CPU_MT compute method is highly advisable, especially for higher precision factors.
+         * GPU is a good option when an error of 1e-5 is good enough for the application (usual error of order 1e-6).
+         * @param primary The coil that generates the vector potential.
+         * @param secondary The coil that is represented with a number of points for which the potential is calculated.
+         * @param inductanceArguments Custom precision settings used for this particular calculation.
+         * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+         * @return Mutual inductance of the system of two coils.
+         */
         static double computeMutualInductance(const Coil &primary, const Coil &secondary,
                                               const CoilPairArguments &inductanceArguments,
                                               ComputeMethod computeMethod = CPU_ST);
 
+        /**
+         * @brief Calculates the magnitude of sinusoidal steady-state voltage induced in the secondary coil.
+         * Generates CoilPairArguments from given precisionFactor. Similar to computeMutualInductance.
+         * @param secondary The coil that is represented with a number of points for which the E field is calculated.
+         * @param precisionFactor Determines the precision of given calculation, increments = baseIncrements * 2^precision.
+         * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+         * @return Magnitude of the voltage induced on the secondary coil.
+         */
         [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary,
                                                             PrecisionFactor precisionFactor = PrecisionFactor(),
                                                             ComputeMethod computeMethod = CPU_ST) const;
+        /**
+         * @brief Calculates the magnitude of sinusoidal steady-state voltage induced in the secondary coil.
+         * Uses provided CoilPairArguments for precision settings. Similar to computeMutualInductance.
+         * @param secondary The coil that is represented with a number of points for which the E field is calculated.
+         * @param inductanceArguments Custom precision settings used for this particular calculation.
+         * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+         * @return Magnitude of the voltage induced on the secondary coil.
+         */
         [[nodiscard]] double computeSecondaryInducedVoltage(const Coil &secondary,
                                                             const CoilPairArguments &inductanceArguments,
                                                             ComputeMethod computeMethod = CPU_ST) const;
-
+        /**
+         * @brief Special method which returns self inductance L of the given coil and sets it internally.
+         * @details This method is exclusively single threaded and represents a shortcoming of this approach.
+         * Low precision factors, below 5.0, are not advisable and good precision (error of order 1e-6)
+         * can be achieved with precision factor 10.0. It works well for thick and thin coils,
+         * but poorly for flat coils, and does not work for filaments (loops) as the integral is inherently divergent.
+         * @param precisionFactor
+         * @return Magnitude of the voltage induced on the secondary coil.
+         */
         double computeAndSetSelfInductance(PrecisionFactor precisionFactor);
 
-
+        /**
+        * @brief Calculates the Ampere force F and torque T between two coils.
+        * Generates CoilPairArguments from given precisionFactor.
+        * @details For better precision, the primary coil should be the bigger one, length is the most important parameter.
+        * There are more performant implementations if both coils lie on the z-axis and have rotation angles set to 0.
+        * Using CPU_MT compute method is highly advisable, especially for higher precision factors and
+        * GPU is a good option when an error of 1e-5 is good enough for the application (usual error of order 1e-6).
+        * @param primary The coil that generates the magnetic field.
+        * @param secondary The coil that is represented with a number of points for which the field is calculated.
+        * @param precisionFactor Determines the precision of given calculation, increments = baseIncrements * 2^precision.
+        * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+        * @return Pair of Cartesian vectors which represent force (first) and torque (second).
+        */
         static std::pair<vec3::Vector3, vec3::Vector3>
         computeAmpereForce(const Coil &primary, const Coil &secondary,
                            PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod computeMethod = CPU_ST);
+        /**
+        * @brief Calculates the Ampere force F and torque T between two coils.
+        * Generates CoilPairArguments from given precisionFactor
+        * @details For better precision, the primary coil should be the bigger one, length is the most important parameter.
+        * There are more performant implementations if both coils lie on the z-axis and have rotation angles set to 0.
+        * Using CPU_MT compute method is highly advisable, especially for higher precision factors and
+        * GPU is a good option when an error of 1e-5 is good enough for the application (usual error of order 1e-6).
+        * @param primary The coil that generates the magnetic field.
+        * @param secondary The coil that is represented with a number of points for which the field is calculated.
+        * @param inductanceArguments Custom precision settings used for this particular calculation.
+        * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+        * @return Pair of Cartesian vectors which represent force (first) and torque (second).
+        */
         static std::pair<vec3::Vector3, vec3::Vector3>
         computeAmpereForce(const Coil &primary, const Coil &secondary,
                            const CoilPairArguments &forceArguments, ComputeMethod computeMethod = CPU_ST);
 
+        /**
+         * @brief Calculates force F and torque T between a coil and magnetostatic object with a dipole moment.
+         * Uses precision internally defined by defaultPrecisionCPU.
+         * @details This method can prove particularly useful for approximating the force and and torque
+         * between two coils which are sufficiently far apart, or when the secondary coil is very small.
+         * It can also be useful in particle simulations where the magnetic dipole moment is not negligible
+         * @param pointVector Radius vector from the origin to the point where the magnetic dipole is located.
+         * @param dipoleMoment Magnetic dipole moment vector of a secondary coil or another object (magnet, particle).
+         * @return Pair of Cartesian vectors which represent force (first) and torque (second).
+         */
         [[nodiscard]] std::pair<vec3::Vector3, vec3::Vector3>
         computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 dipoleMoment) const;
-
+        /**
+         * @brief Calculates force F and torque T between a coil and magnetostatic object with a dipole moment.
+         * Uses provided PrecisionArguments for precision settings.
+         * @details This method can prove particularly useful for approximating the force and and torque
+         * between two coils which are sufficiently far apart, or when the secondary coil is very small.
+         * It can also be useful in particle simulations where the magnetic dipole moment is not negligible
+         * @param pointVector Radius vector from the origin to the point where the magnetic dipole is located.
+         * @param dipoleMoment Magnetic dipole moment vector of a secondary coil or another object (magnet, particle).
+         * @param usedPrecision Custom precision settings used for this particular calculation.
+         * @return Pair of Cartesian vectors which represent force (first) and torque (second).
+         */
         [[nodiscard]] std::pair<vec3::Vector3, vec3::Vector3>
         computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 dipoleMoment,
                                    const PrecisionArguments &usedPrecision) const;
 
+        /**
+         * @brief Calculates mutual inductance M between two coils for different coil configurations.
+         * All positional arguments can be changed. Generates CoilPairArguments from given precisionFactor.
+         * @details This method is exceptionally powerful because it can more efficiently utilise the CPU with
+         * distributed (coarse-grained) multithreading, and especially the GPU with a special pure GPU implementation
+         * of mutual inductance calculation. Computation times can be as low as several microseconds per configuration.
+         * @param primary The coil that generates the vector potential
+         * @param secondary The coil that is represented with a number of points for which the potential is calculated.
+         * @param primaryPositions Positions of the center of the primary coil.
+         * @param secondaryPositions Positions of the center of the secondary coil.
+         * @param primaryYAngles Primary coil rotation angles along the y-axis.
+         * @param primaryZAngles Primary coil rotation angles along the z-axis.
+         * @param secondaryYAngles Secondary coil rotation angles along the y-axis.
+         * @param secondaryZAngles Secondary coil rotation angles along the z-axis.
+         * @param precisionFactor Determines the precision of given calculation, increments = baseIncrements * 2^precision.
+         * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+         * @return Array of mutual inductance values, one for each appropriate configuration.
+         */
         static std::vector<double>
         computeAllMutualInductanceArrangements(const Coil &primary, const Coil &secondary,
                                                const vec3::Vector3Array &primaryPositions,
@@ -425,7 +533,24 @@ class Coil
                                                const std::vector<double> &secondaryZAngles,
                                                PrecisionFactor precisionFactor = PrecisionFactor(),
                                                ComputeMethod computeMethod = CPU_ST);
-
+        /**
+        * @brief Calculates force F and torque T between two coils for different coil configurations.
+        * All positional arguments can be changed. Generates CoilPairArguments from given precisionFactor.
+        * @details This method is exceptionally powerful because it can more efficiently utilise the CPU with
+        * distributed (coarse-grained) multithreading, and especially the GPU with a special pure GPU implementation
+        * of force and torque calculation. Computation times can be as low as several microseconds per configuration.
+        * @param primary The coil that generates the magnetic field
+        * @param secondary The coil that is represented with a number of points for which the field is calculated.
+        * @param primaryPositions Positions of the center of the primary coil.
+        * @param secondaryPositions Positions of the center of the secondary coil.
+        * @param primaryYAngles Primary coil rotation angles along the y-axis.
+        * @param primaryZAngles Primary coil rotation angles along the z-axis.
+        * @param secondaryYAngles Secondary coil rotation angles along the y-axis.
+        * @param secondaryZAngles Secondary coil rotation angles along the z-axis.
+        * @param precisionFactor Determines the precision of given calculation, increments = baseIncrements * 2^precision.
+        * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
+        * @return Array of pairs of force (first) and torque (second) vectors, one for each appropriate configuration.
+        */
         static std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
         computeAllAmpereForceArrangements(const Coil &primary, const Coil &secondary,
                                           const vec3::Vector3Array &primaryPositions,
@@ -436,7 +561,10 @@ class Coil
                                           const std::vector<double> &secondaryZAngles,
                                           PrecisionFactor precisionFactor = PrecisionFactor(),
                                           ComputeMethod computeMethod = CPU_ST);
-
+        /**
+         * @brief Generates a string object with all properties of the coil.
+         * @return Coil string
+         */
         explicit operator std::string() const;
 
     private:

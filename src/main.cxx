@@ -13,11 +13,11 @@
 #pragma ide diagnostic ignored "Simplify"
 int main()
 {
-//    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(1.0), 16, 22);
+//    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 16, 25);
 //    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 25);
 //    benchComputeAllFields();
 
-//    benchComputeAllFieldsEveryCoilType(200003, 8);
+//    benchComputeAllFieldsEveryCoilType(1'000'000, 8);
 
 //    benchMInductanceZAxisMTScaling(16);
 //    benchMInductanceGeneralMTScaling(16);
@@ -59,8 +59,8 @@ int main()
 //    benchCoilMInductanceAndForceComputeAll();
 //    benchCoilMInductanceAndForceComputeAllGPU();
 
-    benchCoilGroupMInductanceAndForceAll();
-    benchCoilGroupMInductanceAndForceAllGPU();
+//    benchCoilGroupMInductanceAndForceAll();
+//    benchCoilGroupMInductanceAndForceAllGPU();
 
 //    testCoilMInductanceArrangements();
 //    testCoilForceArrangements();
@@ -71,6 +71,8 @@ int main()
 //    testMInductanceZAxisArgumentGeneration();
 //    testMInductanceGeneralArgumentGeneration();
 
+    benchCoilGroupComputeAllFieldsMTScaling(PrecisionFactor(3.0), 16, 100, 16);
+    benchCoilGroupComputeAllFieldsGPUScaling(PrecisionFactor(3.0), 100, 20);
 
     return 0;
 }

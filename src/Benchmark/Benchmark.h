@@ -4,6 +4,7 @@
 #include "Coil.h"
 
 const int g_maxPot = 22;
+const int g_maxPotGroup = 16;
 
 
 void benchMathFunctions();
@@ -39,6 +40,12 @@ void benchCoilMInductanceAndForceComputeAll(int configCount = 100, int threadCou
 void benchCoilGroupComputeAllFieldsMTvsMTD(int threadCount = g_defaultThreadCount, int pointCount = 20'000);
 void benchCoilGroupComputeAllFields(PrecisionFactor precisionFactor = PrecisionFactor(),
                                     int coilCount = 50, int opCount = 100'000, int threadCount = g_defaultThreadCount);
+void benchCoilGroupComputeAllFieldsMTScaling(PrecisionFactor precisionFactor = PrecisionFactor(),
+                                             int threadCount = g_defaultThreadCount,
+                                             int coilCount = 100, int maxPointsLog2 = g_maxPotGroup);
+void benchCoilGroupComputeAllFieldsGPUScaling(PrecisionFactor precisionFactor = PrecisionFactor(),
+                                             int coilCount = 100, int maxPointsLog2 = g_maxPotGroup);
+
 void benchCoilGroupComputeAllFieldsGPU(int coilCount = 100, int opCount = 131'072);
 void benchCoilGroupMInductanceAndForce(int opCount = 2, int threadCount = g_defaultThreadCount);
 void benchCoilGroupMInductanceAndForceAll(int coilCount = 50, int opCount = 10, int threadCount = g_defaultThreadCount);

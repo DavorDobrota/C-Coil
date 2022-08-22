@@ -3,6 +3,7 @@ from distutils.errors import DistutilsExecError, CompileError
 from distutils.msvccompiler import MSVCCompiler
 from distutils.unixccompiler import UnixCCompiler
 from os.path import join
+import types
 from typing import List, Optional, Union
 
 from setuptools.command.build_ext import build_ext
@@ -44,11 +45,12 @@ def locate_CUDA() -> dict:
 
 
 def customize_compiler_for_nvcc(
-        compiler: Union[UnixCCompiler, MSVCCompiler], CUDA: dict, cuda_compile_args: List[str]
+        compiler: Union[UnixCCompiler, MSVCCompiler], CUDA: dict, cuda_compile_args: List[str],
+        cuda_include_dirs_generated: List[str], cuda_macros_generated: List[str]
 ) -> None:
     def setup_unix_compiler():
         default_compiler_so = compiler.compiler_so
-        super = compiler._compile
+        _super = compiler._compile
 
         def _compile(obj, src, ext, cc_args, extra_postargs, pp_opts):
             # Set compiler to NVCC for .cu files
@@ -56,7 +58,7 @@ def customize_compiler_for_nvcc(
                 compiler.set_executable('compiler_so', CUDA['nvcc'])
                 extra_postargs = cuda_compile_args + ["--compiler-options=-fpic"]
 
-            super(obj, src, ext, cc_args, extra_postargs, pp_opts)
+            _super(obj, src, ext, cc_args, extra_postargs, pp_opts)
 
             # Reset compiler to default
             compiler.compiler_so = default_compiler_so
@@ -66,7 +68,9 @@ def customize_compiler_for_nvcc(
     def setup_msvc_compiler():
         compiler.nvcc = CUDA['nvcc']
         compiler.cuda_compile_args = cuda_compile_args
-        compiler.compile = _MSVC_CUDA_compile
+        compiler.cuda_include_dirs = cuda_include_dirs_generated
+        compiler.cuda_macros = cuda_macros_generated
+        compiler.compile = types.MethodType(_MSVC_CUDA_compile, compiler)
 
     # Determine the compiler type and set it up
     compiler.src_extensions.append('.cu')
@@ -145,9 +149,12 @@ def _MSVC_CUDA_compile(
         elif ext == '.cu':
             # Compile CUDA file
             input_opt = src
-            output_opt = "-o=" + obj
+            output_opt = f'-o={obj}'
             try:
-                compiler.spawn([compiler.nvcc] + compiler.cuda_compile_args + [output_opt] + [input_opt])
+                compiler.spawn(
+                    [compiler.nvcc] + ["-c"] + compiler.cuda_compile_args 
+                    + compiler.cuda_include_dirs + compiler.cuda_macros
+                    + [output_opt] + [input_opt])
             except DistutilsExecError as msg:
                 raise CompileError(msg)
             continue
@@ -174,12 +181,19 @@ def _MSVC_CUDA_compile(
 class CudaBuildExt(build_ext):
     CUDA: dict
     cuda_compile_args: List[str]
+    cuda_include_dirs_generated: List[str]
+    cuda_macros_generated: List[str]
 
     def build_extensions(self):
-        customize_compiler_for_nvcc(self.compiler, CudaBuildExt.CUDA, CudaBuildExt.cuda_compile_args)
+        customize_compiler_for_nvcc(
+            self.compiler, CudaBuildExt.CUDA, CudaBuildExt.cuda_compile_args,
+            CudaBuildExt.cuda_include_dirs_generated, CudaBuildExt.cuda_macros_generated
+        )
         build_ext.build_extensions(self)
 
     @staticmethod
-    def setup(CUDA: dict, cuda_compile_args: List[str]):
+    def setup(CUDA: dict, cuda_compile_args: List[str], cuda_include_dirs: List[str], cuda_macros: List[tuple]):
         CudaBuildExt.CUDA = CUDA
         CudaBuildExt.cuda_compile_args = cuda_compile_args
+        CudaBuildExt.cuda_include_dirs_generated = [f"-I{inc_dir}" for inc_dir in cuda_include_dirs]
+        CudaBuildExt.cuda_macros_generated = [f"-D{key}={value}" for key, value in cuda_macros]

@@ -26,7 +26,7 @@ int main()
 //    benchForceGeneralMTScaling(16);
 
 //    compMInductanceGeneralMisalignedCoils();
-//    compMInductanceGeneralCase();
+    compMInductanceGeneralCase();
 
 //    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(5.0), 16);
 

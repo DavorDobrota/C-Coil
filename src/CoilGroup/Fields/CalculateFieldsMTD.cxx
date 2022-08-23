@@ -78,10 +78,10 @@ vec3::Vector3Array CoilGroup::calculateAllAPotentialMTD(const vec3::Vector3Array
     {
         g_threadPool.push
         (
-                calcThread,
-                std::ref(*memberCoils[i]),
-                std::ref(pointVectors),
-                std::ref(intermediateValues[i])
+            calcThread,
+            std::ref(*memberCoils[i]),
+            std::ref(pointVectors),
+            std::ref(intermediateValues[i])
         );
     }
 
@@ -121,10 +121,10 @@ vec3::Vector3Array CoilGroup::calculateAllEFieldMTD(const vec3::Vector3Array &po
     {
         g_threadPool.push
         (
-                calcThread,
-                std::ref(*memberCoils[i]),
-                std::ref(pointVectors),
-                std::ref(intermediateValues[i])
+            calcThread,
+            std::ref(*memberCoils[i]),
+            std::ref(pointVectors),
+            std::ref(intermediateValues[i])
         );
     }
     g_threadPool.synchronizeThreads();
@@ -163,10 +163,10 @@ vec3::Matrix3Array CoilGroup::calculateAllBGradientMTD(const vec3::Vector3Array 
     {
         g_threadPool.push
         (
-                calcThread,
-                std::ref(*memberCoils[i]),
-                std::ref(pointVectors),
-                std::ref(intermediateValues[i])
+            calcThread,
+            std::ref(*memberCoils[i]),
+            std::ref(pointVectors),
+            std::ref(intermediateValues[i])
         );
     }
 

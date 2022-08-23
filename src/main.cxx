@@ -8,12 +8,13 @@
 #include "Test.h"
 #include "Compare.h"
 
+//    benchMathFunctions();
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "Simplify"
 int main()
 {
-//    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 16, 25);
+//    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(3.0), 16, 22);
 //    benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor(3.0), 25);
 //    benchComputeAllFields();
 
@@ -26,7 +27,7 @@ int main()
 //    benchForceGeneralMTScaling(16);
 
 //    compMInductanceGeneralMisalignedCoils();
-    compMInductanceGeneralCase();
+//    compMInductanceGeneralCase();
 
 //    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(5.0), 16);
 
@@ -73,6 +74,8 @@ int main()
 
     benchCoilGroupComputeAllFieldsMTScaling(PrecisionFactor(3.0), 16, 100, 16);
     benchCoilGroupComputeAllFieldsGPUScaling(PrecisionFactor(3.0), 100, 20);
+
+//    testCoilGroupFieldsMTD();
 
     return 0;
 }

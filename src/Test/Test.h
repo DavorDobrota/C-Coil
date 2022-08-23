@@ -15,6 +15,8 @@ void testMInductanceGeneralDifferentGeometries();
 void testAmpereForceGeneralForZAxis();
 void testGradientTensor();
 
+void testCoilGroupFieldsMTD();
+
 void testCoilMInductanceArrangements();
 void testCoilForceArrangements();
 void testGroupMInductanceArrangements();

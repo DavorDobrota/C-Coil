@@ -83,6 +83,13 @@ struct CoilPairArguments
 
 class CoilGroup;
 
+/**
+ * @brief Primary class in this project.
+ * Models a circular coil with a rectangular cross section and uniform current density.
+ * @details The model works best for a solid block of material and when the effects of windings are negligible.
+ * Primary attributes are length (b), thickness (a), the inner radius (R) of the internal cylindrical hole,
+ * and the number of turns of wire (windings).
+ */
 class Coil
 {
     friend CoilGroup;

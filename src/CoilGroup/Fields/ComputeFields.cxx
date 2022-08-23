@@ -75,7 +75,7 @@ vec3::Vector3Array CoilGroup::computeAllBFieldVectors(const vec3::Vector3Array &
     {
         return calculateAllBFieldGPU(pointVectors);
     }
-    else if (memberCoils.size() < 2 * threadCount || computeMethod != CPU_MT)
+    else if (memberCoils.size() >= 2 * threadCount && computeMethod == CPU_MT)
     {
         return calculateAllBFieldMTD(pointVectors);
     }
@@ -101,7 +101,7 @@ vec3::Vector3Array CoilGroup::computeAllEFieldVectors(const vec3::Vector3Array &
     {
         return calculateAllEFieldGPU(pointVectors);
     }
-    else if (memberCoils.size() < 2 * threadCount && computeMethod == CPU_MT)
+    else if (memberCoils.size() > 2 * threadCount && computeMethod == CPU_MT)
     {
         return calculateAllEFieldMTD(pointVectors);
     }

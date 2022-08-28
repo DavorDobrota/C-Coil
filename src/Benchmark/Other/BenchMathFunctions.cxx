@@ -91,7 +91,17 @@ void benchMathFunctions()
     begin_time = high_resolution_clock::now();
     for (int i = 1; i <= opCount; ++i)
     {
-        temp += std::exp(i);
+        temp += std::atan2(1.0, i);
+    }
+    printf("%.15f\n", temp);
+    interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
+    printf("atan2 : %.1f MOps/s\n", 1e-6 * opCount / interval);
+
+    temp = 0.0;
+    begin_time = high_resolution_clock::now();
+    for (int i = 1; i <= opCount; ++i)
+    {
+        temp += std::exp(1.0 / i);
     }
     printf("%.15f\n", temp);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();

@@ -49,7 +49,7 @@ vec3::Vector3Array CoilGroup::computeAllAPotentialVectors(const vec3::Vector3Arr
     {
         return calculateAllAPotentialGPU(pointVectors);
     }
-    else if (memberCoils.size() >= 2 * threadCount && computeMethod == CPU_MT)
+    else if (memberCoils.size() >= threadCount && computeMethod == CPU_MT)
     {
         return calculateAllAPotentialMTD(pointVectors);
     }
@@ -75,7 +75,7 @@ vec3::Vector3Array CoilGroup::computeAllBFieldVectors(const vec3::Vector3Array &
     {
         return calculateAllBFieldGPU(pointVectors);
     }
-    else if (memberCoils.size() >= 2 * threadCount && computeMethod == CPU_MT)
+    else if (memberCoils.size() >= threadCount && computeMethod == CPU_MT)
     {
         return calculateAllBFieldMTD(pointVectors);
     }
@@ -101,7 +101,7 @@ vec3::Vector3Array CoilGroup::computeAllEFieldVectors(const vec3::Vector3Array &
     {
         return calculateAllEFieldGPU(pointVectors);
     }
-    else if (memberCoils.size() > 2 * threadCount && computeMethod == CPU_MT)
+    else if (memberCoils.size() >= threadCount && computeMethod == CPU_MT)
     {
         return calculateAllEFieldMTD(pointVectors);
     }
@@ -127,7 +127,7 @@ vec3::Matrix3Array CoilGroup::computeAllBGradientMatrices(const vec3::Vector3Arr
     {
         return calculateAllBGradientGPU(pointVectors);
     }
-    else if (memberCoils.size() >= 2 * threadCount && computeMethod == CPU_MT)
+    else if (memberCoils.size() >= threadCount && computeMethod == CPU_MT)
     {
         return calculateAllBGradientMTD(pointVectors);
     }

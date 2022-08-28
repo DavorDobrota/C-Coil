@@ -3,7 +3,7 @@ add_library(
 
         CoilGroup.cxx
         Fields/CalculateFieldsGPU.cxx
-        Fields/CalculateFieldsMTD.cxx MInductance/CalculateMInductanceMTD.cxx MInductance/CalculateMInductanceGPU.cxx ForceAndTorque/CalculateForceMTD.cxx ForceAndTorque/CalculateForceGPU.cxx Utils/GPUArgumentGeneration.cxx Fields/ComputeFields.cxx ForceAndTorque/ComputeForce.cxx MInductance/ComputeMInductance.cxx)
+        Fields/CalculateFieldsMTD.cxx MInductance/CalculateMInductanceMTD.cxx MInductance/CalculateMInductanceGPU.cxx ForceAndTorque/CalculateForceMTD.cxx ForceAndTorque/CalculateForceGPU.cxx Utils/GPUArgumentGeneration.cxx Fields/ComputeFields.cxx ForceAndTorque/ComputeForce.cxx MInductance/ComputeMInductance.cxx Fields/CalculateFieldsMT.cxx)
 set_property(TARGET CoilGroup PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(CoilGroup PRIVATE -fpic)

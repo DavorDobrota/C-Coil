@@ -193,8 +193,8 @@ double Coil::calculateAmpereForceZAxisFast(const Coil &primary, const Coil &seco
     }
     else
     {
-        std::vector<size_t> blockPositions = primary.calculateChunkSize(radialIncrements + 1);
         int threadCount = primary.getThreadCount();
+        std::vector<size_t> blockPositions = calculateChunkSize(radialIncrements + 1, threadCount);
 
         g_threadPool.setTaskCount(threadCount);
         g_threadPool.getCompletedTasks().store(0ull);

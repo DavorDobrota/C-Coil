@@ -6,7 +6,7 @@ add_library(
         PrecisionArguments/PrecisionArguments.cxx
         PrecisionArguments/CoilPairArguments.cxx
         Fields/CalculateFieldsMethods.cxx
-        Fields/CalculateAllFieldsMethods.cxx
+        Fields/CalculateAllFieldsMT.cxx
         MInductance/CalculateMInductanceZAxis.cxx
         MInductance/CalculateMInductanceArrangements.cxx
         ForceAndTorque/CalculateForceZAxis.cxx
@@ -15,7 +15,7 @@ add_library(
         Fields/CalculateFieldsFast.cxx
         Utils/SupportFunctions.cxx
         Utils/CalculateAttributes.cxx
-        Fields/ComputeFieldsMethods.cxx ForceAndTorque/ComputeForceMethods.cxx MInductance/ComputeMInductanceMethods.cxx MInductance/CalculateMInductanceGeneral.cxx ForceAndTorque/CalculateForceGeneral.cxx)
+        Fields/ComputeFieldsMethods.cxx ForceAndTorque/ComputeForceMethods.cxx MInductance/ComputeMInductanceMethods.cxx MInductance/CalculateMInductanceGeneral.cxx ForceAndTorque/CalculateForceGeneral.cxx Fields/CalculateAllFieldsGPU.cxx)
 set_property(TARGET Coil PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(Coil PRIVATE -fpic)

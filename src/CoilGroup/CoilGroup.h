@@ -78,6 +78,11 @@ class CoilGroup
         explicit operator std::string() const;
 
     private:
+        [[nodiscard]] vec3::Vector3Array calculateAllAPotentialMT(const vec3::Vector3Array &pointVectors) const;
+        [[nodiscard]] vec3::Vector3Array calculateAllBFieldMT(const vec3::Vector3Array &pointVectors) const;
+        [[nodiscard]] vec3::Vector3Array calculateAllEFieldMT(const vec3::Vector3Array &pointVectors) const;
+        [[nodiscard]] vec3::Matrix3Array calculateAllBGradientMT(const vec3::Vector3Array &pointVectors) const;
+
         // MTD stands for Multithreading Distributed - useful when there are many coils, each is given its own thread
         [[nodiscard]] vec3::Vector3Array calculateAllAPotentialMTD(const vec3::Vector3Array &pointVectors) const;
         [[nodiscard]] vec3::Vector3Array calculateAllBFieldMTD(const vec3::Vector3Array &pointVectors) const;

@@ -51,7 +51,6 @@ vec3::Vector3Array CoilGroup::calculateAllAPotentialMTD(const vec3::Vector3Array
             std::ref(resultArrZ)
         );
     }
-
     g_threadPool.synchronizeThreads();
 
     vec3::Vector3Array output;

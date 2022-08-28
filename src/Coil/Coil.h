@@ -607,7 +607,7 @@ class Coil
         [[nodiscard]] std::vector<double> calculateBGradientFast(double zCoord, double rCoord,
                                                                  const PrecisionArguments &usedPrecision) const;
 
-        [[nodiscard]] std::vector<size_t> calculateChunkSize(size_t opCount) const;
+        [[nodiscard]] static std::vector<size_t> calculateChunkSize(size_t opCount, int threads);
 
         [[nodiscard]] vec3::Vector3Array calculateAllBFieldMT(const vec3::Vector3Array &pointVectors,
                                                               const PrecisionArguments &usedPrecision) const;

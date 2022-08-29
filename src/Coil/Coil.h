@@ -12,6 +12,7 @@
 #include <string>
 
 #define PRINT_PRECISION 0
+#define PRINT_TIMINGS 0
 
 
 const int g_defaultThreadCount = 8;

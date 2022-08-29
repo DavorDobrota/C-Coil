@@ -169,6 +169,7 @@ void Calculate_hardware_accelerated_b(long long opCount, CoilData coil,
     #if DEBUG_TIMINGS
         recordStartPoint();
         recordStartPoint();
+        printf("---------------------------------------------------\n");
     #endif
 
     long long blocks = ceil(double(opCount) / NTHREADS);

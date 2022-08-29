@@ -239,16 +239,19 @@ void Calculate_force_and_torque_configurations_group(long long coilCount, long l
         printf("\tWriting to output array:  %.9g s\n\n", g_duration);
 
         g_duration = getIntervalDuration();
-        printf("\tDevice buffer size:       %.3lf MB\n", (double(coilCount * sizeof(CoilData) + configCount * (sizeof(SecondaryCoilPositionData) + sizeof(ForceTorqueData)) / 1.0e6)));
-        printf("\tTotal blocks:             %d\n", blocks);
+        printf("\tDevice buffer size:       %.3lf MB\n",
+               (double(coilCount * sizeof(CoilData) + configCount * (sizeof(SecondaryCoilPositionData) + sizeof(ForceTorqueData))) / 1e6)
+        );
+        printf("\tTotal blocks:             %d * %lli\n", blocks, coilCount);
         printf("\tThreads per calculation:  %i\n", NTHREADS);
-        printf("\tTotal issued threads:     %i\n", NTHREADS * blocks);
-        printf("\tTotal coils:              %d\n", coilCount);
-        printf("\tTotal configurations:     %d\n", configCount);
-        printf("\tPoints per configuration: %d\n", pointCount);
-        printf("\tTotal calculations:       %d\n", coilCount * pointCount * configCount);
+        printf("\tTotal issued threads:     %i * %lli\n", NTHREADS * blocks, coilCount);
+        printf("\tTotal coils:              %lli\n", coilCount);
+        printf("\tTotal configurations:     %lli\n", configCount);
+        printf("\tPoints per configuration: %lli\n", pointCount);
+        printf("\tTotal calculations:       %lli\n", coilCount * pointCount * configCount);
         printf("\n\tPerformance:              %.0f Configs/s\n", double(configCount / g_duration));
-        printf("\n\tEffective Performance:    %.1f kPoints/s\n", double(0.001 * coilCount * pointCount * configCount / g_duration));
+        printf("\tEffective Performance:    %.1f kConfigs/s\n", double(1e-3 * coilCount * configCount / g_duration));
+        printf("\tEquivalent Performance:   %.1f MPoints/s\n", double(1e-6 * coilCount * pointCount * configCount / g_duration));
         printf("---------------------------------------------------\n\n");
     #endif
 }

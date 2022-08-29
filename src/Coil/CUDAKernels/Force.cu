@@ -263,8 +263,8 @@ void Calculate_force_and_torque_configurations(long long configCount, long long 
     printf("\tTotal configurations:     %lli\n", configCount);
     printf("\tPoints per configuration: %lli\n", pointCount);
     printf("\tTotal calculations:       %lli\n", pointCount * configCount);
-    printf("\n\tPerformance:              %.1f kCoils/s\n", double(0.001 * configCount / g_duration));
-    printf("\n\tEffective Performance:    %.1f kPoints/s\n", double(0.001 * pointCount * configCount / g_duration));
+    printf("\n\tPerformance:              %.1f kConfigs/s\n", double(0.001 * configCount / g_duration));
+    printf("\tEffective Performance:    %.1f kPoints/s\n", double(0.001 * pointCount * configCount / g_duration));
     printf("---------------------------------------------------\n\n");
 #endif
 }

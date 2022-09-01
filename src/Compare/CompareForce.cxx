@@ -23,10 +23,6 @@ void compAmpereForceFilamentsZAxis()
 
 void compAmpereForceThickCoilsGeneral()
 {
-    Coil coil1 = Coil(0.0602, 0.0728, 0.5292, 126, 16500);
-    Coil coil2 = Coil(0.168, 0.0285, 0.552, 1890, 725);
-    Coil coil3 = Coil(0.1965, 0.04365, 0.552, 3792, 725);
-
     CoilGroup group = CoilGroup();
     group.addCoil(0.0602, 0.0728, 0.5292, 126, 16500);
     group.addCoil(0.168, 0.0285, 0.552, 1890, 725);
@@ -35,13 +31,16 @@ void compAmpereForceThickCoilsGeneral()
     printf("%.15g T\n", group.computeBFieldVector(vec3::Vector3()).z);
 
     printf("%.15g MJ\n", 1e-6 *
-           (0.5 * coil1.computeAndSetSelfInductance(PrecisionFactor(12.0)) * coil1.getCurrent() * coil1.getCurrent() +
-            0.5 * coil2.computeAndSetSelfInductance(PrecisionFactor(12.0)) * coil2.getCurrent() * coil2.getCurrent() +
-            0.5 * coil3.computeAndSetSelfInductance(PrecisionFactor(12.0)) * coil3.getCurrent() * coil3.getCurrent() +
-           Coil::computeMutualInductance(coil1, coil2) * coil1.getCurrent() * coil2.getCurrent() +
-           Coil::computeMutualInductance(coil2, coil3) * coil2.getCurrent() * coil3.getCurrent() +
-           Coil::computeMutualInductance(coil1, coil3) * coil1.getCurrent() * coil3.getCurrent()
-           ));
+           (0.5 * group[0].computeAndSetSelfInductance(PrecisionFactor(12.0)) *
+           group[0].getCurrent() * group[0].getCurrent() +
+           0.5 * group[1].computeAndSetSelfInductance(PrecisionFactor(12.0)) *
+           group[1].getCurrent() * group[1].getCurrent() +
+           0.5 * group[2].computeAndSetSelfInductance(PrecisionFactor(12.0)) *
+           group[2].getCurrent() * group[2].getCurrent() +
+           Coil::computeMutualInductance(group[0], group[1]) * group[0].getCurrent() * group[1].getCurrent() +
+           Coil::computeMutualInductance(group[1], group[2]) * group[1].getCurrent() * group[2].getCurrent() +
+           Coil::computeMutualInductance(group[0], group[2]) * group[0].getCurrent() * group[2].getCurrent())
+    );
 
     std::pair<vec3::Vector3, vec3::Vector3> forcePair;
     auto precision = PrecisionFactor(8.0);
@@ -51,8 +50,8 @@ void compAmpereForceThickCoilsGeneral()
     {
         for (int j = 0; j <= 2; ++j)
         {
-            coil1.setPositionAndOrientation(vec3::Vector3(0.0, 0.002 * j, 0.001 * i));
-            forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
+            group[0].setPositionAndOrientation(vec3::Vector3(0.0, 0.002 * j, 0.001 * i));
+            forcePair = group.computeAmpereForce(group[0], precision, CPU_MT);
             printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
                    forcePair.first.x, forcePair.first.y, forcePair.first.z,
                    forcePair.second.x, forcePair.second.y, forcePair.second.z);
@@ -61,39 +60,42 @@ void compAmpereForceThickCoilsGeneral()
     printf("Force and Torque in rotation\n");
     for (int i = 0; i <= 10; ++i)
     {
-        coil1.setPositionAndOrientation(vec3::Vector3(), M_PI/360 * i, M_PI_2);
-        forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
+        group[0].setPositionAndOrientation(vec3::Vector3(), M_PI/360 * i, M_PI_2);
+        forcePair = group.computeAmpereForce(group[0], precision, CPU_MT);
         printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
                forcePair.first.x, forcePair.first.y, forcePair.first.z,
                forcePair.second.x, forcePair.second.y, forcePair.second.z);
     }
     printf("\n");
 
-    coil1.setPositionAndOrientation(vec3::Vector3(), M_PI/36 + 1e-7);
-    double M1 = coil1.getCurrent() * coil2.getCurrent() * Coil::computeMutualInductance(coil1, coil2, precision, CPU_MT) +
-                coil1.getCurrent() * coil3.getCurrent() * Coil::computeMutualInductance(coil1, coil3, precision, CPU_MT);
-    coil1.setPositionAndOrientation(vec3::Vector3(), M_PI/36 - 1e-7);
-    double M2 = coil1.getCurrent() * coil2.getCurrent() * Coil::computeMutualInductance(coil1, coil2, precision, CPU_MT) +
-            coil1.getCurrent() * coil3.getCurrent() * Coil::computeMutualInductance(coil1, coil3, precision, CPU_MT);
+    group[0].setPositionAndOrientation(vec3::Vector3(), M_PI/36 + 1e-7);
+    double M1 = group[0].getCurrent() * group[1].getCurrent() *
+            Coil::computeMutualInductance(group[0], group[1], precision, CPU_MT) +
+            group[0].getCurrent() * group[1].getCurrent() * Coil::computeMutualInductance(group[0], group[2], precision, CPU_MT);
+
+    group[0].setPositionAndOrientation(vec3::Vector3(), M_PI/36 - 1e-7);
+    double M2 = group[0].getCurrent() * group[1].getCurrent() *
+            Coil::computeMutualInductance(group[0], group[1], precision, CPU_MT) +
+            group[0].getCurrent() * group[2].getCurrent() * Coil::computeMutualInductance(group[0], group[2], precision, CPU_MT);
+
     printf("By mutual inductance gradient : %.15g\n\n", (M1 - M2) / 2e-7);
 
-    coil1.setPositionAndOrientation(
+    group[0].setPositionAndOrientation(
             vec3::Vector3(0.001, 0.0, 0.0), M_PI/180, 3 * M_PI_2);
-    forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
+    forcePair = group.computeAmpereForce(group[0], precision, CPU_MT);
     printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
            forcePair.first.x, forcePair.first.y, forcePair.first.z,
            forcePair.second.x, forcePair.second.y, forcePair.second.z);
-
-    coil1.setPositionAndOrientation(
+    group[0].setPositionAndOrientation(
             vec3::Vector3(0.001, 0.0, 0.001), M_PI/180, 3 * M_PI_2);
-    forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
+    forcePair = group.computeAmpereForce(group[0], precision, CPU_MT);
     printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
            forcePair.first.x, forcePair.first.y, forcePair.first.z,
            forcePair.second.x, forcePair.second.y, forcePair.second.z);
 
-    coil1.setPositionAndOrientation(
+    group[0].setPositionAndOrientation(
             vec3::Vector3(0.001, 0.001, 0.001), M_PI/180, 3 * M_PI_2);
-    forcePair = group.computeAmpereForce(coil1, precision, CPU_MT);
+    forcePair = group.computeAmpereForce(group[0], precision, CPU_MT);
     printf("%21.15g %21.15g %21.15g\n%21.15g %21.15g %21.15g\n\n",
            forcePair.first.x, forcePair.first.y, forcePair.first.z,
            forcePair.second.x, forcePair.second.y, forcePair.second.z);

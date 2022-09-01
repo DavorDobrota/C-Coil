@@ -43,7 +43,7 @@ int main()
 
 //    compAmpereForceZAxis();
 //    compAmpereForceThinCoilsZAxis();
-
+//    compAmpereForceThickCoilsGeneral();
 //    benchCoilGroupMInductanceAndForce(16);
 
 //    benchCoilGroupComputeAllFieldsMTvsMTD(16, 100'000);

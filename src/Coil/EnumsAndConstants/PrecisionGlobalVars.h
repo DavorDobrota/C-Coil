@@ -20,5 +20,6 @@ const double g_secLinearWeightModifier = 1;
 
 const double g_thinCoilApproximationRatio = 1e-7;
 const double g_zAxisApproximationRatio = 1e-12;
+const double g_commonPlaneApproximationRatio = 1e-14;
 
 #endif //GENERAL_COIL_PROGRAM_PRECISIONGLOBALVARS_H

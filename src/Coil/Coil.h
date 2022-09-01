@@ -630,11 +630,14 @@ class Coil
         [[nodiscard]] vec3::Matrix3Array calculateAllBGradientGPU(const vec3::Vector3Array &pointVectors,
                                                                   const PrecisionArguments &usedPrecision) const;
 
+        static bool isZAxisCase(const Coil &primary, const Coil &secondary);
+        static std::pair<bool, double> improvedPrecisionCase(const Coil &primary, const Coil &secondary);
 
         static std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-        calculateRingIncrementPosition(int angularBlocks, int angularIncrements, double alpha, double beta);
+        calculateRingIncrementPosition(int angularBlocks, int angularIncrements, const Coil &sec,
+                                       bool improvedPrecision,
+                                       double offset);
 
-        static bool isZAxisCase(const Coil &primary, const Coil &secondary);
         static void generateCoilPairArgumentsData(const Coil &primary, const Coil &secondary,
                                                   CoilPairArgumentsData &coilPairArgumentsData,
                                                   const CoilPairArguments &inductanceArguments,

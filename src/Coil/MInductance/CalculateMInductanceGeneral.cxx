@@ -29,8 +29,14 @@ double Coil::calculateMutualInductanceGeneral(const Coil &primary, const Coil &s
 
     int numElements = lengthBlocks * lengthIncrements * thicknessBlocks * thicknessIncrements * angularBlocks * angularIncrements;
 
+    // if the coil axes lie in the same plane a great precision improvement can be unlocked
+    std::pair<bool, double> improvedPrecision = improvedPrecisionCase(primary, secondary);
+
     std::vector<std::pair<vec3::Vector3, vec3::Vector3>> unitRingValues =
-            calculateRingIncrementPosition(angularBlocks, angularIncrements, alphaAngle, betaAngle);
+        calculateRingIncrementPosition(
+            angularBlocks, angularIncrements, secondary,
+            improvedPrecision.first, improvedPrecision.second
+    );
 
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     int maxLengthIndex = lengthIncrements - 1;

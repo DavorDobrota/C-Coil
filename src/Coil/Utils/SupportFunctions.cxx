@@ -49,8 +49,27 @@ Coil::Coil(const Coil &original)
     this->inverseTransformationMatrix = original.inverseTransformationMatrix;
 }
 
+
+bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
+{
+    vec3::Vector3 primPositionVec = primary.getPositionVector();
+    vec3::Vector3 secPositionVec = secondary.getPositionVector();
+
+    if (std::abs(primPositionVec.x / primary.innerRadius) < g_zAxisApproximationRatio &&
+        std::abs(primPositionVec.y / primary.innerRadius) < g_zAxisApproximationRatio &&
+        std::abs(secPositionVec.x / primary.innerRadius) < g_zAxisApproximationRatio &&
+        std::abs(secPositionVec.y / primary.innerRadius) < g_zAxisApproximationRatio &&
+        std::abs(primary.yAxisAngle / (2 * M_PI)) < g_zAxisApproximationRatio &&
+        std::abs(secondary.yAxisAngle / (2 * M_PI)) < g_zAxisApproximationRatio)
+    {
+        return true;
+    }
+    return false;
+}
+
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements, double alpha, double beta)
+Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements, const Coil &sec,
+                                     bool improvedPrecision, double offset)
 {
     int numElements = angularBlocks * angularIncrements;
 
@@ -62,16 +81,22 @@ Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements, d
 
     double angularBlock = 2*M_PI / angularBlocks;
 
+    if (improvedPrecision)
+        angularBlock = M_PI / angularBlocks;
+
     // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
     angularBlocks--;
     angularIncrements--;
 
-    double sinA = std::sin(alpha); double cosA = std::cos(alpha);
-    double sinB = std::sin(beta); double cosB = std::cos(beta);
+    double sinA = std::sin(sec.yAxisAngle);
+    double cosA = std::cos(sec.yAxisAngle);
+
+    double sinB = std::sin(sec.zAxisAngle);
+    double cosB = std::cos(sec.zAxisAngle);
 
     for (int phiBlock = 0; phiBlock <= angularBlocks; ++phiBlock)
     {
-        double blockPositionPhi = angularBlock * (phiBlock + 0.5);
+        double blockPositionPhi = offset + angularBlock * (phiBlock + 0.5);
 
         for (int phiIndex = 0; phiIndex <= angularIncrements; ++phiIndex)
         {
@@ -94,23 +119,40 @@ Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements, d
     return unitRingVector;
 }
 
-
-bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
+std::pair<bool, double> Coil::improvedPrecisionCase(const Coil &primary, const Coil &secondary)
 {
-    vec3::Vector3 primPositionVec = primary.getPositionVector();
-    vec3::Vector3 secPositionVec = secondary.getPositionVector();
+    vec3::Vector3 primPosVec = primary.positionVector;
+    vec3::Vector3 secPosVec = secondary.positionVector;
 
-    if (std::abs(primPositionVec.x / primary.innerRadius) < g_zAxisApproximationRatio &&
-        std::abs(primPositionVec.y / primary.innerRadius) < g_zAxisApproximationRatio &&
-        std::abs(secPositionVec.x / primary.innerRadius) < g_zAxisApproximationRatio &&
-        std::abs(secPositionVec.y / primary.innerRadius) < g_zAxisApproximationRatio &&
-        std::abs(primary.yAxisAngle / (2 * M_PI)) < g_zAxisApproximationRatio &&
-        std::abs(secondary.yAxisAngle / (2 * M_PI)) < g_zAxisApproximationRatio)
+    vec3::Vector3 primNormalVector = vec3::Vector3(std::sin(primary.yAxisAngle) * std::cos(primary.zAxisAngle),
+                                                   std::sin(primary.yAxisAngle) * std::sin(primary.zAxisAngle),
+                                                   std::cos(primary.yAxisAngle));
+
+    vec3::Vector3 secNormalVector = vec3::Vector3(std::sin(secondary.yAxisAngle) * std::cos(secondary.zAxisAngle),
+                                                  std::sin(secondary.yAxisAngle) * std::sin(secondary.zAxisAngle),
+                                                  std::cos(secondary.yAxisAngle));
+
+    vec3::Vector3 posDifference = primPosVec - secPosVec;
+    vec3::Vector3 planeNormal = vec3::Vector3::crossProduct(primNormalVector, posDifference);
+
+    double dotCrossProduct = vec3::Vector3::scalarProduct(planeNormal, secNormalVector);
+
+    bool improvedPrecision = std::abs(dotCrossProduct) / posDifference.abs() <= g_commonPlaneApproximationRatio;
+    double offset = 0.0;
+
+    if (improvedPrecision)
     {
-        return true;
+        offset = std::atan2(
+            std::cos(secondary.yAxisAngle) *
+            (planeNormal.x * std::cos(secondary.zAxisAngle) + planeNormal.y * std::sin(secondary.zAxisAngle)) -
+            planeNormal.z * std::sin(secondary.yAxisAngle),
+            planeNormal.x * std::sin(secondary.zAxisAngle) - planeNormal.y * std::cos(secondary.zAxisAngle)
+        );
     }
-    return false;
+
+    return {improvedPrecision, offset};
 }
+
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"

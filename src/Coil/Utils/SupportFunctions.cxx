@@ -137,11 +137,16 @@ std::pair<bool, double> Coil::improvedPrecisionCase(const Coil &primary, const C
 
     double dotCrossProduct = vec3::Vector3::scalarProduct(planeNormal, secNormalVector);
 
-    bool improvedPrecision = std::abs(dotCrossProduct) / posDifference.abs() <= g_commonPlaneApproximationRatio;
+    bool improvedPrecision = std::abs(dotCrossProduct) <= g_commonPlaneApproximationRatio;
     double offset = 0.0;
 
     if (improvedPrecision)
     {
+        if (planeNormal.x == 0.0 && planeNormal.y == 0.0 && planeNormal.z == 0.0)
+            planeNormal = vec3::Vector3::crossProduct(secNormalVector, posDifference);
+        if (planeNormal.x == 0.0 && planeNormal.y == 0.0 && planeNormal.z == 0.0)
+            planeNormal = vec3::Vector3::crossProduct(secNormalVector, primNormalVector);
+
         offset = std::atan2(
             std::cos(secondary.yAxisAngle) *
             (planeNormal.x * std::cos(secondary.zAxisAngle) + planeNormal.y * std::sin(secondary.zAxisAngle)) -

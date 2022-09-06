@@ -176,8 +176,8 @@ void compMInductanceGeneralCase()
         for (int j = 1; j <= 9; ++j)
         {
             temp = Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(j), CPU_MT);
-            printf("%.16g\n", 1e3 * temp);
-            fprintf(output, "%.16g\t", 1e3 * temp);
+            printf("%.15g\n", 1e3 * temp);
+            fprintf(output, "%.15g\t", 1e3 * temp);
         }
         printf("\n");
         fprintf(output, "\n");
@@ -191,8 +191,8 @@ void compMInductanceGeneralCase()
         for (int j = 1; j <= 9; ++j)
         {
             temp = Coil::computeMutualInductance(coil1, coil2, PrecisionFactor(j), CPU_MT);
-            printf("%.16g\n", 1e3 * temp);
-            fprintf(output, "%.16g\t", 1e3 * temp);
+            printf("%.15g\n", 1e3 * temp);
+            fprintf(output, "%.15g\t", 1e3 * temp);
         }
         printf("\n");
         fprintf(output, "\n");

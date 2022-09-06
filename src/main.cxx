@@ -27,7 +27,8 @@ int main()
 //    benchForceGeneralMTScaling(16);
 
 //    compMInductanceGeneralMisalignedCoils();
-//    compMInductanceGeneralCase();
+    compMInductanceGeneralCase();
+//    compMInductanceGeneralParallelAxes();
 
 //    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(5.0), 16);
 
@@ -44,6 +45,7 @@ int main()
 //    compAmpereForceZAxis();
 //    compAmpereForceThinCoilsZAxis();
 //    compAmpereForceThickCoilsGeneral();
+//    compAmpereForceFilamentsGeneral();
 //    benchCoilGroupMInductanceAndForce(16);
 
 //    benchCoilGroupComputeAllFieldsMTvsMTD(16, 100'000);

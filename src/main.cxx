@@ -81,7 +81,6 @@ int main()
 
 //    testCoilGroupFieldsMTD();
 
-
     return 0;
 }
 #pragma clang diagnostic pop

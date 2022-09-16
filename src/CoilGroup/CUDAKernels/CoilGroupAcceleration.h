@@ -6,23 +6,23 @@
 
 void Calculate_hardware_accelerated_a_group(long long coilCount, long long opCount,
                                             const CoilData *coilArr,
-                                            const DataVector *posArr,
-                                            DataVector *resArr = nullptr);
+                                            const VectorData *posArr,
+                                            VectorData *resArr = nullptr);
 
 void Calculate_hardware_accelerated_b_group(long long coilCount, long long opCount,
                                             const CoilData *coilArr,
-                                            const DataVector *posArr,
-                                            DataVector *resArr = nullptr);
+                                            const VectorData *posArr,
+                                            VectorData *resArr = nullptr);
 
 void Calculate_hardware_accelerated_e_group(long long coilCount, long long opCount,
                                             const CoilData *coilArr,
-                                            const DataVector *posArr,
-                                            DataVector *resArr = nullptr);
+                                            const VectorData *posArr,
+                                            VectorData *resArr = nullptr);
 
 void Calculate_hardware_accelerated_g_group(long long coilCount, long long opCount,
                                             const CoilData *coilArr,
-                                            const DataVector *posArr,
-                                            DataMatrix *resArr = nullptr);
+                                            const VectorData *posArr,
+                                            MatrixData *resArr = nullptr);
 
 void Calculate_mutual_inductance_configurations_group(long long coilCount, long long configCount, long long pointCount,
                                                       SecondaryCoilData secondaryCoil,

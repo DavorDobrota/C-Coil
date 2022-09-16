@@ -8,7 +8,7 @@
 
 
 __global__
-void calculateFieldSlow(long long opCount, CoilData coil, const DataVector *posArr, DataVector *resArr)
+void calculateFieldSlow(long long opCount, CoilData coil, const VectorData *posArr, VectorData *resArr)
 {
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
@@ -71,7 +71,7 @@ void calculateFieldSlow(long long opCount, CoilData coil, const DataVector *posA
 }
 
 __global__
-void calculateFieldFast(long long opCount, CoilData coil, const DataVector *posArr, DataVector *resArr)
+void calculateFieldFast(long long opCount, CoilData coil, const VectorData *posArr, VectorData *resArr)
 {
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
@@ -146,12 +146,12 @@ void calculateFieldFast(long long opCount, CoilData coil, const DataVector *posA
 
 namespace
 {
-    DataVector *g_posArr = nullptr;
-    DataVector *g_resArr = nullptr;
+    VectorData *g_posArr = nullptr;
+    VectorData *g_resArr = nullptr;
 
     void getBuffers(long long opCount)
     {
-        std::vector<DataVector*> buffers = GPUMem::getBuffers<DataVector>({opCount, opCount});
+        std::vector<VectorData*> buffers = GPUMem::getBuffers<VectorData>({opCount, opCount});
 
         g_posArr = buffers[0];
         g_resArr = buffers[1];
@@ -163,8 +163,8 @@ namespace
 }
 
 void Calculate_hardware_accelerated_b(long long opCount, CoilData coil,
-                                      const DataVector *posArr,
-                                      DataVector *resArr)
+                                      const VectorData *posArr,
+                                      VectorData *resArr)
 {
     #if DEBUG_TIMINGS
         recordStartPoint();
@@ -183,7 +183,7 @@ void Calculate_hardware_accelerated_b(long long opCount, CoilData coil,
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemcpy(g_posArr, posArr, opCount * sizeof(DataVector), cudaMemcpyHostToDevice));
+    gpuErrchk(cudaMemcpy(g_posArr, posArr, opCount * sizeof(VectorData), cudaMemcpyHostToDevice));
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -192,7 +192,7 @@ void Calculate_hardware_accelerated_b(long long opCount, CoilData coil,
             recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemset(g_resArr, 0, opCount * sizeof(DataVector)));
+    gpuErrchk(cudaMemset(g_resArr, 0, opCount * sizeof(VectorData)));
 
     if (coil.useFastMethod)
         calculateFieldFast<<<blocks, NTHREADS>>>(opCount, coil, g_posArr, g_resArr);
@@ -209,7 +209,7 @@ void Calculate_hardware_accelerated_b(long long opCount, CoilData coil,
     #endif
 
     if(resArr != nullptr)
-        gpuErrchk(cudaMemcpy(resArr, g_resArr, opCount * sizeof(DataVector), cudaMemcpyDeviceToHost));
+        gpuErrchk(cudaMemcpy(resArr, g_resArr, opCount * sizeof(VectorData), cudaMemcpyDeviceToHost));
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();

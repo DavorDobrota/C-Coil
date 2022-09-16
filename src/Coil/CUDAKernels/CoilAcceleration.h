@@ -6,16 +6,16 @@
 
 
 void Calculate_hardware_accelerated_a(long long opCount, CoilData coil,
-                                      const DataVector *posArr,
-                                      DataVector *resArr = nullptr);
+                                      const VectorData *posArr,
+                                      VectorData *resArr = nullptr);
 
 void Calculate_hardware_accelerated_b(long long opCount, CoilData coil,
-                                      const DataVector *posArr,
-                                      DataVector *resArr = nullptr);
+                                      const VectorData *posArr,
+                                      VectorData *resArr = nullptr);
 
 void Calculate_hardware_accelerated_g(long long opCount, CoilData coil,
-                                      const DataVector *posArr,
-                                      DataMatrix *resArr = nullptr);
+                                      const VectorData *posArr,
+                                      MatrixData *resArr = nullptr);
 
 
 void Calculate_mutual_inductance_configurations(long long configCount, long long pointCount,

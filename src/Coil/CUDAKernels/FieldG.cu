@@ -8,7 +8,7 @@
 
 
 __global__
-void calculateGradientSlow(long long opCount, CoilData coil, const DataVector *posArr, DataMatrix *resArr)
+void calculateGradientSlow(long long opCount, CoilData coil, const VectorData *posArr, MatrixData *resArr)
 {
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
@@ -124,7 +124,7 @@ void calculateGradientSlow(long long opCount, CoilData coil, const DataVector *p
 }
 
 __global__
-void calculateGradientFast(long long opCount, CoilData coil, const DataVector *posArr, DataMatrix *resArr)
+void calculateGradientFast(long long opCount, CoilData coil, const VectorData *posArr, MatrixData *resArr)
 {
     unsigned int index = threadIdx.x;
     long long global_index = blockIdx.x * blockDim.x + index;
@@ -260,17 +260,17 @@ void calculateGradientFast(long long opCount, CoilData coil, const DataVector *p
 	
 namespace 
 {
-    DataVector *g_posArr = nullptr;
-    DataMatrix *g_resArr = nullptr;
+    VectorData *g_posArr = nullptr;
+    MatrixData *g_resArr = nullptr;
 
     void getBuffers(long long opCount)
     {
         std::vector<void*> buffers = GPUMem::getBuffers(
-            {opCount * (long long)sizeof(DataVector), opCount * (long long)sizeof(DataMatrix)}
+            {opCount * (long long)sizeof(VectorData), opCount * (long long)sizeof(MatrixData)}
         );
 
-        g_posArr = static_cast<DataVector*>(buffers[0]);
-        g_resArr = static_cast<DataMatrix*>(buffers[1]);
+        g_posArr = static_cast<VectorData*>(buffers[0]);
+        g_resArr = static_cast<MatrixData*>(buffers[1]);
     }
     
     #if DEBUG_TIMINGS
@@ -279,7 +279,7 @@ namespace
 }
 
 
-void Calculate_hardware_accelerated_g(long long opCount, CoilData coil, const DataVector *posArr, DataMatrix *resArr)
+void Calculate_hardware_accelerated_g(long long opCount, CoilData coil, const VectorData *posArr, MatrixData *resArr)
 {
     #if DEBUG_TIMINGS
         recordStartPoint();
@@ -298,7 +298,7 @@ void Calculate_hardware_accelerated_g(long long opCount, CoilData coil, const Da
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemcpy(g_posArr, posArr, opCount * sizeof(DataVector), cudaMemcpyHostToDevice));
+    gpuErrchk(cudaMemcpy(g_posArr, posArr, opCount * sizeof(VectorData), cudaMemcpyHostToDevice));
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -307,7 +307,7 @@ void Calculate_hardware_accelerated_g(long long opCount, CoilData coil, const Da
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemset(g_resArr, 0, opCount * sizeof(DataMatrix)));
+    gpuErrchk(cudaMemset(g_resArr, 0, opCount * sizeof(MatrixData)));
 
     if (coil.useFastMethod)
         calculateGradientFast<<<blocks, NTHREADS>>>(opCount, coil, g_posArr, g_resArr);
@@ -324,7 +324,7 @@ void Calculate_hardware_accelerated_g(long long opCount, CoilData coil, const Da
     #endif
 
     if(resArr != nullptr)
-        gpuErrchk(cudaMemcpy(resArr, g_resArr, opCount * sizeof(DataMatrix), cudaMemcpyDeviceToHost));
+        gpuErrchk(cudaMemcpy(resArr, g_resArr, opCount * sizeof(MatrixData), cudaMemcpyDeviceToHost));
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();

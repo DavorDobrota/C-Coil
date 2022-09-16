@@ -56,9 +56,9 @@ struct CoilData
     TYPE invTransformArray[9];
 };
 
-struct DataVector
+struct VectorData
 {
-    DataVector() :
+    VectorData() :
 
         x{0.0},
         y{0.0},
@@ -70,9 +70,9 @@ struct DataVector
     TYPE z;
 };
 
-struct DataMatrix
+struct MatrixData
 {
-    DataMatrix() :
+    MatrixData() :
 
         xx{0.0},
         xy{0.0},

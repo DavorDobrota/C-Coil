@@ -13,8 +13,8 @@ vec3::Vector3Array CoilGroup::calculateAllAPotentialGPU(const vec3::Vector3Array
     long long size = pointVectors.size();
     long long coils = memberCoils.size();
 
-    auto *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
-    auto *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    auto *coordinateArr = static_cast<VectorData *>(calloc(size, sizeof(VectorData)));
+    auto *resultArr = static_cast<VectorData *>(calloc(size, sizeof(VectorData)));
     auto *coilDataArr = static_cast<CoilData *>(calloc(coils, sizeof(CoilData)));
 
     if(!coordinateArr || !resultArr || !coilDataArr)
@@ -58,8 +58,8 @@ vec3::Vector3Array CoilGroup::calculateAllBFieldGPU(const vec3::Vector3Array &po
     long long size = pointVectors.size();
     long long coils = memberCoils.size();
 
-    auto *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
-    auto *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    auto *coordinateArr = static_cast<VectorData *>(calloc(size, sizeof(VectorData)));
+    auto *resultArr = static_cast<VectorData *>(calloc(size, sizeof(VectorData)));
     auto *coilDataArr = static_cast<CoilData *>(calloc(coils, sizeof(CoilData)));
 
     if(!coordinateArr || !resultArr || !coilDataArr)
@@ -104,8 +104,8 @@ vec3::Vector3Array CoilGroup::calculateAllEFieldGPU(const vec3::Vector3Array &po
     long long size = pointVectors.size();
     long long coils = memberCoils.size();
 
-    auto *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
-    auto *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    auto *coordinateArr = static_cast<VectorData *>(calloc(size, sizeof(VectorData)));
+    auto *resultArr = static_cast<VectorData *>(calloc(size, sizeof(VectorData)));
     auto *coilDataArr = static_cast<CoilData *>(calloc(coils, sizeof(CoilData)));
 
     if(!coordinateArr || !resultArr || !coilDataArr)
@@ -150,8 +150,8 @@ vec3::Matrix3Array CoilGroup::calculateAllBGradientGPU(const vec3::Vector3Array 
     long long size = pointVectors.size();
     long long coils = memberCoils.size();
 
-    auto *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
-    auto *resultArr = static_cast<DataMatrix *>(calloc(size, sizeof(DataMatrix)));
+    auto *coordinateArr = static_cast<VectorData *>(calloc(size, sizeof(VectorData)));
+    auto *resultArr = static_cast<MatrixData *>(calloc(size, sizeof(MatrixData)));
     auto *coilDataArr = static_cast<CoilData *>(calloc(coils, sizeof(CoilData)));
 
     if(!coordinateArr || !resultArr || !coilDataArr)

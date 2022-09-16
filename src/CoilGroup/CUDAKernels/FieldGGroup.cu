@@ -10,8 +10,8 @@
 __global__
 void calculateGradientGroup(long long opCount, long long coilIndex,
                             const CoilData *coilArr,
-                            const DataVector *posArr,
-                            DataMatrix *resArr)
+                            const VectorData *posArr,
+                            MatrixData *resArr)
 {
     unsigned int index = threadIdx.x;
     long long globalIndex = blockIdx.x * blockDim.x + index;
@@ -188,20 +188,20 @@ void calculateGradientGroup(long long opCount, long long coilIndex,
 namespace
 {
     CoilData *g_coilArr = nullptr;
-    DataVector *g_posArr = nullptr;
-    DataMatrix *g_resArr = nullptr;
+    VectorData *g_posArr = nullptr;
+    MatrixData *g_resArr = nullptr;
 
     void getBuffers(long long coilCount, long long opCount)
     {
         std::vector<void*> buffers = GPUMem::getBuffers(
                 { coilCount * (long long)sizeof(CoilData),
-                  opCount * (long long)sizeof(DataVector),
-                  opCount * (long long)sizeof(DataMatrix)}
+                  opCount * (long long)sizeof(VectorData),
+                  opCount * (long long)sizeof(MatrixData)}
         );
 
         g_coilArr = static_cast<CoilData*>(buffers[0]);
-        g_posArr = static_cast<DataVector*>(buffers[1]);
-        g_resArr = static_cast<DataMatrix*>(buffers[2]);
+        g_posArr = static_cast<VectorData*>(buffers[1]);
+        g_resArr = static_cast<MatrixData*>(buffers[2]);
     }
 
     #if DEBUG_TIMINGS
@@ -211,8 +211,8 @@ namespace
 
 void Calculate_hardware_accelerated_g_group(long long coilCount, long long opCount,
                                             const CoilData *coilArr,
-                                            const DataVector *posArr,
-                                            DataMatrix *resArr)
+                                            const VectorData *posArr,
+                                            MatrixData *resArr)
 {
     #if DEBUG_TIMINGS
         recordStartPoint();
@@ -231,7 +231,7 @@ void Calculate_hardware_accelerated_g_group(long long coilCount, long long opCou
     #endif
 
     gpuErrchk(cudaMemcpy(g_coilArr, coilArr, coilCount * sizeof(CoilData), cudaMemcpyHostToDevice))
-    gpuErrchk(cudaMemcpy(g_posArr, posArr, opCount * sizeof(DataVector), cudaMemcpyHostToDevice))
+    gpuErrchk(cudaMemcpy(g_posArr, posArr, opCount * sizeof(VectorData), cudaMemcpyHostToDevice))
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();
@@ -240,7 +240,7 @@ void Calculate_hardware_accelerated_g_group(long long coilCount, long long opCou
         recordStartPoint();
     #endif
 
-    gpuErrchk(cudaMemset(g_resArr, 0, opCount * sizeof(DataMatrix)))
+    gpuErrchk(cudaMemset(g_resArr, 0, opCount * sizeof(MatrixData)))
 
     for (int i = 0; i < coilCount; ++i)
     {
@@ -258,7 +258,7 @@ void Calculate_hardware_accelerated_g_group(long long coilCount, long long opCou
     #endif
 
     if(resArr != nullptr)
-        gpuErrchk(cudaMemcpy(resArr, g_resArr, opCount * sizeof(DataMatrix), cudaMemcpyDeviceToHost))
+        gpuErrchk(cudaMemcpy(resArr, g_resArr, opCount * sizeof(MatrixData), cudaMemcpyDeviceToHost))
 
     #if DEBUG_TIMINGS
         g_duration = getIntervalDuration();

@@ -25,8 +25,8 @@ vec3::Vector3Array Coil::calculateAllAPotentialGPU(const vec3::Vector3Array &poi
 
     long long size = pointVectors.size();
 
-    auto *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
-    auto *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    auto *coordinateArr = static_cast<VectorData *>(calloc(size, sizeof(VectorData)));
+    auto *resultArr = static_cast<VectorData *>(calloc(size, sizeof(VectorData)));
 
     if(!coordinateArr || !resultArr)
         throw std::bad_alloc();
@@ -34,7 +34,7 @@ vec3::Vector3Array Coil::calculateAllAPotentialGPU(const vec3::Vector3Array &poi
     #if PRINT_TIMINGS == 1
         interval = getIntervalDuration();
         printf("\tInitialising input:      %.9g s | %.3g GB/s\n",
-               interval, 1e-9 * double(size * (sizeof(DataVector) + sizeof(vec3::Vector3))) / interval
+               interval, 1e-9 * double(size * (sizeof(VectorData) + sizeof(vec3::Vector3))) / interval
         );
         recordStartPoint();
     #endif //PRINT_TIMINGS
@@ -51,7 +51,7 @@ vec3::Vector3Array Coil::calculateAllAPotentialGPU(const vec3::Vector3Array &poi
     #if PRINT_TIMINGS == 1
         interval = getIntervalDuration();
         printf("\tPreparing input array:   %.9g s | %.3g GB/s\n",
-               interval, 1e-9 * double(size * (sizeof(DataVector) + sizeof(vec3::Vector3))) / interval
+               interval, 1e-9 * double(size * (sizeof(VectorData) + sizeof(vec3::Vector3))) / interval
         );
         recordStartPoint();
     #endif //PRINT_TIMINGS
@@ -101,7 +101,7 @@ vec3::Vector3Array Coil::calculateAllAPotentialGPU(const vec3::Vector3Array &poi
     #if PRINT_TIMINGS == 1
         interval = getIntervalDuration();
         printf("\tPreparing output array:  %.9g s | %.3g GB/s\n",
-               interval, 1e-9 * double(size * (sizeof(DataVector) + sizeof(vec3::Vector3))) / interval
+               interval, 1e-9 * double(size * (sizeof(VectorData) + sizeof(vec3::Vector3))) / interval
         );
         interval = getIntervalDuration();
         printf("\nTotal time:                  %.9g s\n", interval);
@@ -122,8 +122,8 @@ vec3::Vector3Array Coil::calculateAllBFieldGPU(const vec3::Vector3Array &pointVe
     #endif //PRINT_TIMINGS
     long long size = pointVectors.size();
 
-    auto *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
-    auto *resultArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
+    auto *coordinateArr = static_cast<VectorData *>(calloc(size, sizeof(VectorData)));
+    auto *resultArr = static_cast<VectorData *>(calloc(size, sizeof(VectorData)));
 
     if(!coordinateArr || !resultArr)
         throw std::bad_alloc();
@@ -131,7 +131,7 @@ vec3::Vector3Array Coil::calculateAllBFieldGPU(const vec3::Vector3Array &pointVe
     #if PRINT_TIMINGS == 1
         interval = getIntervalDuration();
         printf("\tInitialising input:      %.9g s | %.3g GB/s\n",
-               interval, 1e-9 * double(size * (sizeof(DataVector) + sizeof(vec3::Vector3))) / interval
+               interval, 1e-9 * double(size * (sizeof(VectorData) + sizeof(vec3::Vector3))) / interval
         );
         recordStartPoint();
     #endif //PRINT_TIMINGS
@@ -148,7 +148,7 @@ vec3::Vector3Array Coil::calculateAllBFieldGPU(const vec3::Vector3Array &pointVe
     #if PRINT_TIMINGS == 1
         interval = getIntervalDuration();
         printf("\tPreparing input array:   %.9g s | %.3g GB/s\n",
-               interval, 1e-9 * double(size * (sizeof(DataVector) + sizeof(vec3::Vector3))) / interval
+               interval, 1e-9 * double(size * (sizeof(VectorData) + sizeof(vec3::Vector3))) / interval
         );
         recordStartPoint();
     #endif //PRINT_TIMINGS
@@ -198,7 +198,7 @@ vec3::Vector3Array Coil::calculateAllBFieldGPU(const vec3::Vector3Array &pointVe
     #if PRINT_TIMINGS == 1
         interval = getIntervalDuration();
         printf("\tPreparing output array:  %.9g s | %.3g GB/s\n",
-               interval, 1e-9 * double(size * (sizeof(DataVector) + sizeof(vec3::Vector3))) / interval
+               interval, 1e-9 * double(size * (sizeof(VectorData) + sizeof(vec3::Vector3))) / interval
         );
         interval = getIntervalDuration();
         printf("\nTotal time:                  %.9g s\n", interval);
@@ -220,8 +220,8 @@ vec3::Matrix3Array Coil::calculateAllBGradientGPU(const vec3::Vector3Array &poin
 
     long long size = pointVectors.size();
 
-    auto *coordinateArr = static_cast<DataVector *>(calloc(size, sizeof(DataVector)));
-    auto *resultArr = static_cast<DataMatrix *>(calloc(size, sizeof(DataMatrix)));
+    auto *coordinateArr = static_cast<VectorData *>(calloc(size, sizeof(VectorData)));
+    auto *resultArr = static_cast<MatrixData *>(calloc(size, sizeof(MatrixData)));
 
     if(!coordinateArr || !resultArr)
         throw std::bad_alloc();
@@ -229,7 +229,7 @@ vec3::Matrix3Array Coil::calculateAllBGradientGPU(const vec3::Vector3Array &poin
      #if PRINT_TIMINGS == 1
         interval = getIntervalDuration();
         printf("\tInitialising input:      %.9g s | %.3g GB/s\n",
-               interval, 1e-9 * double(size * (sizeof(DataVector) + sizeof(vec3::Vector3))) / interval
+               interval, 1e-9 * double(size * (sizeof(VectorData) + sizeof(vec3::Vector3))) / interval
         );
         recordStartPoint();
     #endif //PRINT_TIMINGS
@@ -246,7 +246,7 @@ vec3::Matrix3Array Coil::calculateAllBGradientGPU(const vec3::Vector3Array &poin
     #if PRINT_TIMINGS == 1
         interval = getIntervalDuration();
         printf("\tPreparing input array:   %.9g s | %.3g GB/s\n",
-               interval, 1e-9 * double(size * (sizeof(DataVector) + sizeof(vec3::Vector3))) / interval
+               interval, 1e-9 * double(size * (sizeof(VectorData) + sizeof(vec3::Vector3))) / interval
         );
         recordStartPoint();
     #endif //PRINT_TIMINGS
@@ -298,7 +298,7 @@ vec3::Matrix3Array Coil::calculateAllBGradientGPU(const vec3::Vector3Array &poin
     #if PRINT_TIMINGS == 1
         interval = getIntervalDuration();
         printf("\tPreparing output array:  %.9g s | %.3g GB/s\n",
-               interval, 1e-9 * double(size * (sizeof(DataMatrix) + sizeof(vec3::Matrix3))) / interval
+               interval, 1e-9 * double(size * (sizeof(MatrixData) + sizeof(vec3::Matrix3))) / interval
         );
         interval = getIntervalDuration();
         printf("\nTotal time:                  %.9g s\n", interval);

@@ -27,7 +27,7 @@ int main()
 //    benchForceGeneralMTScaling(16);
 
 //    compMInductanceGeneralMisalignedCoils();
-    compMInductanceGeneralCase();
+//    compMInductanceGeneralCase();
 //    compMInductanceGeneralParallelAxes();
 
 //    benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor(5.0), 16);
@@ -57,7 +57,7 @@ int main()
 //    benchCoilGroupComputeAllFieldsGPU(1000, 1000000);
 
 //    benchCoilGroupComputeAllFieldsMTvsMTD();
-//    benchCoilGroupMInductanceAndForce();
+    benchCoilGroupMInductanceAndForce(1, 12);
 
 //    benchCoilMInductanceAndForceComputeAll();
 //    benchCoilMInductanceAndForceComputeAllGPU();
@@ -80,6 +80,7 @@ int main()
 //    benchMathFunctions();
 
 //    testCoilGroupFieldsMTD();
+
 
     return 0;
 }

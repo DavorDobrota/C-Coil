@@ -11,6 +11,8 @@ namespace
 }
 
 
+Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0) {}
+
 Coil::Coil(const Coil &original)
 {
     this->id = original.getId();

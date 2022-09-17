@@ -61,6 +61,7 @@ namespace vec3
             ///@brief Returns a Triplet representing the vector in spherical coordinates (z, r, phi).
             [[nodiscard]] Triplet getAsSphericalCoords() const;
 
+            ///@brief Generates a string object with all components of the 3D Vector.
             explicit operator std::string() const;
     };
 
@@ -101,6 +102,7 @@ namespace vec3
             Matrix3 operator*(const Matrix3 &mat) const;
             Vector3 operator*(const Vector3 &vec) const;
 
+            ///@brief Generates a string object with all components of the 3x3 Matrix.
             explicit operator std::string() const;
     };
 
@@ -122,6 +124,7 @@ namespace vec3
             ///@brief Creates a 3-tuple with elements (first, second, third).
             explicit Triplet(double first, double second, double third);
 
+            ///@brief Generates a string object with the values of the triplet.
             explicit operator std::string() const;
     };
 
@@ -177,6 +180,7 @@ namespace vec3
             const Vector3& operator[](size_t index) const;
             Vector3Array& operator+=(const Vector3 &appendedVector3);
 
+            ///@brief Generates a string object from all elements of encapsulated std::vector.
             explicit operator std::string() const;
     };
 
@@ -243,6 +247,7 @@ namespace vec3
             const Matrix3& operator[](size_t index) const;
             Matrix3Array& operator+=(const Matrix3 &appendedMatrix3);
 
+            ///@brief Generates a string object from all elements of encapsulated std::vector.
             explicit operator std::string() const;
     };
 }

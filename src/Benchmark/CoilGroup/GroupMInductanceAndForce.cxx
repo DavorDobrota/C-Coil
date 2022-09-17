@@ -13,8 +13,8 @@ void benchCoilGroupMInductanceAndForce(int opCount, int threadCount)
     high_resolution_clock::time_point begin_time;
     double interval;
 
-    int coilCountMTD = 3 * threadCount;
-    int coilCount = threadCount;
+    int coilCountMTD = 2 * threadCount;
+    int coilCount = 2 * threadCount - 1;
 
     CoilGroup coilGroupMTD = CoilGroup();
     CoilGroup coilGroup = CoilGroup();
@@ -23,18 +23,18 @@ void benchCoilGroupMInductanceAndForce(int opCount, int threadCount)
     for (int i = 1; i <= coilCountMTD; ++i)
     {
         coilGroupMTD.addCoil(
-                0.1, 0.1, 0.1, 10000, 10,
-                PrecisionFactor(), 8,
-                vec3::Vector3(1e-8, 0.0, 0.15*double(i)),0.0, 0.0
+            0.1, 0.1, 0.1, 10000, 10,
+            PrecisionFactor(), 8,
+            vec3::Vector3(1e-8, 0.0, 0.15*double(i)),0.0, 0.0
         );
     }
 
     for (int i = 0; i <= coilCount; ++i)
     {
         coilGroup.addCoil(
-                0.1, 0.1, 0.1, 10000, 10,
-                PrecisionFactor(), 8,
-                vec3::Vector3(1e-8, 0.0, 0.15*double(i)),0.0, 0.0
+            0.1, 0.1, 0.1, 10000, 10,
+            PrecisionFactor(), 8,
+            vec3::Vector3(1e-8, 0.0, 0.15*double(i)),0.0, 0.0
         );
     }
 

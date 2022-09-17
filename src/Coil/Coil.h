@@ -142,8 +142,8 @@ class CoilGroup;
  * Models a circular coil with a rectangular cross section and uniform current density.
  * @details The model works best for a solid block of material and when the effects of windings are negligible.
  * Primary attributes are length (b), thickness (a), the inner radius (R) of the internal cylindrical hole,
- * and the number of turns of wire (windings). Length and thickness can be set to 0.0 and that is interpreted as
- * having a thin coil (b = 0.0), flat coil (a = 0.0), or filament (a = 0.0, b = 0.0).
+ * and the number of turns of wire (N). These attributes cannot be changed. Length and thickness can be set to 0.0
+ * and that is interpreted as having a thin coil (b = 0.0), flat coil (a = 0.0), or filament (a = 0.0, b = 0.0).
  * The coil is oriented like a spherical vector, when angles are (0.0, 0.0) the coil axis is along the z-axis.
  * The first angle is the rotation around the y-axis, and the second around the z-axis.
  * Default precision settings are stored and used if custom ones are not provided.
@@ -196,7 +196,6 @@ class Coil
         /**
          *
          */
-        Coil();
 
         Coil(double innerRadius, double thickness, double length, int numOfTurns,
              double current, double wireResistivity, double sineFrequency,
@@ -444,8 +443,8 @@ class Coil
                                                                  ComputeMethod computeMethod = CPU_ST) const;
 
         /**
-         * @brief Calculates the amplitude vector of electric field E in sinusoidal steady-state for a number of specified points.
-         * Uses precision internally defined by defaultPrecisionCPU.
+         * @brief Calculates the amplitude vector of electric field E in sinusoidal steady-state
+         * for a number of specified points. Uses precision internally defined by defaultPrecisionCPU.
          * @details There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
          * @param computeMethod Three calculation options: CPU_ST, CPU_MT, and GPU. CPU_ST is default.
@@ -454,8 +453,8 @@ class Coil
         [[nodiscard]] vec3::Vector3Array computeAllEFieldVectors(const vec3::Vector3Array &pointVectors,
                                                                  ComputeMethod computeMethod = CPU_ST) const;
         /**
-         * @brief Calculates the amplitude vector of electric field E in sinusoidal steady-state for a number of specified points.
-         * Uses provided PrecisionArguments for precision settings.
+         * @brief Calculates the amplitude vector of electric field E in sinusoidal steady-state
+         * for a number of specified points. Uses provided PrecisionArguments for precision settings.
          * @details There are multiple compute methods, GPU acceleration is best suited for a large number of points.
          * @param pointVectors An array of radius vectors wrapped in class Vector3Array.
          * @param usedPrecision Custom precision settings used for this particular calculation.
@@ -490,7 +489,7 @@ class Coil
                                                                      ComputeMethod computeMethod = CPU_ST) const;
 
         /**
-         * @brief Calculates the Mutual induction M between two given coils.
+         * @brief Calculates the mutual inductance M between two given coils.
          * Generates CoilPairArguments from given precisionFactor.
          * @details For better precision, the primary coil should be the bigger one, length is the most important parameter.
          * There are more performant implementations if both coils lie on the z-axis and have rotation angles set to 0.
@@ -506,7 +505,7 @@ class Coil
                                               PrecisionFactor precisionFactor = PrecisionFactor(),
                                               ComputeMethod computeMethod = CPU_ST);
         /**
-         * @brief Calculates the Mutual induction M between two given coils.
+         * @brief Calculates the mutual inductance M between two given coils.
          * Uses provided CoilPairArguments for precision settings.
          * @details For better precision, the primary coil should be the bigger one, length is the most important parameter.
          * There are more performant implementations if both coils lie on the z-axis and have rotation angles set to 0.
@@ -551,12 +550,12 @@ class Coil
          * can be achieved with precision factor 10.0. It works well for thick and thin coils,
          * but poorly for flat coils, and does not work for filaments (loops) as the integral is inherently divergent.
          * @param precisionFactor
-         * @return Magnitude of the voltage induced on the secondary coil.
+         * @return Self inductance of the coil.
          */
         double computeAndSetSelfInductance(PrecisionFactor precisionFactor);
 
         /**
-        * @brief Calculates the Ampere force F and torque T between two coils.
+        * @brief Calculates the force F and torque T between two coils.
         * Generates CoilPairArguments from given precisionFactor.
         * @details For better precision, the primary coil should be the bigger one, length is the most important parameter.
         * There are more performant implementations if both coils lie on the z-axis and have rotation angles set to 0.
@@ -572,7 +571,7 @@ class Coil
         computeAmpereForce(const Coil &primary, const Coil &secondary,
                            PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod computeMethod = CPU_ST);
         /**
-        * @brief Calculates the Ampere force F and torque T between two coils.
+        * @brief Calculates the force F and torque T between two coils.
         * Generates CoilPairArguments from given precisionFactor
         * @details For better precision, the primary coil should be the bigger one, length is the most important parameter.
         * There are more performant implementations if both coils lie on the z-axis and have rotation angles set to 0.
@@ -671,13 +670,13 @@ class Coil
                                           const std::vector<double> &secondaryZAngles,
                                           PrecisionFactor precisionFactor = PrecisionFactor(),
                                           ComputeMethod computeMethod = CPU_ST);
-        /**
-         * @brief Generates a string object with all properties of the coil.
-         * @return Coil string
-         */
+
+        ///@brief Generates a string object with all properties of the Coil instance.
         explicit operator std::string() const;
 
     private:
+
+        Coil();
         Coil (const Coil &original);
 
         void calculateMagneticMoment();

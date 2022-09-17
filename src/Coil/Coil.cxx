@@ -19,8 +19,6 @@ namespace
 }
 
 
-Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0) {}
-
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double wireResistivity,
            double sineFrequency, const PrecisionArguments &precisionSettingsCPU,
            const PrecisionArguments &precisionSettingsGPU, int threadCount, vec3::Vector3 coordinatePosition,

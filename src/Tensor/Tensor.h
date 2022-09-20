@@ -31,9 +31,9 @@ namespace vec3
             double y;
             double z;
 
-            ///@brief Default constructor, creates a null vector (0, 0, 0).
+            /// @brief Default constructor, creates a null vector (0, 0, 0).
             Vector3();
-            ///@brief Creates a vector with coordinates (x, y, z).
+            /// @brief Creates a vector with coordinates (x, y, z).
             explicit Vector3(double x, double y, double z);
 
             Vector3 operator+(const Vector3 &otherVec) const;
@@ -43,25 +43,25 @@ namespace vec3
             Vector3 operator*(double multiplier) const;
             Vector3 operator*=(double multiplier);
 
-            ///@brief Returns the magnitude (Euclidean norm) of the vector.
+            /// @brief Returns the magnitude (Euclidean norm) of the vector.
             [[nodiscard]] double abs() const;
 
-            ///@brief Returns the inner product of two Vector3 objects.
+            /// @brief Returns the inner product of two Vector3 objects.
             static double scalarProduct(Vector3 vector1, Vector3 vector2);
-            ///@brief Returns the vector product of two Vector3 objects.
+            /// @brief Returns the vector product of two Vector3 objects.
             static Vector3 crossProduct(Vector3 vector1, Vector3 vector2);
 
-            ///@brief Creates a Vector3 from cylindrical coordinates (z, r, phi), phi [0, 2PI].
+            /// @brief Creates a Vector3 from cylindrical coordinates (z, r, phi), phi [0, 2PI].
             static Vector3 getFromCylindricalCoords(double z, double r, double phi);
-            ///@brief Creates a Vector3 from spherical coordinates (r,theta, phi), theta [0, PI], phi [0, 2PI].
+            /// @brief Creates a Vector3 from spherical coordinates (r,theta, phi), theta [0, PI], phi [0, 2PI].
             static Vector3 getFromSphericalCoords(double r, double theta, double phi);
 
-            ///@brief Returns a Triplet representing the vector in cylindrical coordinates (z, r, phi).
+            /// @brief Returns a Triplet representing the vector in cylindrical coordinates (z, r, phi).
             [[nodiscard]] Triplet getAsCylindricalCoords() const;
-            ///@brief Returns a Triplet representing the vector in spherical coordinates (z, r, phi).
+            /// @brief Returns a Triplet representing the vector in spherical coordinates (z, r, phi).
             [[nodiscard]] Triplet getAsSphericalCoords() const;
 
-            ///@brief Generates a string object with all components of the 3D Vector.
+            /// @brief Generates a string object with all components of the 3D Vector.
             explicit operator std::string() const;
     };
 
@@ -86,12 +86,12 @@ namespace vec3
             double zy;
             double zz;
 
-            ///@brief Default constructor, creates a null matrix.
+            /// @brief Default constructor, creates a null matrix.
             Matrix3();
-            ///@brief Creates matrix with components ((xx, xy, xz), (yx, yy, yz), (zx, zy, zz)).
+            /// @brief Creates matrix with components ((xx, xy, xz), (yx, yy, yz), (zx, zy, zz)).
             explicit Matrix3(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz);
 
-            ///@brief Returns the determinant of the determinant of a square matrix.
+            /// @brief Returns the determinant of the determinant of a square matrix.
             [[nodiscard]] double det() const;
 
             Matrix3 operator+(const Matrix3 &mat) const;
@@ -102,7 +102,7 @@ namespace vec3
             Matrix3 operator*(const Matrix3 &mat) const;
             Vector3 operator*(const Vector3 &vec) const;
 
-            ///@brief Generates a string object with all components of the 3x3 Matrix.
+            /// @brief Generates a string object with all components of the 3x3 Matrix.
             explicit operator std::string() const;
     };
 
@@ -119,12 +119,12 @@ namespace vec3
             double second;
             double third;
 
-            ///@brief Default constructor, returns a tuple of zeros (0, 0, 0).
+            /// @brief Default constructor, returns a tuple of zeros (0, 0, 0).
             Triplet();
-            ///@brief Creates a 3-tuple with elements (first, second, third).
+            /// @brief Creates a 3-tuple with elements (first, second, third).
             explicit Triplet(double first, double second, double third);
 
-            ///@brief Generates a string object with the values of the triplet.
+            /// @brief Generates a string object with the values of the triplet.
             explicit operator std::string() const;
     };
 
@@ -144,43 +144,43 @@ namespace vec3
 
         public:
 
-            ///@brief Default constructor, creates an empty encapsulated std::vector<vec3::Vector3>.
+            /// @brief Default constructor, creates an empty encapsulated std::vector<vec3::Vector3>.
             Vector3Array();
-            ///@brief Creates an encapsulated std::vector<vec3::Vector3> of given size.
+            /// @brief Creates an encapsulated std::vector<vec3::Vector3> of given size.
             explicit Vector3Array(size_t initSize);
-            ///@brief Creates an encapsulated std::vector<vec3::Vector3> filled with given values.
+            /// @brief Creates an encapsulated std::vector<vec3::Vector3> filled with given values.
             explicit Vector3Array(const std::vector<Vector3> &vectorArray);
 
-            ///@brief Applies std::vector push_back with the given Vector3.
+            /// @brief Applies std::vector push_back with the given Vector3.
             void append(const Vector3 &appendedVector3);
-            ///@brief Applies std::vector emplace_back with given 3 values (x, y, z).
+            /// @brief Applies std::vector emplace_back with given 3 values (x, y, z).
             void append(double x, double y, double z);
-            ///@brief Applies std::vector reserve with the provided size for faster append operations.
+            /// @brief Applies std::vector reserve with the provided size for faster append operations.
             void reserve(size_t reserveSize);
-            ///@brief Applies std::vector resize with the provided size.
+            /// @brief Applies std::vector resize with the provided size.
             void resize(size_t newSize);
-            ///@brief Applies std::vector clear.
+            /// @brief Applies std::vector clear.
             void clear();
-            ///@brief Returns the size of encapsulated std::vector.
+            /// @brief Returns the size of encapsulated std::vector.
             [[nodiscard]] size_t size() const;
 
-            ///@brief Returns a reference to encapsulated std::vector<vec3::Vector3>.
+            /// @brief Returns a reference to encapsulated std::vector<vec3::Vector3>.
             std::vector<Vector3>& getItems();
 
-            ///@brief Returns a std::vector<double> of only x components of Vector3.
+            /// @brief Returns a std::vector<double> of only x components of Vector3.
             [[nodiscard]] std::vector<double> x() const;
-            ///@brief Returns a std::vector<double> of only y components of Vector3.
+            /// @brief Returns a std::vector<double> of only y components of Vector3.
             [[nodiscard]] std::vector<double> y() const;
-            ///@brief Returns a std::vector<double> of only z components of Vector3.
+            /// @brief Returns a std::vector<double> of only z components of Vector3.
             [[nodiscard]] std::vector<double> z() const;
-            ///@brief Returns a std::vector<double> of magnitudes of Vector3.
+            /// @brief Returns a std::vector<double> of magnitudes of Vector3.
             [[nodiscard]] std::vector<double> abs() const;
 
             Vector3& operator[](size_t index);
             const Vector3& operator[](size_t index) const;
             Vector3Array& operator+=(const Vector3 &appendedVector3);
 
-            ///@brief Generates a string object from all elements of encapsulated std::vector.
+            /// @brief Generates a string object from all elements of encapsulated std::vector.
             explicit operator std::string() const;
     };
 
@@ -200,54 +200,54 @@ namespace vec3
 
         public:
 
-            ///@brief Default constructor, creates an empty encapsulated std::vector<vec3::Matrix3>.
+            /// @brief Default constructor, creates an empty encapsulated std::vector<vec3::Matrix3>.
             Matrix3Array();
-            ///@brief Creates an encapsulated std::vector<vec3::Matrix3> of given size.
+            /// @brief Creates an encapsulated std::vector<vec3::Matrix3> of given size.
             explicit Matrix3Array(size_t initSize);
-            ///@brief Creates an encapsulated std::vector<vec3::Vector3> filled with given values.
+            /// @brief Creates an encapsulated std::vector<vec3::Vector3> filled with given values.
             explicit Matrix3Array(const std::vector<Matrix3> &matrixArray);
 
-            ///@brief Applies std::vector push_back with the given Matrix3.
+            /// @brief Applies std::vector push_back with the given Matrix3.
             void append(const Matrix3 &appendedMatrix3);
-            ///@brief Applies std::vector emplace_back with given 3 values ((xx, xy, xz), (yx, yy, yz), (zx, zy, zz)).
+            /// @brief Applies std::vector emplace_back with given 3 values ((xx, xy, xz), (yx, yy, yz), (zx, zy, zz)).
             void append(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz);
-            ///@brief Applies std::vector reserve with the provided size for faster append operations.
+            /// @brief Applies std::vector reserve with the provided size for faster append operations.
             void reserve(size_t reserveSize);
-            ///@brief Applies std::vector resize with the provided size.
+            /// @brief Applies std::vector resize with the provided size.
             void resize(size_t newSize);
-            ///@brief Returns the size of encapsulated std::vector.
+            /// @brief Returns the size of encapsulated std::vector.
             void clear();
             [[nodiscard]] size_t size() const;
 
-            ///@brief Returns a reference to encapsulated std::vector<vec3::Matrix3>.
+            /// @brief Returns a reference to encapsulated std::vector<vec3::Matrix3>.
             std::vector<Matrix3>& getItems();
 
-            ///@brief Returns a std::vector<double> of only xx components of Matrix3.
+            /// @brief Returns a std::vector<double> of only xx components of Matrix3.
             [[nodiscard]] std::vector<double> xx() const;
-            ///@brief Returns a std::vector<double> of only xy components of Matrix3.
+            /// @brief Returns a std::vector<double> of only xy components of Matrix3.
             [[nodiscard]] std::vector<double> xy() const;
-            ///@brief Returns a std::vector<double> of only xz components of Matrix3.
+            /// @brief Returns a std::vector<double> of only xz components of Matrix3.
             [[nodiscard]] std::vector<double> xz() const;
-            ///@brief Returns a std::vector<double> of only yx components of Matrix3.
+            /// @brief Returns a std::vector<double> of only yx components of Matrix3.
             [[nodiscard]] std::vector<double> yx() const;
-            ///@brief Returns a std::vector<double> of only yy components of Matrix3.
+            /// @brief Returns a std::vector<double> of only yy components of Matrix3.
             [[nodiscard]] std::vector<double> yy() const;
-            ///@brief Returns a std::vector<double> of only yz components of Matrix3.
+            /// @brief Returns a std::vector<double> of only yz components of Matrix3.
             [[nodiscard]] std::vector<double> yz() const;
-            ///@brief Returns a std::vector<double> of only zx components of Matrix3.
+            /// @brief Returns a std::vector<double> of only zx components of Matrix3.
             [[nodiscard]] std::vector<double> zx() const;
-            ///@brief Returns a std::vector<double> of only zy components of Matrix3.
+            /// @brief Returns a std::vector<double> of only zy components of Matrix3.
             [[nodiscard]] std::vector<double> zy() const;
-            ///@brief Returns a std::vector<double> of only zz components of Matrix3.
+            /// @brief Returns a std::vector<double> of only zz components of Matrix3.
             [[nodiscard]] std::vector<double> zz() const;
-            ///@brief Returns a std::vector<double> of determinants of Matrix3.
+            /// @brief Returns a std::vector<double> of determinants of Matrix3.
             [[nodiscard]] std::vector<double> det() const;
 
             Matrix3& operator[](size_t index);
             const Matrix3& operator[](size_t index) const;
             Matrix3Array& operator+=(const Matrix3 &appendedMatrix3);
 
-            ///@brief Generates a string object from all elements of encapsulated std::vector.
+            /// @brief Generates a string object from all elements of encapsulated std::vector.
             explicit operator std::string() const;
     };
 }

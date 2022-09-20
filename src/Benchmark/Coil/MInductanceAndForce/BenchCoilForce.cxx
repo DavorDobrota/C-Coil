@@ -8,7 +8,7 @@
 #include <chrono>
 
 
-void benchForceZAxis(ComputeMethod computeMethod, int threadCount)
+void Benchmark::forceZAxis(ComputeMethod computeMethod, int threadCount)
 {
     using namespace std::chrono;
 
@@ -28,13 +28,13 @@ void benchForceZAxis(ComputeMethod computeMethod, int threadCount)
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeAmpereForce(primary, secondary, PrecisionFactor(i), computeMethod).first.z;
+            temp = Coil::computeForceTorque(primary, secondary, PrecisionFactor(i), computeMethod).first.z;
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("precisionFactor(%.1f) : %6.4f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }
 }
 
-void benchForceGeneral(ComputeMethod computeMethod, int threadCount)
+void Benchmark::forceGeneral(ComputeMethod computeMethod, int threadCount)
 {
     using namespace std::chrono;
 
@@ -56,40 +56,40 @@ void benchForceGeneral(ComputeMethod computeMethod, int threadCount)
 
         high_resolution_clock::time_point begin_time = high_resolution_clock::now();
         for (int j = 0; j < currentOperations; ++j)
-            temp = Coil::computeAmpereForce(primary, secondary, PrecisionFactor(i), computeMethod);
+            temp = Coil::computeForceTorque(primary, secondary, PrecisionFactor(i), computeMethod);
         double interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
         printf("precisionFactor(%.1f) : %6.3f ms/op\n", (double) i, 1'000.0 * interval / currentOperations);
     }
 }
 
-void benchForceZAxisMTScaling(int maxThreadCount)
+void Benchmark::forceZAxisMTScaling(int maxThreadCount)
 {
     printf("Performance comparison between different numbers of threads:\n");
 
     printf(" -> single thread:\n");
-    benchForceZAxis(CPU_ST);
+    Benchmark::forceZAxis(CPU_ST);
     printf("\n");
 
     for (int i = 2; i <= maxThreadCount; ++i)
     {
         printf(" -> %2d threads:\n", i);
-        benchForceZAxis(CPU_MT, i);
+        Benchmark::forceZAxis(CPU_MT, i);
         printf("\n");
     }
 }
 
-void benchForceGeneralMTScaling(int maxThreadCount)
+void Benchmark::forceGeneralMTScaling(int maxThreadCount)
 {
     printf("Performance comparison between different numbers of threads:\n");
 
     printf(" -> single thread:\n");
-    benchForceGeneral(CPU_ST);
+    Benchmark::forceGeneral(CPU_ST);
     printf("\n");
 
     for (int i = 2; i <= maxThreadCount; ++i)
     {
         printf(" -> %2d threads:\n", i);
-        benchForceGeneral(CPU_MT, i);
+        Benchmark::forceGeneral(CPU_MT, i);
         printf("\n");
     }
 }

@@ -29,9 +29,9 @@ class Coil;
  */
 struct PrecisionFactor
 {
-    ///@brief Default constructor, sets relativePrecision to 5.0.
+    /// @brief Default constructor, sets relativePrecision to 5.0.
     PrecisionFactor();
-    ///@brief Sets relativePrecision to the given double value
+    /// @brief Sets relativePrecision to the given double value
     explicit PrecisionFactor(double relativePrecision);
 
     double relativePrecision;
@@ -46,10 +46,10 @@ struct PrecisionFactor
  */
 struct PrecisionArguments
 {
-    ///@brief Default constructor, sets all blocks to 1, and all increments to default quadrature value, currently 20.
+    /// @brief Default constructor, sets all blocks to 1, and all increments to default quadrature value, currently 20.
     PrecisionArguments();
-    ///@brief Takes 6 integer values specifying the number of blocks and increments assigned to each layer.
-    ///@details Angular increments are along phi, thickness along a, and length along b (length is not utilised)
+    /// @brief Takes 6 integer values specifying the number of blocks and increments assigned to each layer.
+    /// @details Angular increments are along phi, thickness along a, and length along b (length is not utilised)
     explicit PrecisionArguments(int angularBlocks, int thicknessBlocks, int lengthBlocks,
                                 int angularIncrements, int thicknessIncrements, int lengthIncrements);
 
@@ -103,9 +103,9 @@ struct PrecisionArguments
 struct CoilPairArguments
 {
     friend PrecisionArguments;
-    ///@brief Default constructor, initialises primary and secondary coil PrecisionArguments to default values
+    /// @brief Default constructor, initialises primary and secondary coil PrecisionArguments to default values
     CoilPairArguments();
-    ///@brief Takes two PrecisionArguments arguments and creates new CoilPairArguments
+    /// @brief Takes two PrecisionArguments arguments and creates new CoilPairArguments
     explicit CoilPairArguments(const PrecisionArguments &primaryPrecision,
                                const PrecisionArguments &secondaryPrecision);
 
@@ -192,7 +192,7 @@ class Coil
     public:
 
         /// @name CoilConstructors
-        ///@{
+        /// @{
         /**
          *
          */
@@ -232,88 +232,88 @@ class Coil
              double yAxisAngle = 0.0, double zAxisAngle = 0.0);
         /// @}
 
-        ///@brief Returns the unique coil identifier.
+        /// @brief Returns the unique coil identifier.
         [[nodiscard]] unsigned long long getId() const;
-        ///@brief Returns the radius of inner cylinder of the circular coil.
+        /// @brief Returns the radius of inner cylinder of the circular coil.
         [[nodiscard]] double getInnerRadius() const;
-        ///@brief Returns the thickness of windings of the circular coil.
+        /// @brief Returns the thickness of windings of the circular coil.
         [[nodiscard]] double getThickness() const;
-        ///@brief Returns the length of the circular coil.
+        /// @brief Returns the length of the circular coil.
         [[nodiscard]] double getLength() const;
-        ///@brief Returns the number of windings (turns) of the circular coil.
+        /// @brief Returns the number of windings (turns) of the circular coil.
         [[nodiscard]] int getNumOfTurns() const;
 
-        ///@brief Returns the current density of a circular coil. Ill defined for thin coils, pancakes and filaments.
+        /// @brief Returns the current density of a circular coil. Ill defined for thin coils, pancakes and filaments.
         [[nodiscard]] double getCurrentDensity() const;
-        ///@brief Returns a current passing through each winding of a circular coil.
+        /// @brief Returns a current passing through each winding of a circular coil.
         [[nodiscard]] double getCurrent() const;
 
-        ///@brief Returns current wire resistivity, determined by the used material. By default, copper is used.
+        /// @brief Returns current wire resistivity, determined by the used material. By default, copper is used.
         [[nodiscard]] double getWireResistivity() const;
-        ///@brief Returns if the coil is sine wave (AC) driven or DC driven.
+        /// @brief Returns if the coil is sine wave (AC) driven or DC driven.
         [[nodiscard]] bool isSineDriven() const;
-        ///@brief Returns the frequency of the AC sine wave driving the coil. 0.0 if the it is DC driven.
+        /// @brief Returns the frequency of the AC sine wave driving the coil. 0.0 if the it is DC driven.
         [[nodiscard]] double getSineFrequency() const;
 
-        ///@brief Uses lazy loading and returns an equivalent magnetic dipole moment (approximation at large distance)
+        /// @brief Uses lazy loading and returns an equivalent magnetic dipole moment (approximation at large distance)
         [[nodiscard]] vec3::Vector3 getMagneticMoment();
-        ///@brief Calculates average wire thickness supposing the winding is orthogonal.
+        /// @brief Calculates average wire thickness supposing the winding is orthogonal.
         [[nodiscard]] double getAverageWireThickness() const;
 
-        ///@brief Returns last set or calculated value of self inductance
+        /// @brief Returns last set or calculated value of self inductance
         [[nodiscard]] double getSelfInductance() const;
-        ///@brief Uses lazy loading and returns coil resistance of the coil with skin effect compensation.
+        /// @brief Uses lazy loading and returns coil resistance of the coil with skin effect compensation.
         [[nodiscard]] double getResistance();
-        ///@brief Uses lazy loading and returns inductive reactance of the coil, capacitance not included.
+        /// @brief Uses lazy loading and returns inductive reactance of the coil, capacitance not included.
         [[nodiscard]] double getReactance();
-        ///@brief Uses lazy loading and returns the magnitude of the coil impedance.
+        /// @brief Uses lazy loading and returns the magnitude of the coil impedance.
         [[nodiscard]] double getImpedance();
 
-        ///@brief Returns the default PrecisionArguments used for CPU calculations.
+        /// @brief Returns the default PrecisionArguments used for CPU calculations.
         [[nodiscard]] const PrecisionArguments &getPrecisionSettingsCPU() const;
-        ///@brief Returns the default PrecisionArguments used for GPU calculations.
+        /// @brief Returns the default PrecisionArguments used for GPU calculations.
         [[nodiscard]] const PrecisionArguments &getPrecisionSettingsGPU() const;
-        ///@brief Returns the default number of threads.
+        /// @brief Returns the default number of threads.
         [[nodiscard]] int getThreadCount() const;
-        ///@brief Returns the type of methods the coil is using. Thin and rectangular coils use fast methods.
+        /// @brief Returns the type of methods the coil is using. Thin and rectangular coils use fast methods.
         [[nodiscard]] bool isUsingFastMethod() const;
-        ///@brief Returns the type of circular coil with rectangular cross section.
+        /// @brief Returns the type of circular coil with rectangular cross section.
         [[nodiscard]] CoilType getCoilType() const;
 
-        ///@brief Returns position of the coil in external Cartesian coordinate system
+        /// @brief Returns position of the coil in external Cartesian coordinate system
         [[nodiscard]] vec3::Vector3 getPositionVector() const;
-        ///@brief Returns a pair of angles <yAxisAngle, zAxisAngle> which represent the coil orientation
+        /// @brief Returns a pair of angles <yAxisAngle, zAxisAngle> which represent the coil orientation
         [[nodiscard]] std::pair<double, double> getRotationAngles() const;
 
-        ///@brief Returns the inverse transformation matrix used to simplify field calculation.
+        /// @brief Returns the inverse transformation matrix used to simplify field calculation.
         [[nodiscard]] vec3::Matrix3 getTransformationMatrix() const;
-        ///@brief Returns the transformation matrix used to adapt field tensors to the external coordinate system.
+        /// @brief Returns the transformation matrix used to adapt field tensors to the external coordinate system.
         [[nodiscard]] vec3::Matrix3 getInverseTransformationMatrix() const;
 
-        ///@brief Sets current density and calculates appropriate current. Not suitable for thin coils, pancakes and filaments.
+        /// @brief Sets current density and calculates appropriate current. Not suitable for thin coils, pancakes and filaments.
         void setCurrentDensity(double currentDensity);
-        ///@brief Sets the current through windings and calculates the appropriate current density.
+        /// @brief Sets the current through windings and calculates the appropriate current density.
         void setCurrent(double current);
-        ///@brief Sets wire resistivity, necessary for resistance calculation.
+        /// @brief Sets wire resistivity, necessary for resistance calculation.
         void setWireResistivity(double wireResistivity);
-        ///@brief Sets AC sine driven frequency. 0.0 is used for DC.
+        /// @brief Sets AC sine driven frequency. 0.0 is used for DC.
         void setSineFrequency(double sineFrequency);
 
-        ///@brief Sets the given, custom PrecisionArguments as default for CPU calculations.
+        /// @brief Sets the given, custom PrecisionArguments as default for CPU calculations.
         void setDefaultPrecisionCPU(const PrecisionArguments &precisionSettings);
-        ///@brief Calculates the PrecisionArguments for the appropriate PrecisionFactor
+        /// @brief Calculates the PrecisionArguments for the appropriate PrecisionFactor
         /// and sets them as default for CPU calculations
         void setDefaultPrecisionCPU(PrecisionFactor precisionFactor = PrecisionFactor());
-        ///@brief Sets the given, custom PrecisionArguments as default for GPU calculations.
+        /// @brief Sets the given, custom PrecisionArguments as default for GPU calculations.
         void setDefaultPrecisionGPU(const PrecisionArguments &precisionSettings);
-        ///@brief Calculates the PrecisionArguments for the appropriate PrecisionFactor
+        /// @brief Calculates the PrecisionArguments for the appropriate PrecisionFactor
         /// and sets them as default for GPU calculations
         void setDefaultPrecisionGPU(PrecisionFactor precisionFactor = PrecisionFactor());
-        ///@brief Calculates the PrecisionArguments for the appropriate PrecisionFactor
+        /// @brief Calculates the PrecisionArguments for the appropriate PrecisionFactor
         /// and sets them as default for both CPU and GPU
         void setDefaultPrecision(PrecisionFactor precisionFactor = PrecisionFactor());
 
-        ///@brief Sets the number of threads used in field and interaction calculations.
+        /// @brief Sets the number of threads used in field and interaction calculations.
         void setThreadCount(int threadCount);
         /**
          * @brief Repositions and reorients the coil in the external coordinate system.
@@ -323,7 +323,7 @@ class Coil
          */
         void setPositionAndOrientation(vec3::Vector3 positionVector = vec3::Vector3(),
                                        double yAxisAngle = 0.0, double zAxisAngle = 0.0);
-        ///@brief Sets self inductance of the coil to the provided value, overriding all previous calculations.
+        /// @brief Sets self inductance of the coil to the provided value, overriding all previous calculations.
         void setSelfInductance(double selfInductance);
 
 
@@ -549,7 +549,7 @@ class Coil
          * Low precision factors, below 5.0, are not advisable and good precision (error of order 1e-6)
          * can be achieved with precision factor 10.0. It works well for thick and thin coils,
          * but poorly for flat coils, and does not work for filaments (loops) as the integral is inherently divergent.
-         * @param precisionFactor
+         * @param precisionFactor Determines the precision of given calculation.
          * @return Self inductance of the coil.
          */
         double computeAndSetSelfInductance(PrecisionFactor precisionFactor);
@@ -568,7 +568,7 @@ class Coil
         * @return Pair of Cartesian vectors which represent force (first) and torque (second).
         */
         static std::pair<vec3::Vector3, vec3::Vector3>
-        computeAmpereForce(const Coil &primary, const Coil &secondary,
+        computeForceTorque(const Coil &primary, const Coil &secondary,
                            PrecisionFactor precisionFactor = PrecisionFactor(), ComputeMethod computeMethod = CPU_ST);
         /**
         * @brief Calculates the force F and torque T between two coils.
@@ -584,7 +584,7 @@ class Coil
         * @return Pair of Cartesian vectors which represent force (first) and torque (second).
         */
         static std::pair<vec3::Vector3, vec3::Vector3>
-        computeAmpereForce(const Coil &primary, const Coil &secondary,
+        computeForceTorque(const Coil &primary, const Coil &secondary,
                            const CoilPairArguments &forceArguments, ComputeMethod computeMethod = CPU_ST);
 
         /**
@@ -661,7 +661,7 @@ class Coil
         * @return Array of pairs of force (first) and torque (second) vectors, one for each appropriate configuration.
         */
         static std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-        computeAllAmpereForceArrangements(const Coil &primary, const Coil &secondary,
+        computeAllForceTorqueArrangements(const Coil &primary, const Coil &secondary,
                                           const vec3::Vector3Array &primaryPositions,
                                           const vec3::Vector3Array &secondaryPositions,
                                           const std::vector<double> &primaryYAngles,
@@ -765,7 +765,7 @@ class Coil
                                                     ComputeMethod computeMethod = CPU_ST);
 
         static std::pair<vec3::Vector3, vec3::Vector3>
-        calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
+        calculateForceTorqueGeneral(const Coil &primary, const Coil &secondary,
                                     const CoilPairArguments &forceArguments, ComputeMethod computeMethod);
 
         static std::vector<double>
@@ -788,7 +788,7 @@ class Coil
                                                     PrecisionFactor precisionFactor = PrecisionFactor());
 
         static std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-        calculateAllAmpereForceArrangementsMTD(const Coil &primary, const Coil &secondary,
+        calculateAllForceTorqueArrangementsMTD(const Coil &primary, const Coil &secondary,
                                                const vec3::Vector3Array &primaryPositions,
                                                const vec3::Vector3Array &secondaryPositions,
                                                const std::vector<double> &primaryYAngles,
@@ -797,7 +797,7 @@ class Coil
                                                const std::vector<double> &secondaryZAngles,
                                                PrecisionFactor precisionFactor = PrecisionFactor());
         static std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-        calculateAllAmpereForceArrangementsGPU(const Coil &primary, const Coil &secondary,
+        calculateAllForceTorqueArrangementsGPU(const Coil &primary, const Coil &secondary,
                                                const vec3::Vector3Array &primaryPositions,
                                                const vec3::Vector3Array &secondaryPositions,
                                                const std::vector<double> &primaryYAngles,

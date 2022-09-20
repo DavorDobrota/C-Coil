@@ -2,7 +2,7 @@
 
 
 std::pair<vec3::Vector3, vec3::Vector3>
-Coil::computeAmpereForce(const Coil &primary, const Coil &secondary,
+Coil::computeForceTorque(const Coil &primary, const Coil &secondary,
                          const CoilPairArguments &forceArguments, ComputeMethod computeMethod)
 {
     if (isZAxisCase(primary, secondary))
@@ -20,18 +20,18 @@ Coil::computeAmpereForce(const Coil &primary, const Coil &secondary,
         return {vec3::Vector3(0.0, 0.0, zForce), vec3::Vector3()};
     }
     else
-        return calculateAmpereForceGeneral(primary, secondary, forceArguments, computeMethod);
+        return calculateForceTorqueGeneral(primary, secondary, forceArguments, computeMethod);
 }
 
 std::pair<vec3::Vector3, vec3::Vector3>
-Coil::computeAmpereForce(const Coil &primary, const Coil &secondary,
+Coil::computeForceTorque(const Coil &primary, const Coil &secondary,
                          PrecisionFactor precisionFactor, ComputeMethod computeMethod)
 {
     auto args = CoilPairArguments::getAppropriateCoilPairArguments(
         primary, secondary, precisionFactor, computeMethod, isZAxisCase(primary, secondary), false
     );
 
-    return computeAmpereForce(primary, secondary, args, computeMethod);
+    return computeForceTorque(primary, secondary, args, computeMethod);
 }
 
 
@@ -56,7 +56,7 @@ Coil::computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 dipole
 
 
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-Coil::computeAllAmpereForceArrangements(const Coil &primary, const Coil &secondary,
+Coil::computeAllForceTorqueArrangements(const Coil &primary, const Coil &secondary,
                                         const vec3::Vector3Array &primaryPositions,
                                         const vec3::Vector3Array &secondaryPositions,
                                         const std::vector<double> &primaryYAngles,
@@ -75,21 +75,21 @@ Coil::computeAllAmpereForceArrangements(const Coil &primary, const Coil &seconda
     {
         if (computeMethod == GPU)
         {
-            return calculateAllAmpereForceArrangementsGPU
-            (
-                primary, secondary,primaryPositions, secondaryPositions,
-                primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
-                precisionFactor
-            );
+            return calculateAllForceTorqueArrangementsGPU
+                    (
+                            primary, secondary, primaryPositions, secondaryPositions,
+                            primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
+                            precisionFactor
+                    );
         }
         else if (arrangementCount >= 2 * primary.getThreadCount() && computeMethod == CPU_MT)
         {
-            return calculateAllAmpereForceArrangementsMTD
-            (
-                primary, secondary, primaryPositions, secondaryPositions,
-                primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
-                precisionFactor
-            );
+            return calculateAllForceTorqueArrangementsMTD
+                    (
+                            primary, secondary, primaryPositions, secondaryPositions,
+                            primaryYAngles, primaryZAngles, secondaryYAngles, secondaryZAngles,
+                            precisionFactor
+                    );
         }
         else
         {
@@ -107,7 +107,7 @@ Coil::computeAllAmpereForceArrangements(const Coil &primary, const Coil &seconda
                     secondaryPositions[i],secondaryYAngles[i],secondaryZAngles[i]
                 );
 
-                outputForcesAndTorques.emplace_back(computeAmpereForce(prim, sec, precisionFactor, computeMethod));
+                outputForcesAndTorques.emplace_back(computeForceTorque(prim, sec, precisionFactor, computeMethod));
             }
             return outputForcesAndTorques;
         }

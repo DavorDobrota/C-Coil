@@ -6,7 +6,7 @@
 #include <chrono>
 
 
-void benchMathFunctions()
+void Benchmark::mathFunctions()
 {
     using namespace std::chrono;
 

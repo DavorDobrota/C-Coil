@@ -2,16 +2,16 @@ add_library(
         Benchmark OBJECT
 
         Other/BenchMathFunctions.cxx
-        Coil/MInductanceAndForce/BenchForce.cxx
-        Coil/Fields/BenchFields.cxx
-        Coil/Fields/BenchFieldsEveryCoil.cxx
-        Coil/Fields/BenchFieldsScaling.cxx
-        Coil/MInductanceAndForce/BenchMInductanceZAxis.cxx
-        Coil/MInductanceAndForce/BenchMInductanceGeneral.cxx
-        Coil/MInductanceAndForce/BenchComputeAll.cxx
-        CoilGroup/GroupFields.cxx
-        CoilGroup/GroupMInductanceAndForce.cxx
-    )
+        Coil/MInductanceAndForce/BenchCoilForce.cxx
+        Coil/Fields/BenchCoilFields.cxx
+        Coil/Fields/BenchCoilFieldsEveryCoil.cxx
+        Coil/Fields/BenchCoilFieldsScaling.cxx
+        Coil/MInductanceAndForce/BenchCoilMInductanceZAxis.cxx
+        Coil/MInductanceAndForce/BenchCoilMInductanceGeneral.cxx
+        Coil/MInductanceAndForce/BenchCoilComputeAll.cxx
+        CoilGroup/BenchGroupFields.cxx
+        CoilGroup/BenchGroupMInductanceAndForce.cxx
+        CoilGroup/BenchGroupFieldsScaling.cxx)
 
 set_property(TARGET Benchmark PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 

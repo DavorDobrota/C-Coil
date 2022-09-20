@@ -14,7 +14,7 @@ namespace
 
 
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-Coil::calculateAllAmpereForceArrangementsMTD(const Coil &primary, const Coil &secondary,
+Coil::calculateAllForceTorqueArrangementsMTD(const Coil &primary, const Coil &secondary,
                                              const vec3::Vector3Array &primaryPositions,
                                              const vec3::Vector3Array &secondaryPositions,
                                              const std::vector<double> &primaryYAngles,
@@ -50,7 +50,7 @@ Coil::calculateAllAmpereForceArrangementsMTD(const Coil &primary, const Coil &se
         prim.setPositionAndOrientation(primaryPosition, primaryYAngle, primaryZAngle);
         sec.setPositionAndOrientation(secondaryPosition, secondaryYAngle, secondaryZAngle);
 
-        ampereForce = Coil::computeAmpereForce(prim, sec, precisionFactor);
+        ampereForce = Coil::computeForceTorque(prim, sec, precisionFactor);
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
@@ -81,7 +81,7 @@ Coil::calculateAllAmpereForceArrangementsMTD(const Coil &primary, const Coil &se
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-Coil::calculateAllAmpereForceArrangementsGPU(const Coil &primary, const Coil &secondary,
+Coil::calculateAllForceTorqueArrangementsGPU(const Coil &primary, const Coil &secondary,
                                              const vec3::Vector3Array &primaryPositions,
                                              const vec3::Vector3Array &secondaryPositions,
                                              const std::vector<double> &primaryYAngles,

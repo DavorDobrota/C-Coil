@@ -24,23 +24,23 @@ class CoilGroup
         int threadCount{};
         
     public:
-        ///@brief All arguments have defaults so it is a also a default constructor, best used that way.
+        /// @brief All arguments have defaults so it is a also a default constructor, best used that way.
         explicit CoilGroup(std::vector<std::shared_ptr<Coil>> memberCoils = std::vector<std::shared_ptr<Coil>>(),
                            PrecisionFactor precisionFactor = PrecisionFactor(),
                            int threadCount = g_defaultThreadCount);
 
-        ///@brief Returns the default PrecisionFactor according to which default arguments for all members are generated.
+        /// @brief Returns the default PrecisionFactor according to which default arguments for all members are generated.
         [[nodiscard]] PrecisionFactor getDefaultPrecisionFactor() const;
-        ///@brief Returns the number of threads used in CPU_MT calculations.
+        /// @brief Returns the number of threads used in CPU_MT calculations.
         [[nodiscard]] int getThreadCount() const;
-        ///@brief Returns a constant reference to internal std::vector
+        /// @brief Returns a constant reference to internal std::vector
         [[nodiscard]] const std::vector<std::shared_ptr<Coil>> &getMemberCoils() const;
 
-        ///@brief Setts the default PrecisionFactor which is immediately applied to all members.
+        /// @brief Setts the default PrecisionFactor which is immediately applied to all members.
         void setDefaultPrecisionFactor(PrecisionFactor precisionFactor = PrecisionFactor());
-        ///@brief Setts the default number of threads which is immediately applied to all members.
+        /// @brief Setts the default number of threads which is immediately applied to all members.
         void setThreadCount(int threadCount);
-        ///@brief Adds a new member Coil to the back, most common Coil constructor is imitated for simplicity.
+        /// @brief Adds a new member Coil to the back, most common Coil constructor is imitated for simplicity.
         void addCoil(double innerRadius, double thickness, double length, int numOfTurns, double current = 1.0,
                      PrecisionFactor precisionFactor = PrecisionFactor(), int coilThreads = g_defaultThreadCount,
                      vec3::Vector3 coordinatePosition = vec3::Vector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
@@ -153,7 +153,7 @@ class CoilGroup
          * @return Pair of Cartesian vectors which represent force (first) and torque (second).
          */
         [[nodiscard]] std::pair<vec3::Vector3, vec3::Vector3>
-        computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFactor = PrecisionFactor(),
+        computeForceTorque(const Coil &secondary, PrecisionFactor precisionFactor = PrecisionFactor(),
                            ComputeMethod computeMethod = CPU_ST) const;
         /**
          * @brief Calculates force F and torque T between a coil and magnetostatic object with a dipole moment.
@@ -208,14 +208,14 @@ class CoilGroup
          * Array of pairs of force (first) and torque (second) vectors, one for each appropriate configuration.
          */
         [[nodiscard]] std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-        computeAllAmpereForceArrangements(const Coil &secondary,
+        computeAllForceTorqueArrangements(const Coil &secondary,
                                           const vec3::Vector3Array &secondaryPositions,
                                           const std::vector<double> &secondaryYAngles,
                                           const std::vector<double> &secondaryZAngles,
                                           PrecisionFactor precisionFactor = PrecisionFactor(),
                                           ComputeMethod computeMethod = CPU_ST) const;
 
-        ///@brief Generates a string object with all properties of the CoilGroup instance (and appropriate member Coils).
+        /// @brief Generates a string object with all properties of the CoilGroup instance (and appropriate member Coils).
         explicit operator std::string() const;
 
     private:
@@ -243,7 +243,7 @@ class CoilGroup
         [[nodiscard]] double calculateMutualInductanceMTD(const Coil &secondary,
                                                           PrecisionFactor precisionFactor = PrecisionFactor()) const;
         [[nodiscard]] std::pair<vec3::Vector3, vec3::Vector3>
-        calculateAmpereForceMTD(const Coil &secondary, PrecisionFactor precisionFactor = PrecisionFactor()) const;
+        calculateForceTorqueMTD(const Coil &secondary, PrecisionFactor precisionFactor = PrecisionFactor()) const;
 
         [[nodiscard]] std::vector<double>
         calculateAllMutualInductanceArrangementsMTD(const Coil &secondary,
@@ -260,14 +260,14 @@ class CoilGroup
                                                     PrecisionFactor precisionFactor = PrecisionFactor()) const;
 
         [[nodiscard]] std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-        calculateAllAmpereForceArrangementsMTD(const Coil &secondary,
+        calculateAllForceTorqueArrangementsMTD(const Coil &secondary,
                                                const vec3::Vector3Array &secondaryPositions,
                                                const std::vector<double> &secondaryYAngles,
                                                const std::vector<double> &secondaryZAngles,
                                                PrecisionFactor precisionFactor = PrecisionFactor()) const;
 
         [[nodiscard]] std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-        calculateAllAmpereForceArrangementsGPU(const Coil &secondary,
+        calculateAllForceTorqueArrangementsGPU(const Coil &secondary,
                                                const vec3::Vector3Array &secondaryPositions,
                                                const std::vector<double> &secondaryYAngles,
                                                const std::vector<double> &secondaryZAngles,

@@ -6,7 +6,7 @@
 #include <chrono>
 
 
-void benchComputeFieldsST(int opCount)
+void Benchmark::computeFieldsST(int opCount)
 {
     using namespace std::chrono;
 
@@ -50,7 +50,7 @@ void benchComputeFieldsST(int opCount)
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
-void benchComputeAllFields(PrecisionFactor precisionFactor, int opCount, int repeatCount, int threadCount)
+void Benchmark::computeAllFields(PrecisionFactor precisionFactor, int opCount, int repeatCount, int threadCount)
 {
     using namespace std::chrono;
 

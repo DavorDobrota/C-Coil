@@ -7,7 +7,7 @@
 #include <chrono>
 
 
-void benchMInductanceZAxis(ComputeMethod computeMethod, int threadCount)
+void Benchmark::mInductanceZAxis(ComputeMethod computeMethod, int threadCount)
 {
     using namespace std::chrono;
 
@@ -35,23 +35,23 @@ void benchMInductanceZAxis(ComputeMethod computeMethod, int threadCount)
     }
 }
 
-void benchMInductanceZAxisMTScaling(int maxThreadCount)
+void Benchmark::mInductanceZAxisMTScaling(int maxThreadCount)
 {
     printf("Performance comparison between different numbers of threads:\n");
 
     printf(" -> single thread:\n");
-    benchMInductanceZAxis(CPU_ST);
+    Benchmark::mInductanceZAxis(CPU_ST);
     printf("\n");
 
     for (int i = 2; i <= maxThreadCount; ++i)
     {
         printf(" -> %2d threads:\n", i);
-        benchMInductanceZAxis(CPU_MT, i);
+        Benchmark::mInductanceZAxis(CPU_MT, i);
         printf("\n");
     }
 }
 
-void benchSelfInductance()
+void Benchmark::selfInductance()
 {
     using namespace std::chrono;
 

@@ -12,7 +12,7 @@ namespace
 
 
 std::pair<vec3::Vector3, vec3::Vector3>
-CoilGroup::calculateAmpereForceMTD(const Coil &secondary, PrecisionFactor precisionFactor) const
+CoilGroup::calculateForceTorqueMTD(const Coil &secondary, PrecisionFactor precisionFactor) const
 {
     g_threadPool.setTaskCount(memberCoils.size());
     g_threadPool.getCompletedTasks().store(0ull);
@@ -27,7 +27,7 @@ CoilGroup::calculateAmpereForceMTD(const Coil &secondary, PrecisionFactor precis
             PrecisionFactor precisionFactor,
             std::pair<vec3::Vector3, vec3::Vector3> &ampereForce
     ){
-        ampereForce = Coil::computeAmpereForce(coil, secondary, precisionFactor);
+        ampereForce = Coil::computeForceTorque(coil, secondary, precisionFactor);
 
         g_threadPool.getCompletedTasks().fetch_add(1ull);
     };
@@ -60,7 +60,7 @@ CoilGroup::calculateAmpereForceMTD(const Coil &secondary, PrecisionFactor precis
 }
 
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-CoilGroup::calculateAllAmpereForceArrangementsMTD(const Coil &secondary, const vec3::Vector3Array &secondaryPositions,
+CoilGroup::calculateAllForceTorqueArrangementsMTD(const Coil &secondary, const vec3::Vector3Array &secondaryPositions,
                                                   const std::vector<double> &secondaryYAngles,
                                                   const std::vector<double> &secondaryZAngles,
                                                   PrecisionFactor precisionFactor) const
@@ -92,7 +92,7 @@ CoilGroup::calculateAllAmpereForceArrangementsMTD(const Coil &secondary, const v
             if (memberCoil->getId() != secondary.getId())
             {
                 std::pair<vec3::Vector3, vec3::Vector3> tempPair;
-                tempPair = Coil::computeAmpereForce(*memberCoil, sec, precisionFactor, CPU_ST);
+                tempPair = Coil::computeForceTorque(*memberCoil, sec, precisionFactor, CPU_ST);
                 forceTorque.first += tempPair.first;
                 forceTorque.second += tempPair.second;
             }

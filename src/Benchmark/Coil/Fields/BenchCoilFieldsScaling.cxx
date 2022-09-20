@@ -6,7 +6,8 @@
 #include <chrono>
 
 
-void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int threadCount, int maxPointsLog2)
+void Benchmark::computeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor,
+                                                  int threadCount, int maxPointsLog2)
 {
     using namespace std::chrono;
 
@@ -166,7 +167,7 @@ void benchComputeAllFieldsWorkloadScalingMT(PrecisionFactor precisionFactor, int
     fclose(output);
 }
 
-void benchComputeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, int maxPointsLog2)
+void Benchmark::computeAllFieldsWorkloadScalingGPU(PrecisionFactor precisionFactor, int maxPointsLog2)
 {
     using namespace std::chrono;
 

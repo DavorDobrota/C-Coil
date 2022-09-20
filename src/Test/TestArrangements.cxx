@@ -80,21 +80,21 @@ void testCoilForceArrangements()
         secZAxisAngle[i] = 0.6;
     }
 
-    printf("Testing results of Coil::computeAllAmpereForceArrangements for CPU and GPU\n");
+    printf("Testing results of Coil::computeAllForceTorqueArrangements for CPU and GPU\n");
     printf("The values should be very close and the error 1e-5 or less\n\n");
 
     std::vector<std::pair<vec3::Vector3, vec3::Vector3>> forceTorqueCPU(configCount);
     std::vector<std::pair<vec3::Vector3, vec3::Vector3>> forceTorqueGPU(configCount);
 
-    forceTorqueCPU = Coil::computeAllAmpereForceArrangements(
-            prim, sec, primPositions,secPositions,
-            primYAxisAngle, primZAxisAngle,secYAxisAngle, secZAxisAngle,
+    forceTorqueCPU = Coil::computeAllForceTorqueArrangements(
+            prim, sec, primPositions, secPositions,
+            primYAxisAngle, primZAxisAngle, secYAxisAngle, secZAxisAngle,
             precision, CPU_ST
     );
 
-    forceTorqueGPU = Coil::computeAllAmpereForceArrangements(
-            prim, sec, primPositions,secPositions,
-            primYAxisAngle, primZAxisAngle,secYAxisAngle, secZAxisAngle,
+    forceTorqueGPU = Coil::computeAllForceTorqueArrangements(
+            prim, sec, primPositions, secPositions,
+            primYAxisAngle, primZAxisAngle, secYAxisAngle, secZAxisAngle,
             precision, GPU
     );
 
@@ -198,13 +198,13 @@ void testGroupForceArrangements()
     std::vector<std::pair<vec3::Vector3, vec3::Vector3>> forceTorqueCPU(configCount);
     std::vector<std::pair<vec3::Vector3, vec3::Vector3>> forceTorqueGPU(configCount);
 
-    forceTorqueCPU = coilGroup.computeAllAmpereForceArrangements(
-            coilGroup[0], secPositions,secYAxisAngle, secZAxisAngle,
+    forceTorqueCPU = coilGroup.computeAllForceTorqueArrangements(
+            coilGroup[0], secPositions, secYAxisAngle, secZAxisAngle,
             precision, CPU_ST
     );
 
-    forceTorqueGPU = coilGroup.computeAllAmpereForceArrangements(
-            coilGroup[0], secPositions,secYAxisAngle, secZAxisAngle,
+    forceTorqueGPU = coilGroup.computeAllForceTorqueArrangements(
+            coilGroup[0], secPositions, secYAxisAngle, secZAxisAngle,
             precision, GPU
     );
 

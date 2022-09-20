@@ -19,7 +19,7 @@ void testAmpereForceGeneralForZAxis()
     for (int i = 0; i < 100; ++i)
     {
         sec.setPositionAndOrientation(vec3::Vector3(0.1, 0.0, 0.08 + i * 0.001));
-        forcePair = Coil::computeAmpereForce(prim, sec, PrecisionFactor(8.0), CPU_MT);
+        forcePair = Coil::computeForceTorque(prim, sec, PrecisionFactor(8.0), CPU_MT);
         printf("%.15f %.15f %.15f %.15f %.15f %.15f\n",
                forcePair.first.x, forcePair.first.y, forcePair.first.z,
                forcePair.second.x, forcePair.second.y, forcePair.second.z);

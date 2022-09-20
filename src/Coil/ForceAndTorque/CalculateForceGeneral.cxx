@@ -6,7 +6,7 @@
 
 
 std::pair<vec3::Vector3, vec3::Vector3>
-Coil::calculateAmpereForceGeneral(const Coil &primary, const Coil &secondary,
+Coil::calculateForceTorqueGeneral(const Coil &primary, const Coil &secondary,
                                   const CoilPairArguments &forceArguments, ComputeMethod computeMethod)
 {
     std::vector<double> forceAndTorqueComponents(6);

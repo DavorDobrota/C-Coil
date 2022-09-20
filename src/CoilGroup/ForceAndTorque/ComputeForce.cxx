@@ -2,11 +2,11 @@
 
 
 std::pair<vec3::Vector3, vec3::Vector3>
-CoilGroup::computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod computeMethod) const
+CoilGroup::computeForceTorque(const Coil &secondary, PrecisionFactor precisionFactor, ComputeMethod computeMethod) const
 {
     if (memberCoils.size() >= 2 * threadCount && computeMethod == CPU_MT)
     {
-        return calculateAmpereForceMTD(secondary, precisionFactor);
+        return calculateForceTorqueMTD(secondary, precisionFactor);
     }
     else
     {
@@ -17,7 +17,7 @@ CoilGroup::computeAmpereForce(const Coil &secondary, PrecisionFactor precisionFa
         for (const auto &memberCoil: memberCoils)
             if (memberCoil->getId() != secondary.getId())
             {
-                tempPair = Coil::computeAmpereForce(*memberCoil, secondary, precisionFactor, computeMethod);
+                tempPair = Coil::computeForceTorque(*memberCoil, secondary, precisionFactor, computeMethod);
                 totalForce += tempPair.first;
                 totalTorque += tempPair.second;
             }
@@ -45,7 +45,7 @@ CoilGroup::computeForceOnDipoleMoment(vec3::Vector3 pointVector, vec3::Vector3 d
 
 
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-CoilGroup::computeAllAmpereForceArrangements(const Coil &secondary, const vec3::Vector3Array &secondaryPositions,
+CoilGroup::computeAllForceTorqueArrangements(const Coil &secondary, const vec3::Vector3Array &secondaryPositions,
                                              const std::vector<double> &secondaryYAngles,
                                              const std::vector<double> &secondaryZAngles,
                                              PrecisionFactor precisionFactor, ComputeMethod computeMethod) const
@@ -57,14 +57,14 @@ CoilGroup::computeAllAmpereForceArrangements(const Coil &secondary, const vec3::
         arrangementCount == secondaryZAngles.size()) {
         if (computeMethod == GPU)
         {
-            return calculateAllAmpereForceArrangementsGPU(
-                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
+            return calculateAllForceTorqueArrangementsGPU(
+                    secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
             );
         }
         else if (arrangementCount >= 2 * this->threadCount && computeMethod == CPU_MT)
         {
-            return calculateAllAmpereForceArrangementsMTD(
-                secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
+            return calculateAllForceTorqueArrangementsMTD(
+                    secondary, secondaryPositions, secondaryYAngles, secondaryZAngles, precisionFactor
             );
         }
         else
@@ -79,7 +79,7 @@ CoilGroup::computeAllAmpereForceArrangements(const Coil &secondary, const vec3::
                 sec.setPositionAndOrientation(
                     secondaryPositions[i], secondaryYAngles[i], secondaryZAngles[i]
                 );
-                outputMInductances.emplace_back(computeAmpereForce(sec, precisionFactor, computeMethod));
+                outputMInductances.emplace_back(computeForceTorque(sec, precisionFactor, computeMethod));
             }
             return outputMInductances;
         }

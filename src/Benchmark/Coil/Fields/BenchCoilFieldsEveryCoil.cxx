@@ -6,7 +6,7 @@
 #include <chrono>
 
 
-void benchComputeAllFieldsEveryCoilType(int opCount, int threadCount)
+void Benchmark::computeAllFieldsEveryCoilType(int opCount, int threadCount)
 {
     using namespace std::chrono;
 

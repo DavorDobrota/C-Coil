@@ -9,7 +9,7 @@
 
 
 std::vector<std::pair<vec3::Vector3, vec3::Vector3>>
-CoilGroup::calculateAllAmpereForceArrangementsGPU(const Coil &secondary, const vec3::Vector3Array &secondaryPositions,
+CoilGroup::calculateAllForceTorqueArrangementsGPU(const Coil &secondary, const vec3::Vector3Array &secondaryPositions,
                                                   const std::vector<double> &secondaryYAngles,
                                                   const std::vector<double> &secondaryZAngles,
                                                   PrecisionFactor precisionFactor) const

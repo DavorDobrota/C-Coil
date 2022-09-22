@@ -1,12 +1,11 @@
 #include "Compare.h"
-#include "Coil.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cstdio>
 
 
-void compMInductanceGeneralMisalignedCoils()
+void Compare::mutualInductanceMisalignedCoils()
 {
     Coil primary1 = Coil(0.06, 0.0, 0.12, 120);
     Coil secondary1 = Coil(0.05, 0.0, 0.0, 1);
@@ -96,7 +95,7 @@ void compMInductanceGeneralMisalignedCoils()
     printf("\n");
 }
 
-void compMInductanceGeneralParallelAxes()
+void Compare::mutualInductanceParallelAxesGraphs()
 {
     double tempInductance;
     auto precision = PrecisionFactor(6.0);
@@ -104,8 +103,10 @@ void compMInductanceGeneralParallelAxes()
     Coil coil1 = Coil(0.071247, 0.01397, 0.142748, 1142);
     Coil coil2 = Coil(0.0969645, 0.041529, 0.02413, 516);
 
-    double rArr1[] = {0.0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 0.01, 0.011, 0.0117475,
-                      0.2237105, 0.224, 0.225, 0.23, 0.24, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 5.0, 10.0};
+    double rArr1[] = {0.0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006,
+                      0.007, 0.008, 0.009, 0.01, 0.011, 0.0117475,
+                      0.2237105, 0.224, 0.225, 0.23, 0.24, 0.25, 0.3,
+                      0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 5.0, 10.0};
 
     for (double i : rArr1)
     {
@@ -115,10 +116,14 @@ void compMInductanceGeneralParallelAxes()
     }
     printf("\n");
 
-    double rArr2[] = {0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.02, 0.02,
-                      0.02, 0.02, 0.02, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25};
-    double zArr2[] = {0.01, 0.02, 0.03, 0.04, 0.05, 0.059309, 0.07, 0.083439, 0.09, 0.1, 0.6, 1.0, 0.083439, 0.09, 0.1,
-                      0.6, 1.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.059309, 0.07, 0.083439, 0.09, 0.1, 0.6, 1.0};
+    double rArr2[] = {0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006,
+                      0.006, 0.006, 0.006, 0.02, 0.02,0.02, 0.02, 0.02, 0.25,
+                      0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25,
+                      0.25, 0.25};
+    double zArr2[] = {0.01, 0.02, 0.03, 0.04, 0.05, 0.059309, 0.07, 0.083439, 0.09,
+                      0.1, 0.6, 1.0, 0.083439, 0.09, 0.1, 0.6, 1.0, 0.01,
+                      0.02, 0.03, 0.04, 0.05, 0.059309, 0.07, 0.083439, 0.09,
+                      0.1, 0.6, 1.0};
     for (int i = 0; i < 29; ++i)
     {
         coil2.setPositionAndOrientation(vec3::Vector3(rArr2[i], 0.0, zArr2[i]));
@@ -126,7 +131,10 @@ void compMInductanceGeneralParallelAxes()
         printf("%8g %5g : %.14g mH\n", zArr2[i], rArr2[i], 1e3 * tempInductance);
     }
     printf("\n");
+}
 
+void Compare::mutualInductanceParallelAxes()
+{
     FILE *input = fopen("../data/values_MInductance_general.txt", "r");
     FILE *output = fopen("output.txt", "w");
 
@@ -162,7 +170,7 @@ void compMInductanceGeneralParallelAxes()
     fclose(output);
 }
 
-void compMInductanceGeneralCase()
+void Compare::mutualInductanceGeneralCase()
 {
     FILE *output = fopen("output.txt", "w");
 
@@ -202,7 +210,7 @@ void compMInductanceGeneralCase()
     fclose(output);
 }
 
-void compMInductanceGeneralGraphs()
+void Compare::mutualInductanceGeneralGraphs()
 {
     FILE *output = fopen("output.txt", "w");
 
@@ -279,7 +287,7 @@ void compMInductanceGeneralGraphs()
     fclose(output);
 }
 
-void compMInductanceGeneralEdgeCases()
+void Compare::mutualInductanceGeneralEdgeCases()
 {
     Coil coil1 = Coil(0.03, 0.12, 0.12, 3600);
     Coil coil2 = Coil(0.03, 0.12, 0.12, 3600);

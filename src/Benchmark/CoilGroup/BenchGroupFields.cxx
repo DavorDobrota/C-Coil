@@ -157,17 +157,17 @@ void Benchmark::coilGroupComputeAllFieldsMTvsMTD(int threadCount, int pointCount
     printf("Quick performance benchmark for %d coils and %d points\n\n", threadCount, pointCount);
 
     begin_time = high_resolution_clock::now();
-    compCoilGroupMTD(coilCount1, pointCount, 1, false);
+    Compare::fieldsCoilGroupMTD(coilCount1, pointCount, 1, false);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("ST  perf : %.0f kPoints/s\n", 1e-3 * coilCount1 * pointCount / interval);
 
     begin_time = high_resolution_clock::now();
-    compCoilGroupMTD(coilCount1, pointCount, threadCount, false);
+    Compare::fieldsCoilGroupMTD(coilCount1, pointCount, threadCount, false);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("MT  perf : %.0f kPoints/s\n", 1e-3 * coilCount1 * pointCount / interval);
 
     begin_time = high_resolution_clock::now();
-    compCoilGroupMTD(coilCount2, pointCount, threadCount, false);
+    Compare::fieldsCoilGroupMTD(coilCount2, pointCount, threadCount, false);
     interval = duration_cast<duration<double>>(high_resolution_clock::now() - begin_time).count();
     printf("MTD perf : %.0f kPoints/s\n", 1e-3 * coilCount2 * pointCount / interval);
 

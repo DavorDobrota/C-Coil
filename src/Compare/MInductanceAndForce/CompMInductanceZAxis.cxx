@@ -1,12 +1,9 @@
 #include "Compare.h"
-#include "Coil.h"
 
-#define _USE_MATH_DEFINES
-#include <math.h>
 #include <cstdio>
 
 
-void compMutualInductanceZAxis()
+void Compare::mutualInductanceZAxis()
 {
     Coil primary = Coil(0.1, 0.1, 0.1, 100);
     Coil secondary = Coil(0.3, 0.1, 0.1, 100);
@@ -55,7 +52,7 @@ void compMutualInductanceZAxis()
     fclose(output);
 }
 
-void compSelfInductance()
+void Compare::selfInductance()
 {
     Coil coil1 = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(), 12);
     Coil coil2 = Coil(0.03, 0.0, 0.12, 120);

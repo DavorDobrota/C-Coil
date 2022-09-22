@@ -1,16 +1,12 @@
 #include "Compare.h"
-#include "Coil.h"
-#include "Coil/EnumsAndConstants/ComputeMethod.h"
 #include "Tensor.h"
-#include "CoilGroup.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cstdio>
-#include <vector>
 
 
-void compCoilGroupMTD(int coilCount, int pointCount, int threadCount, bool print)
+void Compare::fieldsCoilGroupMTD(int coilCount, int pointCount, int threadCount, bool print)
 {
     double torusRadius = 1.0;
 

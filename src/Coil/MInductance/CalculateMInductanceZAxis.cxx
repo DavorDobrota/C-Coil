@@ -226,7 +226,7 @@ double Coil::calculateMutualInductanceZAxisFast(const Coil &primary, const Coil 
         mutualInductance = std::accumulate(results.begin(), results.end(), 0.0);
     }
 
-    return mutualInductance * 2*M_PI / primary.current;
+    return mutualInductance * 2*M_PI / (primary.current * secondary.current);
 }
 
 

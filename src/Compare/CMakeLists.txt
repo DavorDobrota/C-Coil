@@ -1,11 +1,11 @@
 add_library(
         Compare OBJECT
 
-        CompareMiscellaneous.cxx
-        CompareForce.cxx
-        CompareMInductanceZAxis.cxx
-        CompareMInductanceGeneral.cxx
-        CompareMTD.cxx)
+        Other/CompMiscellaneous.cxx
+        MInductanceAndForce/CompForce.cxx
+        MInductanceAndForce/CompMInductanceZAxis.cxx
+        MInductanceAndForce/CompMInductanceGeneral.cxx
+        Other/CompFieldMTD.cxx)
 set_property(TARGET Compare PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(Compare PRIVATE -fpic)

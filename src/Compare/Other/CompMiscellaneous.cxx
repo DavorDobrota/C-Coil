@@ -1,13 +1,14 @@
 #include "Compare.h"
-#include "Coil.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cstdio>
 
 
-void compMethodPrecisionCPUvsGPU()
+void Compare::fieldsPrecisionCPUvsGPU()
 {
+    printf("Compares potential A and field B values for specific points, values are written in output.txt\n\n");
+
     Coil testCoil = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(6.0), 12);
 
     int pointCount = 2000;
@@ -38,10 +39,17 @@ void compMethodPrecisionCPUvsGPU()
                 cpuFieldVectors[i].x, gpuFieldVectors[i].x,
                 cpuFieldVectors[i].z, gpuFieldVectors[i].z,
                 cpuPotential[i], gpuPotential[i]);
+        printf("%9.4g %9.4g %9.4g\n",
+               std::abs(cpuFieldVectors[i].x - gpuFieldVectors[i].x) / std::abs(cpuFieldVectors[i].x),
+               std::abs(cpuFieldVectors[i].z - gpuFieldVectors[i].z) / std::abs(cpuFieldVectors[i].z),
+               std::abs(cpuPotential[i] - gpuPotential[i]) / std::abs(cpuPotential[i])
+        );
     }
+
+    fclose(output);
 }
 
-void compPrecisionCPUvsGPU()
+void Compare::mutualInductanceAndForceTorquePrecisionCPUvsGPU()
 {
     printf("Comparing calculation precision in GPU and CPU cases (CPU | GPU) fast\n\n");
 
@@ -93,7 +101,7 @@ void compPrecisionCPUvsGPU()
     printf("Gradient zz : %.15g | %.15g\n", prim2.computeBGradientMatrix(vec3::Vector3()).zz, gradientArr[0].zz);
 }
 
-void compMInductanceForSpecialCase()
+void Compare::mutualInductanceSpecialCase()
 {
     Coil primary = Coil(0.071335, 0.01397, 0.142748, 1142);
     Coil secondary = Coil(0.096945, 0.041529, 0.02413, 516);

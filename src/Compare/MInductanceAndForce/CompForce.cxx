@@ -1,13 +1,11 @@
 #include "Compare.h"
-#include "Coil.h"
-#include "CoilGroup.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cstdio>
 
 
-void compAmpereForceFilamentsZAxis()
+void Compare::forceTorqueFilamentsZAxis()
 {
     Coil coil1 = Coil(0.5, 0.0, 0.0, 1, 100);
     Coil coil2 = Coil(0.3, 0.0, 0.0, 1, 200);
@@ -21,7 +19,7 @@ void compAmpereForceFilamentsZAxis()
     printf("\n");
 }
 
-void compAmpereForceThickCoilsGeneral()
+void Compare::forceTorqueThickCoilsGeneral()
 {
     CoilGroup group = CoilGroup();
     group.addCoil(0.0602, 0.0728, 0.5292, 126, 16500);
@@ -30,8 +28,8 @@ void compAmpereForceThickCoilsGeneral()
 
     printf("%.15g T\n", group.computeBFieldVector(vec3::Vector3()).z);
 
-    printf("%.15g MJ\n", 1e-6 *
-           (0.5 * group[0].computeAndSetSelfInductance(PrecisionFactor(12.0)) *
+    printf("%.15g MJ\n", 1e-6 * (
+           0.5 * group[0].computeAndSetSelfInductance(PrecisionFactor(12.0)) *
            group[0].getCurrent() * group[0].getCurrent() +
            0.5 * group[1].computeAndSetSelfInductance(PrecisionFactor(12.0)) *
            group[1].getCurrent() * group[1].getCurrent() +
@@ -101,7 +99,7 @@ void compAmpereForceThickCoilsGeneral()
            forcePair.second.x, forcePair.second.y, forcePair.second.z);
 }
 
-void compAmpereForceThinCoilsZAxis()
+void Compare::forceTorqueThinCoilsZAxis()
 {
     ComputeMethod computeMethod = CPU_ST;
     std::pair<vec3::Vector3, vec3::Vector3> tempForce;
@@ -177,7 +175,7 @@ void compAmpereForceThinCoilsZAxis()
     printf("\n");
 }
 
-void compAmpereForceFilamentsGeneral()
+void Compare::forceTorqueFilamentsGeneral()
 {
     std::pair<vec3::Vector3, vec3::Vector3> tempForce;
     double a, b, c;
@@ -324,7 +322,7 @@ void compAmpereForceFilamentsGeneral()
     printf("\n");
 }
 
-void compAmpereForceZAxis()
+void Compare::forceTorqueZAxis()
 {
     Coil prim1 = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(6.0), 16);
     Coil sec1 = Coil(0.02, 0.025, 0.04, 1000, PrecisionFactor(6.0), 16);
@@ -338,7 +336,7 @@ void compAmpereForceZAxis()
     printf("\n");
 }
 
-void compForceOnDipoleVsAmpereForce()
+void Compare::forceOnDipoleVsForceTorque()
 {
     printf("This comparison shows the application of dipole approximation for force calculation\n");
     printf("The first column represents the force | and the second represents torque\n\n");

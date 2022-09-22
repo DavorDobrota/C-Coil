@@ -1,11 +1,12 @@
 #ifndef GENERAL_COIL_PROGRAM_THREADPOOL_H
 #define GENERAL_COIL_PROGRAM_THREADPOOL_H
 
-#include <ctype.h>
-
 #include "ctpl_stl.h"
 
+#include <ctype.h>
 
+
+/// @brief Contains a wrapper for the CTPL library (https://github.com/vit-vit/CTPL) which is used for multithreading.
 namespace threadPool
 {
     extern ctpl::thread_pool threadPool;

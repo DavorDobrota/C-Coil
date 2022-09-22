@@ -1,9 +1,8 @@
 #include "Test.h"
-#include "Coil.h"
 #include "CoilGroup.h"
 
 
-void testCoilMInductanceArrangements()
+void Test::testCoilMInductanceArrangements()
 {
     Coil prim = Coil(0.1, 0.1, 0.1, 10000);
     Coil sec = Coil(0.1, 0.1, 0.1, 10000);
@@ -55,7 +54,7 @@ void testCoilMInductanceArrangements()
     printf("\n\n");
 }
 
-void testCoilForceArrangements()
+void Test::testCoilForceArrangements()
 {
     Coil prim = Coil(0.1, 0.1, 0.1, 10000);
     Coil sec = Coil(0.1, 0.1, 0.1, 10000);
@@ -107,7 +106,7 @@ void testCoilForceArrangements()
     printf("\n\n");
 }
 
-void testGroupMInductanceArrangements()
+void Test::testGroupMInductanceArrangements()
 {
     CoilGroup coilGroup = CoilGroup();
 
@@ -162,7 +161,7 @@ void testGroupMInductanceArrangements()
     printf("\n\n");
 }
 
-void testGroupForceArrangements()
+void Test::testGroupForceArrangements()
 {
     CoilGroup coilGroup = CoilGroup();
 

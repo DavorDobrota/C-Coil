@@ -5,6 +5,7 @@
 #include <iostream>
 
 
+/// @brief Contains custom objects (Vector3 and Matrix3) used to define the coordinate system and appropriate transformations.
 namespace vec3
 {
 

@@ -9,80 +9,80 @@ void initBenchmark(py::module_ &mainModule)
 {
     py::module_ benchmarkModule = mainModule.def_submodule("benchmark");
 
-    benchmarkModule.def("bench_math_functions", Benchmark::benchMathFunctions);
+    benchmarkModule.def("math_functions", Benchmark::mathFunctions);
 
     benchmarkModule.def(
-            "bench_compute_fields_ST", Benchmark::benchComputeFieldsST,
+            "compute_fields_ST", Benchmark::computeFieldsST,
             py::arg("op_count") = 50'000)
         .def(
-            "bench_compute_all_fields", Benchmark::benchComputeAllFields,
+            "compute_all_fields", Benchmark::computeAllFields,
             py::arg("precision_factor") = PrecisionFactor(),
             py::arg("op_count") = 20'000, py::arg("repeat_count") = 1,
             py::arg("thread_count") = g_defaultThreadCount)
         .def(
-            "bench_compute_all_fields_every_coil_type", Benchmark::benchComputeAllFieldsEveryCoilType,
+            "compute_all_fields_every_coil_type", Benchmark::computeAllFieldsEveryCoilType,
             py::arg("op_count") = 100'000, py::arg("thread_count") = g_defaultThreadCount)
         .def(
-            "bench_compute_all_fields_workload_scaling_MT", Benchmark::benchComputeAllFieldsWorkloadScalingMT,
+            "compute_all_fields_workload_scaling_MT", Benchmark::computeAllFieldsWorkloadScalingMT,
             py::arg("precision_factor") = PrecisionFactor(),
             py::arg("thread_count") = g_defaultThreadCount,
             py::arg("max_points_log2") = g_maxPot)
         .def(
-            "bench_compute_all_fields_workload_scaling_GPU", Benchmark::benchComputeAllFieldsWorkloadScalingGPU,
+            "compute_all_fields_workload_scaling_GPU", Benchmark::computeAllFieldsWorkloadScalingGPU,
             py::arg("precision_factor") = PrecisionFactor(),
             py::arg("max_points_log2") = g_maxPot);
 
     benchmarkModule.def(
-            "bench_m_inductance_Z_axis", Benchmark::benchMInductanceZAxis,
+            "m_inductance_Z_axis", Benchmark::mInductanceZAxis,
             py::arg("compute_method") = CPU_ST, py::arg("thread_count") = g_defaultThreadCount)
         .def(
-            "bench_m_inductance_Z_axis_MT_scaling", Benchmark::benchMInductanceZAxisMTScaling,
+            "m_inductance_Z_axis_MT_scaling", Benchmark::mInductanceZAxisMTScaling,
             py::arg("max_thread_count") = g_defaultThreadCount)
-        .def("bench_self_inductance", Benchmark::benchSelfInductance);
+        .def("self_inductance", Benchmark::selfInductance);
 
     benchmarkModule.def(
-            "bench_m_inductance_general", Benchmark::benchMInductanceGeneral,
+            "m_inductance_general", Benchmark::mInductanceGeneral,
             py::arg("compute_method") = CPU_ST, py::arg("thread_count") = g_defaultThreadCount)
         .def(
-            "bench_m_inductance_general_MT_scaling", Benchmark::benchMInductanceGeneralMTScaling,
+            "m_inductance_general_MT_scaling", Benchmark::mInductanceGeneralMTScaling,
             py::arg("max_thread_count") = g_defaultThreadCount);
 
     benchmarkModule.def(
-            "bench_force_general", Benchmark::benchForceGeneral,
+            "force_general", Benchmark::forceGeneral,
             py::arg("compute_method") = CPU_ST, py::arg("thread_count") = g_defaultThreadCount)
         .def(
-            "bench_force_general_MT_scaling", Benchmark::benchForceGeneralMTScaling,
+            "force_general_MT_scaling", Benchmark::forceGeneralMTScaling,
             py::arg("max_thread_count") = g_defaultThreadCount);
 
     benchmarkModule.def(
-            "bench_coil_m_inductance_and_force_compute_all_MT_vs_MTD",
-            Benchmark::benchCoilMInductanceAndForceComputeAllMTvsMTD,
+            "coil_m_inductance_and_force_compute_all_MT_vs_MTD",
+            Benchmark::coilMInductanceAndForceComputeAllMTvsMTD,
             py::arg("precision_factor") = PrecisionFactor(), py::arg("thread_count") = g_defaultThreadCount)
         .def(
-            "bench_coil_m_inductance_and_force_compute_all_GPU",
-            Benchmark::benchCoilMInductanceAndForceComputeAllGPU, py::arg("config_count") = 10'000)
+            "coil_m_inductance_and_force_compute_all_GPU",
+            Benchmark::coilMInductanceAndForceComputeAllGPU, py::arg("config_count") = 10'000)
         .def(
-            "bench_coil_m_inductance_and_force_compute_all", Benchmark::benchCoilMInductanceAndForceComputeAll,
+            "coil_m_inductance_and_force_compute_all", Benchmark::coilMInductanceAndForceComputeAll,
             py::arg("config_count") = 10'000, py::arg("thread_count") = g_defaultThreadCount);
 
     benchmarkModule.def(
-            "bench_coil_group_compute_all_fields_MT_vs_MTD", Benchmark::benchCoilGroupComputeAllFieldsMTvsMTD,
+            "coil_group_compute_all_fields_MT_vs_MTD", Benchmark::coilGroupComputeAllFieldsMTvsMTD,
             py::arg("thread_count") = g_defaultThreadCount, py::arg("point_count") = 20'000)
         .def(
-            "bench_coil_group_compute_all_fields", Benchmark::benchCoilGroupComputeAllFields,
+            "coil_group_compute_all_fields", Benchmark::coilGroupComputeAllFields,
             py::arg("precision_factor") = PrecisionFactor(), py::arg("num_coils") = 50,
             py::arg("op_count") = 100'000, py::arg("thread_count") = g_defaultThreadCount)
         .def(
-            "bench_coil_group_compute_all_fields_GPU", Benchmark::benchCoilGroupComputeAllFieldsGPU,
+            "coil_group_compute_all_fields_GPU", Benchmark::coilGroupComputeAllFieldsGPU,
             py::arg("num_coils") = 100, py::arg("op_count") = 131'072)
         .def(
-            "bench_coil_group_m_inductance_and_force", Benchmark::benchCoilGroupMInductanceAndForce,
+            "coil_group_m_inductance_and_force", Benchmark::coilGroupMInductanceAndForce,
             py::arg("op_count") = 2, py::arg("thread_count") = g_defaultThreadCount)
         .def(
-            "bench_coil_group_m_inductance_and_force_all", Benchmark::benchCoilGroupMInductanceAndForceAll,
+            "coil_group_m_inductance_and_force_all", Benchmark::coilGroupMInductanceAndForceAll,
             py::arg("coil_count") = 50, py::arg("op_count") = 10,
             py::arg("thread_count") = g_defaultThreadCount)
         .def(
-            "bench_coil_group_m_inductance_and_force_all_GPU", Benchmark::benchCoilGroupMInductanceAndForceAllGPU,
+            "coil_group_m_inductance_and_force_all_GPU", Benchmark::coilGroupMInductanceAndForceAllGPU,
             py::arg("coil_count") = 50, py::arg("op_count") = 10);
 }

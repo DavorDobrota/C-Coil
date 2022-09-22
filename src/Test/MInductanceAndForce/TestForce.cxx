@@ -1,5 +1,4 @@
 #include "Test.h"
-#include "Coil.h"
 #include "Tensor.h"
 
 #define _USE_MATH_DEFINES
@@ -7,7 +6,7 @@
 #include <cstdio>
 
 
-void testAmpereForceGeneralForZAxis()
+void Test::testAmpereForceGeneralForZAxis()
 {
     Coil prim = Coil(0.03, 0.03, 0.12, 3600, PrecisionFactor(6.0), 16);
     Coil sec = Coil(0.02, 0.025, 0.04, 1000, PrecisionFactor(6.0), 16);
@@ -27,7 +26,7 @@ void testAmpereForceGeneralForZAxis()
     printf("\n");
 }
 
-void testGradientTensor()
+void Test::testGradientTensor()
 {
     Coil coil = Coil(1.0, 0.0, 1e-10, 1);
 

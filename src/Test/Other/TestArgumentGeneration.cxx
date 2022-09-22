@@ -1,10 +1,9 @@
 #include "Test.h"
-#include "Coil.h"
 
 #include <cstdio>
 
 
-void testMInductanceZAxisDifferentGeometries()
+void Test::testMInductanceZAxisDifferentGeometries()
 {
     vec3::Vector3 defaultVec = vec3::Vector3(0.0, 0.0, 0.2);
 
@@ -93,7 +92,7 @@ void testMInductanceZAxisDifferentGeometries()
     printf("\n");
 }
 
-void testMInductanceGeneralDifferentGeometries()
+void Test::testMInductanceGeneralDifferentGeometries()
 {
     vec3::Vector3 defaultVec = vec3::Vector3(1e-8, 0.0, 0.2);
 

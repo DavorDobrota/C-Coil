@@ -19,7 +19,7 @@ int main()
 
 //    Benchmark::computeAllFieldsEveryCoilType(1'000'000, 8);
 
-//    Benchmark::mInductanceZAxisMTScaling(16);
+//    Benchmark::mutualInductanceZAxisMTScaling(16);
 //    Benchmark::mInductanceGeneralMTScaling(16);
 //    Benchmark::selfInductance();
 //    Benchmark::forceZAxisMTScaling(16);
@@ -40,7 +40,7 @@ int main()
 
 //    Compare::mutualInductanceZAxis();
 
-//    testAmpereForceGeneralForZAxis();
+//    Test::testAmpereForceGeneralForZAxis();
 
 //    Compare::forceTorqueZAxis();
 //    Compare::forceTorqueThinCoilsZAxis();
@@ -65,23 +65,23 @@ int main()
 //    Benchmark::coilGroupMInductanceAndForceAll();
 //    Benchmark::coilGroupMInductanceAndForceAllGPU();
 
-//    testCoilMInductanceArrangements();
-//    testCoilForceArrangements();
+//    Test::testCoilMInductanceArrangements();
+//    Test::testCoilForceArrangements();
 
-//    testGroupMInductanceArrangements();
-//    testGroupForceArrangements();
+//    Test::testGroupMInductanceArrangements();
+//    Test::testGroupForceArrangements();
 
-//    testMInductanceZAxisArgumentGeneration();
-//    testMInductanceGeneralArgumentGeneration();
+//    Test::testMInductanceZAxisArgumentGeneration();
+//    Test::testMInductanceGeneralArgumentGeneration();
 
 //    Benchmark::coilGroupComputeAllFieldsMTScaling(PrecisionFactor(1.0), 16, 100, 20);
 //    Benchmark::coilGroupComputeAllFieldsGPUScaling(PrecisionFactor(3.0), 100, 20);
 
 //    Benchmark::mathFunctions();
 
-//    testCoilGroupFieldsMTD();
+//    Test::testCoilGroupFieldsMTD();
 
-    Compare::forceTorqueThickCoilsGeneral();
+//    Compare::forceTorqueThickCoilsGeneral();
 
 
     return 0;

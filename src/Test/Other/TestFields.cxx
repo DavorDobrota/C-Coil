@@ -2,7 +2,7 @@
 #include "CoilGroup.h"
 
 
-void testCoilGroupFieldsMTD()
+void Test::testCoilGroupFieldsMTD()
 {
     CoilGroup coilGroup = CoilGroup();
 

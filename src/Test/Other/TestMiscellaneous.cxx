@@ -1,17 +1,13 @@
 #include "Test.h"
-#include "Coil.h"
-#include "Coil/EnumsAndConstants/ComputeMethod.h"
 #include "Tensor.h"
 #include "CoilGroup.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cstdio>
-#include <vector>
-#include <chrono>
 
 
-void testNewCoilParameters()
+void Test::testNewCoilParameters()
 {
     Coil testCoil1 = Coil(0.03, 0.03, 0.12, 3600);
 
@@ -33,7 +29,7 @@ void testNewCoilParameters()
     printf("%.25f %.25f\n", vector.z, testCoil1.computeBFieldVector(positionVector).z);
 }
 
-void testCoilPositionAndRotation()
+void Test::testCoilPositionAndRotation()
 {
     Coil coil1 = Coil(0.03, 0.03, 0.12, 3600);
     coil1.setPositionAndOrientation(vec3::Vector3(), 0.0, 0.0);
@@ -75,7 +71,7 @@ void testCoilPositionAndRotation()
     printf("\n");
 }
 
-void testCoilGroupComputeAllMTD()
+void Test::testCoilGroupComputeAllMTD()
 {
     int coilCount = 8 * 8;
     const int pointCount = 1'000;

@@ -14,7 +14,7 @@ void calculatePotentialGroup(long long opCount, long long coilIndex,
                              VectorData *resArr)
 {
     unsigned int index = threadIdx.x;
-    long long globalIndex = blockIdx.x * blockDim.x + index;
+    long long globalIndex = (long long) blockIdx.x * blockDim.x + index;
 
     if(globalIndex >= opCount)
         return;
@@ -143,7 +143,7 @@ void Calculate_hardware_accelerated_a_group(long long coilCount, long long opCou
         recordStartPoint();
     #endif
 
-    long long blocks = ceil(double(opCount) / NTHREADS);
+    int blocks = int(std::ceil(double(opCount) / NTHREADS));
 
     getBuffers(coilCount, opCount);
 

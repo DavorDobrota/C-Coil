@@ -15,7 +15,7 @@ void CalculateForceAndTorqueConfigurationsGroup(long long coilIndex, long long c
                                                 ForceTorqueData *forceTorqueArr)
 {
     unsigned int index = threadIdx.x;
-    long long globalIndex = blockIdx.x * blockDim.x + index;
+    long long globalIndex = (long long) blockIdx.x * blockDim.x + index;
 
     if(globalIndex >= configCount * pointCount)
         return;
@@ -194,7 +194,7 @@ void Calculate_force_and_torque_configurations_group(long long coilCount, long l
         recordStartPoint();
     #endif
 
-    int blocks = ceil(double(configCount * pointCount) / NTHREADS);
+    int blocks = int(std::ceil(double((long long) configCount * pointCount) / NTHREADS));
 
     getBuffers(coilCount, configCount);
 

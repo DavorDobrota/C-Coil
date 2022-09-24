@@ -75,7 +75,7 @@ int main()
 //    Test::testMInductanceGeneralArgumentGeneration();
 
 //    Benchmark::coilGroupComputeAllFieldsMTScaling(PrecisionFactor(1.0), 16, 100, 20);
-//    Benchmark::coilGroupComputeAllFieldsGPUScaling(PrecisionFactor(3.0), 100, 20);
+    Benchmark::coilGroupComputeAllFieldsGPUScaling(PrecisionFactor(3.0), 100, 20);
 
 //    Benchmark::mathFunctions();
 

@@ -39,7 +39,21 @@ void initCoilGroup(py::module_ &mainModule)
             py::arg("num_of_turns"), py::arg("current") = 1.0,
             py::arg("precision_factor") = PrecisionFactor(), py::arg("coil_threads") = g_defaultThreadCount,
             py::arg("coordinate_position") = vec3::Vector3(),
-            py::arg("y_axis_angle") = 0.0, py::arg("z_axis_angle") = 0.0);
+            py::arg("y_axis_angle") = 0.0, py::arg("z_axis_angle") = 0.0)
+        .def("remove_coil", &CoilGroup::removeCoil, py::arg("index"));
+
+    coilGroup
+        .def(
+            "__getitem__",
+            [](const CoilGroup &self, long long index) -> Coil& {
+                if(index < 0)
+                    index += self.getMemberCoils().size();
+
+                if(index < 0 || index >= self.getMemberCoils().size())
+                    throw std::out_of_range("Array index out of range!");
+                return *self.getMemberCoils()[index];
+            }
+        );
 
     coilGroup.def("compute_B_field_vector", &CoilGroup::computeBFieldVector, py::arg("point_vector"))
         .def("compute_A_potential_vector", &CoilGroup::computeAPotentialVector, py::arg("point_vector"))
@@ -65,7 +79,7 @@ void initCoilGroup(py::module_ &mainModule)
             py::arg("precision_factor") = PrecisionFactor(),
             py::arg("compute_method") = CPU_ST)
         .def(
-            "compute_ampere_force", &CoilGroup::computeAmpereForce,
+            "compute_force_torque", &CoilGroup::computeForceTorque,
             py::arg("secondary"),
             py::arg("precision_factor") = PrecisionFactor(),
             py::arg("compute_method") = CPU_ST);
@@ -85,8 +99,8 @@ void initCoilGroup(py::module_ &mainModule)
             py::arg("precision_factor") = PrecisionFactor(),
             py::arg("compute_method") = CPU_ST)
         .def(
-            "compute_all_ampere_force_arrangements",
-            &CoilGroup::computeAllAmpereForceArrangements,
+            "compute_all_force_torque_arrangements",
+            &CoilGroup::computeAllForceTorqueArrangements,
             py::arg("secondary"),
             py::arg("secondary_positions"),
             py::arg("secondary_y_angles"),

@@ -15,3 +15,6 @@ build/
 dist/
 *.egg*/
 **/__pycache__/
+
+*.xml
+*.mlx

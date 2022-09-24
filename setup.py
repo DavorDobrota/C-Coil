@@ -72,7 +72,11 @@ sources = [
     *glob("src/Benchmark/Other/*.cxx"),
 
     *glob("src/Compare/*.cxx"),
+    *glob("src/Compare/MInductanceAndForce/*.cxx"),
+    *glob("src/Compare/Other/*.cxx"),
     *glob("src/Test/*.cxx"),
+    *glob("src/Test/MInductanceAndForce/*.cxx"),
+    *glob("src/Test/Other/*.cxx"),
 
     *glob("src/CoilGroup/*.cxx"),
     *glob("src/CoilGroup/Fields/*.cxx"),
@@ -92,7 +96,6 @@ sources = [
     *glob("src/Tensor/Vector/*.cxx"),
 
     *glob("src/LegendreMatrix/*.cxx"),
-    *glob("src/Math/*.cxx"),
     *glob("src/ThreadPool/*.cxx"),
     *glob("src/Utils/*.cxx"),
 ]

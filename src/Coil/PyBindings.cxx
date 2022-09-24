@@ -62,8 +62,18 @@ void initCoil(py::module_ &mainModule)
         .def_readwrite("thickness_increment_count", &PrecisionArguments::thicknessIncrements)
         .def_readwrite("length_increment_count", &PrecisionArguments::lengthIncrements);
 
-    precisionArguments.def_static("get_coil_precision_arguments_CPU", &PrecisionArguments::getCoilPrecisionArgumentsCPU)
-        .def_static("get_coil_precision_arguments_GPU", &PrecisionArguments::getCoilPrecisionArgumentsGPU);
+    precisionArguments.def_static(
+            "get_coil_precision_arguments_CPU", &PrecisionArguments::getCoilPrecisionArgumentsCPU,
+            py::arg("coil"), py::arg("precision_factor")
+        )
+        .def_static(
+            "get_coil_precision_arguments_GPU", &PrecisionArguments::getCoilPrecisionArgumentsGPU,
+            py::arg("coil"), py::arg("precision_factor")
+        )
+        .def_static(
+            "get_secondary_coil_precision_arguments_GPU", &PrecisionArguments::getSecondaryCoilPrecisionArgumentsGPU,
+            py::arg("coil"), py::arg("precision_factor")
+        );
 
     precisionArguments.def("__repr__", &PrecisionArguments::operator std::string);
 
@@ -90,8 +100,7 @@ void initCoil(py::module_ &mainModule)
 
     // Coil
 
-    coil.def(py::init<>())
-        .def(
+    coil.def(
             py::init<double, double, double, int, double, double, double,
                      PrecisionFactor, int, vec3::Vector3, double, double>(),
             py::arg("inner_radius"), py::arg("thickness"), py::arg("length"), py::arg("num_of_turns"),
@@ -191,7 +200,7 @@ void initCoil(py::module_ &mainModule)
         .def(
             "set_default_precision_GPU",
             static_cast<void (Coil::*)(PrecisionFactor)>(&Coil::setDefaultPrecisionGPU),
-            py::arg("precision_factor"))
+            py::arg("precision_factor") = PrecisionFactor())
         .def(
             "set_default_precision_CPU",
             static_cast<void (Coil::*)(const PrecisionArguments&)>(&Coil::setDefaultPrecisionCPU),
@@ -199,7 +208,7 @@ void initCoil(py::module_ &mainModule)
         .def(
             "set_default_precision_CPU",
             static_cast<void (Coil::*)(PrecisionFactor)>(&Coil::setDefaultPrecisionCPU),
-            py::arg("precision_factor"))
+            py::arg("precision_factor") = PrecisionFactor())
         .def("set_thread_count", &Coil::setThreadCount, py::arg("thread_count"));
 
     coil.def("set_self_inductance", &Coil::setSelfInductance, py::arg("self_inductance"));
@@ -314,14 +323,14 @@ void initCoil(py::module_ &mainModule)
             "compute_ampere_force",
             static_cast<std::pair<vec3::Vector3, vec3::Vector3> (*)(
                 const Coil&, const Coil&, PrecisionFactor, ComputeMethod
-            )>(&Coil::computeAmpereForce),
+            )>(&Coil::computeForceTorque),
             py::arg("primary"), py::arg("secondary"),
             py::arg("precision_factor") = PrecisionFactor(), py::arg("compute_method") = CPU_ST)
         .def_static(
             "compute_ampere_force",
             static_cast<std::pair<vec3::Vector3, vec3::Vector3> (*)(
-                    const Coil&, const Coil&, const CoilPairArguments&, ComputeMethod
-            )>(&Coil::computeAmpereForce),
+                const Coil&, const Coil&, const CoilPairArguments&, ComputeMethod
+            )>(&Coil::computeForceTorque),
             py::arg("primary"), py::arg("secondary"), py::arg("force_arguments"), py::arg("compute_method") = CPU_ST);
 
     coil.def(
@@ -344,7 +353,7 @@ void initCoil(py::module_ &mainModule)
             py::arg("secondary_Y_angles"), py::arg("secondary_Z_angles"),
             py::arg("precision_factor") = PrecisionFactor(), py::arg("compute_method") = CPU_ST)
         .def_static(
-            "compute_all_ampere_force_arrangements", &Coil::computeAllAmpereForceArrangements,
+            "compute_all_force_torque_arrangements", &Coil::computeAllForceTorqueArrangements,
             py::arg("primary"), py::arg("secondary"), py::arg("primary_positions"), py::arg("secondary_positions"),
             py::arg("primary_Y_angles"), py::arg("primary_Z_angles"),
             py::arg("secondary_Y_angles"), py::arg("secondary_Z_angles"),

@@ -50,19 +50,25 @@ void CoilGroup::addCoil(double innerRadius, double thickness, double length, int
 {
     this->memberCoils.push_back(
         std::make_shared<Coil>(
-                innerRadius, thickness, length, numOfTurns, current,
-                precisionFactor, coilThreads, coordinatePosition, yAxisAngle, zAxisAngle
+            innerRadius, thickness, length, numOfTurns, current,
+            precisionFactor, coilThreads, coordinatePosition, yAxisAngle, zAxisAngle
         )
     );
+}
+
+void CoilGroup::removeCoil(size_t index) {
+    if(index >= memberCoils.size())
+        throw std::out_of_range("Coil index out of range!");
+    memberCoils.erase(memberCoils.begin() + index);
 }
 
 
 Coil& CoilGroup::operator[](size_t index) const
 {
+    if(index >= memberCoils.size())
+        throw std::out_of_range("Coil index out of range!");
     return static_cast<Coil &>(*memberCoils[index]);
 }
-
-
 
 CoilGroup::operator std::string() const
 {

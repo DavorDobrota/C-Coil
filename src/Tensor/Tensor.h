@@ -98,8 +98,8 @@ namespace vec3
             Matrix3 operator+(const Matrix3 &mat) const;
             Matrix3 operator+=(const Matrix3 &mat);
 
-            Matrix3 operator*(double multiplier) const;
             void operator*=(double multiplier);
+            Matrix3 operator*(double multiplier) const;
             Matrix3 operator*(const Matrix3 &mat) const;
             Vector3 operator*(const Vector3 &vec) const;
 

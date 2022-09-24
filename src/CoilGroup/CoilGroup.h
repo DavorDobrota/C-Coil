@@ -44,6 +44,12 @@ class CoilGroup
         void addCoil(double innerRadius, double thickness, double length, int numOfTurns, double current = 1.0,
                      PrecisionFactor precisionFactor = PrecisionFactor(), int coilThreads = g_defaultThreadCount,
                      vec3::Vector3 coordinatePosition = vec3::Vector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
+        /**
+         * @brief Removes the Coil at the selected index from the CoilGroup.
+         * @param index Index within the CoilGroup of the Coil that is being removed.
+         */
+        void removeCoil(size_t index);
+
 
         Coil& operator[](size_t index) const;
 

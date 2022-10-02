@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-project(Coil_Evolution)
+project(C-Coil)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -37,7 +37,7 @@ if(USE_GPU)
     set(CUDA_NVCC_FLAGS "--use_fast_math --optimise -O3")
     set(CMAKE_CUDA_ARCHITECTURES "61;72;75;86")
 
-    project(Coil_Evolution LANGUAGES CXX CUDA)
+    project(C-Coil LANGUAGES CXX CUDA)
 endif()
 
 if(${GPU_INCREMENTS} LESS_EQUAL 80 AND ${GPU_INCREMENTS} GREATER_EQUAL 1)
@@ -152,10 +152,10 @@ if(OUTPUT_EXECUTABLE)
 endif()
 
 if(OUTPUT_LIB_SHARED)
-    add_library(coil_evolution_shared SHARED ${LIBS})
-    set_property(TARGET coil_evolution_shared PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    add_library(c_coil_shared SHARED ${LIBS})
+    set_property(TARGET c_coil_shared PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
     target_include_directories(
-            coil_evolution_shared
+            c_coil_shared
             BEFORE
             PUBLIC ${INCS}
     )
@@ -163,6 +163,6 @@ if(OUTPUT_LIB_SHARED)
 #        set_target_properties(coil_calculations_shared PROPERTIES CUDA_ARCHITECTURES "all-major")
 #    endif()
     if(!WIN32)
-        target_link_libraries(coil_evolution_shared pthread)
+        target_link_libraries(c_coil_shared pthread)
     endif()
 endif()

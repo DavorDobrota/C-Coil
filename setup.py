@@ -141,7 +141,7 @@ else:
 
 ext_modules = [
     Pybind11Extension(
-        name="coil_evolution",
+        name="c_coil",
         sources=sources,
         define_macros=macros,
         **extra_kwargs
@@ -149,20 +149,27 @@ ext_modules = [
 ]
 
 with open("README.md", "r") as f:
-    long_description = f.read()
+    long_description = f.read().strip()
+
+with open("LICENSE", "r") as f:
+    project_license = f.read().strip()
+
+with open("VERSION", "r") as f:
+    project_version = f.read().strip()
 
 setup(
     cmdclass=cmdclass,
-    name="coil-evolution",
-    version="1.0.0a0",
+    name="c-coil",
+    version=project_version,
     ext_modules=ext_modules,
-    author="Davor Dobrota, Nikola Socec",
+    author="Davor Dobrota, Nikola Socec, Lara Vrabac",
     author_email="nikola.socec@gmail.com",
-    url="https://github.com/DavorDobrota/Coil-Evolution",
+    url="https://github.com/DavorDobrota/C-Coil",
     description="A library for performing calculations with coils.",
     long_description=long_description,
     zip_safe=False,
     python_requires=">=3.6",
     define_macros=macros,
     include_dirs=header_include_dirs,
+    license=project_license,
 )

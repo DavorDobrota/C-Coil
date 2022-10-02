@@ -11,7 +11,7 @@ __global__
 void calculateFieldSlow(long long opCount, CoilData coil, const VectorData *posArr, VectorData *resArr)
 {
     unsigned int index = threadIdx.x;
-    long long global_index = blockIdx.x * blockDim.x + index;
+    long long global_index = (long long) blockIdx.x * blockDim.x + index;
 
     if(global_index >= opCount)
         return;
@@ -172,7 +172,7 @@ void Calculate_hardware_accelerated_b(long long opCount, CoilData coil,
         printf("---------------------------------------------------\n");
     #endif
 
-    long long blocks = ceil(double(opCount) / NTHREADS);
+    int blocks = int(std::ceil(double(opCount) / NTHREADS));
 
     getBuffers(opCount);
 

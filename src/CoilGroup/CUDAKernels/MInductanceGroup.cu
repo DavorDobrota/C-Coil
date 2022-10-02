@@ -15,7 +15,7 @@ void CalculateMutualInductanceConfigurationsGroup(long long coilIndex, long long
                                                   TYPE *inductanceArr)
 {
     unsigned int index = threadIdx.x;
-    long long globalIndex = blockIdx.x * blockDim.x + index;
+    long long globalIndex = (long long) blockIdx.x * blockDim.x + index;
 
     if(globalIndex >= configCount * pointCount)
         return;
@@ -178,7 +178,7 @@ void Calculate_mutual_inductance_configurations_group(long long coilCount, long 
         recordStartPoint();
     #endif
 
-    int blocks = ceil(double(configCount * pointCount) / NTHREADS);
+    int blocks = int(std::ceil(double((long long) configCount * pointCount) / NTHREADS));
 
     getBuffers(coilCount, configCount);
 

@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
-from coil_evolution.coil import *
-from coil_evolution.tensor import *
+from c_coil.coil import *
+from c_coil.tensor import *
 import math as m
 import gc
 

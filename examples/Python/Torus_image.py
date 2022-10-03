@@ -4,9 +4,9 @@ import numpy as np
 import math as m
 import gc
 
-from coil_evolution.coil import *
-from coil_evolution.coil_group import *
-from coil_evolution.tensor import *
+from c_coil.coil import *
+from c_coil.coil_group import *
+from c_coil.tensor import *
 
 xDim = 6001
 yDim = 6001

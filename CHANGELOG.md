@@ -1,7 +1,7 @@
 # C-Coil CHANGELOG
 
 
-## [2.0.0] - 2022-10-02
+## [1.0.0] - 2022-10-02
 
 ### Added
 - GPU support for C++ and Python on Windows and Linux platforms
@@ -10,7 +10,7 @@
 - Inner project and Python module structures refactored
 
 
-## [1.0.0] - 2021-09-23
+## [1.0.0b] - 2021-09-23
 
 ### Added
 - first stable version

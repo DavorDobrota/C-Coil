@@ -1,5 +1,5 @@
-PROJECT_NAME         = "Coil Evolution"
-PROJECT_NUMBER       = 1.2
+PROJECT_NAME         = "C-Coil (Circular Coil Object-oriented Interaction Library)"
+PROJECT_NUMBER       = 1.0.0
 PROJECT_BRIEF        = "A library for performing various calculations using circular coils."
 
 OUTPUT_DIRECTORY     = @CMAKE_CURRENT_BINARY_DIR@/docs_doxygen/

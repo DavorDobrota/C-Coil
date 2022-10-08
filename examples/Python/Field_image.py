@@ -1,45 +1,74 @@
-import matplotlib as mpl
+import c_coil.coil as c
+import c_coil.tensor as ten
+
+import math as m
+import numpy as np
+
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-import numpy as np
-import math as m
+
 import gc
+import os
 
-from c_coil.coil import *
-from c_coil.tensor import *
+# if using GPU acceleration on Windows, CUDA path needs to be added
+# common path is added below, but you should check for differences (e.g. different CUDA version)
+# os.add_dll_directory("C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.7/bin")
 
-xDim = 5001
-yDim = 5001
+# image resolution
+xDim = 3001
+yDim = 3001
+
+# rectangular domain dimensions
 xSize = 0.24
 ySize = 0.24
+
+# at which point the image is centered
+xOffset = 0.0
+yOffset = 0.0
 zPos = 0.0
 
-coil = Coil(0.03, 0.03, 0.12, 3600, 10, PrecisionFactor(11.0), 16)
-coil.set_position_and_orientation(Vector3(), m.pi / 2, 0.0)
+# coil used for field computations, orientation set such that it lies in xOy plane
+coil = c.Coil(0.03, 0.03, 0.12, 3600, 10)
+coil.set_position_and_orientation(ten.Vector3(), m.pi / 2, 0.0)
 
-positions = Vector3Array()
+# setting precision and number of threads used (number of CPU threads is advised)
+coil.set_thread_count(8)
+precision = c.PrecisionFactor(7.0)
 
-matrix = np.zeros((xDim, yDim), dtype=np.float64)
+coil.set_default_precision_CPU(precision)
+coil.set_default_precision_GPU(precision)
 
+# initialising array for specifying points
+positions = ten.Vector3Array()
+
+# initialising image generation parameters, using np arrays to reduce memory use
 x = np.zeros((xDim,), dtype=np.float64)
 y = np.zeros((yDim,), dtype=np.float64)
+pixelValues = np.zeros((xDim, yDim), dtype=np.float64)
 
+# generating point position arguments
 for i in range(0, yDim):
     for j in range(0, xDim):
-        xPos = xSize / (xDim - 1) * (j - (xDim - 1) / 2.0)
-        yPos = ySize / (yDim - 1) * (i - (yDim - 1) / 2.0)
+        xPos = xOffset + xSize / (xDim - 1) * (j - (xDim - 1) / 2.0)
+        yPos = yOffset + ySize / (yDim - 1) * (i - (yDim - 1) / 2.0)
+
         positions.append(xPos, yPos, zPos)
 
+# generating positions for image pixels
 for i in range(0, xDim):
     x[i] = xSize / (xDim - 1) * (i - (xDim - 1) / 2.0)
 
 for i in range(0, yDim):
     y[i] = ySize / (yDim - 1) * (i - (yDim - 1) / 2.0)
 
-fields = coil.compute_all_B_field_vectors(positions, CPU_MT).abs()
+# calling the field compute function
+fields = coil.compute_all_B_field_vectors(positions, c.CPU_MT).abs()
 
+# deleting unnecessary data
 del positions
 
+# it was noticed that when using the GPU some specific points produce nan or inf
+# applying this simple "filter" resolved the issue in many cases
 for i in range(0, yDim):
     for j in range(0, xDim):
         temp = fields[i * xDim + j]
@@ -70,19 +99,23 @@ for i in range(0, yDim):
             if n > 0:
                 temp /= n
 
-        matrix[i][j] = temp
+        pixelValues[i][j] = temp
 
+# deleting unnecessary data
 del fields
 gc.collect()
 
+# generating appropriate image to visualise data
 fig = plt.figure()
-fig.set_size_inches(8.0, 6.5)
+fig.set_size_inches(8, 6.5)
 fig.set_dpi(500)
 
-custom = mcolors.LinearSegmentedColormap.from_list("gist_yarg", plt.get_cmap("turbo").colors, N=2**24)
+# linear color interpolation to show more than 256 discrete color values (continuous spectrum)
+custom = mcolors.LinearSegmentedColormap.from_list("", plt.cm.turbo.colors, N=2**24)
 
-plot = plt.pcolormesh(x, y, matrix, cmap=plt.get_cmap("Greys"))
-cbar = plt.colorbar(plot)
+fig.plot = plt.pcolormesh(x, y, pixelValues, cmap=custom)
+cbar = plt.colorbar(fig.plot)
 
-plt.show()
+# showing and saving the image
+fig.show()
 fig.savefig('Field_image.png', dpi=500)

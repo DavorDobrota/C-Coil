@@ -15,9 +15,9 @@
   wire (N). Additional parameters are optional.
 - Depending on the relationship of thickness and length, 4
   types of coils are distinguished with Enum CoilType:
-  - Loop of wire (FILAMENT) - negligible length and thickness
-  - Thin solenoid (THIN) - negligible thickness
-  - Pancake coil (FLAT) - negligible length
+  - Loop of wire (FILAMENT) - negligible length and thickness (a = 0.0, b = 0.0)
+  - Thin solenoid (THIN) - negligible thickness (a = 0.0)
+  - Pancake coil (FLAT) - negligible length (b = 0.0)
   - Circular coil with a rectangular cross-section (RECTANGULAR)
 - Calculations with multi-coil systems, implemented in CoilGroup, are
   especially efficient when using the GPU
@@ -29,6 +29,8 @@
   Python methods have the same signature, but their names are written in 
   snake_case. It can be found in folder docs.
 - Examples for 3 Python and 3 MATLAB use cases are provided.
+- Performance benchmarks are available in module Benchmark and precision tests
+  are available in module Comparison.
 
 ## Installation
 - bla

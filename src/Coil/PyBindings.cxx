@@ -217,6 +217,8 @@ void initCoil(py::module_ &mainModule)
             "set_position_and_orientation", &Coil::setPositionAndOrientation,
             py::arg("position_vector"), py::arg("y_axis_angle"), py::arg("z_axis_angle"));
 
+    coil.def("is_point_inside", &Coil::isPointInside, py::arg("point_vector"));
+
     coil.def(
             "compute_B_field_vector",
             static_cast<vec3::Vector3 (Coil::*)(vec3::Vector3) const>(&Coil::computeBFieldVector),

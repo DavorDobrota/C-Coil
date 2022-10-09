@@ -55,6 +55,8 @@ void initCoilGroup(py::module_ &mainModule)
             }
         );
 
+    coilGroup.def("is_point_inside", &CoilGroup::isPointInside, py::arg("point_vector"));
+
     coilGroup.def("compute_B_field_vector", &CoilGroup::computeBFieldVector, py::arg("point_vector"))
         .def("compute_A_potential_vector", &CoilGroup::computeAPotentialVector, py::arg("point_vector"))
         .def("compute_E_field_vector", &CoilGroup::computeEFieldVector, py::arg("point_vector"))

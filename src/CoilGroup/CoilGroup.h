@@ -40,18 +40,19 @@ class CoilGroup
         void setDefaultPrecisionFactor(PrecisionFactor precisionFactor = PrecisionFactor());
         /// @brief Setts the default number of threads which is immediately applied to all members.
         void setThreadCount(int threadCount);
+
         /// @brief Adds a new member Coil to the back, most common Coil constructor is imitated for simplicity.
         void addCoil(double innerRadius, double thickness, double length, int numOfTurns, double current = 1.0,
                      PrecisionFactor precisionFactor = PrecisionFactor(), int coilThreads = g_defaultThreadCount,
                      vec3::Vector3 coordinatePosition = vec3::Vector3(), double yAxisAngle = 0.0, double zAxisAngle = 0.0);
-        /**
-         * @brief Removes the Coil at the selected index from the CoilGroup.
-         * @param index Index within the CoilGroup of the Coil that is being removed.
-         */
+         ///@brief Removes the Coil at the selected index from the CoilGroup.
         void removeCoil(size_t index);
 
-
         Coil& operator[](size_t index) const;
+
+        /// @brief Checks if a given point lies inside the circular coil if coil type is RECTANGULAR,
+        /// or if it is exceedingly close to a FILAMENT, THIN, or FLAT coil.
+        [[nodiscard]] bool isPointInside(vec3::Vector3 pointVector);
 
         /**
          * @brief Calculates vector potential A of the magnetic field at the specified point from all member Coils.

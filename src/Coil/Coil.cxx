@@ -251,6 +251,18 @@ void Coil::setPositionAndOrientation(vec3::Vector3 positionVector, double yAxisA
     calculateTransformationMatrices();
 }
 
+bool Coil::isPointInside(vec3::Vector3 pointVector)
+{
+    vec3::Vector3 transformedVec = this->inverseTransformationMatrix * (pointVector - this->positionVector);
+    vec3::Triplet cylindricalCoords = transformedVec.getAsCylindricalCoords();
+
+    double zPos = cylindricalCoords.first;
+    double rPos = cylindricalCoords.second;
+
+    return (std::abs(zPos) < 0.5*length + g_thinCoilApproximationRatio * innerRadius) &&
+           (std::abs(rPos - innerRadius - 0.5*thickness) < 0.5*thickness + g_thinCoilApproximationRatio * innerRadius);
+}
+
 void Coil::setSelfInductance(double selfInductance)
 {
     this->selfInductance = selfInductance;

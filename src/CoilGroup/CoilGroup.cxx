@@ -56,19 +56,30 @@ void CoilGroup::addCoil(double innerRadius, double thickness, double length, int
     );
 }
 
-void CoilGroup::removeCoil(size_t index) {
+void CoilGroup::removeCoil(size_t index)
+{
     if(index >= memberCoils.size())
         throw std::out_of_range("Coil index out of range!");
+
     memberCoils.erase(memberCoils.begin() + index);
 }
-
 
 Coil& CoilGroup::operator[](size_t index) const
 {
     if(index >= memberCoils.size())
         throw std::out_of_range("Coil index out of range!");
+
     return static_cast<Coil &>(*memberCoils[index]);
 }
+
+
+bool CoilGroup::isPointInside(vec3::Vector3 pointVector)
+{
+    for (auto& memberCoil : memberCoils)
+        if (memberCoil->isPointInside(pointVector))
+            return true;
+}
+
 
 CoilGroup::operator std::string() const
 {

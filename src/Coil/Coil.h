@@ -325,6 +325,9 @@ class Coil
                                        double yAxisAngle = 0.0, double zAxisAngle = 0.0);
         /// @brief Sets self inductance of the coil to the provided value, overriding all previous calculations.
         void setSelfInductance(double selfInductance);
+        /// @brief Checks if a given point lies inside the circular coil if coil type is RECTANGULAR,
+        /// or if it is exceedingly close to a FILAMENT, THIN, or FLAT coil.
+        [[nodiscard]] bool isPointInside(vec3::Vector3 pointVector);
 
 
         /**

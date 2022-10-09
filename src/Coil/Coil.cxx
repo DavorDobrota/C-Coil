@@ -1,6 +1,5 @@
 #include "Coil.h"
-#include "LegendreMatrix.h"
-#include "ctpl_stl.h"
+#include "ThreadPool.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -10,27 +9,27 @@
 
 namespace
 {
-    const double g_MiReduced = 0.0000001;
-
     const double g_defaultCurrent = 1.0;
     const double g_defaultResistivity = 1.63e-8;
     const double g_defaultSineFrequency = 50;
 
     unsigned long long g_currentId = 0;
+
+    threadPool::ThreadPoolControl g_threadPool;
 }
 
 
-Coil::Coil() : Coil(0.0, 0.0, 0.0, 3600, 0) {}
-
-Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-           double wireResistivity, double sineFrequency, const PrecisionArguments &precisionSettings,
-           int threadCount, vec3::CoordVector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
+Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double wireResistivity,
+           double sineFrequency, const PrecisionArguments &precisionSettingsCPU,
+           const PrecisionArguments &precisionSettingsGPU, int threadCount, vec3::Vector3 coordinatePosition,
+           double yAxisAngle, double zAxisAngle) :
         innerRadius(innerRadius),
         thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 1e-18 * innerRadius * g_thinCoilApproximationRatio : thickness),
         length(length / innerRadius < g_thinCoilApproximationRatio ? 1e-18 * innerRadius * g_thinCoilApproximationRatio : length),
         numOfTurns(numOfTurns),
         id(++g_currentId),
-        defaultPrecision(precisionSettings),
+        defaultPrecisionCPU(precisionSettingsCPU),
+        defaultPrecisionGPU(precisionSettingsGPU),
         useFastMethod(length / innerRadius >= g_thinCoilApproximationRatio),
         positionVector(coordinatePosition),
         yAxisAngle(yAxisAngle), zAxisAngle(zAxisAngle)
@@ -46,7 +45,7 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
            double wireResistivity, double sineFrequency, PrecisionFactor precisionFactor,
-           int threadCount, vec3::CoordVector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
+           int threadCount, vec3::Vector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
         innerRadius(innerRadius),
         thickness(thickness / innerRadius < g_thinCoilApproximationRatio ? 1e-18 * innerRadius * g_thinCoilApproximationRatio : thickness),
         length(length / innerRadius < g_thinCoilApproximationRatio ? 1e-18 * innerRadius * g_thinCoilApproximationRatio : length),
@@ -62,39 +61,49 @@ Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, 
     calculateAverageWireThickness();
     setWireResistivity(wireResistivity);
     setSineFrequency(sineFrequency);
-    setDefaultPrecision(PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor));
+    setDefaultPrecisionCPU(PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor));
+    setDefaultPrecisionGPU(PrecisionArguments::getCoilPrecisionArgumentsGPU(*this, precisionFactor));
     setThreadCount(threadCount);
 }
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
-           PrecisionFactor precisionFactor, int threadCount) :
+           PrecisionFactor precisionFactor, int threadCount, vec3::Vector3 coordinatePosition,
+           double yAxisAngle, double zAxisAngle) :
            Coil(innerRadius, thickness, length, numOfTurns, current, g_defaultResistivity, sineFrequency,
-                precisionFactor, threadCount) {}
+                precisionFactor, threadCount, coordinatePosition, yAxisAngle, zAxisAngle) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current, double sineFrequency,
-           const PrecisionArguments &precisionSettings, int threadCount) :
+           const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU, int threadCount,
+           vec3::Vector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
            Coil(innerRadius, thickness, length, numOfTurns, current,
-                g_defaultResistivity, sineFrequency, precisionSettings, threadCount) {}
+                g_defaultResistivity, sineFrequency, precisionSettingsCPU, precisionSettingsGPU, threadCount,
+                coordinatePosition, yAxisAngle, zAxisAngle) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-           PrecisionFactor precisionFactor, int threadCount)  :
+           PrecisionFactor precisionFactor, int threadCount, vec3::Vector3 coordinatePosition,
+           double yAxisAngle, double zAxisAngle)  :
            Coil(innerRadius, thickness, length, numOfTurns, current, g_defaultResistivity,
-                g_defaultSineFrequency, precisionFactor, threadCount) {}
+                g_defaultSineFrequency, precisionFactor, threadCount,
+                coordinatePosition, yAxisAngle, zAxisAngle) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, double current,
-           const PrecisionArguments &precisionSettings, int threadCount) :
+           const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU, int threadCount,
+           vec3::Vector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
            Coil(innerRadius, thickness, length, numOfTurns, current, g_defaultResistivity,
-                g_defaultSineFrequency, precisionSettings, threadCount) {}
+                g_defaultSineFrequency, precisionSettingsCPU, precisionSettingsGPU, threadCount,
+                coordinatePosition, yAxisAngle, zAxisAngle) {}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns, PrecisionFactor precisionFactor,
-           int threadCount) :
+           int threadCount, vec3::Vector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
            Coil(innerRadius, thickness, length, numOfTurns, g_defaultCurrent, g_defaultResistivity,
-                g_defaultSineFrequency, precisionFactor, threadCount){}
+                g_defaultSineFrequency, precisionFactor, threadCount, coordinatePosition, yAxisAngle, zAxisAngle){}
 
 Coil::Coil(double innerRadius, double thickness, double length, int numOfTurns,
-           const PrecisionArguments &precisionSettings, int threadCount) :
+           const PrecisionArguments &precisionSettingsCPU, const PrecisionArguments &precisionSettingsGPU, int threadCount,
+           vec3::Vector3 coordinatePosition, double yAxisAngle, double zAxisAngle) :
            Coil(innerRadius, thickness, length, numOfTurns, g_defaultCurrent, g_defaultResistivity,
-                g_defaultSineFrequency, precisionSettings, threadCount) {}
+                g_defaultSineFrequency, precisionSettingsCPU, precisionSettingsGPU, threadCount,
+                coordinatePosition, yAxisAngle, zAxisAngle) {}
 
 
 double Coil::getCurrentDensity() const { return currentDensity; }
@@ -117,16 +126,14 @@ bool Coil::isSineDriven() const { return sineDriven; }
 
 double Coil::getSineFrequency() const { return sineFrequency; }
 
-vec3::FieldVector3 Coil::getMagneticMoment()
+vec3::Vector3 Coil::getMagneticMoment()
 {
     calculateMagneticMoment();
 
     double sinA = std::sin(yAxisAngle); double cosA = std::cos(yAxisAngle);
     double sinB = std::sin(zAxisAngle); double cosB = std::cos(zAxisAngle);
 
-    return vec3::FieldVector3(magneticMoment * sinA * cosB,
-                              magneticMoment * sinA * sinB,
-                              magneticMoment * cosA);
+    return vec3::Vector3(magneticMoment * sinA * cosB,magneticMoment * sinA * sinB,magneticMoment * cosA);
 }
 
 double Coil::getWireResistivity() const { return wireResistivity; }
@@ -151,7 +158,9 @@ double Coil::getImpedance()
     return impedance;
 }
 
-const PrecisionArguments &Coil::getPrecisionSettings() const { return defaultPrecision; }
+const PrecisionArguments &Coil::getPrecisionSettingsCPU() const { return defaultPrecisionCPU; }
+
+const PrecisionArguments &Coil::getPrecisionSettingsGPU() const { return defaultPrecisionGPU; }
 
 int Coil::getThreadCount() const { return threadCount; }
 
@@ -159,9 +168,13 @@ bool Coil::isUsingFastMethod() const { return useFastMethod; }
 
 CoilType Coil::getCoilType() const { return coilType; }
 
-vec3::CoordVector3 Coil::getPositionVector() const { return positionVector; }
+vec3::Vector3 Coil::getPositionVector() const { return positionVector; }
 
 std::pair<double, double> Coil::getRotationAngles() const { return {yAxisAngle, zAxisAngle}; }
+
+vec3::Matrix3 Coil::getTransformationMatrix() const { return transformationMatrix; }
+
+vec3::Matrix3 Coil::getInverseTransformationMatrix() const { return inverseTransformationMatrix; }
 
 
 void Coil::setCurrentDensity(double currentDensity)
@@ -196,26 +209,40 @@ void Coil::setSineFrequency(double sineFrequency)
     calculateImpedance();
 }
 
-void Coil::setDefaultPrecision(const PrecisionArguments &precisionSettings)
+void Coil::setDefaultPrecisionCPU(const PrecisionArguments &precisionSettings)
 {
-    this->defaultPrecision = precisionSettings;
+    this->defaultPrecisionCPU = precisionSettings;
 }
 
-void Coil::setDefaultPrecision(PrecisionFactor precisionFactor, ComputeMethod computeMethod)
+void Coil::setDefaultPrecisionCPU(PrecisionFactor precisionFactor)
 {
-    if (computeMethod == GPU)
-        this->defaultPrecision = PrecisionArguments::getCoilPrecisionArgumentsGPU(*this, precisionFactor);
-    else
-        this->defaultPrecision = PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor);
+    this->defaultPrecisionCPU = PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor);
 }
 
-void Coil::setSelfInductance(double selfInductance)
+void Coil::setDefaultPrecisionGPU(const PrecisionArguments &precisionSettings)
 {
-    this->selfInductance = selfInductance;
+    this->defaultPrecisionGPU = precisionSettings;
+}
+
+void Coil::setDefaultPrecisionGPU(PrecisionFactor precisionFactor)
+{
+    this->defaultPrecisionGPU = PrecisionArguments::getCoilPrecisionArgumentsGPU(*this, precisionFactor);
+}
+
+void Coil::setDefaultPrecision(PrecisionFactor precisionFactor)
+{
+    this->defaultPrecisionCPU = PrecisionArguments::getCoilPrecisionArgumentsCPU(*this, precisionFactor);
+    this->defaultPrecisionGPU = PrecisionArguments::getCoilPrecisionArgumentsGPU(*this, precisionFactor);
 }
 
 
-void Coil::setPositionAndOrientation(vec3::CoordVector3 positionVector, double yAxisAngle, double zAxisAngle)
+void Coil::setThreadCount(int threadCount)
+{
+    Coil::threadCount = threadCount;
+    g_threadPool.setSize(threadCount);
+}
+
+void Coil::setPositionAndOrientation(vec3::Vector3 positionVector, double yAxisAngle, double zAxisAngle)
 {
     this->positionVector = positionVector;
     this->yAxisAngle = yAxisAngle;
@@ -224,163 +251,23 @@ void Coil::setPositionAndOrientation(vec3::CoordVector3 positionVector, double y
     calculateTransformationMatrices();
 }
 
-void Coil::calculateMagneticMoment()
+bool Coil::isPointInside(vec3::Vector3 pointVector)
 {
-    magneticMoment = M_PI * current * numOfTurns *
-            (innerRadius * innerRadius + innerRadius * thickness + thickness * thickness / 3);
+    vec3::Vector3 transformedVec = this->inverseTransformationMatrix * (pointVector - this->positionVector);
+    vec3::Triplet cylindricalCoords = transformedVec.getAsCylindricalCoords();
+
+    double zPos = cylindricalCoords.first;
+    double rPos = cylindricalCoords.second;
+
+    return (std::abs(zPos) < 0.5*length + g_thinCoilApproximationRatio * innerRadius) &&
+           (std::abs(rPos - innerRadius - 0.5*thickness) < 0.5*thickness + g_thinCoilApproximationRatio * innerRadius);
 }
 
-void Coil::calculateAverageWireThickness()
+void Coil::setSelfInductance(double selfInductance)
 {
-    averageWireThickness = std::sqrt(length * thickness / numOfTurns);
+    this->selfInductance = selfInductance;
 }
 
-void Coil::calculateResistance()
-{
-    double wireRadius = averageWireThickness * 0.5;
-    double ohmicResistance = wireResistivity * numOfTurns * 2*M_PI *
-            (innerRadius + thickness * 0.5) / (wireRadius * wireRadius * M_PI);
-    double skinDepth = std::sqrt(wireResistivity / (M_PI * sineFrequency * g_MiReduced));
-
-    double ohmicSurface = M_PI * wireRadius * wireRadius;
-    double sineSurface = 2*M_PI * (
-            skinDepth * skinDepth * (exp(-wireRadius / skinDepth) - 1) +
-            skinDepth * wireRadius);
-
-    resistance = ohmicResistance * (ohmicSurface / sineSurface);
-}
-
-void Coil::calculateReactance()
-{
-    reactance = selfInductance * 2*M_PI * sineFrequency;
-}
-
-void Coil::calculateImpedance()
-{
-    calculateResistance();
-    calculateReactance();
-    impedance = std::sqrt(resistance * resistance + reactance * reactance);
-}
-
-void Coil::calculateCoilType()
-{
-    if (thickness / innerRadius < g_thinCoilApproximationRatio && length / innerRadius < g_thinCoilApproximationRatio)
-        coilType = CoilType::FILAMENT;
-
-    else if (thickness / innerRadius < g_thinCoilApproximationRatio)
-        coilType = CoilType::THIN;
-
-    else if (length / innerRadius < g_thinCoilApproximationRatio)
-        coilType = CoilType::FLAT;
-
-    else
-        coilType = CoilType::RECTANGULAR;
-}
-
-void Coil::calculateTransformationMatrices()
-{
-
-    double cosY = std::cos(yAxisAngle); double sinY = std::sin(yAxisAngle);
-    double cosZ = std::cos(zAxisAngle); double sinZ = std::sin(zAxisAngle);
-
-    transformationMatrix = vec3::Matrix3(cosZ * cosZ * cosY - sinZ * sinZ, -sinZ * cosZ * cosY - sinZ * cosZ, cosZ * sinY,
-                                         sinZ * cosZ * cosY + sinZ * cosZ, cosZ * cosZ - sinZ * sinZ * cosY, sinZ * sinY,
-                                         -sinY * cosZ, sinY * sinZ, cosY);
-
-    inverseTransformationMatrix = vec3::Matrix3(cosZ * cosZ * cosY - sinZ * sinZ, sinZ * cosZ * cosY + sinZ * cosZ, -cosZ * sinY,
-                                                -sinZ * cosZ * cosY - sinZ * cosZ, cosZ * cosZ - sinZ * sinZ * cosY, sinZ * sinY,
-                                                sinY * cosZ, sinY * sinZ, cosY);
-}
-
-double Coil::computeAndSetSelfInductance(PrecisionFactor precisionFactor, ComputeMethod computeMethod)
-{
-    if (coilType == CoilType::FILAMENT)
-    {
-        fprintf(stderr, "ERROR: The integral of a filament is divergent, try a thin rectangular coil\n");
-        throw std::logic_error("Coil loop calculation not supported");
-    }
-    // centering the coil at (0, 0, 0) and setting angles to 0 improves the accuracy by leveraging the z-axis formula
-    vec3::CoordVector3 tempPosition = getPositionVector();
-    std::pair tempAngles = getRotationAngles();
-    setPositionAndOrientation();
-
-    auto arguments = CoilPairArguments::getAppropriateCoilPairArguments(*this, *this, precisionFactor);
-    double inductance;
-
-    if (coilType == CoilType::FLAT)
-        inductance = Coil::computeMutualInductance(*this, *this, arguments, computeMethod);
-    else
-        inductance = Coil::calculateSelfInductance(arguments, computeMethod);
-
-    setSelfInductance(inductance);
-    setPositionAndOrientation(tempPosition, tempAngles.first, tempAngles.second);
-
-    return inductance;
-}
-
-
-std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>>
-Coil::calculateRingIncrementPosition(int angularBlocks, int angularIncrements,
-                                     double alpha, double beta, double ringIntervalSize)
-{
-    int numElements = angularBlocks * angularIncrements;
-
-    std::vector<std::pair<vec3::FieldVector3, vec3::FieldVector3>> unitRingVector;
-    unitRingVector.reserve(numElements);
-
-    vec3::FieldVector3 ringPosition;
-    vec3::FieldVector3 ringTangent;
-
-    double angularBlock = ringIntervalSize / angularBlocks;
-
-    // subtracting 1 because n-th order Gauss quadrature has (n + 1) positions which here represent increments
-    angularBlocks--;
-    angularIncrements--;
-
-    double sinA = std::sin(alpha); double cosA = std::cos(alpha);
-    double sinB = std::sin(beta); double cosB = std::cos(beta);
-
-    for (int phiBlock = 0; phiBlock <= angularBlocks; ++phiBlock)
-    {
-        double blockPositionPhi = angularBlock * (phiBlock + 0.5);
-
-        for (int phiIndex = 0; phiIndex <= angularIncrements; ++phiIndex)
-        {
-            double phi = blockPositionPhi +
-                         (angularBlock * 0.5) * Legendre::positionMatrix[angularIncrements][phiIndex];
-
-            double sinPhi = std::sin(phi); double cosPhi = std::cos(phi);
-
-            ringPosition = vec3::FieldVector3(cosB * cosA * cosPhi - sinB * sinPhi,
-                                              sinB * cosA * cosPhi + cosB * sinPhi,
-                                              (-1) * sinA * cosPhi);
-
-            ringTangent = vec3::FieldVector3((-1) * cosB * cosA * sinPhi - sinB * cosPhi,
-                                             (-1) * sinB * cosA * sinPhi + cosB * cosPhi,
-                                             sinA * sinPhi);
-
-            unitRingVector.emplace_back(ringPosition, ringTangent);
-        }
-    }
-    return unitRingVector;
-}
-
-bool Coil::isZAxisCase(const Coil &primary, const Coil &secondary)
-{
-    vec3::FieldVector3 primPositionVec = vec3::CoordVector3::convertToFieldVector(primary.getPositionVector());
-    vec3::FieldVector3 secPositionVec = vec3::CoordVector3::convertToFieldVector(secondary.getPositionVector());
-
-    if (primPositionVec.x / primary.innerRadius < g_zAxisApproximationRatio &&
-        primPositionVec.y / primary.innerRadius < g_zAxisApproximationRatio &&
-        secPositionVec.x / primary.innerRadius < g_zAxisApproximationRatio &&
-        secPositionVec.y / primary.innerRadius < g_zAxisApproximationRatio &&
-        primary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio &&
-        secondary.yAxisAngle / (2 * M_PI) < g_zAxisApproximationRatio)
-    {
-        return true;
-    }
-    return false;
-}
 
 Coil::operator std::string() const
 {
@@ -405,7 +292,8 @@ Coil::operator std::string() const
         << ", impedance=" << impedance
         << ", use_fast_method=" << useFastMethod
         << ", thread_count=" << threadCount
-        << ", default_precision=" << std::string(defaultPrecision)
+        << ", default_precision_CPU=" << std::string(defaultPrecisionCPU)
+        << ", default_precision_GPU=" << std::string(defaultPrecisionGPU)
         << ", position_vector=" << std::string(positionVector)
         << ", y_axis_angle=" << yAxisAngle
         << ", z_axis_angle=" << zAxisAngle

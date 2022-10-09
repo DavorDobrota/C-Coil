@@ -1,3 +1,4 @@
+#include <sstream>
 #include <string>
 
 #include <PyMain.h>
@@ -11,80 +12,54 @@ namespace py = pybind11;
 void initTensor(py::module_ &mainModule)
 {
     py::module_ tensorModule = mainModule.def_submodule("tensor");
-    
-    py::enum_<vec3::CoordinateSystem> coordinateSystem(tensorModule, "CoordinateSystem");
-    py::class_<vec3::CoordVector3> coordVector3(tensorModule, "CoordVector3");
-    py::class_<vec3::FieldVector3> fieldVector3(tensorModule, "FieldVector3");
+
+    py::class_<vec3::Vector3> vector3(tensorModule, "Vector3");
     py::class_<vec3::Matrix3> matrix3(tensorModule, "Matrix3");
+    py::class_<vec3::Triplet> triplet(tensorModule, "Triplet");
 
-
-    // CoordinateSystem
-
-    coordinateSystem.value("CARTESIAN", vec3::CoordinateSystem::CARTESIAN)
-        .value("CYLINDRICAL", vec3::CoordinateSystem::CYLINDRICAL)
-        .value("SPHERICAL", vec3::CoordinateSystem::SPHERICAL)
-        .export_values();
-
-
-    // CoordVector3
-
-    coordVector3.def_readwrite("elem_1", &vec3::CoordVector3::comp1)
-        .def_readwrite("elem_2", &vec3::CoordVector3::comp2)
-        .def_readwrite("elem_3", &vec3::CoordVector3::comp3);
-
-    coordVector3.def(py::init<>())
-        .def(
-            py::init<vec3::CoordinateSystem, double, double, double>(),
-            py::arg("system"), py::arg("elem_1"), py::arg("elem_2"), py::arg("elem_3"));
-
-    coordVector3.def("is_cartesian", &vec3::CoordVector3::isCartesian)
-        .def("is_cylindrical", &vec3::CoordVector3::isCylindrical)
-        .def("is_spherical", &vec3::CoordVector3::isSpherical);
-
-    coordVector3.def("convert_to_cartesian", &vec3::CoordVector3::convertToCartesian)
-        .def("convert_to_cylindrical", &vec3::CoordVector3::convertToCylindrical)
-        .def("convert_to_spherical", &vec3::CoordVector3::convertToSpherical);
-
-    coordVector3.def_static(
-            "convert_all_to_cartesian", &vec3::CoordVector3::convertAllToCartesian, py::arg("vectors"))
-        .def_static("convert_all_to_cylindrical", &vec3::CoordVector3::convertAllToCylindrical, py::arg("vectors"))
-        .def_static("convert_all_to_spherical", &vec3::CoordVector3::convertAllToSpherical, py::arg("vectors"));
-
-    coordVector3.def_static("convert_to_field_vector", &vec3::CoordVector3::convertToFieldVector, py::arg("vector"))
-        .def_static("convert_to_coord_vector", &vec3::CoordVector3::convertToCoordVector, py::arg("vector"));
-
-    coordVector3.def_property_readonly("coordinate_system", &vec3::CoordVector3::getCoordinateSystem);
-
-    coordVector3.def("__repr__", &vec3::CoordVector3::operator std::string);
+    py::class_<vec3::Vector3Array> vector3Array(tensorModule, "Vector3Array");
+    py::class_<vec3::Matrix3Array> matrix3Array(tensorModule, "Matrix3Array");
 
 
     // FieldVector3
 
-    fieldVector3.def_readwrite("x", &vec3::FieldVector3::x)
-        .def_readwrite("y", &vec3::FieldVector3::y)
-        .def_readwrite("z", &vec3::FieldVector3::z);
+    vector3.def_readwrite("x", &vec3::Vector3::x)
+        .def_readwrite("y", &vec3::Vector3::y)
+        .def_readwrite("z", &vec3::Vector3::z);
 
-    fieldVector3.def(py::init<>())
+    vector3.def(py::init<>())
         .def(py::init<double, double, double>(), py::arg("x"), py::arg("y"), py::arg("z"));
 
-    fieldVector3.def("__add__", &vec3::FieldVector3::operator+)
-        .def("__iadd__", &vec3::FieldVector3::operator+=)
-        .def("__sub__", &vec3::FieldVector3::operator-)
-        .def("__isub__", &vec3::FieldVector3::operator-=)
-        .def("__mul__", &vec3::FieldVector3::operator*)
-        .def("__imul__", &vec3::FieldVector3::operator*=);
+    vector3.def("__add__", &vec3::Vector3::operator+)
+        .def("__iadd__", &vec3::Vector3::operator+=)
+        .def("__sub__", &vec3::Vector3::operator-)
+        .def("__isub__", &vec3::Vector3::operator-=)
+        .def("__mul__", &vec3::Vector3::operator*)
+        .def("__imul__", &vec3::Vector3::operator*=);
 
-    fieldVector3.def("magnitude", &vec3::FieldVector3::magnitude);
+    vector3.def("abs", &vec3::Vector3::abs);
 
-    fieldVector3.def_static(
-        "scalar_product", &vec3::FieldVector3::scalarProduct,
+    vector3.def_static(
+        "scalar_product", &vec3::Vector3::scalarProduct,
         py::arg("vector1"), py::arg("vector2"));
 
-    fieldVector3.def_static(
-        "cross_product", &vec3::FieldVector3::crossProduct,
+    vector3.def_static(
+        "cross_product", &vec3::Vector3::crossProduct,
         py::arg("vector1"), py::arg("vector2"));
 
-    fieldVector3.def("__repr__", &vec3::FieldVector3::operator std::string);
+    vector3.def_static(
+        "get_from_cylindrical_coords", &vec3::Vector3::getFromCylindricalCoords,
+        py::arg("z"), py::arg("r"), py::arg("phi"));
+
+    vector3.def_static(
+        "get_from_spherical_coords", &vec3::Vector3::getFromSphericalCoords,
+        py::arg("z"), py::arg("theta"), py::arg("phi"));
+
+    vector3
+        .def("get_as_cylindrical_coords", &vec3::Vector3::getAsCylindricalCoords)
+        .def("get_as_spherical_coords", &vec3::Vector3::getAsSphericalCoords);
+
+    vector3.def("__repr__", &vec3::Vector3::operator std::string);
 
 
     // Matrix3
@@ -106,16 +81,160 @@ void initTensor(py::module_ &mainModule)
             py::arg("yx") = 0.0, py::arg("yy") = 0.0, py::arg("yz") = 0.0,
             py::arg("zx") = 0.0, py::arg("zy") = 0.0, py::arg("zz") = 0.0);
 
+    matrix3.def("det", &vec3::Matrix3::det);
+
     matrix3.def("__add__", &vec3::Matrix3::operator+)
         .def("__iadd__", &vec3::Matrix3::operator+=)
+        .def("__imul__", &vec3::Matrix3::operator*=)
+        .def(
+            "__mul__",
+            static_cast<vec3::Matrix3 (vec3::Matrix3::*)(double) const>(&vec3::Matrix3::operator*))
         .def(
             "__mul__",
             static_cast<vec3::Matrix3 (vec3::Matrix3::*)(const vec3::Matrix3&) const>(&vec3::Matrix3::operator*)
         )
         .def(
             "__mul__",
-            static_cast<vec3::FieldVector3 (vec3::Matrix3::*)(const vec3::FieldVector3&) const>(&vec3::Matrix3::operator*)
+            static_cast<vec3::Vector3 (vec3::Matrix3::*)(const vec3::Vector3&) const>(&vec3::Matrix3::operator*)
         );
 
     matrix3.def("__repr__", &vec3::Matrix3::operator std::string);
+
+
+    // Triplet
+
+    triplet.def_readwrite("first", &vec3::Triplet::first)
+           .def_readwrite("second", &vec3::Triplet::second)
+           .def_readwrite("third", &vec3::Triplet::third);
+
+    triplet.def(py::init<>())
+           .def(
+               py::init<double, double, double>(),
+               py::arg("first"), py::arg("second"), py::arg("third")
+           );
+
+    triplet.def("__repr__", &vec3::Triplet::operator std::string);
+
+
+    // Vector3Array
+
+    vector3Array.def(py::init<>())
+        .def(py::init<size_t>(), py::arg("init_size"))
+        .def(py::init<const std::vector<vec3::Vector3>&>(), py::arg("vector_list"));
+
+    vector3Array
+        .def(
+            "append",
+            static_cast<void (vec3::Vector3Array::*)(const vec3::Vector3&)>(&vec3::Vector3Array::append),
+            py::arg("appended_vector"))
+        .def(
+            "append",
+            static_cast<void (vec3::Vector3Array::*)(double, double, double)>(&vec3::Vector3Array::append),
+            py::arg("x"), py::arg("y"), py::arg("z"))
+        .def("reserve", &vec3::Vector3Array::reserve, py::arg("reserve_size"))
+        .def("resize", &vec3::Vector3Array::resize, py::arg("new_size"))
+        .def("clear", &vec3::Vector3Array::clear)
+        .def("size", &vec3::Vector3Array::size);
+
+    vector3Array.def("items", &vec3::Vector3Array::getItems);
+
+    vector3Array.def("x", &vec3::Vector3Array::x)
+        .def("y", &vec3::Vector3Array::y)
+        .def("z", &vec3::Vector3Array::z)
+        .def("abs", &vec3::Vector3Array::abs);
+
+    vector3Array
+        .def(
+            "__getitem__",
+            [](const vec3::Vector3Array &self, long long index){
+                if(index < 0)
+                    index += self.size();
+
+                if(index < 0 || index >= self.size())
+                    throw std::out_of_range("Array index out of range!");
+                return self[index];
+            }
+        )
+        .def(
+            "__setitem__",
+            [](vec3::Vector3Array &self, long long index, const vec3::Vector3 &item){
+                if(index < 0)
+                    index += self.size();
+
+                if(index < 0 || index >= self.size())
+                    throw std::out_of_range("Array index out of range!");
+                self[index] = item;
+            }
+        )
+        .def("__iadd__", &vec3::Vector3Array::operator+=);
+
+    vector3Array.def("__repr__", &vec3::Vector3Array::operator std::string);
+
+
+    // Matrix3Array
+
+    matrix3Array.def(py::init<>())
+            .def(py::init<size_t>(), py::arg("init_size"))
+            .def(py::init<const std::vector<vec3::Matrix3>&>(), py::arg("matrix_list"));
+
+    matrix3Array
+        .def(
+            "append",
+            static_cast<void (vec3::Matrix3Array::*)(const vec3::Matrix3&)>(&vec3::Matrix3Array::append),
+            py::arg("appended_matrix"))
+        .def(
+            "append",
+            static_cast<
+                void (vec3::Matrix3Array::*)
+                (double, double, double, double, double, double, double, double, double)
+            > (&vec3::Matrix3Array::append),
+            py::arg("xx"), py::arg("xy"), py::arg("xz"),
+            py::arg("yx"), py::arg("yy"), py::arg("yz"),
+            py::arg("zx"), py::arg("zy"), py::arg("zz")
+        )
+        .def("reserve", &vec3::Matrix3Array::reserve, py::arg("reserve_size"))
+        .def("resize", &vec3::Matrix3Array::resize, py::arg("new_size"))
+        .def("clear", &vec3::Matrix3Array::clear)
+        .def("size", &vec3::Matrix3Array::size);
+
+    matrix3Array.def("items", &vec3::Matrix3Array::getItems);
+
+    matrix3Array
+        .def("xx", &vec3::Matrix3Array::xx)
+        .def("xy", &vec3::Matrix3Array::xy)
+        .def("xz", &vec3::Matrix3Array::xz)
+        .def("yx", &vec3::Matrix3Array::yx)
+        .def("yy", &vec3::Matrix3Array::yy)
+        .def("yz", &vec3::Matrix3Array::yz)
+        .def("zx", &vec3::Matrix3Array::zx)
+        .def("zy", &vec3::Matrix3Array::zy)
+        .def("zz", &vec3::Matrix3Array::zz)
+        .def("det", &vec3::Matrix3Array::det);
+
+    matrix3Array
+        .def(
+            "__getitem__",
+            [](const vec3::Matrix3Array &self, long long index){
+                if(index < 0)
+                    index += self.size();
+
+                if(index < 0 || index >= self.size())
+                    throw std::out_of_range("Array index out of range!");
+                return self[index];
+            }
+        )
+        .def(
+            "__setitem__",
+            [](vec3::Matrix3Array &self, long long index, const vec3::Matrix3 &item){
+                if(index < 0)
+                    index += self.size();
+
+                if(index < 0 || index >= self.size())
+                    throw std::out_of_range("Array index out of range!");
+                self[index] = item;
+            }
+        )
+        .def("__iadd__", &vec3::Matrix3Array::operator+=);
+
+    matrix3Array.def("__repr__", &vec3::Matrix3Array::operator std::string);
 }

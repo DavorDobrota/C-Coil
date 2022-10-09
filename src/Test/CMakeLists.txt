@@ -1,11 +1,12 @@
 add_library(
         Test OBJECT
 
-        TestMiscellaneous.cxx
-        TestMInductanceGeneral.cxx
-        TestForce.cxx
-        TestMInductanceZAxis.cxx
-        TestArgumentGeneration.cxx)
+        Other/TestMiscellaneous.cxx
+        MInductanceAndForce/TestMInductanceGeneral.cxx
+        MInductanceAndForce/TestForce.cxx
+        MInductanceAndForce/TestMInductanceZAxis.cxx
+        Other/TestArgumentGeneration.cxx MInductanceAndForce/TestArrangements.cxx Other/TestFields.cxx)
+set_property(TARGET Test PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(Test PRIVATE -fpic)
 

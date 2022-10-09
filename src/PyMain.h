@@ -5,7 +5,6 @@
 
 void initTensor(pybind11::module_ &mainModule);
 void initCoil(pybind11::module_ &mainModule);
-void initCoilData(pybind11::module_ &mainModule);
 void initCoilGroup(pybind11::module_ &mainModule);
 void initBenchmark(pybind11::module_ &mainModule);
 void initCompare(pybind11::module_ &mainModule);

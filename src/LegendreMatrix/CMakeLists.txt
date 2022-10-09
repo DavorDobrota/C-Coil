@@ -1,4 +1,5 @@
 add_library(LegendreMatrix OBJECT LegendreMatrix.cxx)
+set_property(TARGET LegendreMatrix PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(LegendreMatrix PRIVATE -fpic)
 

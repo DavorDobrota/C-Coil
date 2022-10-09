@@ -1,4 +1,5 @@
 add_library(ThreadPool OBJECT ThreadPool.cxx)
+set_property(TARGET ThreadPool PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 target_compile_options(ThreadPool PRIVATE -fpic)
 

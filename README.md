@@ -71,7 +71,7 @@ If you have already cloned the repository, you can clone all the submodules by r
 
 ### Windows requirements
 #### MSVC
-- MSVC version 2019 or newer (Visual Studio 2019)
+- MSVC version 1920 or newer (Visual Studio 2019)
 
 ### Building with CMake
 

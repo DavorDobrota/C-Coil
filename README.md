@@ -61,7 +61,7 @@ You can choose to build the project with different options:
 #### Project dependencies
 Make sure that all the project's dependencies (git submodules located in the 'extern' directory)
 are cloned properly. This can be done by cloning the project with the command:  
-`git clone https://github.com/DavorDobrota/C-COIL.git --recursive`.  
+`git clone https://github.com/DavorDobrota/C-COIL.git --recursive`  
 If you have already cloned the repository, you can clone all the submodules by running:  
 `git submodule update --init`
 

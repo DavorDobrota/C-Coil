@@ -78,6 +78,7 @@ bool CoilGroup::isPointInside(vec3::Vector3 pointVector)
     for (auto& memberCoil : memberCoils)
         if (memberCoil->isPointInside(pointVector))
             return true;
+    return false;
 }
 
 

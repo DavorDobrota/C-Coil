@@ -22,7 +22,7 @@
 - Calculations with multi-coil systems, implemented in CoilGroup, are
   especially efficient when using the GPU
 
-### Getting started
+### Getting Started
 - The library can be used natively from C++ and via Python bindings, which
   can also be used from MATLAB
 - Documentation is available, and it is generated with Doxygen for C++. 
@@ -33,4 +33,21 @@
   are available in module Comparison.
 
 ## Installation
-- bla
+
+### Linux
+
+#### CMake
+
+#### Python 3
+
+#### Important Notes
+- a
+
+### Windows
+
+#### CMake
+
+#### Python 3
+
+#### Important Notes
+- a

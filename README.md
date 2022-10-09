@@ -71,7 +71,7 @@ If you have already cloned the repository, you can clone all the submodules by r
 
 ### Windows requirements
 #### MSVC
-- MSVC version 1920 or higher (Visual Studio 2019)
+- MSVC version 2019 or newer (Visual Studio 2019)
 
 ### Building with CMake
 
@@ -110,9 +110,10 @@ $env:GPU_INCREMENTS = 80
 pip install .
 ```
 
-#### Using the Python module in Matlab
-After building the Python module, no further steps should be required to use it from Matlab.
-See the Matlab examples for extra information on using the Python module within Matlab.
+#### Using the Python module in MATLAB 
+After building the Python module, no further steps should be required to use it from MATLAB.
+Make sure you open MATLAB from the virtual environment if you are using it.
+See the MATLAB examples for extra information on using the Python module within MATLAB.
 
 
 #### Important notes
@@ -120,8 +121,8 @@ See the Matlab examples for extra information on using the Python module within 
    the CUDA binaries need to be added in Python as a DLL directory.
    See the Python examples for further reference.
    
-2. When testing the Python module within Matlab, we encountered an error caused by a
-   mismatch of GCC's native libstdc++ version and Matlab's bundeled libstdc++ version.
-   We fixed the problem by overwriting Matlab's version with the native GCC's version.
+2. When testing the Python module within MATLAB, we encountered an error caused by a
+   mismatch of GCC's native libstdc++ version and MATLAB's bundeled libstdc++ version.
+   We fixed the problem by overwriting MATLAB's version with the native GCC's version.
    This procedure comes with a risk, however, and we therefore advise caution if you are trying
    to replicate the hack on your machine.

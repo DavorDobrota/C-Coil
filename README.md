@@ -33,21 +33,95 @@
   are available in module Comparison.
 
 ## Installation
+The library can be built on Windows and Linux platforms, 
+either as a C++ library (using CMake) or as a Python module (using setuptools and pybind11).
 
-### Linux
+### Choosing build options
+You can choose to build the project with different options:
+- USE_GPU (bool/int) - enables or disables CUDA modules for GPU hardware acceleration
+- GPU_INCREMENTS (int) 
+  - determines the amount of increments used in GPU calculations
+  - should be a value between 1 and 80, bounds included
+  - increasing the increment count increases the precision of GPU calculations (it also increases compute time and VRAM usage), and vice versa
+- TYPE (str)
+  - determines the floating point type used in GPU calculations
+  - should be either 'float' or 'double'
+  - choosing 'double' will significantly decrease the calculation speed on most modern GPUs 
 
+### Common requirements
 #### CMake
+- CMake version 3.8 or higher
 
 #### Python 3
+- Python version 3.8 or higher
 
-#### Important Notes
-- a
+#### CUDA
+- CUDA toolkit version 11 or higher
 
-### Windows
+#### Project dependencies
+Make sure that all the project's dependencies (git submodules located in the 'extern' directory)
+are cloned properly. This can be done by cloning the project with the command:  
+`git clone https://github.com/DavorDobrota/C-COIL.git --recursive`.  
+If you have already cloned the repository, you can clone all the submodules by running:  
+`git submodule update --init`
 
-#### CMake
+### Linux requirements
+#### GCC
+- GCC version 10 or higher
 
-#### Python 3
+### Windows requirements
+#### MSVC
+- MSVC version 1920 or higher (Visual Studio 2019)
 
-#### Important Notes
-- a
+### Building with CMake
+
+#### Running CMake
+To build the project with CMake, run the following commands:
+```shell
+mkdir build
+cd build
+cmake ../
+cmake --build . --config release
+```
+
+#### Choosing build options
+To choose build options while building with CMake, simply append them to the `cmake ../` call,  
+e.g. `cmake ../ -DUSE_GPU=1 -DGPU_INCREMENTS=80`
+
+### Building the Python Module
+
+#### Running the setup.py build
+To build the Python module, run the following commands 
+(using a [virtual environment](https://docs.python.org/3/library/venv.html#:~:text=A%20virtual%20environment%20is%20a,part%20of%20your%20operating%20system.) is recommended):
+```shell
+pip install -U -r requirements.txt
+pip install .
+```
+
+#### Choosing build options
+To choose build options while build the Python module on Linux, you need to pass them to
+the build script as environment variables,  
+e.g. `USE_GPU=1 GPU_INCREMENTS=80 pip install .`
+
+The process is very similar on Windows and this example will work in Powershell:
+```shell
+$env:USE_GPU = 1
+$env:GPU_INCREMENTS = 80
+pip install .
+```
+
+#### Using the Python module in Matlab
+After building the Python module, no further steps should be required to use it from Matlab.
+See the Matlab examples for extra information on using the Python module within Matlab.
+
+
+#### Important notes
+1. On Windows, to use the CUDA modules with the Python code, 
+   the CUDA binaries need to be added in Python as a DLL directory.
+   See the Python examples for further reference.
+   
+2. When testing the Python module within Matlab, we encountered an error caused by a
+   mismatch of GCC's native libstdc++ version and Matlab's bundeled libstdc++ version.
+   We fixed the problem by overwriting Matlab's version with the native GCC's version.
+   This procedure comes with a risk, however, and we therefore advise caution if you are trying
+   to replicate the hack on your machine.

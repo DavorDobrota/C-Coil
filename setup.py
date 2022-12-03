@@ -151,7 +151,7 @@ ext_modules = [
 with open("README.md", "r") as f:
     long_description = f.read().strip()
 
-with open("LICENSE", "r") as f:
+with open("LICENSE", "r", encoding="utf-8") as f:
     project_license = f.read().strip()
 
 with open("VERSION", "r") as f:

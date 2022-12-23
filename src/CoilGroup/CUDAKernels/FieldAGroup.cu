@@ -43,6 +43,8 @@ void calculatePotentialGroup(long long opCount, long long coilIndex,
     TYPE topEdge = zCoord + 0.5f * coil.length;
     TYPE bottomEdge = zCoord - 0.5f * coil.length;
 
+    int angIncs = coil.angularIncrements / 2 + coil.angularIncrements % 2;
+
     if (coil.useFastMethod)
     {
         for (int incT = 0; incT < coil.thicknessIncrements; ++incT)
@@ -51,38 +53,62 @@ void calculatePotentialGroup(long long opCount, long long coilIndex,
 
             TYPE tempConstA = incrementPositionT * incrementPositionT + rCoord * rCoord;
             TYPE tempConstB = 2.0f * incrementPositionT * rCoord;
+            TYPE tempConstG = coil.thicknessWeightArray[incT] * incrementPositionT;
 
-            for (int incF = 0; incF < coil.angularIncrements; ++incF)
+//            for (int incF = 0; incF < coil.angularIncrements; ++incF)
+//            {
+//                TYPE cosinePhi = coil.cosPrecomputeArray[incF];
+//
+//                TYPE tempConstC = rsqrt(tempConstA - tempConstB * cosinePhi);
+//
+//                TYPE tempConstD1 = topEdge * tempConstC;
+//                TYPE tempConstD2 = bottomEdge * tempConstC;
+//
+//                TYPE tempConstE1 = sqrt(tempConstD1 * tempConstD1 + 1.0f);
+//                TYPE tempConstE2 = sqrt(tempConstD2 * tempConstD2 + 1.0f);
+//
+//                TYPE tempConstF = log((tempConstE1 + tempConstD1) / (tempConstE2 + tempConstD2));
+//
+//                potential += tempConstG * coil.angularWeightArray[incF] * cosinePhi * tempConstF;
+//            }
+
+            for (int incF = 0; incF < angIncs; ++incF)
             {
-                TYPE cosinePhi = coil.cosPrecomputeArray[incF];
+                TYPE cosinePhi_0 = coil.cosPrecomputeArray[2 * incF + 0];
+                TYPE cosinePhi_1 = coil.cosPrecomputeArray[2 * incF + 1];
 
-                TYPE tempConstC = rsqrt(tempConstA - tempConstB * cosinePhi);
+                TYPE tempConstC_0 = rsqrt(tempConstA - tempConstB * cosinePhi_0);
+                TYPE tempConstC_1 = rsqrt(tempConstA - tempConstB * cosinePhi_1);
 
-                TYPE tempConstD1 = topEdge * tempConstC;
-                TYPE tempConstD2 = bottomEdge * tempConstC;
+                TYPE tempConstD1_0 = topEdge * tempConstC_0;
+                TYPE tempConstD1_1 = topEdge * tempConstC_1;
 
-                TYPE tempConstE1 = sqrt(tempConstD1 * tempConstD1 + 1.0f);
-                TYPE tempConstE2 = sqrt(tempConstD2 * tempConstD2 + 1.0f);
+                TYPE tempConstD2_0 = bottomEdge * tempConstC_0;
+                TYPE tempConstD2_1 = bottomEdge * tempConstC_1;
 
-                TYPE tempConstF = log((tempConstE1 + tempConstD1) / (tempConstE2 + tempConstD2));
+                TYPE tempConstE1_0 = sqrt(tempConstD1_0 * tempConstD1_0 + 1.0f);
+                TYPE tempConstE1_1 = sqrt(tempConstD1_1 * tempConstD1_1 + 1.0f);
 
-                potential += coil.constFactor *
-                             coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF] *
-                             incrementPositionT * cosinePhi * tempConstF;
+                TYPE tempConstE2_0 = sqrt(tempConstD2_0 * tempConstD2_0 + 1.0f);
+                TYPE tempConstE2_1 = sqrt(tempConstD2_1 * tempConstD2_1 + 1.0f);
+
+                TYPE tempConstF_0 = log((tempConstE1_0 + tempConstD1_0) / (tempConstE2_0 + tempConstD2_0));
+                TYPE tempConstF_1 = log((tempConstE1_1 + tempConstD1_1) / (tempConstE2_1 + tempConstD2_1));
+
+                potential += tempConstG * coil.angularWeightArray[2 * incF + 0] * cosinePhi_0 * tempConstF_0;
+                potential += tempConstG * coil.angularWeightArray[2 * incF + 1] * cosinePhi_1 * tempConstF_1;
             }
         }
     }
     else
     {
-        int ang_incs = coil.angularIncrements / 2 + coil.angularIncrements % 2;
-
         for (int incT = 0; incT < coil.thicknessIncrements; ++incT)
         {
             TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.thicknessPositionArray[incT]);
 
             TYPE tempConstA = incrementPositionT * incrementPositionT + rCoord * rCoord + zCoord * zCoord;
             TYPE tempConstB = 2.0f * incrementPositionT * rCoord;
-            TYPE tempConstC = coil.constFactor * coil.thicknessWeightArray[incT] * incrementPositionT;
+            TYPE tempConstC = coil.thicknessWeightArray[incT] * incrementPositionT;
 
 //            for (int incF = 0; incF < coil.angularIncrements; ++incF)
 //            {
@@ -93,7 +119,7 @@ void calculatePotentialGroup(long long opCount, long long coilIndex,
 //                potential += tempConstC * coil.angularWeightArray[incF] * cosinePhi * tempConstD;
 //            }
 
-            for (int incF = 0; incF < ang_incs; ++incF)
+            for (int incF = 0; incF < angIncs; ++incF)
             {
                 TYPE cosinePhi_0 = coil.cosPrecomputeArray[2 * incF + 0];
                 TYPE cosinePhi_1 = coil.cosPrecomputeArray[2 * incF + 1];
@@ -107,6 +133,8 @@ void calculatePotentialGroup(long long opCount, long long coilIndex,
             }
         }
     }
+
+    potential *= coil.constFactor;
 
     TYPE xPot = (-1.0f) * sin(phiCord) * potential;
     TYPE yPot = potential * cos(phiCord);

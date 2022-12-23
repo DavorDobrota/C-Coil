@@ -36,6 +36,8 @@ namespace Test
 
     /// @brief Tests if CoilGroup coarse-grained multithreading (MTD) is implemented properly.
     void testCoilGroupFieldsMTD();
+    /// @brief Tests if CoilGroup hardware acceleration (GPU) is implemented properly.
+    void testCoilGroupFieldsGPU();
 
     /// @brief Tests if Coil::computeAllMutualInductanceArrangements is implemented correctly (CPU_ST is reference)
     void testCoilMInductanceArrangements();

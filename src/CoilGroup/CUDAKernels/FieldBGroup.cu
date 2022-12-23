@@ -44,6 +44,8 @@ void calculateFieldGroup(long long opCount, long long coilIndex,
     TYPE topEdge = zCoord + 0.5f * coil.length;
     TYPE bottomEdge = zCoord - 0.5f * coil.length;
 
+    int angIncs = coil.angularIncrements / 2 + coil.angularIncrements % 2;
+
     if (coil.useFastMethod)
     {
         for (int incT = 0; incT < coil.thicknessIncrements; ++incT)
@@ -57,21 +59,53 @@ void calculateFieldGroup(long long opCount, long long coilIndex,
             TYPE tempConstD1 = topEdge * topEdge + tempConstC;
             TYPE tempConstD2 = bottomEdge * bottomEdge + tempConstC;
 
-            for (int incF = 0; incF < coil.angularIncrements; ++incF)
+            TYPE tempConstG = coil.constFactor * coil.thicknessWeightArray[incT];
+
+//            for (int incF = 0; incF < coil.angularIncrements; ++incF)
+//            {
+//                TYPE cosinePhi = coil.cosPrecomputeArray[incF];
+//
+//                TYPE tempConstE = tempConstB * cosinePhi;
+//
+//                TYPE tempConstF1 = rsqrt(tempConstD1 - tempConstE);
+//                TYPE tempConstF2 = rsqrt(tempConstD2 - tempConstE);
+//
+//                TYPE tempConstG = coil.constFactor * coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF];
+//
+//                fieldH += tempConstG * incrementPositionT * cosinePhi * (tempConstF2 - tempConstF1);
+//                fieldZ += tempConstG *
+//                          ((tempConstA - 0.5f * tempConstE) / (tempConstC - tempConstE)) *
+//                          (topEdge * tempConstF1 - bottomEdge * tempConstF2);
+//            }
+
+            for (int incF = 0; incF < angIncs; ++incF)
             {
-                TYPE cosinePhi = coil.cosPrecomputeArray[incF];
+                TYPE cosinePhi_0 = coil.cosPrecomputeArray[2 * incF + 0];
+                TYPE cosinePhi_1 = coil.cosPrecomputeArray[2 * incF + 1];
 
-                TYPE tempConstE = tempConstB * cosinePhi;
+                TYPE tempConstE_0 = tempConstB * cosinePhi_0;
+                TYPE tempConstE_1 = tempConstB * cosinePhi_1;
 
-                TYPE tempConstF1 = rsqrt(tempConstD1 - tempConstE);
-                TYPE tempConstF2 = rsqrt(tempConstD2 - tempConstE);
+                TYPE tempConstF1_0 = rsqrt(tempConstD1 - tempConstE_0);
+                TYPE tempConstF1_1 = rsqrt(tempConstD1 - tempConstE_1);
 
-                TYPE tempConstG = coil.constFactor * coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF];
+                TYPE tempConstF2_0 = rsqrt(tempConstD2 - tempConstE_0);
+                TYPE tempConstF2_1 = rsqrt(tempConstD2 - tempConstE_1);
 
-                fieldH += tempConstG * incrementPositionT * cosinePhi * (tempConstF2 - tempConstF1);
-                fieldZ += tempConstG *
-                          ((tempConstA - 0.5f * tempConstE) / (tempConstC - tempConstE)) *
-                          (topEdge * tempConstF1 - bottomEdge * tempConstF2);
+                TYPE tempConstG_0 = tempConstG * coil.angularWeightArray[2 * incF + 0];
+                TYPE tempConstG_1 = tempConstG * coil.angularWeightArray[2 * incF + 1];
+
+                fieldH += tempConstG_0 *
+                        incrementPositionT * cosinePhi_0 * (tempConstF2_0 - tempConstF1_0);
+                fieldH += tempConstG_1 *
+                          incrementPositionT * cosinePhi_1 * (tempConstF2_1 - tempConstF1_1);
+
+                fieldZ += tempConstG_0 *
+                        ((tempConstA - 0.5f * tempConstE_0) / (tempConstC - tempConstE_0)) *
+                        (topEdge * tempConstF1_0 - bottomEdge * tempConstF2_0);
+                fieldZ += tempConstG_1 *
+                        ((tempConstA - 0.5f * tempConstE_1) / (tempConstC - tempConstE_1)) *
+                        (topEdge * tempConstF1_1 - bottomEdge * tempConstF2_1);
             }
         }
     }
@@ -85,17 +119,39 @@ void calculateFieldGroup(long long opCount, long long coilIndex,
             TYPE tempConstB = incrementPositionT * rCoord;
             TYPE tempConstC = tempConstA + rCoord * rCoord + zCoord * zCoord;
             TYPE tempConstD = incrementPositionT * zCoord;
+            TYPE tempConstE = coil.constFactor * coil.thicknessWeightArray[incT];
 
-            for (int incF = 0; incF < coil.angularIncrements; ++incF)
+//            for (int incF = 0; incF < coil.angularIncrements; ++incF)
+//            {
+//                TYPE cosinePhi = coil.cosPrecomputeArray[incF];
+//
+//                TYPE tempConstF = tempConstC - 2.0f * tempConstB * cosinePhi;
+//                TYPE tempConstG = tempConstF * sqrt(tempConstF);
+//                TYPE tempConstH = tempConstE * coil.angularWeightArray[incF] / tempConstG;
+//
+//                fieldH += tempConstH * (tempConstD * cosinePhi);
+//                fieldZ += tempConstH * (tempConstA - tempConstB * cosinePhi);
+//            }
+
+            for (int incF = 0; incF < angIncs; ++incF)
             {
-                TYPE cosinePhi = coil.cosPrecomputeArray[incF];
+                TYPE cosinePhi_0 = coil.cosPrecomputeArray[2 * incF + 0];
+                TYPE cosinePhi_1 = coil.cosPrecomputeArray[2 * incF + 1];
 
-                TYPE tempConstE = tempConstC - 2.0f * tempConstB * cosinePhi;
-                TYPE tempConstF = tempConstE * sqrt(tempConstE);
-                TYPE tempConstG = coil.constFactor * coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF] / tempConstF;
+                TYPE tempConstF_0 = tempConstC - 2.0f * tempConstB * cosinePhi_0;
+                TYPE tempConstF_1 = tempConstC - 2.0f * tempConstB * cosinePhi_1;
 
-                fieldH += tempConstG * (tempConstD * cosinePhi);
-                fieldZ += tempConstG * (tempConstA - tempConstB * cosinePhi);
+                TYPE tempConstG_0 = tempConstF_0 * sqrt(tempConstF_0);
+                TYPE tempConstG_1 = tempConstF_1 * sqrt(tempConstF_1);
+
+                TYPE tempConstH_0 = tempConstE * coil.angularWeightArray[2 * incF + 0] / tempConstG_0;
+                TYPE tempConstH_1 = tempConstE * coil.angularWeightArray[2 * incF + 1] / tempConstG_1;
+
+                fieldH += tempConstH_0 * (tempConstD * cosinePhi_0);
+                fieldH += tempConstH_1 * (tempConstD * cosinePhi_1);
+
+                fieldZ += tempConstH_0 * (tempConstA - tempConstB * cosinePhi_0);
+                fieldZ += tempConstH_1 * (tempConstA - tempConstB * cosinePhi_1);
             }
         }
     }

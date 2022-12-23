@@ -14,7 +14,8 @@
 int main()
 {
 
-
+//    Benchmark::coilGroupComputeAllFieldsGPU(100, 1'048'576);
+    Test::testCoilGroupFieldsMTD();
     return 0;
 }
 #pragma clang diagnostic pop

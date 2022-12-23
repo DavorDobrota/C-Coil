@@ -74,22 +74,36 @@ void calculatePotentialGroup(long long opCount, long long coilIndex,
     }
     else
     {
+        int ang_incs = coil.angularIncrements / 2 + coil.angularIncrements % 2;
+
         for (int incT = 0; incT < coil.thicknessIncrements; ++incT)
         {
             TYPE incrementPositionT = coil.innerRadius + 0.5f * coil.thickness * (1.0f + coil.thicknessPositionArray[incT]);
 
             TYPE tempConstA = incrementPositionT * incrementPositionT + rCoord * rCoord + zCoord * zCoord;
             TYPE tempConstB = 2.0f * incrementPositionT * rCoord;
+            TYPE tempConstC = coil.constFactor * coil.thicknessWeightArray[incT] * incrementPositionT;
 
-            for (int incF = 0; incF < coil.angularIncrements; ++incF)
+//            for (int incF = 0; incF < coil.angularIncrements; ++incF)
+//            {
+//                TYPE cosinePhi = coil.cosPrecomputeArray[incF];
+//
+//                TYPE tempConstD = rsqrt(tempConstA - tempConstB * cosinePhi);
+//
+//                potential += tempConstC * coil.angularWeightArray[incF] * cosinePhi * tempConstD;
+//            }
+
+            for (int incF = 0; incF < ang_incs; ++incF)
             {
-                TYPE cosinePhi = coil.cosPrecomputeArray[incF];
+                TYPE cosinePhi_0 = coil.cosPrecomputeArray[2 * incF + 0];
+                TYPE cosinePhi_1 = coil.cosPrecomputeArray[2 * incF + 1];
 
-                TYPE tempConstC = rsqrt(tempConstA - tempConstB * cosinePhi);
+                TYPE tempConstD_0 = rsqrt(tempConstA - tempConstB * cosinePhi_0);
+                TYPE tempConstD_1 = rsqrt(tempConstA - tempConstB * cosinePhi_1);
 
-                potential += coil.constFactor *
-                             coil.thicknessWeightArray[incT] * coil.angularWeightArray[incF] *
-                             incrementPositionT * cosinePhi * tempConstC;
+                potential += tempConstC * coil.angularWeightArray[2 * incF + 0] * cosinePhi_0 * tempConstD_0;
+                potential += tempConstC * coil.angularWeightArray[2 * incF + 1] * cosinePhi_1 * tempConstD_1;
+
             }
         }
     }

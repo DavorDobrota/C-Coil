@@ -1,4 +1,5 @@
 wheel~=0.37
-setuptools>=61.0.0
-pytest-runner>=6.0.0
-pybind11>=2.0.0
+setuptools>=61.0.0,<68.0.0      # Avoid breaking changes in latest setuptools versions
+pytest-runner>=6.0.0,<6.1.0     # Last stable release before it was deprecated
+pybind11>=2.0.0,<2.11.0         # Avoid recent breaking changes in Pybind11
+numpy>=1.23.5,<1.26.0           # Avoid breaking changes in latest numpy versions

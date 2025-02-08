@@ -33,7 +33,7 @@ def main():
     sec = c.Coil(0.01022, 0.011, 0.0022, 20)
 
     # setting precision and number of threads used (number of CPU threads is advised)
-    prim.set_thread_count(16)
+    prim.set_thread_count(8)
     precision = c.PrecisionFactor(4.0)
 
     # initialising arrays for specifying arrangements
@@ -78,7 +78,7 @@ def main():
         primPositions, secPositions,
         primOrientationY, primOrientationZ,
         secOrientationY, secOrientationZ,
-        precision, c.GPU
+        precision, c.CPU_MT
     )
     # computing force and torque for given arrangements
     # configurations = c.Coil.compute_all_force_torque_arrangements(
